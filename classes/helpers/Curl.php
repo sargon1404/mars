@@ -1,0 +1,189 @@
+<?php
+/**
+* The Curl Class
+* @package Mars
+*/
+
+namespace Mars\Helpers;
+
+/**
+* The Curl Class
+* Wrapper around the Curl library
+*/
+class Curl
+{
+	/**
+	* @var string $useragent The useragent used when making requests
+	*/
+	public $useragent = '';
+
+	/**
+	* @var bool $followlocation Determines the value of CURLOPT_FOLLOWLOCATION
+	*/
+	public $followlocation = true;
+
+	/**
+	* @var bool $header If true,the headers will be also returned
+	*/
+	public $header = false;
+
+	/**
+	* @var int $code The http code of the last request
+	*/
+	public $code = '';
+
+	/**
+	* @var array $request_header The request headers
+	*/
+	public $request_header = [];
+
+	/**
+	* @var array $error The generated error if any
+	*/
+	public $error = '';
+
+	/**
+	* @var array $info The request info
+	*/
+	public $info = [];
+
+	/**
+	* @var array $options Curl options for curl_setopt
+	*/
+	protected $options = [];
+
+	/**
+	* Builds the curl object
+	* @param array $options Curl options specified as key=>value
+	*/
+	public function __construct(array $options = [])
+	{
+		if (!extension_loaded('curl')) {
+			throw new \Exception('The curl extension must be enabled on this server!');
+		}
+
+		if (!$options) {
+			$this->setOptions($options);
+		}
+
+		if (isset($_SERVER['HTTP_USER_AGENT'])) {
+			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
+		}
+	}
+
+	/**
+	* Curl Options can be set as key=>value before the request is made
+	* @param array $options The options
+	* @return $this
+	*/
+	public function setOptions(array $options = [])
+	{
+		$this->options = $this->options + $options;
+
+		return $this;
+	}
+
+	/**
+	* Sets the basic curl options [header/useragent/followlocation]
+	* @param string $url The url
+	* @return resource The curl handle
+	*/
+	protected function init(string $url)
+	{
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->followlocation);
+		curl_setopt($ch, CURLOPT_HEADER, $this->header);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+
+		foreach ($this->options as $name => $val) {
+			curl_setopt($ch, $name, $val);
+		}
+
+		return $ch;
+	}
+
+	/**
+	* Executes the curl session and returns the result
+	* @param resource $ch The curl handler
+	* @return string The result
+	*/
+	protected function exec($ch)
+	{
+		$result = curl_exec($ch);
+		$this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$this->info = curl_getinfo($ch);
+
+		if ($this->code) {
+			$this->request_header = $this->info['request_header'];
+		} else {
+			$this->error = curl_error($ch);
+		}
+
+		curl_close($ch);
+
+		return $result;
+	}
+
+	/**
+	* Fetches an url with a GET request
+	* @param string $url The url to retrieve
+	* @return mixed The contents of the url; false on failure
+	*/
+	public function get(string $url)
+	{
+		$ch = $this->init($url);
+
+		return $this->exec($ch);
+	}
+
+	/**
+	* Uses Curl to download a file with a get request
+	* @param string $url The url to retrieve
+	* @param string $filename The local filename under which the file will be stored
+	* @return mixed The contents of the url; false on failure
+	*/
+	public function getFile(string $url, string $filename)
+	{
+		$f = fopen($filename, 'wb');
+		if (!$f) {
+			return false;
+		}
+
+		$ch = $this->init($url);
+
+		curl_setopt($ch, CURLOPT_FILE, $f);
+
+		$result = $this->exec($ch);
+
+		fclose($f);
+
+		return $result;
+	}
+
+	/**
+	* Fetches an url with a POST request
+	* @param string $url The url to retrieve
+	* @param array $data Array with the data to post
+	* @param array $files Files to send in the name=>filename format
+	* @return mixed The contents of the url; false on failure
+	*/
+	public function post(string $url, array $data, array $files = [])
+	{
+		if ($files) {
+			foreach ($files as $name => $filename) {
+				$file = new \CURLFile($filename, null, basename($filename));
+				$data[$name] = $file;
+			}
+		}
+
+		$ch = $this->init($url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+		return $this->exec($ch);
+	}
+}

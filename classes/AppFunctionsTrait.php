@@ -1,0 +1,494 @@
+<?php
+/**
+* The App Functions Trait
+* @package Mars
+*/
+
+namespace Mars;
+
+/**
+* The App Functions
+* Contains the App static functions
+*/
+trait AppFunctionsTrait
+{
+	/**
+	* Converts special chars. to html entitites
+	* @param string $value The value to escape
+	* @return string The escaped value
+	*/
+	public static function e(?string $value) : string
+	{
+		return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+	}
+
+	/**
+	* Double escapes a value
+	* @param string $value The value to escape
+	* @param bool $nl2br If true, will apply nl2br to value
+	* @return string The double escaped value
+	*/
+	public static function ex2(?string $value, bool $nl2br = true) : string
+	{
+		$value = static::e(static::e($value));
+
+		if ($nl2br) {
+			return nl2br($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	* Decodes the html special entities
+	* @param string $value The value to decode
+	* @return string The decoded value
+	*/
+	public static function de(?string $value) : string
+	{
+		return htmlspecialchars_decode($value);
+	}
+
+	/**
+	* Escapes and outputs $value
+	* @param string $value The value to escape and output
+	*/
+	public static function ee(?string $value)
+	{
+		echo static::e($value);
+	}
+
+	/**
+	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
+	* @param string $value The value to escape
+	* @param bool $escape_html If true will call html escape the value
+	* @return string The escaped value
+	*/
+	public static function ejs(string $value, bool $escape_html = true) : string
+	{
+		$value = str_replace(['\\', "'", '"', "\n", "\r"], ['\\\\', "\\'", '\\"', '', ''], $value);
+
+		if ($escape_html) {
+			$value = static::e($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	* Escapes text which will be used inside javascript <script> tags
+	* @param string $value The value to escape
+	* @param bool $nl2br If true, will apply nl2br to value
+	* @return string The escaped value
+	*/
+	public static function ejsc(string $value, bool $nl2br = true) : string
+	{
+		if ($nl2br) {
+			$value = nl2br($value);
+		}
+
+		return static::ejs($value, false);
+	}
+
+	/**
+	* Returns a language string
+	* @param $str The string index as defined in the languages file
+	* @param mixed $replace Array with key & values to be used for to search & replace
+	* @param bool $escape_html If true will html escape the string
+	* @return string The language string
+	*/
+	public static function __(string $str, array $replace = [], bool $escape_html = false) : string
+	{
+		if (isset(static::$instance->lang->strings[$str])) {
+			$str = static::$instance->lang->strings[$str];
+		}
+
+		if ($replace) {
+			$search = array_keys($replace);
+			$str = str_replace($search, $replace, $str);
+		}
+
+		if ($escape_html) {
+			$str = static::e($str);
+		}
+
+		return $str;
+	}
+
+	/**
+	* Alias for AppFunctionsTrait::__()
+	* @see AppFunctionsTrait::__()
+	*/
+	public static function str(string $str, $replace = [], bool $escape_html = false) : string
+	{
+		return static::__($str, $replace, $escape_html);
+	}
+
+	/**
+	* Returns a string based on the count of $items.
+	* @param array $items The items to count
+	* @param string $str_single If count($items) == 1 will return $this->app->lang->strings[$str_single]
+	* @param string $str_multi If count($items) == 1 will return $this->app->lang->strings[$str_multi]. Will also replace {COUNT} with the actual count number
+	* @param string $count_str The part which will be replaced with the count number. Default: {COUNT}
+	* @param bool $escape_html If true will html escape the string
+	* @return string
+	*/
+	public static function strc(array $items, string $str_single, string $str_multi, string $count_str = '{COUNT}', bool $escape_html = false) : string
+	{
+		$count = count($items);
+		if ($count == 1) {
+			return static::str($str_single, [], $escape_html);
+		} else {
+			return static::str($str_multi, [$count_str => $count], $escape_html);
+		}
+	}
+
+	/**
+	* Escapes a language string. Shorthand for e(str($str))
+	* @param string $str The string index as defined in the languages file
+	* @param mixed $replace Array with key & values to be used for to search&replace
+	* @return string
+	*/
+	public static function estr(string $str, array $replace = []) : string
+	{
+		return static::str($str, $replace, true);
+	}
+
+	/**
+	* Javascript escapes a language string. Shorthand for ejs(str($str))
+	* @param string $str The string index as defined in the languages file
+	* @param mixed $replace Array with key & values to be used for to search&replace
+	* @return string
+	*/
+	public function ejsstr(string $str, array $replace = []) : string
+	{
+		return static::ejs(static::str($str, $replace));
+	}
+
+	/**
+	* Returns an array with strings built from $strings and $keys
+	* @param array $keys Array containing the keys for which values from $strings should be returned
+	* @param array $strings Array containing the strings in the format key => string
+	* @return array
+	*/
+	public static function getStrings(array $keys, array $strings) : array
+	{
+		$strings_list = [];
+
+		foreach ($keys as $key) {
+			if (isset($strings[$key])) {
+				$strings_list[] = $strings[$key];
+			} else {
+				$strings_list[] = $key;
+			}
+		}
+
+		return $strings_list;
+	}
+
+	/**
+	* Encodes data
+	* @param mixed $data The data to encode
+	* @return string The encoded string
+	*/
+	public static function encode($data) : string
+	{
+		if (!$data) {
+			return '';
+		}
+
+		return json_encode($data);
+	}
+
+	/**
+	* Decodes a string
+	* @param string $string The string to decode
+	* @return mixed The decoded data
+	*/
+	public static function decode(string $string)
+	{
+		if (!$string) {
+			return '';
+		}
+
+		return json_decode($string, true);
+	}
+
+	/**
+	* Returns a random string
+	* @param int $max The maximum number of chars. the string should have
+	* @return string A random string
+	*/
+	public static function randStr(int $max = 20) : string
+	{
+		$str = bin2hex(random_bytes($max));
+
+		return substr($str, 0, $max);
+	}
+
+	/**
+	* Returns a random number
+	* @param int $min Lowest value to be returned
+	* @param int $max Highest value to be returned
+	* @return int A random number
+	*/
+	public static function randInt(int $min = 0, int $max = 0) : int
+	{
+		return random_int($min, $max);
+	}
+
+	/**
+	* If $data is not empty will serialize it. Otherwise will return $default_value
+	* @param mixed $data The data to serialize
+	* @param mixed $default_value The value to return if $data is empty
+	* @param bool $encode If true, the serialized content will be base64 encoded
+	* @return string The serialized string
+	*/
+	public static function serialize($data, $default_value = '', bool $encode = true) : string
+	{
+		if ($data) {
+			if ($encode) {
+				return base64_encode(serialize($data));
+			} else {
+				return serialize($data);
+			}
+		} else {
+			return $default_value;
+		}
+	}
+
+	/**
+	* Will unserialize a value
+	* @param string $value The serialized value
+	* @param mixed $default_value The value to return if $value is empty
+	* @param string $decode If true, will base64 decode the result
+	* @return mixed The unserialized data
+	*/
+	public static function unserialize($value, $default_value = [], bool $decode = true)
+	{
+		if (!$value) {
+			return $default_value;
+		}
+		if (!is_string($value)) {
+			return $value;
+		}
+
+		if ($decode) {
+			return unserialize(base64_decode($value));
+		} else {
+			return unserialize($value);
+		}
+	}
+
+	/**
+	* Adds a slash at the end of the filename. Will add it, only if it's not already there
+	* @param string $filename The filename
+	* @return string The filename with an ending slash
+	*/
+	public static function sl(string $filename) : string
+	{
+		if (!$filename) {
+			return '';
+		}
+
+		return rtrim($filename, '/') . '/';
+	}
+
+	/**
+	* Removes a slash from the end of the filename
+	* @param string $filename The filename
+	* @return string The filename without the slash
+	*/
+	public static function usl(string $filename) : string
+	{
+		return rtrim($filename, '/');
+	}
+
+	/**
+	* Converts an array to a stdClass object
+	* @param array $array The array to convert
+	* @return object
+	*/
+	public static function toObject(array $array) : object
+	{
+		return (object)$array;
+	}
+
+	/**
+	* Returns an array from a SplFixedArray object or from an array
+	* @param mixed $array The array (array,SplFixedArray,Item)
+	* @return array
+	*/
+	public static function toArray($array) : array
+	{
+		if (is_array($array)) {
+			return $array;
+		} elseif (is_object($array)) {
+			return get_object_vars($array);
+		} elseif (is_iterable($array)) {
+			return iterator_to_array($array);
+		} else {
+			return (array)$array;
+		}
+	}
+
+	/**
+	* Merges all the sub-arrays from $array into a single array
+	* @param mixed $array The array
+	*/
+	public static function arrayMerge(array $array) : array
+	{
+		$new_array = [];
+		foreach ($array as $item) {
+			$new_array = array_merge($new_array, $item);
+		}
+
+		return $new_array;
+	}
+
+	/**
+	* Unsets from $array the specified keys
+	* @param array $array The array
+	* @param mixed The keys to unset (string,array)
+	* @return array The array
+	*/
+	public static function arrayUnset(array &$array, $keys) : array
+	{
+		if (!is_array($keys)) {
+			$keys = [$keys];
+		}
+
+		foreach ($keys as $key) {
+			if (isset($array[$key])) {
+				unset($array[$key]);
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	* Pad a string with a leading space
+	* @param string $string The string
+	* @param bool $left If true, will pad the string from the length
+	* @param int $length The number of chars to pad with
+	* @param string $char The char to pad with
+	* @return string
+	*/
+	public static function pad(string $string, bool $left = true, int $length = 1, string $char = ' ') : string
+	{
+		return str_pad($string, $length, $char, ($left ? STR_PAD_LEFT : STR_PAD_RIGHT));
+	}
+
+	/**
+	* Pads a number with a leading 0 if it's below 10. Eg: if $number = 6 returns 06
+	* @param int $number The number
+	* @return string The number with a leading 0
+	*/
+	public static function padInt(int $number) : string
+	{
+		if ($number < 10) {
+			if ($number[0] == '0') {
+				return $number;
+			}
+
+			return '0' . $number;
+		}
+
+		return $number;
+	}
+
+	/**
+	* Converts a string to a class name. Eg: some-action => SomeAction
+	* @param string $str The string to convert
+	* @return string The class name
+	*/
+	public static function strToClass(string $str) : string
+	{
+		$str = preg_replace('/[^a-z0-9\- ]/i', '', $str);
+		$str = str_replace(' ', '-', $str);
+
+		$str = ucwords($str, '-');
+		$str = str_replace('-', '', $str);
+
+		return $str;
+	}
+
+	/**
+	* Does a print_r on $var and outputs <pre> tags
+	* @param mixed $var The variable
+	* @param bool $escape_html If true, will call html escape $var before calling print_r
+	* @param bool $die If true, will call die after
+	*/
+	public static function pp($var, bool $escape_html = false, bool $die = true)
+	{
+		if ($escape_html) {
+			$var = static::e($var);
+		}
+
+		echo '<pre>';
+		\print_r(static::unsetApp($var));
+		echo '</pre>';
+
+		if ($die) {
+			die;
+		}
+	}
+
+	/**
+	* Alias for pp
+	* @see AppFunctionsTrait::pp()
+	*/
+	public static function print_r($var, bool $escape_html = false, bool $die = true)
+	{
+		static::pp($var, $escape_html, $die);
+	}
+
+	/**
+	* Does a var_dump on $var, then dies
+	* @param mixed $var The variable
+	* @param bool $die If true, will call die after var_dump
+	*/
+	public static function dd($var, bool $die = true)
+	{
+		\var_dump(static::unsetApp($var));
+
+		if ($die) {
+			die;
+		}
+	}
+
+	/**
+	* Alias for dd
+	* @see AppFunctions::dd()
+	*/
+	public static function var_dump($var, bool $die = true)
+	{
+		static::dd($var, $die);
+	}
+
+	/**
+	* Cleans var for var_dump and print_r output
+	* @param mixed $var The variable
+	*/
+	public static function unsetApp($var)
+	{
+		if (method_exists($var, 'unsetApp')) {
+			$var->unsetApp();
+		}
+
+		return $var;
+	}
+
+	/**
+	* Prints the debug backtrace
+	*/
+	public static function backtrace()
+	{
+		echo '<pre>';
+		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		echo '</pre>';
+
+		die;
+	}
+}
