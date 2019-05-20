@@ -75,6 +75,19 @@ class Redis implements DriverInterface
 
 		return unserialize($value);
 	}
+	
+	/**
+	* @see \Mars\Memcache\DriverInterface::exists()
+	* {@inheritDoc}
+	*/
+	public function exists(string $key) : bool
+	{
+		if (!$this->handle->exists($key)) {
+			return false;		
+		} else {
+			return true;
+		}		
+	}
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::delete()

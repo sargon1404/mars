@@ -115,7 +115,7 @@ class Memcache implements \SessionHandlerInterface, \SessionUpdateTimestampHandl
 	*/
 	public function validateId($sid)
 	{
-		return $this->app->db->exists($this->table, ['sid' => $sid], 'sid');
+		return $this->app->memcache->exists("session-{$sid}");
 	}
 
 	/**
