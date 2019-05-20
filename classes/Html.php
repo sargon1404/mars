@@ -331,7 +331,7 @@ class Html
 	*/
 	public function inputText(string $name, string $value = '', bool $required = false, string $placeholder = '', string $class = '', string $id = '', array $attributes = []) : string
 	{
-		return $this->request($name, $value, $required, $placeholder, $class, $id, $attributes, 'text');
+		return $this->input($name, $value, $required, $placeholder, $class, $id, $attributes, 'text');
 	}
 
 	/**
@@ -345,7 +345,7 @@ class Html
 	*/
 	public function inputButton(string $name, string $value = '', string $class = '', string $id = '', array $attributes = []) : string
 	{
-		return $this->request($name, $value, false, '', $class, $id, $attributes, 'button');
+		return $this->input($name, $value, false, '', $class, $id, $attributes, 'button');
 	}
 
 	/**

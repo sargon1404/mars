@@ -28,11 +28,6 @@ abstract class Controller
 	public $view = null;
 
 	/**
-	* @var string $url The controller's params
-	*/
-	public $params = [];
-
-	/**
 	* @var string $url The controller's url
 	*/
 	public $url = '';

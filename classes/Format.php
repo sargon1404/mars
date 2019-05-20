@@ -199,7 +199,7 @@ class Format
 	public function timeInterval(int $seconds, ?array &$myinterval = [], string $separator1 = ' ', string $separator2 = ', ') : string
 	{
 		if (!$seconds || $seconds < 0) {
-			return '0 ' . App::str('second');
+			return '0 ' . App::__('second');
 		}
 
 		$interval = ['seconds' => 0, 'minutes' => 0, 'hours' => 0, 'days' => 0, 'weeks' => 0];
@@ -232,37 +232,37 @@ class Format
 
 		if ($interval['weeks']) {
 			if ($interval['weeks'] == 1) {
-				$result[] = $interval['weeks'] . $separator1 . App::str('week');
+				$result[] = $interval['weeks'] . $separator1 . App::__('week');
 			} else {
-				$result[] = $interval['weeks'] . $separator1 . App::str('weeks');
+				$result[] = $interval['weeks'] . $separator1 . App::__('weeks');
 			}
 		}
 		if ($interval['days']) {
 			if ($interval['days'] == 1) {
-				$result[] = $interval['days'] . $separator1 . App::str('day');
+				$result[] = $interval['days'] . $separator1 . App::__('day');
 			} else {
-				$result[] = $interval['days'] . $separator1 . App::str('days');
+				$result[] = $interval['days'] . $separator1 . App::__('days');
 			}
 		}
 		if ($interval['hours']) {
 			if ($interval['hours'] == 1) {
-				$result[] = $interval['hours'] . $separator1 . App::str('hour');
+				$result[] = $interval['hours'] . $separator1 . App::__('hour');
 			} else {
-				$result[] = $interval['hours'] . $separator1 . App::str('hours');
+				$result[] = $interval['hours'] . $separator1 . App::__('hours');
 			}
 		}
 		if ($interval['minutes']) {
 			if ($interval['minutes'] == 1) {
-				$result[] = $interval['minutes'] . $separator1 . App::str('minute');
+				$result[] = $interval['minutes'] . $separator1 . App::__('minute');
 			} else {
-				$result[] = $interval['minutes'] . $separator1 . App::str('minutes');
+				$result[] = $interval['minutes'] . $separator1 . App::__('minutes');
 			}
 		}
 		if ($interval['seconds']) {
 			if ($interval['seconds'] == 1) {
-				$result[] = $interval['seconds'] . $separator1 . App::str('second');
+				$result[] = $interval['seconds'] . $separator1 . App::__('second');
 			} else {
-				$result[] = $interval['seconds'] . $separator1 . App::str('seconds');
+				$result[] = $interval['seconds'] . $separator1 . App::__('seconds');
 			}
 		}
 

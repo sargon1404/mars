@@ -107,12 +107,12 @@ class App
 	/**
 	* @var string $namespace The root namespace
 	*/
-	public $namespace = "app\\";
+	public $namespace = "App\\";
 
 	/**
 	* @var string $extensions_namespace The root namespace for extensions
 	*/
-	public $extensions_namespace = "app\\extensions\\";
+	public $extensions_namespace = "App\\Extensions\\";
 
 	/**
 	* @var string $log_dir The folder where the log files are stored
