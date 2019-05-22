@@ -11,7 +11,7 @@ use Mars\App;
 /**
 * The System's Theme Class
 */
-class Theme extends \mars\extensions\Basic
+class Theme extends \Mars\extensions\Basic
 {
 	use \Mars\Theme;
 

@@ -593,7 +593,7 @@ class App
 	* Displays a fatal error screen
 	* @param $error The error message
 	* @param bool $escape_html If true will escape the error message
-	* @see \mars\document\Screen::fatalError()
+	* @see \Mars\Document\Screen::fatalError()
 	*/
 	public function fatalError(string $error, bool $escape_html = true)
 	{
@@ -606,7 +606,7 @@ class App
 	* @param string $error The error text
 	* @param string $title The error title, if any
 	* @param bool $escape_html If true will escape the title and error message
-	* @see \mars\document\Screen::error()
+	* @see \Mars\Document\Screen::error()
 	*/
 	public function error(string $error, string $title = '', bool $escape_html = true)
 	{
@@ -619,7 +619,7 @@ class App
 	* @param string $message The text of the message
 	* @param string $title The title of the message, if any
 	* @param bool $escape_html If true will escape the title and message
-	* @see \mars\document\Screen::message()
+	* @see \Mars\Document\Screen::message()
 	*/
 	public function message(string $message, string $title = '', bool $escape_html = true)
 	{
@@ -629,7 +629,7 @@ class App
 
 	/**
 	* Displays the Permission Denied screen
-	* @see \mars\document\Screen::permissionDenied()
+	* @see \Mars\Document\Screen::permissionDenied()
 	*/
 	public function permissionDenied()
 	{

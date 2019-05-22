@@ -16,7 +16,7 @@ class Escape
 
 	/**
 	* Converts special chars. to html entitites
-	* @see \mars\App::e()
+	* @see \Mars\App::e()
 	*/
 	public function html(?string $value) : string
 	{
@@ -25,7 +25,7 @@ class Escape
 
 	/**
 	* Decodes the html special entities
-	* @see \mars\App::de()
+	* @see \Mars\App::de()
 	*/
 	public function htmlDecode(?string $value) : string
 	{
@@ -47,7 +47,7 @@ class Escape
 
 	/**
 	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
-	* @see \mars\App::ejs()
+	* @see \Mars\App::ejs()
 	*/
 	public function js(string $value, bool $escape_html = true) : string
 	{
@@ -56,7 +56,7 @@ class Escape
 
 	/**
 	* Escapes text which will be used inside javascript <script> tags
-	* @see \mars\App::ejsc()
+	* @see \Mars\App::ejsc()
 	*/
 	public function jsCode(string $value, bool $nl2br = true) : string
 	{

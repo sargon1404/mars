@@ -12,7 +12,7 @@ namespace Mars\Cacheable;
 */
 class File implements DriverInterface
 {
-	use \mars\AppTrait;
+	use \Mars\AppTrait;
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::get()

@@ -35,16 +35,16 @@ class Templates
 	*/
 	protected $supported_modifiers = [
 		//escape modifiers
-		'e' => ['\mars\App::e', 40],
-		'escape' => ['\mars\App::e', 40],
-		'html' => ['\mars\App::e', 40],
-		'de' => ['\mars\App::de', 50],
-		'ex2' => ['\mars\App::ex2', 60],
-		'js' => ['\mars\App::ejs', 20, false],
-		'ejs' => ['\mars\App::ejs', 20, false],
-		'jsc' => ['\mars\App::ejsc', 20, false],
-		'ejsc' => ['\mars\App::ejsc', 20, false],
-		'jscode' => ['\mars\App::ejsc', 20, false],
+		'e' => ['\Mars\App::e', 40],
+		'escape' => ['\Mars\App::e', 40],
+		'html' => ['\Mars\App::e', 40],
+		'de' => ['\Mars\App::de', 50],
+		'ex2' => ['\Mars\App::ex2', 60],
+		'js' => ['\Mars\App::ejs', 20, false],
+		'ejs' => ['\Mars\App::ejs', 20, false],
+		'jsc' => ['\Mars\App::ejsc', 20, false],
+		'ejsc' => ['\Mars\App::ejsc', 20, false],
+		'jscode' => ['\Mars\App::ejsc', 20, false],
 
 		//base modifiers
 		'nl2br' => ['nl2br', 100],
