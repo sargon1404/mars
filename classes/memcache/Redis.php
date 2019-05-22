@@ -83,10 +83,10 @@ class Redis implements DriverInterface
 	public function exists(string $key) : bool
 	{
 		if (!$this->handle->exists($key)) {
-			return false;		
+			return false;
 		} else {
 			return true;
-		}		
+		}
 	}
 
 	/**

@@ -132,7 +132,7 @@ class Templates
 	}
 
 	/**
-	* Parses a variable. Callback of parse_variables()
+	* Parses a variable. Callback of parseVariables()
 	* @param array $match The callback match
 	* @return string The parsed variable
 	*/
