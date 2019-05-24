@@ -144,25 +144,25 @@ trait AppFunctionsTrait
 	}
 
 	/**
-	* Escapes a language string. Shorthand for e(str($str))
+	* Escapes a language string. Shorthand for e(__($str))
 	* @param string $str The string index as defined in the languages file
 	* @param mixed $replace Array with key & values to be used for to search&replace
 	* @return string
 	*/
 	public static function estr(string $str, array $replace = []) : string
 	{
-		return static::str($str, $replace, true);
+		return static::__($str, $replace, true);
 	}
 
 	/**
-	* Javascript escapes a language string. Shorthand for ejs(str($str))
+	* Javascript escapes a language string. Shorthand for ejs(__($str))
 	* @param string $str The string index as defined in the languages file
 	* @param mixed $replace Array with key & values to be used for to search&replace
 	* @return string
 	*/
-	public function ejsstr(string $str, array $replace = []) : string
+	public function ejsstrstring $str, array $replace = []) : string
 	{
-		return static::ejs(static::str($str, $replace));
+		return static::ejs(static::__($str, $replace));
 	}
 
 	/**
