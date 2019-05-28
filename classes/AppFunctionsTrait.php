@@ -160,7 +160,7 @@ trait AppFunctionsTrait
 	* @param mixed $replace Array with key & values to be used for to search&replace
 	* @return string
 	*/
-	public function ejsstrstring $str, array $replace = []) : string
+	public function ejsstr(string $str, array $replace = []) : string
 	{
 		return static::ejs(static::__($str, $replace));
 	}
