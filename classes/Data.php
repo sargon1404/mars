@@ -27,7 +27,7 @@ abstract class Data
 	/**
 	* @var string $scope The scope from where to read the data
 	*/
-	protected $scope = 'site';
+	protected $scope = 'frontend';
 
 	/**
 	* @var array $data Saved data
@@ -81,7 +81,7 @@ abstract class Data
 	* @param bool $save_data If true, will save the data in the $this->data array
 	* @return $this
 	*/
-	public function load(?string $scope = 'site', bool $save_data = false)
+	public function load(?string $scope = 'frontend', bool $save_data = false)
 	{
 		$scope = $this->getScope($scope);
 
@@ -163,7 +163,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, ?string $scope = 'site', $default_value = '')
+	public function set(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
 	{
 		if (isset($this->$name)) {
 			$this->update($name, $value, $serialize, $scope, $default_value);
@@ -183,7 +183,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function insert(string $name, $value, bool $serialize = false, ?string $scope = 'site', $default_value = '')
+	public function insert(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
 	{
 		$scope = $this->getScope($scope);
 
@@ -215,7 +215,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function update(string $name, $value, bool $serialize = false, ?string $scope = 'site', $default_value = '')
+	public function update(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
 	{
 		$scope = $this->getScope($scope);
 
@@ -239,7 +239,7 @@ abstract class Data
 	* @param string The scope where the data will be set
 	* @return $this
 	*/
-	public function delete(string $name, ?string $scope = 'site')
+	public function delete(string $name, ?string $scope = 'frontend')
 	{
 		$scope = $this->getScope($scope);
 

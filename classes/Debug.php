@@ -245,11 +245,22 @@ class Debug
 	}
 
 	/**
+	* Outputs the backtrace
+	* @param int $options The backtrace options. By default, the args are not printed. Set $options to 0 for the args to be shown
+	*/
+	public static function backtrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS)
+	{
+		echo '<pre>';
+		debug_print_backtrace($options);
+		die;
+	}
+
+	/**
 	* Dumps the superglobals.
 	* Xdebug must be available
 	* @param bool $die If true,will call die after the mem usage is printed
 	*/
-	public static function superglobalsDump(bool $die = false)
+	public static function dump(bool $die = false)
 	{
 		ini_set('xdebug.dump.GET', '*');
 		ini_set('xdebug.dump.POST', '*');
