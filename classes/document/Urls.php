@@ -146,7 +146,7 @@ abstract class Urls
 	*/
 	public function load(string $url, string $location = 'head', int $priority = 100, bool $async = false, bool $defer = false)
 	{
-		if ($this->isLoaded($url)) {
+		if (!$url || $this->isLoaded($url)) {
 			return $this;
 		}
 
@@ -221,6 +221,10 @@ abstract class Urls
 	*/
 	public function unload(string $url)
 	{
+		if (!$url) {
+			return $this;
+		}
+
 		foreach ($this->urls as $location => $urls) {
 			if (isset($urls[$url])) {
 				unset($this->urls[$location][$url]);
