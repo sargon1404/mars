@@ -20,12 +20,18 @@ abstract class Urls
 	protected $urls = ['first' => [], 'head' => [], 'footer' => []];
 
 	/**
+	* @var string $version The version to be applied to the urls
+	*/
+	protected $version = '';
+
+	/**
 	* Outputs an url
 	* @param string $url The url to output
+	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
 	*/
-	abstract public function outputUrl(string $url, bool $async = false, bool $defer = false);
+	abstract public function outputUrl(string $url, $version = true, bool $async = false, bool $defer = false);
 
 	/**
 	* Returns the list of urls
@@ -34,6 +40,26 @@ abstract class Urls
 	public function get() : array
 	{
 		return array_map([$this, 'sort'], $this->urls);
+	}
+
+	/**
+	* Returns an url with the version appended, if required
+	* @param string $url The url to append the version to
+	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @return string The url
+	*/
+	protected function getUrl(string $url, $version) : string
+	{
+		if (!$version) {
+			return $url;
+		}
+
+		$ver = $version;
+		if ($ver === true) {
+			$ver = $this->version;
+		}
+
+		return $this->app->uri->append($url, ['ver' => $ver]);
 	}
 
 	/**
@@ -66,91 +92,22 @@ abstract class Urls
 	}
 
 	/**
-	* Returns the list of local urls
-	* @param string $location The location of the urls [head|footer]
-	* @return array
-	*/
-	public function getLocalUrls(string $location = '') : array
-	{
-		$urls = $this->getSplitUrls($location);
-
-		return $urls['local'];
-	}
-
-	/**
-	* Returns the list of external urls
-	* @param string $location The location of the urls [head|footer]
-	* @return array
-	*/
-	public function getExternalUrls(string $location = '') : array
-	{
-		$urls = $this->getSplitUrls($location);
-
-		return $urls['external'];
-	}
-
-	/**
-	* Splits the urls into local and external
-	* @param string $location The location of the urls [head|footer]. If empty, urls from all locations are returned
-	* @param bool $group If true, the urls will be grouped. If false, it will be returned based on location
-	* @return array
-	*/
-	public function getSplitUrls(string $location = '', bool $group = false) : array
-	{
-		$split_urls = ['local' => [], 'external' => []];
-
-		if ($location) {
-			$urls = [];
-			if (isset($this->urls[$location])) {
-				$urls = $this->getUrls($location);
-			}
-
-			foreach ($urls as $url => $data) {
-				$key = 'external';
-				if ($this->app->uri->isLocal($url)) {
-					$key = 'local';
-				}
-
-				$split_urls[$key][$url] = $data;
-			}
-		} else {
-			foreach ($this->urls as $pos => $urls) {
-				$urls = $this->sort($urls);
-
-				foreach ($urls as $url => $data) {
-					$key = 'external';
-					if ($this->app->uri->isLocal($url)) {
-						$key = 'local';
-					}
-
-					if ($group) {
-						$split_urls[$key][$url] = $data;
-					} else {
-						$split_urls[$key][$pos][$url] = $data;
-					}
-				}
-			}
-		}
-
-		return $split_urls;
-	}
-
-	/**
 	* Loads an url
 	* @param string $url The url to load. Will only load it once, no matter how many times the function is called with the same url
 	* @param string $location The location of the url [head|footer]
 	* @param int $priority The url's output priority. The higher, the better
+	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
 	* @return $this
 	*/
-	public function load(string $url, string $location = 'head', int $priority = 100, bool $async = false, bool $defer = false)
+	public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false)
 	{
 		if (!$url || $this->isLoaded($url)) {
 			return $this;
 		}
 
-		$this->urls[$location][$url] = ['priority' => $priority, 'async' => $async, 'defer' => $defer];
+		$this->urls[$location][$url] = ['priority' => $priority, 'version' => $version, 'async' => $async, 'defer' => $defer];
 
 		return $this;
 	}
@@ -178,11 +135,12 @@ abstract class Urls
 	* @param string $url The url to change the properties for. If it's not found, it will be added
 	* @param string $location The location of the url [head|footer]. If null, the value isn't changed
 	* @param int $priority The url's output priority. The higher, the better. If null, the value isn't changed
+	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr. If null, the value isn't changed
 	* @param bool Returns true if the url was found, false otherwise. If null, the value isn't changed
 	* @return $this
 	*/
-	public function change(string $url, string $location = null, int $priority = null, bool $async = null, bool $defer = null) : bool
+	public function change(string $url, string $location = null, int $priority = null, $version = null, bool $async = null, bool $defer = null) : bool
 	{
 		$url_location = $this->getLocation($url);
 
@@ -195,6 +153,9 @@ abstract class Urls
 
 			if ($priority !== null) {
 				$data['priority'] = $priority;
+			}
+			if ($version !== null) {
+				$data['version'] = $version;
 			}
 			if ($async !== null) {
 				$data['async'] = $async;
@@ -277,7 +238,7 @@ abstract class Urls
 	public function outputUrls(array $urls)
 	{
 		foreach ($urls as $url => $data) {
-			$this->outputUrl($url, $data['async'], $data['defer']);
+			$this->outputUrl($url, $data['version'], $data['async'], $data['defer']);
 		}
 	}
 }

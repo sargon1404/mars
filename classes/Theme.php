@@ -67,21 +67,11 @@ trait Theme
 	*/
 	public $vars = [];
 
-	/**
-	* @var string $css_dateline The dateline of the css sheets
-	*/
-	public $css_dateline = '';
 
 	/**
 	* @var bool $css_output If true, will output the main css file
 	*/
 	public $css_output = true;
-
-	/**
-	* @var string $javascript_dateline The dateline of the javascript scripts
-	*/
-	public $javascript_dateline = '';
-
 	/**
 	* @var bool $javascript_output If true, will output the main js file
 	*/
@@ -188,9 +178,7 @@ trait Theme
 	*/
 	protected function prepareProperties()
 	{
-		$this->css_dateline = $this->app->config->css_dateline;
 		$this->css_output = $this->app->config->css_output;
-		$this->javascript_dateline = $this->app->config->javascript_dateline;
 		$this->javascript_output = $this->app->config->javascript_output;
 	}
 
@@ -764,7 +752,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->app->uri->build($this->dir_url_static . $this->css_file, ['v' => $this->css_dateline]);
+		$url = $this->dir_url_static . $this->css_file;
 
 		$this->app->css->outputUrl($url);
 	}
@@ -778,7 +766,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->app->uri->build($this->dir_url_static . $this->javascript_file, ['v' => $this->javascript_dateline]);
+		$url = $this->dir_url_static . $this->javascript_file;
 
 		$this->app->javascript->outputUrl($url);
 	}

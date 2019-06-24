@@ -52,10 +52,10 @@ class Config extends Data
 		'lang' => 'english',
 		'theme' => 'default',
 
-		'css_dateline' => '1',
+		'css_version' => '1',
 		'css_output' => true,
 
-		'javascript_dateline' => '1',
+		'javascript_version' => '1',
 		'javascript_output' => false,
 	];
 
@@ -111,6 +111,8 @@ class Config extends Data
 
 		if ($this->development) {
 			$this->content_cache_enable = false;
+			$this->css_version = time();
+			$this->javascript_version = time();
 		}
 
 		if ($this->debug_ips) {

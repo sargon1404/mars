@@ -14,12 +14,26 @@ use Mars\App;
 */
 class Javascript extends Urls
 {
+
+	/**
+	* Builds the javascript object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+
+		$this->version = $this->app->config->javascript_version;
+	}
+
 	/**
 	* @see \Mars\Document\Urls::outputUrl()
 	* {@inheritDoc}
 	*/
-	public function outputUrl(string $url, bool $async = false, bool $defer = false)
+	public function outputUrl(string $url, $version = true, bool $async = false, bool $defer = false)
 	{
+		$url = $this->getUrl($url, $version);
+
 		$async_str = '';
 		$defer_str = '';
 		if ($async) {

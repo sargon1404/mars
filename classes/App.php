@@ -50,6 +50,11 @@ class App
 	public $can_gzip = false;
 
 	/**
+	* @var bool $development If true, the system is run in development mode
+	*/
+	public $development = false;
+
+	/**
 	* @var string $scheme The page's scheme: http:// or https://
 	*/
 	public $scheme = '';
@@ -354,6 +359,10 @@ class App
 
 		if ($this->accepts_gzip && $this->config->gzip) {
 			$this->can_gzip = true;
+		}
+
+		if ($this->config->development) {
+			$this->development = true;
 		}
 	}
 

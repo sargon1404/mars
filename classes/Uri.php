@@ -15,11 +15,6 @@ class Uri
 	use AppTrait;
 
 	/**
-	* @var string url_amp The delimitator used when building urls
-	*/
-	public $url_amp = '&';
-
-	/**
 	* Builds an url appending $params to $url
 	* @param string $base_url The url to which params will be appended.
 	* @param array $params Array containing the values to be appended. Specified as $name=>$value
@@ -30,10 +25,9 @@ class Uri
 	{
 		$separator = '?';
 		if (strpos($base_url, '?') !== false) {
-			$separator = $this->url_amp;
+			$separator = '&';
 		}
 
-		$params_str = '';
 		$params_array = [];
 
 		foreach ($params as $name => $value) {
@@ -58,15 +52,23 @@ class Uri
 			}
 		}
 
-		$params_str = implode($this->url_amp, $params_array);
-
 		if ($params_array) {
-			$url = $base_url . $separator . $params_str;
+			$url = $base_url . $separator . implode('&', $params_array);
 		} else {
 			$url = $base_url;
 		}
 
 		return $url;
+	}
+
+	/**
+	* Appends params to url
+	* @param string $url The url to appends params to
+	* @param array $params Array containing the values to be appended. Specified as $name=>$value
+	*/
+	public function append(string $url = '', array $params = []) : string
+	{
+		return $this->build($url, $params, false);
 	}
 
 	/**

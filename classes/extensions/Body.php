@@ -95,7 +95,7 @@ trait Body
 	*/
 	protected function prepareDevelopment()
 	{
-		if ($this->app->config->development) {
+		if ($this->app->development) {
 			$this->development = true;
 		}
 	}
