@@ -67,11 +67,11 @@ trait Theme
 	*/
 	public $vars = [];
 
-
 	/**
 	* @var bool $css_output If true, will output the main css file
 	*/
 	public $css_output = true;
+
 	/**
 	* @var bool $javascript_output If true, will output the main js file
 	*/

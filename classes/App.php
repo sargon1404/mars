@@ -441,7 +441,7 @@ class App
 			$this->timer->start('app_output_content');
 		}
 
-		$this->plugins->run('appOutput1', $this);
+		$this->plugins->run('appOutputStart', $this);
 
 		//grab the content template first
 		ob_start();
@@ -474,10 +474,12 @@ class App
 		if ($this->caching->can_cache) {
 			$this->caching->store($output, $this->can_gzip);
 		}
+		
+		$output = $this->plugins->filter('appOutputFilter', $output, $this);
 
 		echo $output;
 
-		$this->plugins->run('appOutput2', $this);
+		$this->plugins->run('appOutputEnd', $this);
 
 		die;
 	}

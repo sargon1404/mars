@@ -474,7 +474,7 @@ trait AppFunctionsTrait
 	public static function unsetApp($var)
 	{
 		if (method_exists($var, 'unsetApp')) {
-			if(!$var instanceof App) {
+			if (!$var instanceof App) {
 				$var->unsetApp();
 			}
 		}

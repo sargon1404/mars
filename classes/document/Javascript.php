@@ -14,7 +14,6 @@ use Mars\App;
 */
 class Javascript extends Urls
 {
-
 	/**
 	* Builds the javascript object
 	* @param App $app The app object
