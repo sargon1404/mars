@@ -700,7 +700,7 @@ trait Theme
 	* Outputs the loaded css files
 	* @param bool $location The location of the urls: head|footer
 	*/
-	public function outputCssUrls(string $location = 'head')
+	public function outputCssUrls(string $location)
 	{
 		$this->app->css->output($location);
 	}
