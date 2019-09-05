@@ -32,7 +32,7 @@ function get_filename(array $parts, int $base_parts = 1) : string
 	//determine the dir and name of the class
 	if ($parts_count > $base_parts + 1) {
 		$dir_parts = array_slice($parts, $base_parts, $parts_count - ($base_parts + 1));
-				
+
 		$dir = get_dir($dir_parts);
 	}
 
@@ -47,29 +47,29 @@ function get_filename(array $parts, int $base_parts = 1) : string
 function get_dir(array $parts) : string
 {
 	$dir_parts = [];
-	
+
 	foreach ($parts as &$part) {
 		$dir = '';
-		
+
 		$len = strlen($part);
-		
+
 		for ($i = 0; $i < $len; $i++) {
 			$char = $part[$i];
 			$ord = ord($char);
-	
+
 			if ($i && $ord >= 65 && $ord <= 90) {
 				if ($i) {
 					$dir.= '-';
 				}
 			}
-	
+
 			$dir.= $char;
 		}
-		
+
 		$dir_parts[] = $dir;
 	}
-	
+
 	$path = implode('/', $dir_parts) . '/';
-		
+
 	return strtolower($path);
 }

@@ -124,7 +124,7 @@ class AppBooter
 
 		$this->app->lang = new System\Language($this->app);
 		$this->app->theme = new System\Theme($this->app);
-		
+
 		$this->app->router = new Router;
 
 		return $this;

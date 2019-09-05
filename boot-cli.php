@@ -1,11 +1,11 @@
 <?php
-namespace Mars;
+namespace Mars\Cli;
 
 try {
 	require('src/mars/autoload.php');
 	require('src/mars/autoload-app.php');
 
-	$app = Cli::instantiate();
+	$app = App::instantiate();
 	$app->boot();
 
 	$app->plugins->run('bootCli');

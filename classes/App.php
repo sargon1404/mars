@@ -602,40 +602,40 @@ class App
 
 	/**
 	* Displays a fatal error screen
-	* @param $error The error message
+	* @param $text The error's text
 	* @param bool $escape_html If true will escape the error message
 	* @see \Mars\Document\Screen::fatalError()
 	*/
-	public function fatalError(string $error, bool $escape_html = true)
+	public function fatalError(string $text, bool $escape_html = true)
 	{
 		$screen = $this->getScreenObj();
-		$screen->fatalError($error, $escape_html);
+		$screen->fatalError($text, $escape_html);
 	}
 
 	/**
 	* Displays an error screen
-	* @param string $error The error text
-	* @param string $title The error title, if any
+	* @param string $text The error's text
+	* @param string $title The error's title, if any
 	* @param bool $escape_html If true will escape the title and error message
 	* @see \Mars\Document\Screen::error()
 	*/
-	public function error(string $error, string $title = '', bool $escape_html = true)
+	public function error(string $text, string $title = '', bool $escape_html = true)
 	{
 		$screen = $this->getScreenObj();
-		$screen->error($error, $title, $escape_html);
+		$screen->error($text, $title, $escape_html);
 	}
 
 	/**
 	* Displayes a message screen
-	* @param string $message The text of the message
+	* @param string $text The text of the message
 	* @param string $title The title of the message, if any
 	* @param bool $escape_html If true will escape the title and message
 	* @see \Mars\Document\Screen::message()
 	*/
-	public function message(string $message, string $title = '', bool $escape_html = true)
+	public function message(string $text, string $title = '', bool $escape_html = true)
 	{
 		$screen = $this->getScreenObj();
-		$screen->message($message, $title, $escape_html);
+		$screen->message($text, $title, $escape_html);
 	}
 
 	/**
