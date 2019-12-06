@@ -17,7 +17,7 @@ class File
 	/**
 	* @internal
 	*/
-	protected $error_code = 0;
+	protected int $error_code = 0;
 
 	/**
 	* Returns the basename from $filename with invalid characters removed

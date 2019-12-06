@@ -17,32 +17,32 @@ trait Body
 	/**
 	* @var string $name The name of the extension
 	*/
-	public $name = '';
+	public string $name = '';
 
 	/**
 	* @var string $dir The path of the folder where the extension is installed
 	*/
-	public $dir = '';
+	public string $dir = '';
 
 	/**
 	* @var string $dir_url The url pointing to the folder where the extension is installed
 	*/
-	public $dir_url = '';
+	public string $dir_url = '';
 
 	/**
 	* @var string $dir_url_static The static url pointing to the folder where the extension is installed
 	*/
-	public $dir_url_static = '';
+	public string $dir_url_static = '';
 
 	/**
 	* @var bool $development If true, the extension is run in development mode
 	*/
-	public $development = false;
+	public bool $development = false;
 
 	/**
-	* @var int $exec_time The time needed to run this extension
+	* @var float $exec_time The time needed to run this extension
 	*/
-	public $exec_time = 0;
+	public float $exec_time = 0;
 
 	/**
 	* @var string $type The type of the extension

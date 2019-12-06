@@ -19,12 +19,12 @@ class ImageOptimizer
 	/**
 	* @var int $jpeg_quality The quality of the jpeg images
 	*/
-	public $jpeg_quality = 80;
+	public int $jpeg_quality = 80;
 
 	/**
 	* @var array $supported_source_images The formats this class supports
 	*/
-	protected $supported_source_images = ['jpg', 'jpeg', 'png', 'gif'];
+	protected array $supported_source_images = ['jpg', 'jpeg', 'png', 'gif'];
 
 	/**
 	* Optimizes an image

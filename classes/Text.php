@@ -17,7 +17,7 @@ class Text
 	/**
 	* @var string allowed_attributes List of allowed attributes when filtering
 	*/
-	protected $allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
+	protected string $allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
 
 	/**
 	* Returns the first $max_length characters from text. If strlen($text) > $max_length will append $replace_with

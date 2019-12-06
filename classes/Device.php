@@ -17,12 +17,12 @@ class Device
 	/**
 	* @var string $type The device type. Eg: desktop/tablet/smartphone
 	*/
-	public $type = 'desktop';
+	public string $type = 'desktop';
 
 	/**
 	* @var string $devices Array listing the supported devices
 	*/
-	public $devices = ['desktop', 'tablet', 'smartphone'];
+	public array $devices = ['desktop', 'tablet', 'smartphone'];
 
 	/**
 	* Builds the device object

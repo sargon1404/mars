@@ -15,7 +15,7 @@ abstract class Property
 	/**
 	* @var string $value The property's value
 	*/
-	protected $value = '';
+	protected string $value = '';
 
 	/**
 	* Sets the value of the property

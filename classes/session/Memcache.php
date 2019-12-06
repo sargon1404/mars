@@ -19,7 +19,7 @@ class Memcache implements \SessionHandlerInterface, \SessionUpdateTimestampHandl
 	/**
 	* @var int $lifetime The session's lifetime
 	*/
-	protected $lifetime = 0;
+	protected int $lifetime = 0;
 
 	/**
 	* Builds the Memcache Session driver

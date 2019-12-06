@@ -17,12 +17,12 @@ abstract class Urls
 	/**
 	* @var array $urls Array with all the urls to be outputed
 	*/
-	protected $urls = ['first' => [], 'head' => [], 'footer' => []];
+	protected array $urls = ['first' => [], 'head' => [], 'footer' => []];
 
 	/**
 	* @var string $version The version to be applied to the urls
 	*/
-	protected $version = '';
+	protected string $version = '';
 
 	/**
 	* Outputs an url

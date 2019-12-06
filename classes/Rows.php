@@ -15,5 +15,5 @@ class Rows extends Entities
 	/**
 	* @var string $class The class of the objects when loading
 	*/
-	protected static $class = '\Mars\Row';
+	protected static string $class = '\Mars\Row';
 }

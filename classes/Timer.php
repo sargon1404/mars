@@ -15,12 +15,12 @@ class Timer
 	/**
 	* @var float $start The time when the script was started
 	*/
-	public $start = 0;
+	public float $start = 0;
 
 	/**
 	* @var array $timers Array with the started timers
 	*/
-	protected $timers = [];
+	protected array $timers = [];
 
 	/**
 	* Builds the timer object
@@ -68,7 +68,7 @@ class Timer
 	* @param bool $erase If true, will erase the timer
 	* @return int Returns the time difference between the start and the end of the specified timer
 	*/
-	public function end(string $name = 'timer', bool $erase = true)
+	public function end(string $name = 'timer', bool $erase = true) : float
 	{
 		if (!isset($this->timers[$name])) {
 			return 0;

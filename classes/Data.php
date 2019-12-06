@@ -17,22 +17,22 @@ abstract class Data
 	/**
 	* @var string $table The database table used to store the data
 	*/
-	protected $table = '';
+	protected string $table = '';
 
 	/**
 	* @var string $key The memcache key used to store the data
 	*/
-	protected $key = '';
+	protected string $key = '';
 
 	/**
 	* @var string $scope The scope from where to read the data
 	*/
-	protected $scope = 'frontend';
+	protected string $scope = 'frontend';
 
 	/**
 	* @var array $data Saved data
 	*/
-	protected $data = [];
+	protected array $data = [];
 
 	/**
 	* Returns the table where the data is stored

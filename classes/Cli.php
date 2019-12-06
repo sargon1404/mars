@@ -14,11 +14,11 @@ class Cli
 	/**
 	* @param array $argv List of commands
 	*/
-	protected $commands = [];
+	protected array $commands = [];
 	/**
 	* @param array $options List of options
 	*/
-	protected $options = [];
+	protected array $options = [];
 
 
 	/**

@@ -6,6 +6,7 @@
 
 namespace Mars\Helpers;
 
+use PHPMailer;
 use Mars\App;
 
 /**
@@ -17,9 +18,9 @@ class Mailer
 	use \Mars\AppTrait;
 
 	/**
-	* The PHPMailer object
+	* @var PHPMailer $mail The PHPMailer object
 	*/
-	public $mail = null;
+	public PHPMailer $mail;
 
 	/**
 	* Builds the Mailer object
@@ -28,7 +29,7 @@ class Mailer
 	{
 		$this->app = $this->getApp();
 
-		$this->mail = new \PHPMailer;
+		$this->mail = new PHPMailer;
 		$this->mail->setLanguage('en', $this->app->libraries_dir . 'php/vendor/phpmailer/phpmailer/language/');
 		$this->mail->CharSet = 'UTF-8';
 	}

@@ -17,142 +17,142 @@ class App
 	/**
 	* @var float $version The version
 	*/
-	public $version = '1.00';
+	public string $version = '1.00';
 
 	/**
 	* @var string $ip The ip used to make the request
 	*/
-	public $ip = '';
+	public string $ip = '';
 
 	/**
 	* @var string $useragent The useragent
 	*/
-	public $useragent = '';
+	public string $useragent = '';
 
 	/**
 	* @var bool $is_cli True if the app is run as a cli script
 	*/
-	public $is_cli = false;
+	public bool $is_cli = false;
 
 	/**
 	* @var bool $is_https True if the page is loaded with https, false otherwise
 	*/
-	public $is_https = false;
+	public bool $is_https = false;
 
 	/**
 	* @var bool $accepts_gzip If true, the user's browser accepts gzipped output
 	*/
-	public $accepts_gzip = false;
+	public bool $accepts_gzip = false;
 
 	/**
 	* @var bool $can_gzip True, if content can be gzipped
 	*/
-	public $can_gzip = false;
+	public bool $can_gzip = false;
 
 	/**
 	* @var bool $development If true, the system is run in development mode
 	*/
-	public $development = false;
+	public bool $development = false;
 
 	/**
 	* @var string $scheme The page's scheme: http:// or https://
 	*/
-	public $scheme = '';
+	public string $scheme = '';
 
 	/**
 	* @var string $url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
 	*/
-	public $url = '';
+	public string $url = '';
 
 	/**
 	* @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
 	*/
-	public $full_url = '';
+	public string $full_url = '';
 
 	/**
 	* @var string current_url The url of the current page determined from $_SERVER. Does't include the QUERY_STRING
 	*/
-	public $current_url = '';
+	public string $current_url = '';
 
 	/**
 	* @var string $site_url The site's url. Eg: http://mydomain.com/mars
 	*/
-	public $site_url = '';
+	public string $site_url = '';
 
 	/**
 	* @var string $site_url_static The url from where static content is served
 	*/
-	public $site_url_static = '';
+	public string $site_url_static = '';
 
 	/**
 	* @var string $site_url_rel The relative site url. Unlike $site_url it doesn't contain the scheme
 	*/
-	public $site_url_rel = '';
+	public string $site_url_rel = '';
 
 	/**
 	* @var string $site_dir The location on the disk where the site is installed Eg: /var/www/mysite
 	*/
-	public $site_dir = '';
+	public string $site_dir = '';
 
 	/**
 	* @var string $content The system's generated content
 	*/
-	public $content = '';
+	public string $content = '';
 
 	/**
-	* @var object $config The config object
+	* @var Config $config The config object
 	*/
-	public $config = null;
+	public Config $config;
 
 	/**
-	* @var object $cache The cache object
+	* @var Cache $cache The cache object
 	*/
-	public $cache = null;
+	public Cache $cache;
 
 	/**
 	* @var string $namespace The root namespace
 	*/
-	public $namespace = "App\\";
+	public string $namespace = "App\\";
 
 	/**
 	* @var string $extensions_namespace The root namespace for extensions
 	*/
-	public $extensions_namespace = "App\\Extensions\\";
+	public string $extensions_namespace = "App\\Extensions\\";
 
 	/**
 	* @var string $log_dir The folder where the log files are stored
 	*/
-	public $log_dir = '';
+	public string $log_dir = '';
 
 	/**
 	* @var string $cache_dir The folder where the cache files are stored
 	*/
-	public $cache_dir = '';
+	public string $cache_dir = '';
 
 	/**
 	* @var string $libraries_dir The folder where the php libraries are stored
 	*/
-	public $libraries_dir = '';
+	public string $libraries_dir = '';
 
 	/**
 	* @var string $extensions_dir The folder where the extensions are stored
 	*/
-	public $extensions_dir = '';
+	public string $extensions_dir = '';
 
 	/**
 	* @var string $extensions_url The url of the extensions folder
 	*/
-	public $extensions_url = '';
+	public string $extensions_url = '';
 
 	/**
-	* @var object $instance The app instance
+	* @var App $instance The app instance
 	*/
-	protected static $instance = null;
+	protected static App $instance = null;
 
 	/**
-	* @var object $boot The booter object
+	* @var AppBooter $boot The booter object
 	*/
-	protected $boot = null;
+	protected AppBooter $boot = null;
 
 	/**
 	* @const array DIRS The locations of the used dirs

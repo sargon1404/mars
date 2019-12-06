@@ -17,12 +17,12 @@ class Router
 	/**
 	* @var array $params The params of the currently executed route
 	*/
-	public $params = [];
+	public array $params = [];
 
 	/**
 	* @var array $routes The defined routes
 	*/
-	protected $routes = [];
+	protected array $routes = [];
 
 	/**
 	* Adds a route

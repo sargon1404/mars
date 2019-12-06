@@ -15,52 +15,52 @@ trait Language
 	/**
 	* @var string $encoding The encoding of the language
 	*/
-	public $encoding = 'UTF-8';
+	public string $encoding = 'UTF-8';
 
 	/**
 	* @var string $code The language's code
 	*/
-	public $code = 'en';
+	public string $code = 'en';
 
 	/**
 	* @var string $timestamp_format The format in which a timestamp will be displayed
 	*/
-	public $timestamp_format = 'D M d, Y g:i a';
+	public string $timestamp_format = 'D M d, Y g:i a';
 
 	/**
 	* @var string $date_format The format in which a date will be displayed
 	*/
-	public $date_format = 'D M d, Y';
+	public string $date_format = 'D M d, Y';
 
 	/**
 	* @var string $time_format The format in which the time of the day will be displayed
 	*/
-	public $time_format = 'g:i a';
+	public string $time_format = 'g:i a';
 
 	/**
 	* @var string $decimal_separator The language's decimal_separator
 	*/
-	public $decimal_separator = '.';
+	public string $decimal_separator = '.';
 
 	/**
 	* @var string $thousands_separator The language's thousands_separator
 	*/
-	public $thousands_separator = ',';
+	public string $thousands_separator = ',';
 
 	/**
 	* @var array $strings The language's strings
 	*/
-	public $strings = [];
+	public array $strings = [];
 
 	/**
 	* @internal
 	*/
-	protected $loaded_files = [];
+	protected array $loaded_files = [];
 
 	/**
 	* @internal
 	*/
-	protected static $base_dir = 'languages';
+	protected static string $base_dir = 'languages';
 
 	/**
 	* Loads the specified $file from the languages folder

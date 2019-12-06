@@ -19,27 +19,27 @@ class Db
 	/**
 	* @var array $queries The list of executed queries, if debug is on
 	*/
-	public $queries = [];
+	public array $queries = [];
 
 	/**
-	* @var array $queries_time The total time needed to execute the queries, if debug is on
+	* @var float $queries_time The total time needed to execute the queries, if debug is on
 	*/
-	public $queries_time = 0;
+	public float $queries_time = 0;
 
 	/**
 	* @var bool $debug If true, the db will be run in debug mode
 	*/
-	public $debug = false;
+	public bool $debug = false;
 
 	/**
-	* @var object $sql The sql object
+	* @var Sql $sql The sql object
 	*/
-	public $sql = null;
+	public Sql $sql = null;
 
 	/**
 	* @var string $driver The used driver
 	*/
-	protected $driver = '';
+	protected string $driver = '';
 
 	/**
 	* @var object $handle The driver's handle
@@ -49,47 +49,47 @@ class Db
 	/**
 	* @var string $read_hostname The hostname to connect to for read queries
 	*/
-	protected $read_hostname = '';
+	protected string $read_hostname = '';
 
 	/**
 	* @var string $read_username The username used to connect to the read server
 	*/
-	protected $read_username = '';
+	protected string $read_username = '';
 
 	/**
 	* @var string $read_password The password used to connect to the read server
 	*/
-	protected $read_password = '';
+	protected string $read_password = '';
 
 	/**
 	* @var string $read_database The database to connect to the read server
 	*/
-	protected $read_database = '';
+	protected string $read_database = '';
 
 	/**
 	* @var string $write_hostname The hostname to connect to for write queries
 	*/
-	protected $write_hostname = '';
+	protected string $write_hostname = '';
 
 	/**
 	* @var string $write_username The username used to connect to the write server
 	*/
-	protected $write_username = '';
+	protected string $write_username = '';
 
 	/**
 	* @var string $write_password The password used to connect to the write server
 	*/
-	protected $write_password = '';
+	protected string $write_password = '';
 
 	/**
 	* @var string $write_database The database to connect to the write server
 	*/
-	protected $write_database = '';
+	protected string $write_database = '';
 
 	/**
 	* @var bool $connected Set to true, if the connection to the db server has been made
 	*/
-	protected $connected = false;
+	protected bool $connected = false;
 
 	/**
 	* @var object $read_handle The handle for the read queries
@@ -114,7 +114,7 @@ class Db
 	/**
 	* @var string $charset The charset
 	*/
-	protected $charset = '';
+	protected string $charset = '';
 
 	/**
 	* Constructs the db object
@@ -130,6 +130,7 @@ class Db
 	public function __construct(App $app, string $driver = '', $hostname = '', $username = '', $password = '', $database = '', string $charset = 'utf8', bool $debug = false)
 	{
 		$this->app = $app;
+		$this->sql = new Sql;
 
 		if (!$driver) {
 			$driver = $this->app->config->db_driver;
@@ -171,9 +172,7 @@ class Db
 			$this->read_username = $this->write_username = $username;
 			$this->read_password = $this->write_password = $password;
 			$this->read_database = $this->write_database = $database;
-		}
-
-		$this->sql = new Sql;
+		}		
 	}
 
 	/**

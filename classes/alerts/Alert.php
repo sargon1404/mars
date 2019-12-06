@@ -17,22 +17,22 @@ class Alert
 	/**
 	* @var string $title The title of the alert
 	*/
-	public $title = '';
+	public string $title = '';
 
 	/**
 	* @var string $text The text of the alert
 	*/
-	public $text = '';
+	public string $text = '';
 
 	/**
 	* @var bool $escape_html If true, will escape the title when outputing it
 	*/
-	public $escape_html = true;
+	public bool $escape_html = true;
 
 	/**
 	* @var bool $nl2br If true, will call nl2br on text
 	*/
-	public $nl2br = false;
+	public bool $nl2br = false;
 
 	/**
 	* Builds the alert

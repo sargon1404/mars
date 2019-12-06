@@ -15,22 +15,22 @@ class Plugin extends \Mars\Extensions\Basic
 	/**
 	* @var int $pid The plugin's id
 	*/
-	public $pid = 0;
+	public int $pid = 0;
 
 	/**
 	* @var array $hooks Array listing the defined hooks
 	*/
-	protected $hooks = [];
+	protected array $hooks = [];
 
 	/**
 	* @internal
 	*/
-	protected static $type = 'plugin';
+	protected static string $type = 'plugin';
 
 	/**
 	* @internal
 	*/
-	protected static $base_dir = 'plugins';
+	protected static string $base_dir = 'plugins';
 
 	/**
 	* Builds the plugin

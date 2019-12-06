@@ -17,22 +17,22 @@ class Caching extends Cacheable
 	/**
 	* @var bool $can_cache True if the content can be cached
 	*/
-	public $can_cache = false;
+	public bool $can_cache = false;
 
 	/**
 	* @var string $content_type The cached content's type
 	*/
-	protected $content_type = '';
+	protected string $content_type = '';
 
 	/**
 	* @var string $content_type The cached content's id
 	*/
-	protected $content_id = '';
+	protected string $content_id = '';
 
 	/**
 	* @var bool $minify True, if the output can be minified
 	*/
-	protected $minify = true;
+	protected bool $minify = true;
 
 	/**
 	* Builds the caching object

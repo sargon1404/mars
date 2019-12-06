@@ -15,7 +15,7 @@ class Parser
 	/**
 	* @internal
 	*/
-	protected $parse_links_nofollow = false;
+	protected bool $parse_links_nofollow = false;
 
 	/**
 	* Converts all text links (http://domain.com) into the html equivalent (<a href="http://domain.com">http://domain.com</a>)

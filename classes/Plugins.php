@@ -15,37 +15,37 @@ trait Plugins
 	/**
 	* @var array $exec_time The execution time for all plugins is stored here. Set only if debug is enabled
 	*/
-	public $exec_time = [];
+	public array $exec_time = [];
 
 	/**
 	* @var bool $enabled Will be set to true if plugins are enabled
 	*/
-	public $enabled = false;
+	public bool $enabled = false;
 
 	/**
 	* @var array $plugins Array holding the plugin objects
 	*/
-	protected $plugins = [];
+	protected array $plugins = [];
 
 	/**
 	* @var array $hooks Registered hooks
 	*/
-	protected $hooks = [];
+	protected array $hooks = [];
 
 	/**
 	* @var string $output_prefix The prefix to use when using the output function
 	*/
-	protected $output_prefix = '';
+	protected string $output_prefix = '';
 
 	/**
-	* @var null $output_obj Object to pass as the first argument when output calls are made
+	* @var object $output_obj Object to pass as the first argument when output calls are made
 	*/
-	protected $output_obj = null;
+	protected ?object $output_obj = null;
 
 	/**
 	* @var string $namespace The namespace used to load plugins
 	*/
-	protected static $namespace = "plugins\\";
+	protected static string $namespace = "plugins\\";
 
 	/**
 	* Returns the list of loaded plugins
@@ -198,7 +198,7 @@ trait Plugins
 	* @param object $obj The object
 	* @return $this
 	*/
-	public function setOutputData($prefix, $obj)
+	public function setOutputData(string $prefix, object $obj)
 	{
 		$this->output_prefix = $prefix;
 		$this->output_obj = $obj;

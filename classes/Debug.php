@@ -17,7 +17,7 @@ class Debug
 	/**
 	* @var array $info Debug info
 	*/
-	public $info = [];
+	public array $info = [];
 
 	/**
 	* Outputs all the debug info

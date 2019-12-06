@@ -15,42 +15,42 @@ class Curl
 	/**
 	* @var string $useragent The useragent used when making requests
 	*/
-	public $useragent = '';
+	public string $useragent = '';
 
 	/**
 	* @var bool $followlocation Determines the value of CURLOPT_FOLLOWLOCATION
 	*/
-	public $followlocation = true;
+	public bool $followlocation = true;
 
 	/**
 	* @var bool $header If true,the headers will be also returned
 	*/
-	public $header = false;
+	public bool $header = false;
 
 	/**
 	* @var int $code The http code of the last request
 	*/
-	public $code = '';
+	public string $code = '';
 
 	/**
 	* @var array $request_header The request headers
 	*/
-	public $request_header = [];
+	public array $request_header = [];
 
 	/**
-	* @var array $error The generated error if any
+	* @var string $error The generated error if any
 	*/
-	public $error = '';
+	public string $error = '';
 
 	/**
 	* @var array $info The request info
 	*/
-	public $info = [];
+	public array $info = [];
 
 	/**
 	* @var array $options Curl options for curl_setopt
 	*/
-	protected $options = [];
+	protected array $options = [];
 
 	/**
 	* Builds the curl object

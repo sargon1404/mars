@@ -20,37 +20,37 @@ class Memcache
 	/**
 	* @var string $driver The used driver
 	*/
-	protected $driver = '';
+	protected string $driver = '';
 
 	/**
-	* @var object $handle The driver's handle
+	* @var \Mars\Memcache\DriverInterface $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected DriverInterface $handle;
 
 	/**
 	* @var string $host The host to connect to
 	*/
-	protected $host = '';
+	protected string $host = '';
 
 	/**
 	* @var string $port The port to connect to
 	*/
-	protected $port = '';
+	protected string $port = '';
 
 	/**
 	* @var string $key Key used to identify the site
 	*/
-	protected $key = '';
+	protected string $key = '';
 
 	/**
 	* @var bool $enabled Will be set to true, if memcache is enabled
 	*/
-	protected $enabled = false;
+	protected bool $enabled = false;
 
 	/**
 	* @var bool $connected Set to true, if the connection to the memcache server has been made
 	*/
-	protected $connected = false;
+	protected bool $connected = false;
 
 	/**
 	* Contructs the memcache object

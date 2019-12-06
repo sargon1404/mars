@@ -15,27 +15,27 @@ class Entities implements \Iterator, \Countable
 	/**
 	* @var array $data Array containing the objects
 	*/
-	public $data = [];
+	public array $data = [];
 
 	/**
-	* @var array $count The number of loaded objects
+	* @var int $count The number of loaded objects
 	*/
-	public $count = 0;
+	public int $count = 0;
 
 	/**
 	* @var string $class The class of the loaded objects
 	*/
-	protected static $class = '\Mars\Entity';
+	protected static string $class = '\Mars\Entity';
 
 	/**
 	* @internal
 	*/
-	protected $current = 0;
+	protected int $current = 0;
 
 	/**
 	* @internal
 	*/
-	protected $loaded = false;
+	protected bool $loaded = false;
 
 	/**
 	* Builds the objects

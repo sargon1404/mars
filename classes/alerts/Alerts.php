@@ -16,7 +16,7 @@ abstract class Alerts
 	/**
 	* @var array $alerts Array with all the generated alerts
 	*/
-	protected $alerts = [];
+	protected array $alerts = [];
 
 	/**
 	* Returns the count of generated alerts

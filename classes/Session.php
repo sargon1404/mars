@@ -17,7 +17,7 @@ class Session
 	/**
 	* @var string $driver The driver used
 	*/
-	protected $driver = '';
+	protected string $driver = '';
 
 	/**
 	* @var object $handle The driver's handle
@@ -27,27 +27,27 @@ class Session
 	/**
 	* @var string $cookie_name The session cookie's name
 	*/
-	protected $cookie_name = '';
+	protected string $cookie_name = '';
 
 	/**
 	* @var string $cookie_path The session cookie's path
 	*/
-	protected $cookie_path = '';
+	protected string $cookie_path = '';
 
 	/**
 	* @var string $cookie_domain The session cookie's domain
 	*/
-	protected $cookie_domain = '';
+	protected string $cookie_domain = '';
 
 	/**
 	* @var string $cookie_domain The session's save path
 	*/
-	protected $save_path = '';
+	protected string $save_path = '';
 
 	/**
 	* @var string $key Key in $_SESSION, where the data will be read/written from
 	*/
-	protected $key = '';
+	protected string $key = '';
 
 	/**
 	* Builds the session object

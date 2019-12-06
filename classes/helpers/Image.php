@@ -19,82 +19,82 @@ class Image
 	/**
 	* @var int $jpeg_quality The quality of the jpeg images
 	*/
-	public $jpeg_quality = 80;
+	public int $jpeg_quality = 80;
 
 	/**
 	* @var int $png_quality The quality of the png images
 	*/
-	public $png_quality	 = 6;
+	public int $png_quality	 = 6;
 
 	/**
 	* @var string background_color The background color of resized/cut images
 	*/
-	public $background_color = 'ffffff';
+	public string $background_color = 'ffffff';
 
 	/**
 	* @var string $watermark_font The font used to draw the watermark text
 	*/
-	public $watermark_font = '5';
+	public string $watermark_font = '5';
 
 	/**
 	* @var string $watermark_font_ttf If true, will use ttf as a font
 	*/
-	public $watermark_font_ttf = false;
+	public bool $watermark_font_ttf = false;
 
 	/**
 	* @var string $watermark_text_color The color of the watermark text
 	*/
-	public $watermark_text_color = 'ff0000';
+	public string $watermark_text_color = 'ff0000';
 
 	/**
 	* @var int $watermark_text_size The size of the watermark text
 	*/
-	public $watermark_text_size = '20';
+	public string $watermark_text_size = '20';
 
 	/**
-	* @var string $watermark_text_angle The andle of the watermark text
+	* @var string $watermark_text_angle The angle of the watermark text
 	*/
-	public $watermark_text_angle = 0;
+	public string $watermark_text_angle = '0';
 
 	/**
 	* @var string $watermark_background The color of the watermark's background
 	*/
-	public $watermark_background = '000000';
+	public string $watermark_background = '000000';
 
 	/**
 	* @var string $watermark_opacity The opacity of the watermark
 	*/
-	public $watermark_opacity = '40';
+	public string $watermark_opacity = '40';
 
 	/**
 	* @var string $watermark_padding_top The top/bottom padding of the watermark text
 	*/
-	public $watermark_padding_top = 10;
+	public string $watermark_padding_top = '10';
 
 	/**
 	* @var string $watermark_padding_left The left/right padding of the watermark text
 	*/
-	public $watermark_padding_left = 15;
+	public string $watermark_padding_left = '15';
 
 	/**
 	* @var string $watermark_margin_top The top/bottom margin of the watermark text
 	*/
-	public $watermark_margin_top = 20;
+	public string $watermark_margin_top = '20';
 
 	/**
 	* @var string $watermark_margin_left The left/right margin of the watermark text
 	*/
-	public $watermark_margin_left = 30;
+	public string $watermark_margin_left = '30';
 
 	/**
 	* @var array $supported_source_images The formats this class supports for source/input images
 	*/
-	protected $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+	protected array $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
 	/**
 	* @var array $supported_destination_images The formats this class supports for destination/output images
 	*/
-	protected $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
+	protected array $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
 
 	/**
 	* Processes an image

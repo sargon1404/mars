@@ -17,22 +17,22 @@ class Log
 	/**
 	* @var string $suffix The log file's suffix
 	*/
-	public $suffix = '';
+	public string $suffix = '';
 
 	/**
 	* @var string $date The log date
 	*/
-	public $date = '';
+	public string $date = '';
 
 	/**
 	* @var array $handles The log files's handles
 	*/
-	protected $handles = [];
+	protected array $handles = [];
 
 	/**
 	* @var bool $is_cli If true, will use the cli log file
 	*/
-	protected $is_cli = false;
+	protected bool $is_cli = false;
 
 	/**
 	* Builds the log objects

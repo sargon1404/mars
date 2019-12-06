@@ -17,17 +17,17 @@ class Sql
 	/**
 	* @var string $sql The sql code
 	*/
-	protected $sql = '';
+	protected string $sql = '';
 
 	/**
 	* @var array $params The params to use in prepared statements
 	*/
-	protected $params = [];
+	protected array $params = [];
 
 	/**
 	* @internal
 	*/
-	protected $has = [];
+	protected array $has = [];
 
 	/**
 	* Resets the sql/params

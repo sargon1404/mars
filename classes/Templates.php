@@ -33,7 +33,7 @@ class Templates
 	/**
 	* @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
 	*/
-	protected $supported_modifiers = [
+	protected array $supported_modifiers = [
 		//escape modifiers
 		'e' => ['\Mars\App::e', 40],
 		'escape' => ['\Mars\App::e', 40],
@@ -85,12 +85,12 @@ class Templates
 	/**
 	* @internal
 	*/
-	protected $double_escape = false;
+	protected bool $double_escape = false;
 
 	/**
 	* @internal
 	*/
-	protected $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"]*)/is';
+	protected string $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"]*)/is';
 
 	/**
 	* Builds the Template object

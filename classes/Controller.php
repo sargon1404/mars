@@ -18,59 +18,59 @@ abstract class Controller
 	use ReflectionTrait;
 
 	/**
-	* @var Model $model The model object
-	*/
-	public $model = null;
-
-	/**
-	* @var View $view The view object
-	*/
-	public $view = null;
-
-	/**
 	* @var string $url The controller's url
 	*/
-	public $url = '';
+	public string $url = '';
 
 	/**
 	* @var string $default_method Default method to be executed on dispatch/route, if the requested method doesn't exist or is not public
 	*/
-	public $default_method = 'index';
+	public string $default_method = 'index';
 
 	/**
 	* @var string $default_error_method Method to be executed on dispatch/route, if the requested method returns true
 	*/
-	public $default_ok_method = 'index';
+	public string $default_ok_method = 'index';
 
 	/**
 	* @var string $default_error_method Method to be executed on dispatch/route, if the requested method returns false
 	*/
-	public $default_error_method = 'index';
+	public string $default_error_method = 'index';
 
 	/**
 	* @var string $current_method The name of the currently executed method
 	*/
-	public $current_method = '';
+	public string $current_method = '';
 
 	/**
 	* @var string $site_url Alias for $this->app->site_url
 	*/
-	protected $site_url = '';
+	protected string $site_url = '';
+	
+	/**
+	* @var Model $model The model object
+	*/
+	public Model $model;
 
 	/**
-	* @var object $request The request object. Alias for $this->app->request
+	* @var View $view The view object
 	*/
-	protected $request = null;
+	public View $view;
 
 	/**
-	* @var object $filter The filter object. Alias for $this->app->filter
+	* @var Request $request The request object. Alias for $this->app->request
 	*/
-	protected $filter = null;
+	protected Request $request;
 
 	/**
-	* @var object $escape Alias for $this->app->escape
+	* @var Filter $filter The filter object. Alias for $this->app->filter
 	*/
-	protected $escape = null;
+	protected Filter $filter ;
+
+	/**
+	* @var Escape $escape Alias for $this->app->escape
+	*/
+	protected Escape $escape;
 
 	/**
 	* @var object $errors The errors object. Alias for $this->app->errors

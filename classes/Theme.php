@@ -15,77 +15,77 @@ trait Theme
 	/**
 	* @var string $header_template The template which will be used to render the header
 	*/
-	public $header_template = 'header';
+	public string $header_template = 'header';
 
 	/**
 	* @var string $footer_template The template which will be used to render the footer
 	*/
-	public $footer_template = 'footer';
+	public string $footer_template = 'footer';
 
 	/**
 	* @var string $content_template The template which will be used to render the content
 	*/
-	public $content_template = 'content';
+	public string $content_template = 'content';
 
 	/**
 	* @var string $layout The layout used to render the theme, if any
 	*/
-	public $layout = '';
+	public string $layout = '';
 
 	/**
 	* @var string $url Alias for $this->app->url
 	*/
-	public $url = '';
+	public string $url = '';
 
 	/**
 	* @var string $site_url Alias for $this->app->site_url
 	*/
-	public $site_url = '';
+	public string $site_url = '';
 
 	/**
 	* @var string $site_url_static Alias for $this->app->site_url_static
 	*/
-	public $site_url_static = '';
+	public string $site_url_static = '';
 
 	/**
 	* @var string $templates_dir The path for the theme's templates folder
 	*/
-	public $templates_dir = '';
+	public string $templates_dir = '';
 
 	/**
 	* @var string $images_dir The path for the theme's images folder
 	*/
-	public $images_dir = '';
+	public string $images_dir = '';
 
 	/**
 	* @var string $images_url The url of the theme's images folder
 	*/
-	public $images_url = '';
+	public string $images_url = '';
 
 	/**
 	* @var array $vars The theme's vars are stored here
 	*/
-	public $vars = [];
+	public array $vars = [];
 
 	/**
 	* @var bool $css_output If true, will output the main css file
 	*/
-	public $css_output = true;
+	public bool $css_output = true;
 
 	/**
 	* @var bool $javascript_output If true, will output the main js file
 	*/
-	public $javascript_output = true;
+	public bool $javascript_output = true;
 
 	/**
 	* @var array Array with the list of loaded templates
 	*/
-	protected $templates_loaded = [];
+	protected array $templates_loaded = [];
 
 	/**
 	* @var Template $engine The engine used to parse the template
 	*/
-	protected $engine = null;
+	protected Templates $engine = null;
 
 	/**
 	* @internal
@@ -95,57 +95,57 @@ trait Theme
 	/**
 	* @internal
 	*/
-	protected $objs = [];
+	protected array $objs = [];
 
 	/**
 	* @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
 	*/
-	protected $foreach_keys = [];
+	protected array $foreach_keys = [];
 
 	/**
 	* @var array $foreach_values Array where existing vars with the same name as a foreach value are temporarily stored
 	*/
-	protected $foreach_values = [];
+	protected array $foreach_values = [];
 
 	/**
 	* @var array $foreach_loops Array where existing loop counts are temporarily stored
 	*/
-	protected $foreach_loops = [];
+	protected array $foreach_loops = [];
 
 	/**
 	* @var array $foreach_loops_count Array storing the loop index for each foreach cycle
 	*/
-	protected $foreach_loops_count = [];
+	protected array $foreach_loops_count = [];
 
 	/**
 	* @var string $css_file The name of the main css file
 	*/
-	protected $css_file = 'style.css';
+	protected string $css_file = 'style.css';
 
 	/**
 	* @var string $javascript_file The name of the main js file
 	*/
-	protected $javascript_file = 'javascript.js';
+	protected string $javascript_file = 'javascript.js';
 
 	/**
 	* @var string $cache_dir The folder where the cache files are stored
 	*/
-	protected $cache_dir = '';
+	protected string $cache_dir = '';
 
 	/**
 	* @var string $cache_url The url pointing to the folder where the cache files are stored
 	*/
-	protected $cache_url = '';
+	protected string $cache_url = '';
 
 	/**
 	* @var string $templates_cache_dir The folder where the templates will be cached
 	*/
-	protected $templates_cache_dir = '';
+	protected string $templates_cache_dir = '';
 
 	/**
 	* @internal
 	*/
-	protected static $base_dir = 'themes';
+	protected static string $base_dir = 'themes';
 
 	/**
 	* Prepares the theme

@@ -17,17 +17,17 @@ class Pagination
 	/**
 	* @var int $max_links The max number of pagination links to show
 	*/
-	public $max_links = 10;
+	public int $max_links = 10;
 
 	/**
 	* @var string $page_param The name of the query param where the page number will be appended
 	*/
-	public $page_param = 'page';
+	public string $page_param = 'page';
 
 	/**
 	* @var string $seo_page_param The string found in $base_url which will be replaced by the page number, if $is_seo_url is true
 	*/
-	public $seo_page_param = '{PAGE_NO}';
+	public string $seo_page_param = '{PAGE_NO}';
 
 	/**
 	* Builds the pagination template. The number of pages is computed as $total_items / $items_per_page.

@@ -17,47 +17,47 @@ class Request
 	/**
 	* @var array $server Array containing the server data
 	*/
-	public $server = [];
+	public array $server = [];
 
 	/**
 	* @var array $get Array containing the get data
 	*/
-	public $get = [];
+	public array $get = [];
 
 	/**
 	* @var array $post Array containing the post data
 	*/
-	public $post = [];
+	public array $post = [];
 
 	/**
 	* @var array $cookie Array containing the cookie data
 	*/
-	public $cookie = [];
+	public array $cookie = [];
 
 	/**
 	* @var string $method The request method. get/post.
 	*/
-	public $method = '';
+	public string $method = '';
 
 	/**
 	* @var int $cookie_expires The cookie's expires timestamp
 	*/
-	protected $cookie_expires = '';
+	protected string $cookie_expires = '';
 
 	/**
 	* @var string $cookie_path The cookie's path
 	*/
-	protected $cookie_path = '';
+	protected string $cookie_path = '';
 
 	/**
 	* @var string $cookie_domain The cookie's domain
 	*/
-	protected $cookie_domain = '';
+	protected string $cookie_domain = '';
 
 	/**
 	* @var array $upload_disallowed_extensions The extensions of the files which are disallowed at upload
 	*/
-	protected $upload_disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
+	protected array $upload_disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
 
 	/**
 	* Builds the request object

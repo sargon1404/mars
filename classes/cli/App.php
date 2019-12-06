@@ -14,7 +14,7 @@ class App extends \Mars\App
 	/**
 	* @var bool $is_cli True if the app is run as a cli script
 	*/
-	public $is_cli = true;
+	public bool $is_cli = true;
 
 	/**
 	* @see \Mars\App::loadBooter()

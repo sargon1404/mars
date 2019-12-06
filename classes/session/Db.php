@@ -19,7 +19,7 @@ class Db implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInte
 	/**
 	* @var string $table The table where the sessions are stored
 	*/
-	protected $table = '';
+	protected string $table = '';
 
 	/**
 	* Builds the Db Session driver

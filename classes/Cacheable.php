@@ -19,42 +19,42 @@ abstract class Cacheable
 	/**
 	* @var string $dir The folder where the content will be cached
 	*/
-	protected $dir = '';
+	protected string $dir = '';
 
 	/**
 	* @var string $file The name of the file used to cache the content
 	*/
-	protected $file = '';
+	protected string $file = '';
 
 	/**
 	* @var string $filename The filename of the file used to cache the content
 	*/
-	protected $filename = '';
+	protected string $filename = '';
 
 	/**
 	* @var int $expires_interval The interval - in hours - after which the content should be refreshed by the browser
 	*/
-	protected $expires_interval = 24;
+	protected int $expires_interval = 24;
 
 	/**
 	* @var string $extension The extension of the cache file
 	*/
-	protected $extension = 'htm';
+	protected string $extension = 'htm';
 
 	/**
 	* @var string $gzip If true, the content is considered to be gzipped
 	*/
-	protected $gzip = false;
+	protected bool $gzip = false;
 
 	/**
 	* @var string $driver The used driver
 	*/
-	protected $driver = 'file';
+	protected string $driver = 'file';
 
 	/**
-	* @var object $handle The driver's handle
+	* @var \Mars\Cacheable\DriverInterface $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected DriverInterface $handle = null;
 
 	/**
 	* Returns the file used to cache the content

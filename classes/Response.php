@@ -17,7 +17,7 @@ class Response
 	/**
 	* @var string $driver The used driver
 	*/
-	protected $driver = '';
+	protected string $driver = '';
 
 	/**
 	* @var object $handle The driver's handle
@@ -27,7 +27,7 @@ class Response
 	/**
 	* @var bool $initialized Set to true, if the driver & handle have been set
 	*/
-	protected $initialized = false;
+	protected bool $initialized = false;
 
 	/**
 	* Builds the Response object

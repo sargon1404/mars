@@ -15,12 +15,12 @@ class Geoip
 	/**
 	* @var bool $enabled Will be set to true, if geoip is enabled
 	*/
-	public $enabled = false;
+	public bool $enabled = false;
 
 	/**
 	* @var string $localhost The name for localhost
 	*/
-	protected $localhost = 'localhost';
+	protected string $localhost = 'localhost';
 
 	/**
 	* Builds the Geoip object

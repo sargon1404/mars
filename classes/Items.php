@@ -31,7 +31,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	/**
 	* @var array $ids The ids of the currently loaded objects
 	*/
-	public $ids = [];
+	public array $ids = [];
 
 	/**
 	* @var object $errors The errors object. Contains the generated errors, if any
@@ -39,9 +39,9 @@ abstract class Items extends Rows implements \ArrayAccess
 	protected $errors = null;
 
 	/**
-	* @var object $db The database object. Alias for $this->app->db
+	* @var Db $db The database object. Alias for $this->app->db
 	*/
-	protected $db = null;
+	protected Db $db = null;
 
 	/**
 	* Builds the Item object

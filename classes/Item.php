@@ -35,34 +35,34 @@ abstract class Item extends Row
 	protected $errors = null;
 
 	/**
-	* @var object $db The database object. Alias for $this->app->db
+	* @var Db $db The database object. Alias for $this->app->db
 	*/
-	protected $db = null;
+	protected Db $db;
 
 	/**
 	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
 	*/
-	protected static $_ignore = [];
+	protected static array $_ignore = [];
 
 	/**
 	* @var array $_store Array listing the properties which should be stored when the data is set
 	*/
-	protected static $_store = [];
+	protected static array $_store = [];
 
 	/**
 	* @var array $_store Array containing the stored data. The stored data is the original properties of an object
 	*/
-	protected $_stored = [];
+	protected array $_stored = [];
 
 	/**
 	* @internal
 	*/
-	protected static $_defaults = [];
+	protected static array $_defaults = [];
 
 	/**
 	* @internal
 	*/
-	protected static $_defaults_vals = [];
+	protected static array $_defaults_vals = [];
 
 	/**
 	* Builds an item
