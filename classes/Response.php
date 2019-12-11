@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Response\DriverInterface;
+
 /**
 * The Response Class
 * Outputs the system's html/ajax response
@@ -22,7 +24,7 @@ class Response
 	/**
 	* @var object $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected DriverInterface $handle;
 
 	/**
 	* @var bool $initialized Set to true, if the driver & handle have been set
@@ -89,10 +91,16 @@ class Response
 		if (!$driver) {
 			$driver = $this->driver;
 		}
-
+		
 		$class = '\\Mars\\Response\\' . App::strToClass($driver);
+			
+		$handle = new $class($this->app);
 
-		return new $class($this->app);
+		if (!$handle instanceof DriverInterface) {
+			throw new \Exception('The response driver must implement interface DriverInterface');
+		}		
+
+		return $handle;
 	}
 
 	/**

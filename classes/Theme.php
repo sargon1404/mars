@@ -85,12 +85,12 @@ trait Theme
 	/**
 	* @var Template $engine The engine used to parse the template
 	*/
-	protected Templates $engine = null;
+	protected Templates $engine;
 
 	/**
 	* @internal
 	*/
-	protected $obj = 0;
+	protected object $obj;
 
 	/**
 	* @internal
@@ -922,7 +922,7 @@ trait Theme
 	* Sets the context object
 	* @internal
 	*/
-	public function setObj($obj)
+	public function setObj(object $obj)
 	{
 		$this->obj = $obj;
 
@@ -944,7 +944,7 @@ trait Theme
 	*/
 	public function unsetObj()
 	{
-		$this->obj = 0;
+		$this->obj = null;
 	}
 
 	/**

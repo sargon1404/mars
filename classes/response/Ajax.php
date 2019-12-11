@@ -12,7 +12,7 @@ use Mars\App;
 * The Ajax Response Class
 * Generates a json response
 */
-class Ajax
+class Ajax implements DriverInterface
 {
 	use \Mars\AppTrait;
 
@@ -57,10 +57,8 @@ class Ajax
 	}
 
 	/**
-	* Outputs $content as json code
-	* @param string $content The content to output
-	* @param mixed $data The response data. if empty, if will be automatically built
-	* @param bool $send_content_on_error Will send the content even if there is an error
+	* @see \Mars\Response\DriverInterface::output()
+	* {@inheritDoc}
 	*/
 	public function output(string $content, $data = [], bool $send_content_on_error = false)
 	{

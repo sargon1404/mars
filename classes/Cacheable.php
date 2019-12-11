@@ -15,6 +15,7 @@ use Mars\Cacheable\DriverInterface;
 abstract class Cacheable
 {
 	use AppTrait;
+	use DriverTrait;
 
 	/**
 	* @var string $dir The folder where the content will be cached
@@ -52,9 +53,10 @@ abstract class Cacheable
 	protected string $driver = 'file';
 
 	/**
-	* @var \Mars\Cacheable\DriverInterface $handle The driver's handle
+	* @var string $driver The used driver
 	*/
-	protected DriverInterface $handle = null;
+	protected string $driver_namespace = '\\Mars\\Cacheable';
+
 
 	/**
 	* Returns the file used to cache the content
@@ -94,23 +96,6 @@ abstract class Cacheable
 		}
 
 		return $this->driver;
-	}
-
-	/**
-	* Returns the handle corresponding to the driver
-	* @return object The handle
-	*/
-	protected function getHandle() : DriverInterface
-	{
-		$class = '\\Mars\\Cacheable\\' . App::strToClass($this->driver);
-
-		$handle = new $class($this->app);
-
-		if (!$handle instanceof DriverInterface) {
-			throw new \Exception('The cacheable driver must implement interface DriverInterface');
-		}
-
-		return $handle;
 	}
 
 	/**

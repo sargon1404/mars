@@ -22,7 +22,7 @@ class Session
 	/**
 	* @var object $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected object $handle;
 
 	/**
 	* @var string $cookie_name The session cookie's name

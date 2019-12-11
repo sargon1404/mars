@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+
 /**
 * The Items Class
 * Container of multiple items
@@ -34,14 +36,14 @@ abstract class Items extends Rows implements \ArrayAccess
 	public array $ids = [];
 
 	/**
-	* @var object $errors The errors object. Contains the generated errors, if any
+	* @var Errors $errors The errors object. Contains the generated errors, if any
 	*/
-	protected $errors = null;
+	protected Errors $errors;
 
 	/**
 	* @var Db $db The database object. Alias for $this->app->db
 	*/
-	protected Db $db = null;
+	protected Db $db;
 
 	/**
 	* Builds the Item object
@@ -50,7 +52,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
-		$this->errors = new Alerts\Errors;
+		$this->errors = new Errors;
 	}
 
 	/**

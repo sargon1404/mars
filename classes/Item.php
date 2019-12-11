@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+
 /**
 * The Item Class
 * ORM functionality for objects built from database data
@@ -30,9 +32,9 @@ abstract class Item extends Row
 	//protected static $id_name = '';
 
 	/**
-	* @var object $errors The errors object. Contains the generated errors, if any
+	* @var Errors $errors The errors object. Contains the generated errors, if any
 	*/
-	protected $errors = null;
+	protected Errors $errors;
 
 	/**
 	* @var Db $db The database object. Alias for $this->app->db
@@ -72,7 +74,7 @@ abstract class Item extends Row
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
-		$this->errors = new Alerts\Errors;
+		$this->errors = new Errors;
 
 		$table = $this->getTable();
 		$id_name = $this->getIdName();

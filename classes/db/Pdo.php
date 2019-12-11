@@ -6,6 +6,8 @@
 
 namespace Mars\Db;
 
+use PDO;
+
 /**
 * The PDO Database Driver
 */
@@ -14,17 +16,17 @@ class Pdo implements DriverInterface
 	/**
 	* @var string $error_sql The sql which was executed when the error was generated
 	*/
-	public $error_sql = '';
+	public string $error_sql = '';
 
 	/**
-	* @var resource $handle The PDO handle
+	* @var PDO $handle The PDO handle
 	*/
-	protected $handle = null;
+	protected PDO $handle;
 
 	/**
-	* @var resource The result of the last query operation
+	* @var object The result of the last query operation
 	*/
-	protected $result = null;
+	protected object $result;
 
 	/**
 	* @see \Mars\Db\DriverInterface::connect()
@@ -34,7 +36,7 @@ class Pdo implements DriverInterface
 	{
 		$dsn = "mysql:dbname={$database};host={$hostname};charset={$charset}";
 
-		$this->handle = new \PDO($dsn, $username, $password);
+		$this->handle = new PDO($dsn, $username, $password);
 	}
 
 	/**
@@ -101,7 +103,7 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::query()
 	* {@inheritDoc}
 	*/
-	public function query(string $sql, array $params = [])
+	public function query(string $sql, array $params = []) : object
 	{
 		if ($params) {
 			$this->result = $this->handle->prepare($sql);

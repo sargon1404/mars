@@ -16,7 +16,7 @@ class Memcache implements DriverInterface
 	/**
 	* @var object $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected object $handle;
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::connect()

@@ -147,12 +147,12 @@ class App
 	/**
 	* @var App $instance The app instance
 	*/
-	protected static App $instance = null;
+	protected static App $instance;
 
 	/**
 	* @var AppBooter $boot The booter object
 	*/
-	protected AppBooter $boot = null;
+	protected AppBooter $boot;
 
 	/**
 	* @const array DIRS The locations of the used dirs

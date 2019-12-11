@@ -18,72 +18,72 @@ abstract class View
 	/**
 	* @var string $url The url of the controller to which the view belongs.
 	*/
-	public $url = '';
-
+	public string $url = '';
+	
 	/**
-	* @var object $html Alias for $this->app->html
+	* @var string $site_url Alias for $this->app->site_url
 	*/
-	public $html = null;
-
-	/**
-	* @var object $filter Alias for $this->app->filter
-	*/
-	public $filter = null;
-
-	/**
-	* @var object $escape Alias for $this->app->escape
-	*/
-	public $escape = null;
-
-	/**
-	* @var object $format Alias for $this->app->format
-	*/
-	public $format = null;
-
-	/**
-	* @var object $uri Alias for $this->app->format
-	*/
-	public $uri = null;
-
-	/**
-	* @var object $uri Alias for $this->app->text
-	*/
-	public $text = null;
-
-	/**
-	* @var object $uri Alias for $this->app->site_url
-	*/
-	public $site_url = null;
+	public string $site_url = '';
 
 	/**
 	* @var string $layout The name of the layout (subdir) from where the template is rendered
 	*/
-	protected $layout = '';
+	protected string $layout = '';
 
 	/**
 	* @var string $template The name of the template which will be rendered when render() is called
 	*/
-	protected $template = '';
+	protected string $template = '';
 
 	/**
 	* @var string $current_method The name of the currently executed method
 	*/
-	protected $current_method = '';
-
-	/**
-	* @var object $controller The controller
-	*/
-	protected $controller = null;
-
-	/**
-	* @var object $model The model
-	*/
-	protected $model = null;
+	protected string $current_method = '';
 
 	/**
 	* @var string $dirname The dirname of the view. Populated only after render is called
 	*/
-	protected $dirname = '';
+	protected string $dirname = '';
+	
+	/**
+	* @var Controller $controller The controller
+	*/
+	protected Controller $controller;
+
+	/**
+	* @var Model $model The model
+	*/
+	protected Model $model;
+
+	/**
+	* @var Html $html Alias for $this->app->html
+	*/
+	public Html $html;
+
+	/**
+	* @var Filter $filter Alias for $this->app->filter
+	*/
+	public Filter $filter;
+
+	/**
+	* @var Escape $escape Alias for $this->app->escape
+	*/
+	public Escape $escape;
+
+	/**
+	* @var Format $format Alias for $this->app->format
+	*/
+	public Format $format;
+
+	/**
+	* @var Uri $uri Alias for $this->app->format
+	*/
+	public Uri $uri;
+
+	/**
+	* @var Text $uri Alias for $this->app->text
+	*/
+	public Text $text;
 
 	/**
 	* Builds the View

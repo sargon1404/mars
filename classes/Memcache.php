@@ -16,16 +16,7 @@ use Mars\Memcache\DriverInterface;
 class Memcache
 {
 	use AppTrait;
-
-	/**
-	* @var string $driver The used driver
-	*/
-	protected string $driver = '';
-
-	/**
-	* @var \Mars\Memcache\DriverInterface $handle The driver's handle
-	*/
-	protected DriverInterface $handle;
+	use DriverTrait;
 
 	/**
 	* @var string $host The host to connect to
@@ -51,6 +42,11 @@ class Memcache
 	* @var bool $connected Set to true, if the connection to the memcache server has been made
 	*/
 	protected bool $connected = false;
+
+	/**
+	* @var string $driver The used driver
+	*/
+	protected string $driver_namespace = '\\Mars\\Memcache';
 
 	/**
 	* Contructs the memcache object
@@ -126,23 +122,6 @@ class Memcache
 		$this->handle->disconnect();
 
 		$this->handle = null;
-	}
-
-	/**
-	* Returns the handle corresponding to the driver
-	* @return object The driver handle
-	*/
-	protected function getHandle() : DriverInterface
-	{
-		$class = '\\Mars\\Memcache\\' . App::strToClass($this->driver);
-
-		$handle = new $class;
-
-		if (!$handle instanceof DriverInterface) {
-			throw new \Exception('The memcache driver must implement interface DriverInterface');
-		}
-
-		return $handle;
 	}
 
 	/**

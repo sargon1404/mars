@@ -15,12 +15,12 @@ class Device
 	/**
 	* @var string $useragent The useragent to use
 	*/
-	public $useragent = '';
+	public string $useragent = '';
 
 	/**
 	* @var object $handle The driver's handle
 	*/
-	protected $handle = null;
+	protected object $handle;
 
 	/**
 	* Builds the Device object

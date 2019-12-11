@@ -10,16 +10,15 @@ namespace Mars\Response;
 * The Html Response Class
 * Generates a html response
 */
-class Html
+class Html implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	* Outputs $content
-	* @param string $content The content to output
-	* @param array $data Not used
+	* @see \Mars\Response\DriverInterface::output()
+	* {@inheritDoc}
 	*/
-	public function output(string $content, array $data = [])
+	public function output(string $content, $data = [], bool $send_content_on_error = false)
 	{
 		echo $content;
 	}
