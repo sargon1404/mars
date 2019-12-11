@@ -15,21 +15,17 @@ use Mars\Response\DriverInterface;
 class Response
 {
 	use AppTrait;
-
-	/**
-	* @var string $driver The used driver
-	*/
-	protected string $driver = '';
-
-	/**
-	* @var object $handle The driver's handle
-	*/
-	protected DriverInterface $handle;
+	use DriverTrait;
 
 	/**
 	* @var bool $initialized Set to true, if the driver & handle have been set
 	*/
 	protected bool $initialized = false;
+
+	/**
+	* @var string $driver The used driver
+	*/
+	protected string $driver_namespace = '\\Mars\\Response';
 
 	/**
 	* Builds the Response object
@@ -79,28 +75,6 @@ class Response
 		}
 
 		return $this->driver;
-	}
-
-	/**
-	* Returns the driver's handle
-	* @param string $driver The driver
-	* @return object
-	*/
-	protected function getHandle(string $driver = '')
-	{
-		if (!$driver) {
-			$driver = $this->driver;
-		}
-		
-		$class = '\\Mars\\Response\\' . App::strToClass($driver);
-			
-		$handle = new $class($this->app);
-
-		if (!$handle instanceof DriverInterface) {
-			throw new \Exception('The response driver must implement interface DriverInterface');
-		}		
-
-		return $handle;
 	}
 
 	/**

@@ -6,8 +6,6 @@
 
 namespace Mars;
 
-use Mars\Cacheable\DriverInterface;
-
 /**
 * The Cacheable Class
 * Caches content & serves it from cache

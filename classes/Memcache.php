@@ -6,8 +6,6 @@
 
 namespace Mars;
 
-use Mars\Memcache\DriverInterface;
-
 /**
 * The Memcache Class
 * Handles the interactions with the memory cache.
