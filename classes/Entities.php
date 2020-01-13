@@ -15,7 +15,9 @@ class Entities implements \Iterator, \Countable
 	/**
 	* @var array $data Array containing the objects
 	*/
-	public array $data = [];
+	public array
+
+ $data = [];
 
 	/**
 	* @var int $count The number of loaded objects

@@ -4,13 +4,15 @@
 * @package Mars
 */
 
-namespace Mars\Detect;
+namespace Mars\Device;
+
+use Mars\App;
 
 /**
 * The Detect Device Class
 * Detects the device a user is using from the useragent
 */
-class Device
+class MobileDetect implements DriverInterface
 {
 	/**
 	* @var string $useragent The useragent to use
@@ -18,17 +20,12 @@ class Device
 	public string $useragent = '';
 
 	/**
-	* @var object $handle The driver's handle
-	*/
-	protected object $handle;
-
-	/**
 	* Builds the Device object
-	* @param string $useragent The useragent
+	* @param App $app The app object
 	*/
-	public function __construct(string $useragent)
+	public function __construct(App $app)
 	{
-		$this->useragent = $useragent;
+		$this->useragent = $app->useragent;
 	}
 
 	/**

@@ -44,27 +44,37 @@ abstract class Item extends Row
 	/**
 	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
 	*/
-	protected static array $_ignore = [];
+	protected static array
+
+ $_ignore = [];
 
 	/**
 	* @var array $_store Array listing the properties which should be stored when the data is set
 	*/
-	protected static array $_store = [];
+	protected static array
+
+ $_store = [];
 
 	/**
 	* @var array $_store Array containing the stored data. The stored data is the original properties of an object
 	*/
-	protected array $_stored = [];
+	protected array
+
+ $_stored = [];
 
 	/**
 	* @internal
 	*/
-	protected static array $_defaults = [];
+	protected static array
+
+ $_defaults = [];
 
 	/**
 	* @internal
 	*/
-	protected static array $_defaults_vals = [];
+	protected static array
+
+ $_defaults_vals = [];
 
 	/**
 	* Builds an item

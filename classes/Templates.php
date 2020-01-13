@@ -33,7 +33,9 @@ class Templates
 	/**
 	* @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
 	*/
-	protected array $supported_modifiers = [
+	protected array
+
+ $supported_modifiers = [
 		//escape modifiers
 		'e' => ['\Mars\App::e', 40],
 		'escape' => ['\Mars\App::e', 40],

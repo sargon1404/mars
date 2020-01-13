@@ -65,7 +65,9 @@ trait Theme
 	/**
 	* @var array $vars The theme's vars are stored here
 	*/
-	public array $vars = [];
+	public array
+
+ $vars = [];
 
 	/**
 	* @var bool $css_output If true, will output the main css file
@@ -80,42 +82,54 @@ trait Theme
 	/**
 	* @var array Array with the list of loaded templates
 	*/
-	protected array $templates_loaded = [];
+	protected array
+
+ $templates_loaded = [];
 
 	/**
 	* @var Template $engine The engine used to parse the template
 	*/
-	protected Templates $engine;
+	protected ?Templates $engine = null;
 
 	/**
 	* @internal
 	*/
-	protected object $obj;
+	protected ?object $obj = null;
 
 	/**
 	* @internal
 	*/
-	protected array $objs = [];
+	protected array
+
+ $objs = [];
 
 	/**
 	* @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
 	*/
-	protected array $foreach_keys = [];
+	protected array
+
+ $foreach_keys = [];
 
 	/**
 	* @var array $foreach_values Array where existing vars with the same name as a foreach value are temporarily stored
 	*/
-	protected array $foreach_values = [];
+	protected array
+
+ $foreach_values = [];
 
 	/**
 	* @var array $foreach_loops Array where existing loop counts are temporarily stored
 	*/
-	protected array $foreach_loops = [];
+	protected array
+
+ $foreach_loops = [];
 
 	/**
 	* @var array $foreach_loops_count Array storing the loop index for each foreach cycle
 	*/
-	protected array $foreach_loops_count = [];
+	protected array
+
+ $foreach_loops_count = [];
 
 	/**
 	* @var string $css_file The name of the main css file
@@ -762,7 +776,7 @@ trait Theme
 	*/
 	public function outputJavascriptUrl()
 	{
-		if (!$this->js_output) {
+		if (!$this->javascript_output) {
 			return;
 		}
 
@@ -922,7 +936,7 @@ trait Theme
 	* Sets the context object
 	* @internal
 	*/
-	public function setObj(object $obj)
+	public function setObj(?object $obj)
 	{
 		$this->obj = $obj;
 

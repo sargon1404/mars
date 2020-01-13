@@ -17,7 +17,9 @@ class Debug
 	/**
 	* @var array $info Debug info
 	*/
-	public array $info = [];
+	public array
+
+ $info = [];
 
 	/**
 	* Outputs all the debug info
@@ -38,6 +40,8 @@ class Debug
 		$this->outputLoadedTemplates();
 
 		$this->outputOpcacheInfo();
+		
+		$this->outputPreloadInfo();
 
 		echo '</div>';
 	}
@@ -210,6 +214,23 @@ class Debug
 			}
 			echo '</table><br><br>';
 		}
+	}
+	
+	protected function outputPreloadInfo()
+	{
+		$info = opcache_get_status(true);
+
+		echo '<table class="grid debug-grid" style="width:auto;">';
+		echo '<tr><th colspan="3">Preload Info</th></tr>';
+		echo '<tr><td><strong>Enabled</strong></td><td>' . (isset($info['preload_statistics']) ? 'Yes' : 'No') . '</td></tr>';
+		
+		if (isset($info['preload_statistics'])) {
+			echo '<tr><td><strong>Preloaded Functions</strong></td><td>' . $info['preload_statistics']['functions'] . '</td></tr>';
+			echo '<tr><td><strong>Preloaded Scripts</strong></td><td>' . $info['preload_statistics']['classes'] . '</td></tr>';
+			echo '<tr><td><strong>Memory: Used</strong></td><td>' . $this->app->format->size($info['preload_statistics']['memory_consumption'] / 1024) . '</td></tr>';
+		}
+		
+		echo '</table><br><br>';
 	}
 
 	/**

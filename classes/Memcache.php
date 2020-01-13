@@ -42,7 +42,7 @@ class Memcache
 	protected bool $connected = false;
 
 	/**
-	* @var string $driver The used driver
+	* @var string $driver_namespace The driver's namespace
 	*/
 	protected string $driver_namespace = '\\Mars\\Memcache';
 

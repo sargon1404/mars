@@ -449,7 +449,7 @@ class App
 		$content = ob_get_clean();
 
 		$content = $this->plugins->filter('appOutputFilterContent', $content, $this);
-
+	
 		ob_start();
 		$this->theme->renderHeader();
 		echo $content;
@@ -457,7 +457,7 @@ class App
 		$output = ob_get_clean();
 
 		$output = $this->plugins->filter('appOutputFilterOutput', $output, $this);
-
+		
 		if ($this->config->debug) {
 			$output.= $this->getDebugOutput(strlen($output));
 

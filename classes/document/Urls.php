@@ -17,7 +17,9 @@ abstract class Urls
 	/**
 	* @var array $urls Array with all the urls to be outputed
 	*/
-	protected array $urls = ['first' => [], 'head' => [], 'footer' => []];
+	protected array
+
+ $urls = ['first' => [], 'head' => [], 'footer' => []];
 
 	/**
 	* @var string $version The version to be applied to the urls

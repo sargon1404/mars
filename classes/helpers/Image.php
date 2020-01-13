@@ -89,12 +89,16 @@ class Image
 	/**
 	* @var array $supported_source_images The formats this class supports for source/input images
 	*/
-	protected array $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+	protected array
+
+ $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
 	/**
 	* @var array $supported_destination_images The formats this class supports for destination/output images
 	*/
-	protected array $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
+	protected array
+
+ $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
 
 	/**
 	* Processes an image
@@ -183,7 +187,7 @@ class Image
 	* @param int $destination_height The height of the destination image. If 0, it will be computed based on the ratio
 	* @return bool
 	*/
-	public function cutAndResize(string $source_image, string $destination_image, string $destination_width, string $destination_height = 0) : bool
+	public function cutAndResize(string $source_image, string $destination_image, int $destination_width, int $destination_height = 0) : bool
 	{
 		return $this->cutAndResizeFrom($source_image, $destination_image, $destination_width, $destination_height);
 	}
@@ -264,7 +268,7 @@ class Image
 	* Crops and resizes an image starting from center
 	* @see Image::cutAndResize()
 	*/
-	public function cutAndResizeFromCenter(string $source_image, string $destination_image, bool $destination_width, bool $destination_height = 0) : bool
+	public function cutAndResizeFromCenter(string $source_image, string $destination_image, int $destination_width, int $destination_height = 0) : bool
 	{
 		return $this->cutAndResizeFrom($source_image, $destination_image, $destination_width, $destination_height, 'center');
 	}
@@ -273,7 +277,7 @@ class Image
 	* Crops and resizes an image starting from top
 	* @see Image::cutAndResize()
 	*/
-	public function cutAndResizeFromTop(string $source_image, string $destination_image, bool $destination_width, bool $destination_height = 0) : bool
+	public function cutAndResizeFromTop(string $source_image, string $destination_image, int $destination_width, int $destination_height = 0) : bool
 	{
 		return $this->cutAndResizeFrom($source_image, $destination_image, $destination_width, $destination_height, 'top');
 	}

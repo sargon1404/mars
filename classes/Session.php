@@ -13,16 +13,7 @@ namespace Mars;
 class Session
 {
 	use AppTrait;
-
-	/**
-	* @var string $driver The driver used
-	*/
-	protected string $driver = '';
-
-	/**
-	* @var object $handle The driver's handle
-	*/
-	protected object $handle;
+	use DriverTrait;
 
 	/**
 	* @var string $cookie_name The session cookie's name
@@ -48,6 +39,11 @@ class Session
 	* @var string $key Key in $_SESSION, where the data will be read/written from
 	*/
 	protected string $key = '';
+	
+	/**
+	* @var string $driver_namespace The driver's namespace
+	*/
+	protected string $driver_namespace = '\\Mars\\Session';
 
 	/**
 	* Builds the session object
@@ -63,17 +59,6 @@ class Session
 		$this->save_path = $this->app->config->session_save_path;
 
 		$this->handle = $this->getHandle();
-	}
-
-	/**
-	* Returns the handle corresponding to the driver
-	* @return object The driver handle
-	*/
-	protected function getHandle() : object
-	{
-		$class = '\\Mars\\Session\\' . App::strToClass($this->driver);
-
-		return new $class($this->app);
 	}
 
 	/**

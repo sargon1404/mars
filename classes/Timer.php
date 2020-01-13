@@ -20,7 +20,9 @@ class Timer
 	/**
 	* @var array $timers Array with the started timers
 	*/
-	protected array $timers = [];
+	protected array
+
+ $timers = [];
 
 	/**
 	* Builds the timer object

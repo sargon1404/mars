@@ -13,6 +13,7 @@ namespace Mars;
 class Device
 {
 	use AppTrait;
+	use DriverTrait;
 
 	/**
 	* @var string $type The device type. Eg: desktop/tablet/smartphone
@@ -22,7 +23,19 @@ class Device
 	/**
 	* @var string $devices Array listing the supported devices
 	*/
-	public array $devices = ['desktop', 'tablet', 'smartphone'];
+	public array
+
+ $devices = ['desktop', 'tablet', 'smartphone'];
+	
+	/**
+	* @var string $driver The name of the driver
+	*/
+	protected string $driver = 'MobileDetect';
+	
+	/**
+	* @var string $driver_namespace The driver's namespace
+	*/
+	protected string $driver_namespace = '\\Mars\\Device';
 
 	/**
 	* Builds the device object
@@ -115,7 +128,7 @@ class Device
 			return $device;
 		}
 
-		$detector = new Detect\Device($this->app->useragent);
+		$detector = $this->getHandle();
 
 		$device = 'desktop';
 		if ($detector->isTablet()) {

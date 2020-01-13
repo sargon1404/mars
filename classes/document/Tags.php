@@ -15,7 +15,9 @@ abstract class Tags
 	/**
 	* @var array $tags_array Array with all the tags be outputed
 	*/
-	public array $tags_array = [];
+	public array
+
+ $tags_array = [];
 
 	/**
 	* Outputs a tag

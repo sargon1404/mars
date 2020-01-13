@@ -51,10 +51,9 @@ abstract class Cacheable
 	protected string $driver = 'file';
 
 	/**
-	* @var string $driver The used driver
+	* @var string $driver_namespace The driver's namespace
 	*/
 	protected string $driver_namespace = '\\Mars\\Cacheable';
-
 
 	/**
 	* Returns the file used to cache the content

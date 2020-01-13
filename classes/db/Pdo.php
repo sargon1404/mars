@@ -6,8 +6,6 @@
 
 namespace Mars\Db;
 
-use PDO;
-
 /**
 * The PDO Database Driver
 */
@@ -21,7 +19,7 @@ class Pdo implements DriverInterface
 	/**
 	* @var PDO $handle The PDO handle
 	*/
-	protected PDO $handle;
+	protected \PDO $handle;
 
 	/**
 	* @var object The result of the last query operation
@@ -36,7 +34,7 @@ class Pdo implements DriverInterface
 	{
 		$dsn = "mysql:dbname={$database};host={$hostname};charset={$charset}";
 
-		$this->handle = new PDO($dsn, $username, $password);
+		$this->handle = new \PDO($dsn, $username, $password);
 	}
 
 	/**

@@ -12,7 +12,7 @@ use Mars\App;
 * The Memcache Session Class
 * Session driver which uses the memcache
 */
-class Memcache implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
 	use \Mars\AppTrait;
 

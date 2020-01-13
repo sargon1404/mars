@@ -14,12 +14,16 @@ class Cli
 	/**
 	* @param array $argv List of commands
 	*/
-	protected array $commands = [];
+	protected array
+
+ $commands = [];
+
 	/**
 	* @param array $options List of options
 	*/
-	protected array $options = [];
+	protected array
 
+ $options = [];
 
 	/**
 	* Builds the CLI object
@@ -52,7 +56,7 @@ class Cli
 
 			if (strpos($option, '--') === 0) {
 				$str = substr($option, 2);
-			} else if (strpos($option, '-') === 0) {
+			} elseif (strpos($option, '-') === 0) {
 				$str = substr($option, 1);
 			}
 
@@ -74,7 +78,7 @@ class Cli
 	*/
 	public function getOptions() : array
 	{
-		return $this->options;	
+		return $this->options;
 	}
 	
 	/**

@@ -22,12 +22,16 @@ class Sql
 	/**
 	* @var array $params The params to use in prepared statements
 	*/
-	protected array $params = [];
+	protected array
+
+ $params = [];
 
 	/**
 	* @internal
 	*/
-	protected array $has = [];
+	protected array
+
+ $has = [];
 
 	/**
 	* Resets the sql/params

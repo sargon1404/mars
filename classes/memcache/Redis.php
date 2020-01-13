@@ -51,18 +51,30 @@ class Redis implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::add()
 	* {@inheritDoc}
 	*/
-	public function add(string $key, $value)
+	public function add(string $key, $value, int $expires = 0)
 	{
-		return $this->handle->set($key, serialize($value));
+		$ret = $this->handle->set($key, serialize($value));
+		
+		if ($expires) {
+			$this->handle->expireAt($key, time() + $expires);
+		}
+			
+		return $ret;
 	}
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::set()
 	* {@inheritDoc}
 	*/
-	public function set(string $key, $value)
+	public function set(string $key, $value, int $expires = 0)
 	{
-		return $this->handle->set($key, serialize($value));
+		$ret = $this->handle->set($key, serialize($value));
+		
+		if ($expires) {
+			$this->handle->expireAt($key, time() + $expires);
+		}
+		
+		return $ret;
 	}
 
 	/**

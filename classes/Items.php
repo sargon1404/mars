@@ -33,7 +33,9 @@ abstract class Items extends Rows implements \ArrayAccess
 	/**
 	* @var array $ids The ids of the currently loaded objects
 	*/
-	public array $ids = [];
+	public array
+
+ $ids = [];
 
 	/**
 	* @var Errors $errors The errors object. Contains the generated errors, if any

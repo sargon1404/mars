@@ -23,7 +23,7 @@ class Response
 	protected bool $initialized = false;
 
 	/**
-	* @var string $driver The used driver
+	* @var string $driver_namespace The driver's namespace
 	*/
 	protected string $driver_namespace = '\\Mars\\Response';
 

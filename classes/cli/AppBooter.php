@@ -6,7 +6,9 @@
 
 namespace Mars\Cli;
 
-use \Mars\System\{Plugins, Language};
+use Mars\Cli;
+use Mars\System\Plugins;
+use Mars\System\Language;
 
 /**
 * The Booter Class
@@ -14,7 +16,6 @@ use \Mars\System\{Plugins, Language};
 */
 class AppBooter extends \Mars\AppBooter
 {
-
 	/**
 	* Initializes the system objects
 	* @return $this
@@ -25,6 +26,8 @@ class AppBooter extends \Mars\AppBooter
 		$this->app->plugins->load();
 
 		$this->app->lang = new Language($this->app);
+		
+		$this->app->cli = new Cli;
 
 		return $this;
 	}

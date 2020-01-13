@@ -19,7 +19,9 @@ class Db
 	/**
 	* @var array $queries The list of executed queries, if debug is on
 	*/
-	public array $queries = [];
+	public array
+
+ $queries = [];
 
 	/**
 	* @var float $queries_time The total time needed to execute the queries, if debug is on
@@ -146,14 +148,28 @@ class Db
 		$this->charset= $charset;
 		$this->debug = $debug;
 
-		if (is_array($hostname)) {
-			//the master hostname is always the first defined hostname
-			$this->write_hostname = $hostname[0];
-			$this->write_username = $username[0];
-			$this->write_password = $password[0];
-			$this->write_database = $database[0];
+		$this->setReadHost($hostname, $username, $password, $database);
+		$this->setWriteHost($hostname, $username, $password, $database);
+	}
 
-			//pick a random read/slave hostname
+	/**
+	* Destroys the database object. Disconnects from the database server
+	*/
+	public function __destruct()
+	{
+		$this->disconnect();
+	}
+	
+	/**
+	* Sets the read hostname
+	* @param string|array $hostname The db hostname
+	* @param string|array $username The db username
+	* @param string|array $password The db password
+	* @param string|array $database The database to use
+	*/
+	protected function setReadHost($hostname, $username, $password, $database)
+	{
+		if (is_array($hostname)) {
 			$count = count($hostname);
 			if ($count > 1) {
 				$key = mt_rand(0, $count - 1);
@@ -166,21 +182,40 @@ class Db
 				if ($key) {
 					$this->use_same_handle = false;
 				}
+			} else {
+				$this->read_hostname = $hostname;
+				$this->read_username = $username;
+				$this->read_password = $password;
+				$this->read_database = $database;
 			}
 		} else {
-			$this->read_hostname = $this->write_hostname = $hostname;
-			$this->read_username = $this->write_username = $username;
-			$this->read_password = $this->write_password = $password;
-			$this->read_database = $this->write_database = $database;
-		}		
+			$this->read_hostname = $hostname;
+			$this->read_username = $username;
+			$this->read_password = $password;
+			$this->read_database = $database;
+		}
 	}
-
+	
 	/**
-	* Destroys the database object. Disconnects from the database server
+	* Sets the write hostname
+	* @param string|array $hostname The db hostname
+	* @param string|array $username The db username
+	* @param string|array $password The db password
+	* @param string|array $database The database to use
 	*/
-	public function __destruct()
+	protected function setWriteHost($hostname, $username, $password, $database)
 	{
-		$this->disconnect();
+		if (is_array($hostname)) {
+			$this->write_hostname = $hostname[0];
+			$this->write_username = $username[0];
+			$this->write_password = $password[0];
+			$this->write_database = $database[0];
+		} else {
+			$this->write_hostname = $hostname;
+			$this->write_username = $username;
+			$this->write_password = $password;
+			$this->write_database = $database;
+		}
 	}
 
 	/**

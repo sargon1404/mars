@@ -27,7 +27,9 @@ class Log
 	/**
 	* @var array $handles The log files's handles
 	*/
-	protected array $handles = [];
+	protected array
+
+ $handles = [];
 
 	/**
 	* @var bool $is_cli If true, will use the cli log file

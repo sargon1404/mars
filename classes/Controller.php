@@ -7,7 +7,10 @@
 namespace Mars;
 
 use Mars\Response\Ajax;
-use Mars\Alers\{Errors, Messages, Notifications, Warnings};
+use Mars\Alers\Errors;
+use Mars\Alers\Messages;
+use Mars\Alers\Notifications;
+use Mars\Alers\Warnings;
 
 /**
 * The Controller Class
@@ -76,22 +79,22 @@ abstract class Controller
 	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors
 	*/
-	protected Errors $errors = null;
+	protected Errors $errors;
 
 	/**
 	* @var Messages $messages The messages object. Alias for $this->app->messages
 	*/
-	protected Messages $messages = null;
+	protected Messages $messages;
 
 	/**
 	* @var Notifications $notifications The notifications object. Alias for $this->app->notifications
 	*/
-	protected Notifications $notifications = null;
+	protected Notifications $notifications;
 
 	/**
 	* @var Warnings $warnings The warnings object. Alias for $this->app->warnings
 	*/
-	protected Warnings $warnings = null;
+	protected Warnings $warnings;
 
 	/**
 	* Builds the controller

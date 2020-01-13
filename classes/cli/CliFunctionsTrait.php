@@ -25,7 +25,7 @@ trait CliFunctionsTrait
 	* @param string $title Unused
 	* @param bool $escape_html Unused
 	* @return $this
-	*/	
+	*/
 	public function message(string $text, string $title = '', bool $escape_html = true)
 	{
 		return $this->app->cli->message($text);
@@ -37,7 +37,7 @@ trait CliFunctionsTrait
 	* @param string $title Unused
 	* @param bool $escape_html Unused
 	* @return $this
-	*/	
+	*/
 	public function error(string $text, string $title = '', bool $escape_html = true)
 	{
 		return $this->app->cli->error($text);
