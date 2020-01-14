@@ -50,16 +50,12 @@ trait Language
 	/**
 	* @var array $strings The language's strings
 	*/
-	public array
-
- $strings = [];
+	public array $strings = [];
 
 	/**
 	* @internal
 	*/
-	protected array
-
- $loaded_files = [];
+	protected array $loaded_files = [];
 
 	/**
 	* @internal

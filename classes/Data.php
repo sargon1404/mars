@@ -32,9 +32,7 @@ abstract class Data
 	/**
 	* @var array $data Saved data
 	*/
-	protected array
-
- $data = [];
+	protected array $data = [];
 
 	/**
 	* Returns the table where the data is stored

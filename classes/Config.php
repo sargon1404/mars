@@ -15,9 +15,7 @@ class Config extends Data
 	/**
 	* @var array $defaults Array listing the default values of some config values
 	*/
-	protected array
-
- $defaults = [
+	protected array $defaults = [
 		'log_error_types' => E_ALL & ~E_NOTICE,
 
 		'site_url_static' => '',

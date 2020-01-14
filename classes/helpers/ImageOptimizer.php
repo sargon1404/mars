@@ -24,9 +24,7 @@ class ImageOptimizer
 	/**
 	* @var array $supported_source_images The formats this class supports
 	*/
-	protected array
-
- $supported_source_images = ['jpg', 'jpeg', 'png', 'gif'];
+	protected array $supported_source_images = ['jpg', 'jpeg', 'png', 'gif'];
 
 	/**
 	* Optimizes an image

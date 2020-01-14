@@ -19,9 +19,7 @@ class Db
 	/**
 	* @var array $queries The list of executed queries, if debug is on
 	*/
-	public array
-
- $queries = [];
+	public array $queries = [];
 
 	/**
 	* @var float $queries_time The total time needed to execute the queries, if debug is on
@@ -52,6 +50,11 @@ class Db
 	* @var string $read_hostname The hostname to connect to for read queries
 	*/
 	protected string $read_hostname = '';
+	
+	/**
+	* @var string $read_port The port to connect to for read queries
+	*/
+	protected string $read_port = '';
 
 	/**
 	* @var string $read_username The username used to connect to the read server
@@ -72,6 +75,11 @@ class Db
 	* @var string $write_hostname The hostname to connect to for write queries
 	*/
 	protected string $write_hostname = '';
+	
+	/**
+	* @var string $write_port The port to connect to for write queries
+	*/
+	protected string $write_port = '';
 
 	/**
 	* @var string $write_username The username used to connect to the write server
@@ -123,13 +131,14 @@ class Db
 	* @param App $app The app object
 	* @param string $driver The database driver. Currently supported: pdo
 	* @param string|array $hostname The db hostname. If array, the first entry will be used as the master hostname [both read&write], the other as slave hostnames [only read]
+	* @param string|array $port The db port
 	* @param string|array $username The db username
 	* @param string|array $password The db password
 	* @param string|array $database The database to use
 	* @param string $charset The database charset
 	* @param bool $debug If true, will run in debug mode
 	*/
-	public function __construct(App $app, string $driver = '', $hostname = '', $username = '', $password = '', $database = '', string $charset = 'utf8', bool $debug = false)
+	public function __construct(App $app, string $driver = '', $hostname = '', $port = '3306', $username = '', $password = '', $database = '', string $charset = 'utf8', bool $debug = false)
 	{
 		$this->app = $app;
 		$this->sql = new Sql;
@@ -137,6 +146,7 @@ class Db
 		if (!$driver) {
 			$driver = $this->app->config->db_driver;
 			$hostname = $this->app->config->db_hostname;
+			$port = $this->app->config->db_port;
 			$username = $this->app->config->db_username;
 			$password = $this->app->config->db_password;
 			$database = $this->app->config->db_database;
@@ -148,8 +158,8 @@ class Db
 		$this->charset= $charset;
 		$this->debug = $debug;
 
-		$this->setReadHost($hostname, $username, $password, $database);
-		$this->setWriteHost($hostname, $username, $password, $database);
+		$this->setReadHost($hostname, $port, $username, $password, $database);
+		$this->setWriteHost($hostname, $port, $username, $password, $database);
 	}
 
 	/**
@@ -163,11 +173,12 @@ class Db
 	/**
 	* Sets the read hostname
 	* @param string|array $hostname The db hostname
+	* @param string|array $hostname The db port
 	* @param string|array $username The db username
 	* @param string|array $password The db password
 	* @param string|array $database The database to use
 	*/
-	protected function setReadHost($hostname, $username, $password, $database)
+	protected function setReadHost($hostname, $port, $username, $password, $database)
 	{
 		if (is_array($hostname)) {
 			$count = count($hostname);
@@ -175,6 +186,7 @@ class Db
 				$key = mt_rand(0, $count - 1);
 
 				$this->read_hostname = $hostname[$key];
+				$this->read_port = $port[$key];
 				$this->read_username = $username[$key];
 				$this->read_password = $password[$key];
 				$this->read_database = $database[$key];
@@ -184,12 +196,14 @@ class Db
 				}
 			} else {
 				$this->read_hostname = $hostname;
+				$this->read_port = $port;
 				$this->read_username = $username;
 				$this->read_password = $password;
 				$this->read_database = $database;
 			}
 		} else {
 			$this->read_hostname = $hostname;
+			$this->read_port = $port;
 			$this->read_username = $username;
 			$this->read_password = $password;
 			$this->read_database = $database;
@@ -199,19 +213,22 @@ class Db
 	/**
 	* Sets the write hostname
 	* @param string|array $hostname The db hostname
+	* @param string|array $port The db port
 	* @param string|array $username The db username
 	* @param string|array $password The db password
 	* @param string|array $database The database to use
 	*/
-	protected function setWriteHost($hostname, $username, $password, $database)
+	protected function setWriteHost($hostname, $port, $username, $password, $database)
 	{
 		if (is_array($hostname)) {
 			$this->write_hostname = $hostname[0];
+			$this->write_port = $port[0];
 			$this->write_username = $username[0];
 			$this->write_password = $password[0];
 			$this->write_database = $database[0];
 		} else {
 			$this->write_hostname = $hostname;
+			$this->write_port = $port;
 			$this->write_username = $username;
 			$this->write_password = $password;
 			$this->write_database = $database;
@@ -229,13 +246,13 @@ class Db
 
 		try {
 			$this->write_handle = $this->getHandle($this->driver);
-			$this->write_handle->connect($this->write_hostname, $this->write_username, $this->write_password, $this->write_database, $this->charset);
+			$this->write_handle->connect($this->write_hostname, $this->write_port, $this->write_username, $this->write_password, $this->write_database, $this->charset);
 
 			if ($this->use_same_handle) {
 				$this->read_handle = $this->write_handle;
 			} else {
 				$this->read_handle = $this->getHandle($this->driver);
-				$this->read_handle->connect($this->read_hostname, $this->read_username, $this->read_password, $this->read_database, $this->charset);
+				$this->read_handle->connect($this->read_hostname, $this->read_port, $this->read_username, $this->read_password, $this->read_database, $this->charset);
 			}
 		} catch (\Exception $e) {
 			$this->app->fatalError('Error connecting to the database: ' . $e->getMessage());
@@ -256,9 +273,6 @@ class Db
 
 		$this->read_handle->disconnect();
 		$this->write_handle->disconnect();
-
-		$this->read_handle = null;
-		$this->write_handle = null;
 	}
 
 	/**

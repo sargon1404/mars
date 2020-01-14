@@ -89,16 +89,12 @@ class Image
 	/**
 	* @var array $supported_source_images The formats this class supports for source/input images
 	*/
-	protected array
-
- $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+	protected array $supported_source_images = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
 	/**
 	* @var array $supported_destination_images The formats this class supports for destination/output images
 	*/
-	protected array
-
- $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
+	protected array $supported_destination_images = ['jpg', 'jpeg', 'png', 'gif'];
 
 	/**
 	* Processes an image

@@ -14,12 +14,13 @@ interface DriverInterface
 	/**
 	* Connects to the database
 	* @param string $hostname The db hostname
+	* @param string $port The db port
 	* @param string $username The db username
 	* @param string $password The db password
 	* @param string $database The database to use
 	* @param string $charset The database charset
 	*/
-	public function connect(string $hostname, string $username, string $password, string $database, string $charset);
+	public function connect(string $hostname, string $port, string $username, string $password, string $database, string $charset);
 
 	/**
 	* Disconnects from the database

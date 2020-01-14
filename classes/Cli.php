@@ -14,16 +14,12 @@ class Cli
 	/**
 	* @param array $argv List of commands
 	*/
-	protected array
-
- $commands = [];
+	protected array $commands = [];
 
 	/**
 	* @param array $options List of options
 	*/
-	protected array
-
- $options = [];
+	protected array $options = [];
 
 	/**
 	* Builds the CLI object
@@ -180,7 +176,7 @@ class Cli
 	*/
 	public function print(string $text, string $color = '', bool $newline = true, bool $die = false)
 	{
-		if ($color) {
+		if ($color != '') {
 			echo "\e[{$color}m";
 		}
 
@@ -206,7 +202,7 @@ class Cli
 	*/
 	public function message(string $text, bool $newline = true, bool $die = false)
 	{
-		return $this->print($text, $newline, $die);
+		return $this->print($text, '0', $newline, $die);
 	}
 
 	/**

@@ -23,9 +23,7 @@ class Device
 	/**
 	* @var string $devices Array listing the supported devices
 	*/
-	public array
-
- $devices = ['desktop', 'tablet', 'smartphone'];
+	public array $devices = ['desktop', 'tablet', 'smartphone'];
 	
 	/**
 	* @var string $driver The name of the driver

@@ -30,9 +30,9 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::connect()
 	* {@inheritDoc}
 	*/
-	public function connect(string $hostname, string $username, string $password, string $database, string $charset)
+	public function connect(string $hostname, string $port, string $username, string $password, string $database, string $charset)
 	{
-		$dsn = "mysql:dbname={$database};host={$hostname};charset={$charset}";
+		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$charset}";
 
 		$this->handle = new \PDO($dsn, $username, $password);
 	}

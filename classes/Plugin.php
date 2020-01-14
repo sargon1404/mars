@@ -20,9 +20,7 @@ class Plugin extends \Mars\Extensions\Basic
 	/**
 	* @var array $hooks Array listing the defined hooks
 	*/
-	protected array
-
- $hooks = [];
+	protected array $hooks = [];
 
 	/**
 	* @internal

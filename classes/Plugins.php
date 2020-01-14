@@ -15,9 +15,7 @@ trait Plugins
 	/**
 	* @var array $exec_time The execution time for all plugins is stored here. Set only if debug is enabled
 	*/
-	public array
-
- $exec_time = [];
+	public array $exec_time = [];
 
 	/**
 	* @var bool $enabled Will be set to true if plugins are enabled
@@ -27,16 +25,12 @@ trait Plugins
 	/**
 	* @var array $plugins Array holding the plugin objects
 	*/
-	protected array
-
- $plugins = [];
+	protected array $plugins = [];
 
 	/**
 	* @var array $hooks Registered hooks
 	*/
-	protected array
-
- $hooks = [];
+	protected array $hooks = [];
 
 	/**
 	* @var string $output_prefix The prefix to use when using the output function

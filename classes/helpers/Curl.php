@@ -35,9 +35,7 @@ class Curl
 	/**
 	* @var array $request_header The request headers
 	*/
-	public array
-
- $request_header = [];
+	public array $request_header = [];
 
 	/**
 	* @var string $error The generated error if any
@@ -47,16 +45,12 @@ class Curl
 	/**
 	* @var array $info The request info
 	*/
-	public array
-
- $info = [];
+	public array $info = [];
 
 	/**
 	* @var array $options Curl options for curl_setopt
 	*/
-	protected array
-
- $options = [];
+	protected array $options = [];
 
 	/**
 	* Builds the curl object

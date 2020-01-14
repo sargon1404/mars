@@ -17,30 +17,22 @@ class Request
 	/**
 	* @var array $server Array containing the server data
 	*/
-	public array
-
- $server = [];
+	public array $server = [];
 
 	/**
 	* @var array $get Array containing the get data
 	*/
-	public array
-
- $get = [];
+	public array $get = [];
 
 	/**
 	* @var array $post Array containing the post data
 	*/
-	public array
-
- $post = [];
+	public array $post = [];
 
 	/**
 	* @var array $cookie Array containing the cookie data
 	*/
-	public array
-
- $cookie = [];
+	public array $cookie = [];
 
 	/**
 	* @var string $method The request method. get/post.
@@ -65,9 +57,7 @@ class Request
 	/**
 	* @var array $upload_disallowed_extensions The extensions of the files which are disallowed at upload
 	*/
-	protected array
-
- $upload_disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
+	protected array $upload_disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
 
 	/**
 	* Builds the request object

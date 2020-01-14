@@ -413,6 +413,20 @@ trait AppFunctionsTrait
 
 		return $str;
 	}
+	
+	/**
+	* Converts a string to a method name. Eg: some-action => someAction
+	* @param string $str The string to convert
+	* @return string The class name
+	*/
+	public static function strToMethod(string $str) : string
+	{
+		$str = static::strToClass($str);
+		
+		$str[0] = strtolower($str[0]);
+
+		return $str;
+	}
 
 	/**
 	* Does a print_r on $var and outputs <pre> tags
