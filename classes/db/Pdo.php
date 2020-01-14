@@ -101,7 +101,7 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::query()
 	* {@inheritDoc}
 	*/
-	public function query(string $sql, array $params = []) : object
+	public function query(string $sql, array $params = []) : ?object
 	{
 		if ($params) {
 			$this->result = $this->handle->prepare($sql);
@@ -115,7 +115,7 @@ class Pdo implements DriverInterface
 			if (!$this->result->execute()) {
 				$this->error_sql = $sql;
 
-				return false;
+				return null;
 			}
 		} else {
 			$this->result = $this->handle->query($sql);
@@ -123,6 +123,7 @@ class Pdo implements DriverInterface
 
 		if (!$this->result) {
 			$this->error_sql = $sql;
+			$this->result = null;
 		}
 
 		return $this->result;

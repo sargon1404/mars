@@ -145,7 +145,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $unserialize is true
 	* @return mixed
 	*/
-	public function get(string $name, bool $unserialize = false, $default_value = [])
+	public function get(string $name, bool $unserialize = false, $default_value = null)
 	{
 		if ($unserialize) {
 			return App::unserialize($this->$name, $default_value);

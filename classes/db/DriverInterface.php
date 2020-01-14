@@ -58,7 +58,7 @@ interface DriverInterface
 	* @param array $params Params to be used in prepared statements
 	* @return object The result
 	*/
-	public function query(string $sql, array $params = []) : object;
+	public function query(string $sql, array $params = []) : ?object;
 
 	/**
 	* Frees the results of a query
