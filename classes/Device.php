@@ -125,14 +125,23 @@ class Device
 		if ($device !== null) {
 			return $device;
 		}
-
-		$detector = $this->getHandle();
-
-		$device = 'desktop';
-		if ($detector->isTablet()) {
-			$device = 'tablet';
-		} elseif ($detector->isSmartphone()) {
-			$device = 'smartphone';
+		
+		//do we get the device name from varnish?
+		if (isset($_SERVER['X-Device'])) {
+			if (in_array($_SERVER['X-Device'], $this->devices)) {
+				$device = $_SERVER['X-Device'];
+			}
+		}
+		
+		if (!$device) {
+			$detector = $this->getHandle();
+	
+			$device = 'desktop';
+			if ($detector->isTablet()) {
+				$device = 'tablet';
+			} elseif ($detector->isSmartphone()) {
+				$device = 'smartphone';
+			}
 		}
 
 		$this->app->session->set('device', $device);

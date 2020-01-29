@@ -34,7 +34,7 @@ class Db
 	/**
 	* @var Sql $sql The sql object
 	*/
-	public Sql $sql;
+	public object $sql;
 
 	/**
 	* @var string $driver The used driver
@@ -363,7 +363,7 @@ class Db
 	* @return object The result
 	*/
 	protected function query($sql = '', array $params = [], bool $is_read = true)
-	{		
+	{
 		if (!$this->connected) {
 			$this->connect();
 		}
@@ -970,7 +970,7 @@ class Db
 	*/
 	public function exists(string $table, array $where, string $field = '*') : bool
 	{
-		$this->sql->select($field)->from($table)->where($where);
+		$this->sql->select($field)->from($table)->where($where)->limit(1);
 
 		$this->readQuery();
 

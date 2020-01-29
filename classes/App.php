@@ -102,12 +102,12 @@ class App
 	/**
 	* @var Config $config The config object
 	*/
-	public Config $config;
+	public object $config;
 
 	/**
 	* @var Cache $cache The cache object
 	*/
-	public Cache $cache;
+	public object $cache;
 
 	/**
 	* @var string $namespace The root namespace
@@ -147,12 +147,12 @@ class App
 	/**
 	* @var App $instance The app instance
 	*/
-	protected static App $instance;
+	protected static object $instance;
 
 	/**
 	* @var AppBooter $boot The booter object
 	*/
-	protected AppBooter $boot;
+	protected object $boot;
 
 	/**
 	* @const array DIRS The locations of the used dirs

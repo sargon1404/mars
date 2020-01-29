@@ -26,8 +26,12 @@ class Screen
 		if ($escape_html) {
 			$text = App::e($text);
 		}
+		
+		if (!$this->app->is_cli) {
+			$text = nl2br($text);
+		}
 
-		echo 'Fatal Error: ' . nl2br($text) . "\n";
+		echo 'Fatal Error: ' . $text . "\n";
 		die;
 	}
 

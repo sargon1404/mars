@@ -15,7 +15,7 @@ trait AppTrait
 	/**
 	* @var App $app The app object
 	*/
-	protected ?App $app = null;
+	protected ?object $app = null;
 
 	/**
 	* Builds the object

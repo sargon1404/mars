@@ -12,7 +12,7 @@ use Mars\App;
 * The Db Session Class
 * Session driver which uses the database
 */
-class Db implements DriverInterdace, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
+class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
 	use \Mars\AppTrait;
 

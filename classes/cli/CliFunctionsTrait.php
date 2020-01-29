@@ -11,12 +11,29 @@ namespace Mars\Cli;
 */
 trait CliFunctionsTrait
 {
+	
+	/**
+	* @see \Mars\Cli::getColor()
+	*/
+	public function getColor(string $type) : string
+	{
+		return $this->app->cli->getColor($type);
+	}
+		
 	/**
 	* @see \Mars\Cli::print()
 	*/
 	public function print(string $text, string $color = '', bool $newline = true, bool $die = false)
 	{
 		return $this->app->cli->print($text, $color, $newline, $die);
+	}
+	
+	/**
+	* @see \Mars\Cli::header()
+	*/
+	public function header(string $text, bool $newline = true, bool $die = false)
+	{
+		return $this->app->cli->header($text, $newline, $die);
 	}
 
 	/**
@@ -65,6 +82,14 @@ trait CliFunctionsTrait
 	public function info(string $text, bool $newline = true, bool $die = false)
 	{
 		return $this->app->cli->info($text, $newline, $die);
+	}
+	
+	/**
+	* @see \Mars\Cli::list()
+	*/
+	public function list(array $data, bool $headers_show = true, string $headers_color = '', string $col1_color = '', string $col2_color = '', int $col_1_left_pad = 3, int $col_2_left_pad = 15)
+	{
+		return $this->app->cli->list($data, $headers_show, $headers_color, $col1_color, $col2_color, $col_1_left_pad, $col_2_left_pad);
 	}
 
 	/**

@@ -421,6 +421,10 @@ trait AppFunctionsTrait
 	*/
 	public static function strToMethod(string $str) : string
 	{
+		if (!$str) {
+			return $str;
+		}
+		
 		$str = static::strToClass($str);
 		
 		$str[0] = strtolower($str[0]);

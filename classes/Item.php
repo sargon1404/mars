@@ -34,12 +34,12 @@ abstract class Item extends Row
 	/**
 	* @var Errors $errors The errors object. Contains the generated errors, if any
 	*/
-	protected Errors $errors;
+	protected object $errors;
 
 	/**
 	* @var Db $db The database object. Alias for $this->app->db
 	*/
-	protected Db $db;
+	protected object $db;
 
 	/**
 	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating

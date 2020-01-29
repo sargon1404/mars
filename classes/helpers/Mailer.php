@@ -20,7 +20,7 @@ class Mailer
 	/**
 	* @var PHPMailer $mail The PHPMailer object
 	*/
-	public PHPMailer $mail;
+	public object $mail;
 
 	/**
 	* Builds the Mailer object

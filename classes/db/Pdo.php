@@ -24,7 +24,7 @@ class Pdo implements DriverInterface
 	/**
 	* @var object The result of the last query operation
 	*/
-	protected object $result;
+	protected $result;
 
 	/**
 	* @see \Mars\Db\DriverInterface::connect()

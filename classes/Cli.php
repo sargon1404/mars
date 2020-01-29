@@ -12,6 +12,20 @@ namespace Mars;
 class Cli
 {
 	/**
+	* @param array $colors Array defining the user colors
+	*/
+	public array $colors = [
+		'default' => '0',
+		'message' => '0',
+		'error' => '91',
+		'warning' => '93',
+		'info' => '32',
+		'header' => '0;33',
+		'list_1' => '0;32',
+		'list_2' => '0'
+	];
+	
+	/**
 	* @param array $argv List of commands
 	*/
 	protected array $commands = [];
@@ -20,7 +34,7 @@ class Cli
 	* @param array $options List of options
 	*/
 	protected array $options = [];
-
+	
 	/**
 	* Builds the CLI object
 	*/
@@ -66,6 +80,16 @@ class Cli
 
 			$this->options[$name] = $value;
 		}
+	}
+
+	/**
+	* Returns a color, based on type
+	* @param string $type The type of the color
+	* @return string The color
+	*/
+	public function getColor(string $type) : string
+	{
+		return $this->colors[$type] ?? $this->colorts['default'];
 	}
 	
 	/**
@@ -120,7 +144,11 @@ class Cli
 	*/
 	public function getCommandName() : string
 	{
-		return $this->getCommandString(0);
+		if (!$this->commands) {
+			return '';
+		}
+		
+		return $this->commands[0];
 	}
 
 	/**
@@ -129,20 +157,9 @@ class Cli
 	*/
 	public function getCommandAction() : string
 	{
-		return $this->getCommandString(1);
-	}
-
-	/**
-	* Returns a command string, by index
-	* @param int $index The index
-	*/
-	public function getCommandString(int $index) : string
-	{
-		if (empty($this->commands[$index])) {
-			return '';
-		}
-
-		return $this->commands[$index];
+		$slice = array_slice($this->commands, 1);
+		
+		return implode(':', $slice);
 	}
 
 	/**
@@ -194,6 +211,18 @@ class Cli
 	}
 	
 	/**
+	* Outputs a header
+	* @param string $text The text to output
+	* @param bool $newline If true will also output a newline
+	* @param bool $die If true, will die after printing the string
+	* @return $this
+	*/
+	public function header(string $text, bool $newline = true, bool $die = false)
+	{
+		return $this->print($text, $this->colors['header'], $newline, $die);
+	}
+	
+	/**
 	* Outputs a message
 	* @param string $text The text to output
 	* @param bool $newline If true will also output a newline
@@ -202,7 +231,7 @@ class Cli
 	*/
 	public function message(string $text, bool $newline = true, bool $die = false)
 	{
-		return $this->print($text, '0', $newline, $die);
+		return $this->print($text, $this->colors['message'], $newline, $die);
 	}
 
 	/**
@@ -214,7 +243,7 @@ class Cli
 	*/
 	public function error(string $text, bool $newline = true, bool $die = false)
 	{
-		return $this->print($text, '91', $newline, $die);
+		return $this->print($text, $this->colors['error'], $newline, $die);
 	}
 	
 	/**
@@ -234,7 +263,7 @@ class Cli
 	*/
 	public function warning(string $text, bool $newline = true, bool $die = false)
 	{
-		static::print($text, '93', $newline, $die);
+		static::print($text, $this->colors['warning'], $newline, $die);
 	}
 
 	/**
@@ -246,7 +275,85 @@ class Cli
 	*/
 	public function info(string $text, bool $newline = true, bool $die = false)
 	{
-		static::print($text, '32', $newline, $die);
+		static::print($text, $this->colors['info'], $newline, $die);
+	}
+	
+	/**
+	* Prints a list on two columns
+	* @param array $data The data to print in the format ['header1' => [['col1', 'col2'],['col1', 'col2']], 'header2' => ..]
+	* @param bool $headers_show If true, will show the headers
+	* @param string $headers_color The color of the headers
+	* @param string $col1_color The color of the 1st column
+	* @param string $col2_color The color of the 2nd column
+	* @return $this
+	*/
+	public function list(array $data, bool $headers_show = true, string $headers_color = '', string $col1_color = '', string $col2_color = '', int $col_1_left_pad = 3, int $col_2_left_pad = 15)
+	{
+		if (!$headers_color) {
+			$headers_color = $this->colors['header'];
+		}
+		if (!$col1_color) {
+			$col1_color = $this->colors['list_1'];
+		}
+		if (!$col2_color) {
+			$col2_color = $this->colors['list_2'];
+		}
+		
+		$max_length_1 = $this->getMaxLength($data, 0) + $col_2_left_pad;
+		$max_length_2 = $this->getMaxLength($data, 1);
+		
+		foreach ($data as $header => $list) {
+			if ($headers_show) {
+				$this->print($header, $headers_color);
+			}
+			
+			foreach ($list as $item) {
+				$this->print($this->padString($item[0], $max_length_1, $col_1_left_pad), $col1_color, false);
+				$this->print($this->padString($item[1], $max_length_2), $col2_color, false);
+				echo "\n";
+			}
+		}
+		
+		return $this;
+	}
+	
+	/**
+	* Pads a string to match a certain length
+	* @param string $str The string to pad
+	* @param int $pad_length The max length
+	* @param int $pad_length_left If specified, will add $pad_length_left chars to the left
+	* @return string The padded string
+	*/
+	protected function padString(string $str, int $pad_length, int $pad_length_left = 0) : string
+	{
+		$str = str_pad($str, $pad_length);
+		if ($pad_length_left) {
+			$str = str_pad($str, strlen($str) + $pad_length_left, ' ', STR_PAD_LEFT);
+		}
+		
+		return $str;
+	}
+	
+	/**
+	* Returns the max length of a column
+	* @param array $data The data where to look for the max length
+	* @param int $index The index of the column
+	* @return int The max length
+	*/
+	protected function getMaxLength(array $data, int $index) : int
+	{
+		$max_length = 0;
+
+		foreach ($data as $list) {
+			foreach ($list as $item) {
+				$length = strlen($item[$index]);
+				if ($length > $max_length) {
+					$max_length = $length;
+				}
+			}
+		}
+		
+		return $max_length;
 	}
 
 	/**
