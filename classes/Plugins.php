@@ -191,7 +191,7 @@ trait Plugins
 
 		$name = $this->output_prefix . '_' .$hook;
 		
-		if ($this->app->config->plugins_show_output_hooks) {
+		if ($this->app->config->development_plugins) {
 			echo '<hr>' . $name . '<hr>';
 	}
 

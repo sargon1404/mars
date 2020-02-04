@@ -57,8 +57,6 @@ class Config extends Data
 
 		'javascript_version' => '1',
 		'javascript_output' => false,
-		
-		'plugins_show_output_hooks' => false
 	];
 
 	/**

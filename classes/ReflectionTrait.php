@@ -69,11 +69,11 @@ trait ReflectionTrait
 		$prefix = $this->prefix;
 
 		if (!$prefix) {
-			$prefix = str_replace("\\", '', $this->getClassName());
+			$prefix = str_replace("\\", '_', strtolower($this->getClassName()));
 		}
 
 		if ($suffix) {
-			$prefix.= ucfirst($suffix);
+			$prefix.= '_' . $suffix;
 		}
 
 		return $prefix;
