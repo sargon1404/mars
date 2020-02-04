@@ -48,42 +48,42 @@ abstract class View
 	/**
 	* @var Controller $controller The controller
 	*/
-	protected object $controller;
+	protected object $controller; //preload
 
 	/**
 	* @var Model $model The model
 	*/
-	protected object $model;
+	protected Model $model;
 
 	/**
 	* @var Html $html Alias for $this->app->html
 	*/
-	public object $html;
+	public Html $html;
 
 	/**
 	* @var Filter $filter Alias for $this->app->filter
 	*/
-	public object $filter;
+	public Filter $filter;
 
 	/**
 	* @var Escape $escape Alias for $this->app->escape
 	*/
-	public object $escape;
+	public Escape $escape;
 
 	/**
 	* @var Format $format Alias for $this->app->format
 	*/
-	public object $format;
+	public Format $format;
 
 	/**
 	* @var Uri $uri Alias for $this->app->format
 	*/
-	public object $uri;
+	public Uri $uri;
 
 	/**
 	* @var Text $uri Alias for $this->app->text
 	*/
-	public object $text;
+	public Text $text;
 
 	/**
 	* Builds the View

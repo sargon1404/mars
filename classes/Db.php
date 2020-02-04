@@ -34,7 +34,7 @@ class Db
 	/**
 	* @var Sql $sql The sql object
 	*/
-	public object $sql;
+	public Sql $sql;
 
 	/**
 	* @var string $driver The used driver
@@ -102,14 +102,14 @@ class Db
 	protected bool $connected = false;
 
 	/**
-	* @var object $read_handle The handle for the read queries
+	* @var DriverInterface $read_handle The handle for the read queries
 	*/
-	protected object $read_handle;
+	protected DriverInterface $read_handle;
 
 	/**
-	* @var object $write_handle The handle for the write queries
+	* @var DriverInterface $write_handle The handle for the write queries
 	*/
-	protected object $write_handle;
+	protected DriverInterface $write_handle;
 
 	/**
 	* @var bool $use_same_handle True if the same handle is used for both read&write queries

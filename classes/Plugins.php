@@ -186,10 +186,16 @@ trait Plugins
 	* @param mixed $args The arguments to be passed to the plugins
 	*/
 	public function output(string $hook, &...$args)
-	{
+	{		
 		array_unshift($args, $this->output_obj);
 
-		return $this->exec($this->output_prefix . $hook, $args);
+		$name = $this->output_prefix . '_' .$hook;
+		
+		if ($this->app->config->plugins_show_output_hooks) {
+			echo '<hr>' . $name . '<hr>';
+	}
+
+		return $this->exec($name, $args);
 	}
 
 	/**

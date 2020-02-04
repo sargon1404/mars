@@ -72,6 +72,8 @@ function get_traits_and_interfaces(array $files) : array
 */
 function write_file(string $filename, array $files)
 {
+	natsort($files);
+	
 	$cnt = '<?php' . "\n\n";
 	$cnt.= 'return [' . "\n";
 	foreach ($files as $file) {

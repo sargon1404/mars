@@ -208,6 +208,13 @@ class Entities implements \Iterator, \Countable
 
 		return $this;
 	}
+	
+	public function load() : array
+	{
+		$this->loaded = true;
+		
+		return [];
+	}
 
 	/**
 	* Outputs an object's property
@@ -247,7 +254,11 @@ class Entities implements \Iterator, \Countable
 	* @internal
 	*/
 	public function current()
-	{
+	{	
+		if (!$this->loaded) {
+			$this->load();
+		}
+		
 		return $this->data[$this->current];
 	}
 
@@ -256,7 +267,7 @@ class Entities implements \Iterator, \Countable
 	* @internal
 	*/
 	public function key()
-	{
+	{		
 		return $this->current;
 	}
 
@@ -275,6 +286,10 @@ class Entities implements \Iterator, \Countable
 	*/
 	public function rewind()
 	{
+		if (!$this->loaded) {
+			$this->load();
+		}
+		
 		$this->current = 0;
 	}
 

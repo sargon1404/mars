@@ -391,7 +391,7 @@ class Filter
 
 		$param = trim($param, '-');
 
-		$param = $this->app->plugins->filter('filterSlug', $param, $original_param, $allow_slash, $this);
+		$param = $this->app->plugins->filter('filter_slug', $param, $original_param, $allow_slash, $this);
 
 		return $param;
 	}

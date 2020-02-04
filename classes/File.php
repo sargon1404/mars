@@ -308,7 +308,7 @@ class File
 	*/
 	public function readFile(string $filename, string $secure_dir = '')
 	{
-		$this->app->plugins->run('fileReadFile', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_read_file', $filename, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -325,7 +325,7 @@ class File
 	*/
 	public function writeFile(string $filename, string $content, bool $append = false, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileWriteFile', $filename, $content, $append, $secure_dir, $this);
+		$this->app->plugins->run('file_write_file', $filename, $content, $append, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -345,7 +345,7 @@ class File
 	*/
 	public function deleteFile(string $filename, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileDeleteFile', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_delete_file', $filename, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -365,7 +365,7 @@ class File
 	*/
 	public function copyFile(string $source, string $destination, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileCopyFile', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_copy_file', $source, $destination, $secure_dir, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination, $secure_dir);
@@ -382,7 +382,7 @@ class File
 	*/
 	public function moveFile(string $source, string $destination, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileMoveFile', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_move_file', $source, $destination, $secure_dir, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination, $secure_dir);
@@ -515,7 +515,7 @@ class File
 	*/
 	public function createDir(string $dir) : bool
 	{
-		$this->app->plugins->run('fileCreateDir', $dir, $this);
+		$this->app->plugins->run('file_create_dir', $dir, $this);
 
 		if (is_dir($dir)) {
 			return true;
@@ -533,7 +533,7 @@ class File
 	*/
 	public function copyDir(string $source_dir, string $destination_dir, bool $recursive = true) : bool
 	{
-		$this->app->plugins->run('fileCopyDir', $source_dir, $destination_dir, $recursive, $this);
+		$this->app->plugins->run('file_copy_dir', $source_dir, $destination_dir, $recursive, $this);
 
 		$this->checkFilename($source_dir);
 		$this->checkFilename($destination_dir);
@@ -575,7 +575,7 @@ class File
 	*/
 	public function moveDir(string $source_dir, string $destination_dir) : bool
 	{
-		$this->app->plugins->run('fileMoveDir', $source_dir, $destination_dir, $this);
+		$this->app->plugins->run('file_move_dir', $source_dir, $destination_dir, $this);
 
 		$this->checkFilename($source_dir);
 		$this->checkFilename($destination_dir);
@@ -592,7 +592,7 @@ class File
 	*/
 	public function deleteDir(string $dir, bool $recursive = true, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileDeleteDir', $dir, $recursive, $secure_dir, $this);
+		$this->app->plugins->run('file_delete_dir', $dir, $recursive, $secure_dir, $this);
 
 		$this->checkFilename($dir, $secure_dir);
 
@@ -643,7 +643,7 @@ class File
 	*/
 	public function cleanDir(string $dir, bool $recursive = true, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('fileCleanDir', $dir, $recursive, $secure_dir, $this);
+		$this->app->plugins->run('file_clean_dir', $dir, $recursive, $secure_dir, $this);
 
 		$this->checkFilename($dir, $secure_dir);
 

@@ -678,7 +678,7 @@ class Request
 		$upload_dir = App::sl($upload_dir);
 		$uploaded_files = [];
 
-		$this->app->plugins->run('requestUpload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
+		$this->app->plugins->run('request_upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
 
 		if (!isset($_FILES[$name])) {
 			$this->uploadHandleError(UPLOAD_ERR_NO_FILE, '');
@@ -771,11 +771,11 @@ class Request
 				$uploaded_files = current($uploaded_files);
 			}
 
-			$this->app->plugins->run('requestUploadSuccess', $uploaded_files, $name, $upload_dir, $this);
+			$this->app->plugins->run('request_upload_success', $uploaded_files, $name, $upload_dir, $this);
 
 			return $uploaded_files;
 		} else {
-			$this->app->plugins->run('requestUploadError', $uploaded_files, $name, $upload_dir, $this);
+			$this->app->plugins->run('request_upload_error', $uploaded_files, $name, $upload_dir, $this);
 
 			if ($uploaded_files) {
 				//there was an error, but we did upload some files; delete it

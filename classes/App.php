@@ -102,12 +102,12 @@ class App
 	/**
 	* @var Config $config The config object
 	*/
-	public object $config;
+	public Config $config;
 
 	/**
 	* @var Cache $cache The cache object
 	*/
-	public object $cache;
+	public Cache $cache;
 
 	/**
 	* @var string $namespace The root namespace
@@ -147,12 +147,12 @@ class App
 	/**
 	* @var App $instance The app instance
 	*/
-	protected static object $instance;
+	protected static App $instance;
 
 	/**
 	* @var AppBooter $boot The booter object
 	*/
-	protected object $boot;
+	protected AppBooter $boot;
 
 	/**
 	* @const array DIRS The locations of the used dirs
@@ -441,14 +441,14 @@ class App
 			$this->timer->start('app_output_content');
 		}
 
-		$this->plugins->run('appOutputStart', $this);
+		$this->plugins->run('app_output_start', $this);
 
 		//grab the content template first
 		ob_start();
 		$this->theme->renderContent();
 		$content = ob_get_clean();
 
-		$content = $this->plugins->filter('appOutputFilterContent', $content, $this);
+		$content = $this->plugins->filter('app_output_filter_content', $content, $this);
 	
 		ob_start();
 		$this->theme->renderHeader();
@@ -456,7 +456,7 @@ class App
 		$this->theme->renderFooter();
 		$output = ob_get_clean();
 
-		$output = $this->plugins->filter('appOutputFilterOutput', $output, $this);
+		$output = $this->plugins->filter('app_output_filter_output', $output, $this);
 		
 		if ($this->config->debug) {
 			$output.= $this->getDebugOutput(strlen($output));
@@ -475,11 +475,11 @@ class App
 			$this->caching->store($output, $this->can_gzip);
 		}
 		
-		$output = $this->plugins->filter('appOutputFilter', $output, $this);
+		$output = $this->plugins->filter('app_output_filter', $output, $this);
 
 		echo $output;
 
-		$this->plugins->run('appOutputEnd', $this);
+		$this->plugins->run('app_output_end', $this);
 
 		die;
 	}
@@ -683,7 +683,7 @@ class App
 			return false;
 		}
 
-		$this->plugins->run('appMail', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
+		$this->plugins->run('app_mail', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
 
 		$mailer = $this->getMailer($to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments);
 

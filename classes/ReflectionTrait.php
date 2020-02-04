@@ -66,18 +66,16 @@ trait ReflectionTrait
 	*/
 	protected function getPrefix(string $suffix = '') : string
 	{
-		var_dump('get prefix');
-		die;
 		$prefix = $this->prefix;
 
 		if (!$prefix) {
-			$prefix = strtolower(str_replace("\\", '_', $this->getClassName()));
+			$prefix = str_replace("\\", '', $this->getClassName());
 		}
 
 		if ($suffix) {
-			$prefix.= '_' . $suffix;
+			$prefix.= ucfirst($suffix);
 		}
 
-		return $prefix . '_';
+		return $prefix;
 	}
 }

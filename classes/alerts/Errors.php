@@ -10,6 +10,6 @@ namespace Mars\Alerts;
 * The Errors Class
 * Errors container
 */
-class Errors extends Alerts
+class Errors extends \Mars\Alerts\Alerts
 {
 }

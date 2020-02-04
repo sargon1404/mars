@@ -81,7 +81,7 @@ class Text
 			$text = $parser->parseLinks($text, $parse_nofollow);
 		}
 
-		$text = $this->app->plugins->filter('textParse', $text, $this);
+		$text = $this->app->plugins->filter('text_parse', $text, $this);
 
 		return $text;
 	}
@@ -127,7 +127,7 @@ class Text
 		$config->set('Attr.AllowedFrameTargets', '_blank');
 		$config->set('Attr.EnableID', true);
 
-		$this->app->plugins->run('textFilterConfig', $config, $allowed_attributes, $this);
+		$this->app->plugins->run('text_filter_config', $config, $allowed_attributes, $this);
 
 		if ($allowed_elements === null) {
 			$config->set('HTML.AllowedElements', []);
@@ -139,7 +139,7 @@ class Text
 		$purifier = new \HTMLPurifier($config);
 		$clean_text = $purifier->purify($text);
 
-		$clean_text = $this->app->plugins->filter('textFilter', $clean_text, $text, $this);
+		$clean_text = $this->app->plugins->filter('text_filter', $clean_text, $text, $this);
 
 		return $clean_text;
 	}

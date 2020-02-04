@@ -90,7 +90,7 @@ trait Theme
 	/**
 	* @internal
 	*/
-	protected ?object $obj = null;
+	protected $obj = null;
 
 	/**
 	* @internal
@@ -364,7 +364,7 @@ trait Theme
 
 		$this->setObj($current_obj);
 
-		$content = $this->app->plugins->filter('themeGetTemplate', $content, $template, $this);
+		$content = $this->app->plugins->filter('theme_get_template', $content, $template, $this);
 
 		return $content;
 	}
@@ -645,7 +645,7 @@ trait Theme
 	{
 		$title = $this->app->title->get();
 
-		$title = $this->app->plugins->filter('themeOutputTitle', $title);
+		$title = $this->app->plugins->filter('theme_output_title', $title);
 
 		echo '<title>' . App::e($title) . '</title>' . "\n";
 	}
@@ -922,7 +922,7 @@ trait Theme
 	* Sets the context object
 	* @internal
 	*/
-	public function setObj(?object $obj)
+	public function setObj($obj)
 	{
 		$this->obj = $obj;
 

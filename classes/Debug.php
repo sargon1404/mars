@@ -223,8 +223,12 @@ class Debug
 		echo '<tr><td><strong>Enabled</strong></td><td>' . (isset($info['preload_statistics']) ? 'Yes' : 'No') . '</td></tr>';
 		
 		if (isset($info['preload_statistics'])) {
-			echo '<tr><td><strong>Preloaded Functions</strong></td><td>' . $info['preload_statistics']['functions'] . '</td></tr>';
-			echo '<tr><td><strong>Preloaded Scripts</strong></td><td>' . $info['preload_statistics']['classes'] . '</td></tr>';
+			if (isset($info['preload_statistics']['functions'])) {
+				echo '<tr><td><strong>Preloaded Functions</strong></td><td>' . count($info['preload_statistics']['functions']) . '</td></tr>';
+			}
+			if (isset($info['preload_statistics']['classes'])) {
+				echo '<tr><td><strong>Preloaded Scripts</strong></td><td>' . count($info['preload_statistics']['classes']) . '</td></tr>';
+			}
 			echo '<tr><td><strong>Memory: Used</strong></td><td>' . $this->app->format->size($info['preload_statistics']['memory_consumption'] / 1024) . '</td></tr>';
 		}
 		

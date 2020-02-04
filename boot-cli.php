@@ -8,7 +8,7 @@ try {
 	$app = App::instantiate();
 	$app->boot();
 
-	$app->plugins->run('bootCli');
+	$app->plugins->run('boot_cli');
 } catch (\Exception $e) {
 	$app->fatalError($e->getMessage());
 }
