@@ -841,7 +841,7 @@ trait Theme
 
 		$this->addVar('errors', $errors);
 
-		$this->renderTemplate('messages/errors');
+		$this->renderTemplate('alerts/errors');
 	}
 
 	/**
@@ -883,7 +883,7 @@ trait Theme
 
 		$this->addVar('messages', $messages);
 
-		$this->renderTemplate('messages/messages');
+		$this->renderTemplate('alerts/messages');
 	}
 
 	/**
@@ -898,7 +898,7 @@ trait Theme
 
 		$this->addVar('notifications', $notifications);
 
-		$this->renderTemplate('messages/notifications');
+		$this->renderTemplate('alerts/notifications');
 	}
 
 	/**
@@ -913,7 +913,7 @@ trait Theme
 
 		$this->addVar('warnings', $warnings);
 
-		$this->renderTemplate('messages/warnings');
+		$this->renderTemplate('alerts/warnings');
 	}
 
 	/**************TEMPLATES INNER METHODS**************************/
