@@ -81,7 +81,7 @@ class Alerts
 	* Deletes the currently generated errors
 	* @return $this
 	*/
-	public function clear()
+	public function delete()
 	{
 		$this->alerts = [];
 

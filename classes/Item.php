@@ -6,8 +6,6 @@
 
 namespace Mars;
 
-use Mars\Alerts\Errors;
-
 /**
 * The Item Class
 * ORM functionality for objects built from database data
@@ -32,9 +30,9 @@ abstract class Item extends Row
 	//protected static $id_name = '';
 
 	/**
-	* @var Errors $errors The errors object. Contains the generated errors, if any
+	* @var array $errors  Contains the generated error codes, if any
 	*/
-	protected Errors $errors;
+	protected array $errors = [];
 
 	/**
 	* @var Db $db The database object. Alias for $this->app->db
@@ -68,13 +66,12 @@ abstract class Item extends Row
 
 	/**
 	* Builds an item
-	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data
+	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
 	*/
 	public function __construct($data = 0)
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
-		$this->errors = new Errors;
 
 		$table = $this->getTable();
 		$id_name = $this->getIdName();
@@ -127,7 +124,7 @@ abstract class Item extends Row
 	*/
 	public function ok() : bool
 	{
-		if ($this->errors->count()) {
+		if ($this->errors) {
 			return false;
 		}
 
@@ -140,17 +137,16 @@ abstract class Item extends Row
 	*/
 	public function getErrors() : array
 	{
-		return $this->errors->get();
+		return $this->errors;
 	}
 
 	/**
 	* Returns the first generated error, if any
-	* @param bool $only_text If true, will return only the text rather than the object
 	* @return mixed
 	*/
-	public function getFirstError(bool $only_text = false)
+	public function getFirstError()
 	{
-		return $this->errors->getFirst($only_text);
+		return reset($this->errors);
 	}
 
 	/**
@@ -317,6 +313,15 @@ abstract class Item extends Row
 	}
 
 	/**
+	* Child classes can implement this method to validate the object when it's inserted/updated
+	* @return array Array with the error codes, or empty, if no error was generated
+	*/
+	protected function validate() : array
+	{
+		return [];
+	}
+
+	/**
 	* Child classes can implement this method to process the object when it's inserted/updated
 	*/
 	protected function process()
@@ -336,6 +341,11 @@ abstract class Item extends Row
 
 		if (!$table || !$id_name) {
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call insert()');
+		}
+
+		$this->errors = $this->validate();
+		if ($this->errors) {
+			return 0;
 		}
 
 		if ($process) {
@@ -365,6 +375,11 @@ abstract class Item extends Row
 
 		if (!$table || !$id_name) {
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call update()');
+		}
+
+		$this->errors = $this->validate();
+		if ($this->errors) {
+			return 0;
 		}
 
 		if ($process) {
@@ -534,6 +549,7 @@ abstract class Item extends Row
 		}
 
 		if (empty(self::$_defaults[$class_name])) {
+			//read the columns from the database and apply the default int and char values
 			self::$_defaults[$class_name] = $this->getDefaults($default_int, $default_char);
 			self::$_defaults_vals[$class_name] = [$default_int, $default_char];
 
@@ -541,12 +557,17 @@ abstract class Item extends Row
 		} else {
 			///are the default_int/default_char params different than the stored default_vals?
 			// If so,fill the data again as we can not use the stored defaults
+
 			$default_values = self::$_defaults_vals[$class_name];
 			if ($default_values[0] === $default_int && $default_values[1] === $default_char) {
 				$defaults = self::$_defaults[$class_name];
 			} else {
 				$defaults = $this->getDefaults($default_int, $default_char);
 			}
+		}
+
+		if (!empty(static::$defaults_array)) {
+			$defaults = static::$defaults_array + $defaults;
 		}
 
 		return $defaults;
