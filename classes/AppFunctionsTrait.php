@@ -305,6 +305,35 @@ trait AppFunctionsTrait
 	}
 
 	/**
+	* Returns an array out of a string/array
+	* @param array|string $array The data to return the array from
+	* @return array The array
+	*/
+	public static function getArray($array) : array
+	{
+		if (is_array($array)) {
+			return $array;
+		} else {
+			return [$array];
+		}
+	}
+
+	/**
+	* Returns a property of an object or an array value
+	* @param string $name The name of the property/index
+	* @param array|object $data The data to return the property from
+	* @return mixed The property
+	*/
+	public static function getProperty(string $name, $data)
+	{
+		if (is_array($data)) {
+			return $data[$name] ?? null;
+		} else {
+			return $data->$name ?? null;
+		}
+	}
+
+	/**
 	* Converts an array to a stdClass object
 	* @param array $array The array to convert
 	* @return object
@@ -413,7 +442,7 @@ trait AppFunctionsTrait
 
 		return $str;
 	}
-	
+
 	/**
 	* Converts a string to a method name. Eg: some-action => someAction
 	* @param string $str The string to convert
@@ -424,9 +453,9 @@ trait AppFunctionsTrait
 		if (!$str) {
 			return $str;
 		}
-		
+
 		$str = static::strToClass($str);
-		
+
 		$str[0] = strtolower($str[0]);
 
 		return $str;

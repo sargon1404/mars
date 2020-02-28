@@ -254,7 +254,7 @@ class Entities implements \Iterator, \Countable
 	* @internal
 	*/
 	public function current()
-	{	
+	{
 		if (!$this->loaded) {
 			$this->load();
 		}
@@ -267,7 +267,7 @@ class Entities implements \Iterator, \Countable
 	* @internal
 	*/
 	public function key()
-	{		
+	{
 		return $this->current;
 	}
 

@@ -23,11 +23,11 @@ abstract class Item extends Row
 	/**
 	* @var string $table The table from which the object will be loaded.
 	*/
-	//protected static $table = '';
+	protected static string $table = '';
 	/**
 	* @var string $id_name The id column of the table from which the object will be loaded
 	*/
-	//protected static $id_name = '';
+	protected static string $id_name = '';
 
 	/**
 	* @var array $errors  Contains the generated error codes, if any
@@ -35,9 +35,14 @@ abstract class Item extends Row
 	protected array $errors = [];
 
 	/**
-	* @var Db $db The database object. Alias for $this->app->db
+	* @var array $_rules Validation rules
 	*/
-	protected Db $db;
+	protected static array $_rules = [];
+
+	/**
+	* @var array $_skip_rules Validation rules to skip when validating, if any
+	*/
+	protected array $_skip_rules = [];
 
 	/**
 	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
@@ -55,6 +60,11 @@ abstract class Item extends Row
 	protected array $_stored = [];
 
 	/**
+	* @var array $_defaults_array Array containing defaults in the format name=>value
+	*/
+	protected static array $_defaults_array = [];
+
+	/**
 	* @internal
 	*/
 	protected static array $_defaults = [];
@@ -65,13 +75,23 @@ abstract class Item extends Row
 	protected static array $_defaults_vals = [];
 
 	/**
+	* @var Db $db The database object. Alias for $this->app->db
+	*/
+	protected Db $db;
+	/**
+	* @var Validator $validator The validator object. Alias for $this->app->validator
+	*/
+	protected Validator $validator;
+
+	/**
 	* Builds an item
 	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
 	*/
-	public function __construct($data = 0)
+	public function __construct($data = null)
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
+		$this->validator = $this->app->validator;
 
 		$table = $this->getTable();
 		$id_name = $this->getIdName();
@@ -165,6 +185,23 @@ abstract class Item extends Row
 	public function getIdName() : string
 	{
 		return static::$id_name;
+	}
+
+	/**
+	* Returns the validation rules
+	* @return array The rules
+	*/
+	protected function getRules() : array
+	{
+		return static::$_rules;
+	}
+
+	/**
+	* @param array|string $skip_rules Rules which will be skipped at validation
+	*/
+	public function skipRules($skip_rules)
+	{
+		$this->_skip_rules = App::getArray($skip_rules);
 	}
 
 	/**
@@ -314,11 +351,22 @@ abstract class Item extends Row
 
 	/**
 	* Child classes can implement this method to validate the object when it's inserted/updated
-	* @return array Array with the error codes, or empty, if no error was generated
+	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	protected function validate() : array
+	protected function validate() : bool
 	{
-		return [];
+		$rules = $this->getRules();
+		if (!$rules) {
+			return true;
+		}
+
+		if (!$this->validator->validate($this, $rules, $this->getTable(), $this->getIdName(), $this->_skip_rules)) {
+			$this->errors = $this->validator->getErrors();
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -343,13 +391,12 @@ abstract class Item extends Row
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call insert()');
 		}
 
-		$this->errors = $this->validate();
-		if ($this->errors) {
-			return 0;
-		}
-
 		if ($process) {
 			$this->process();
+		}
+
+		if (!$this->validate()) {
+			return 0;
 		}
 
 		$data = $this->getUpdatableData();
@@ -377,13 +424,12 @@ abstract class Item extends Row
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call update()');
 		}
 
-		$this->errors = $this->validate();
-		if ($this->errors) {
-			return 0;
-		}
-
 		if ($process) {
 			$this->process();
+		}
+
+		if (!$this->validate()) {
+			return 0;
 		}
 
 		$data = $this->getUpdatableData();
@@ -544,30 +590,30 @@ abstract class Item extends Row
 		$default_values = [$default_int, $default_char];
 		$class_name = get_class($this);
 
-		if (isset(self::$_defaults_vals[$class_name])) {
-			$default_values = self::$_defaults_vals[$class_name];
+		if (isset(static::$_defaults_vals[$class_name])) {
+			$default_values = static::$_defaults_vals[$class_name];
 		}
 
-		if (empty(self::$_defaults[$class_name])) {
+		if (empty(static::$_defaults[$class_name])) {
 			//read the columns from the database and apply the default int and char values
-			self::$_defaults[$class_name] = $this->getDefaults($default_int, $default_char);
-			self::$_defaults_vals[$class_name] = [$default_int, $default_char];
+			static::$_defaults[$class_name] = $this->getDefaults($default_int, $default_char);
+			static::$_defaults_vals[$class_name] = [$default_int, $default_char];
 
-			$defaults = self::$_defaults[$class_name];
+			$defaults = static::$_defaults[$class_name];
 		} else {
 			///are the default_int/default_char params different than the stored default_vals?
 			// If so,fill the data again as we can not use the stored defaults
 
-			$default_values = self::$_defaults_vals[$class_name];
+			$default_values = static::$_defaults_vals[$class_name];
 			if ($default_values[0] === $default_int && $default_values[1] === $default_char) {
-				$defaults = self::$_defaults[$class_name];
+				$defaults = static::$_defaults[$class_name];
 			} else {
 				$defaults = $this->getDefaults($default_int, $default_char);
 			}
 		}
 
-		if (!empty(static::$defaults_array)) {
-			$defaults = static::$defaults_array + $defaults;
+		if (!empty(static::$_defaults_array)) {
+			$defaults = static::$_defaults_array + $defaults;
 		}
 
 		return $defaults;

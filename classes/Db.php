@@ -50,7 +50,7 @@ class Db
 	* @var string $read_hostname The hostname to connect to for read queries
 	*/
 	protected string $read_hostname = '';
-	
+
 	/**
 	* @var string $read_port The port to connect to for read queries
 	*/
@@ -75,7 +75,7 @@ class Db
 	* @var string $write_hostname The hostname to connect to for write queries
 	*/
 	protected string $write_hostname = '';
-	
+
 	/**
 	* @var string $write_port The port to connect to for write queries
 	*/
@@ -169,7 +169,7 @@ class Db
 	{
 		$this->disconnect();
 	}
-	
+
 	/**
 	* Sets the read hostname
 	* @param string|array $hostname The db hostname
@@ -209,7 +209,7 @@ class Db
 			$this->read_database = $database;
 		}
 	}
-	
+
 	/**
 	* Sets the write hostname
 	* @param string|array $hostname The db hostname
@@ -583,7 +583,7 @@ class Db
 	* @param string $value The value for which to compute the crc
 	* @return array
 	*/
-	public function crc32($value) : array
+	public function crc32(string $value) : array
 	{
 		return ['function' => 'CRC32', 'value' => $value];
 	}

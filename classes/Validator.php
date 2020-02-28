@@ -15,6 +15,113 @@ class Validator
 	use AppTrait;
 
 	/**
+	* @var array $errors The list of validation errors, if any
+	*/
+	protected array $errors = [];
+	/**
+	* @var array $supported_rules The list of suported rules
+	*/
+	protected array $supported_rules = [
+		'required' => '\Mars\Validator\Required',
+		'unique' => '\Mars\Validator\Unique',
+		'min' => '\Mars\Validator\Min',
+		'pattern' => '\Mars\Validator\Pattern',
+		'email' => '\Mars\Validator\Email',
+		'url' => '\Mars\Validator\Url',
+		'ip' => '\Mars\Validator\Ip',
+	];
+
+	/**
+	* Adds a supported validation rule
+	* @param string $name The name of the rule
+	* @param string $class The class which will handle it
+	* @return $this
+	*/
+	public function addSupportedRule(string $name, string $class)
+	{
+		$this->supported_rules[$name] = $class;
+
+		return $this;
+	}
+
+	/**
+	* Deletes a supported validation rule
+	* @param string $name The name of the rule
+	* @return $this
+	*/
+	public function deleteSupportedRule(string $name)
+	{
+		unset($this->supported_rules[$name]);
+
+		return $this;
+	}
+
+	/**
+	* Validates the rules
+	* @param array|object $data The data to validate
+	* @param array $rules The rules to validate
+   * @param string $table The database table where we'll be looking for 'unique' rules
+   * @param string $id_field The id field, which must be 0 in order to process unique' rules
+	* @param array $ignore_array Array with the fields for which we'll skip validation, if any
+	* @return bool True if the validation passed all tests, false otherwise
+	*/
+	public function validate($data, array $rules, string $table, string $id_field, array $ignore_array = []) : bool
+	{
+		$ok = true;
+		$this->errors = [];
+
+		foreach ($rules as $field => $rules_array) {
+			foreach ($rules_array as $name => $rule) {
+				if (in_array($field, $ignore_array)) {
+					continue;
+				}
+
+				$value = (string)App::getProperty($field, $data);
+				$error_code = $rule;
+				$params  = '';
+				if (is_array($rule)) {
+					[$error_code, $params] = $rule;
+				}
+
+				if (isset($this->supported_rules[$name])) {
+					$class = $this->supported_rules[$name];
+					$validator = new $class($this->app, $field, $table, $id_field);
+
+					if (!$validator->validate($value, $params)) {
+						$ok = false;
+						$this->errors[] = $error_code;
+						break;
+					}
+				} else {
+					//is rule a callable function/method?
+					if (is_array($rule) && is_callable($rule[1])) {
+						$method = $rule[1];
+						if (!$method($value)) {
+							$ok = false;
+							$this->errors[] = $error_code;
+							break;
+						}
+					} else {
+						throw new \Exception("Unknown validator: {$name}");
+					}
+				}
+			}
+		}
+		var_dump($ok, $this->errors);
+		die;
+		return $ok;
+	}
+
+	/**
+	* Returns the validation errors, if any
+	* @return array The errors
+	*/
+	public function getErrors() : array
+	{
+		return $this->errors;
+	}
+
+	/**
 	* Validates $value based on $type
 	* @param string $value The value to validate
 	* @param string Validation's type. Eg: url/email/ip/file

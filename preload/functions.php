@@ -35,7 +35,7 @@ function sort_classes(array $files) : array
 		
 		$cnt = file_get_contents($file);
 		if (preg_match('/class.*extends/isU', $cnt)) {
-			$sort = 100;		
+			$sort = 100;
 		}
 			
 		
@@ -58,7 +58,7 @@ function get_traits_and_interfaces(array $files) : array
 	$t_i = [];
 	foreach ($files as $file) {
 		if (strpos($file, 'Interface') !== false || strpos($file, 'Trait') !== false) {
-			$t_i[] = $file;	
+			$t_i[] = $file;
 		}
 	}
 	
