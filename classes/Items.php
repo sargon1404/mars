@@ -24,16 +24,16 @@ abstract class Items extends Rows implements \ArrayAccess
 	/**
 	* @var string $table The table from which the objects will be loaded
 	*/
-	//protected static $table = '';
+	protected static string $table = '';
 	/**
 	* @var string $id_name The id column of the table from which the objects will be loaded
 	*/
-	//protected static $id_name = '';
+	protected static string $id_name = '';
 
 	/**
 	* @var array $ids The ids of the currently loaded objects
 	*/
-	//public array $ids = [];
+	public array $ids = [];
 
 	/**
 	* @var Errors $errors The errors object. Contains the generated errors, if any
