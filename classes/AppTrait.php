@@ -60,25 +60,14 @@ trait AppTrait
 	}
 
 	/**
-	* Unsets the app object, before App::print_r and App::var_dump
+	* Removes properties which shouldn't be displayed by var_dump/print_r
 	*/
-	public function unsetApp()
-	{
-		unset($this->app);
-
-		return $this;
-	}
-
-	/**
-	* Don't use __debugInfo, as all properties will be shown by var_dump as public
-	* Removes the app obj from the list of properties which are displayed by var_dump
-	*/
-	/*public function __debugInfo()
+	public function __debugInfo()
 	{
 		$properties = get_object_vars($this);
 
 		unset($properties['app']);
 
 		return $properties;
-	}*/
+	}
 }

@@ -474,7 +474,7 @@ trait AppFunctionsTrait
 		}
 
 		echo '<pre>';
-		\print_r(static::unsetApp($var));
+		\print_r($var);
 		echo '</pre>';
 
 		if ($die) {
@@ -498,7 +498,7 @@ trait AppFunctionsTrait
 	*/
 	public static function dd($var, bool $die = true)
 	{
-		\var_dump(static::unsetApp($var));
+		\var_dump($var);
 
 		if ($die) {
 			die;
@@ -512,21 +512,6 @@ trait AppFunctionsTrait
 	public static function var_dump($var, bool $die = true)
 	{
 		static::dd($var, $die);
-	}
-
-	/**
-	* Cleans var for var_dump and print_r output
-	* @param mixed $var The variable
-	*/
-	public static function unsetApp($var)
-	{
-		if (method_exists($var, 'unsetApp')) {
-			if (!$var instanceof App) {
-				$var->unsetApp();
-			}
-		}
-
-		return $var;
 	}
 
 	/**

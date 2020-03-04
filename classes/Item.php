@@ -116,6 +116,7 @@ abstract class Item extends Row
 
 		unset($data['app']);
 		unset($data['db']);
+		unset($data['validator']);
 
 		return array_keys($data);
 	}
@@ -127,15 +128,21 @@ abstract class Item extends Row
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
+		$this->validator = $this->app->validator;
 	}
 
 	/**
-	* Removes the app & db obj from the list of properties which are displayed by var_dump
+	* Removes properties which shouldn't be displayed by var_dump/print_r
 	*/
-	public function unsetApp()
+	public function __debugInfo()
 	{
-		unset($this->app);
-		unset($this->db);
+		$properties = get_object_vars($this);
+
+		unset($properties['app']);
+		unset($properties['db']);
+		unset($properties['validator']);
+
+		return $properties;
 	}
 
 	/**
@@ -197,11 +204,23 @@ abstract class Item extends Row
 	}
 
 	/**
+	* Skips rules from validation
 	* @param array|string $skip_rules Rules which will be skipped at validation
+	* @return $this
 	*/
 	public function skipRules($skip_rules)
 	{
 		$this->_skip_rules = App::getArray($skip_rules);
+
+		return $this;
+	}
+
+	/**
+	* Returns the array with the defaults properties
+	*/
+	protected function getDefaultsArray() : array
+	{
+		return static::$_defaults_array;
 	}
 
 	/**
@@ -307,7 +326,7 @@ abstract class Item extends Row
 	{
 		if ($data === null) {
 			//load defaults
-			$data = $this->getDefaultsArray();
+			$data = $this->getDefaultData();
 		}
 
 		if (!$data) {
@@ -391,12 +410,12 @@ abstract class Item extends Row
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call insert()');
 		}
 
-		if ($process) {
-			$this->process();
-		}
-
 		if (!$this->validate()) {
 			return 0;
+		}
+
+		if ($process) {
+			$this->process();
 		}
 
 		$data = $this->getUpdatableData();
@@ -424,12 +443,12 @@ abstract class Item extends Row
 			throw new \Exception('The $table and the $id_name static properties must be set to be able to call update()');
 		}
 
-		if ($process) {
-			$this->process();
-		}
-
 		if (!$this->validate()) {
 			return 0;
+		}
+
+		if ($process) {
+			$this->process();
 		}
 
 		$data = $this->getUpdatableData();
@@ -584,7 +603,7 @@ abstract class Item extends Row
 	* @param int $default_char The default value of the string properties
 	* @return array
 	*/
-	public function getDefaultsArray(int $default_int = 0, string $default_char = '') : array
+	public function getDefaultData(int $default_int = 0, string $default_char = '') : array
 	{
 		$defaults = [];
 		$default_values = [$default_int, $default_char];
@@ -612,8 +631,9 @@ abstract class Item extends Row
 			}
 		}
 
-		if (!empty(static::$_defaults_array)) {
-			$defaults = static::$_defaults_array + $defaults;
+		$defaults_array = $this->getDefaultsArray();
+		if ($defaults_array) {
+			$defaults = $defaults_array + $defaults;
 		}
 
 		return $defaults;
@@ -639,7 +659,7 @@ abstract class Item extends Row
 	*/
 	public function loadDefaults(array $override_array = [], int $default_int = 0, string $default_char = '')
 	{
-		$defaults = $this->getDefaultsArray();
+		$defaults = $this->getDefaultData();
 
 		if ($override_array) {
 			$this->setData($override_array + $defaults);

@@ -78,12 +78,16 @@ abstract class Items extends Rows implements \ArrayAccess
 	}
 
 	/**
-	* Removes the app & db obj from the list of properties which are displayed by var_dump
+	* Removes properties which shouldn't be displayed by var_dump/print_r
 	*/
-	public function unsetApp()
+	public function __debugInfo()
 	{
-		unset($this->app);
-		unset($this->db);
+		$properties = get_object_vars($this);
+
+		unset($properties['app']);
+		unset($properties['db']);
+
+		return $properties;
 	}
 
 	/**
