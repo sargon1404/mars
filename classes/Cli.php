@@ -17,14 +17,14 @@ class Cli
 	public array $colors = [
 		'default' => '0',
 		'message' => '0',
-		'error' => '91',
+		'error' => '0;41',
 		'warning' => '93',
 		'info' => '32',
 		'header' => '0;33',
 		'list_1' => '0;32',
 		'list_2' => '0'
 	];
-	
+
 	/**
 	* @param array $argv List of commands
 	*/
@@ -34,7 +34,17 @@ class Cli
 	* @param array $options List of options
 	*/
 	protected array $options = [];
-	
+
+	/**
+	* @param array $options_list List of options, passed without a name
+	*/
+	protected array $options_list = [];
+
+	/**
+	* List of missing options, when calling checkOptions
+	*/
+	protected array $options_missing = [];
+
 	/**
 	* Builds the CLI object
 	*/
@@ -61,37 +71,32 @@ class Cli
 	*/
 	protected function parseOptions(array $options)
 	{
+		$current_arg = '';
+
 		foreach ($options as $option) {
-			$str = '';
-
 			if (strpos($option, '--') === 0) {
-				$str = substr($option, 2);
+				$current_arg = '';
+
+				$parts = explode('=', substr($option, 2));
+				$name = $parts[0];
+				$value = $parts[1] ?? '';
+
+				$this->options[$name] = $value;
+
 			} elseif (strpos($option, '-') === 0) {
-				$str = substr($option, 1);
+				$current_arg = substr($option, 1);
+
+				$this->options[$current_arg] = true;
+			} else {
+				if ($current_arg) {
+					$this->options[$current_arg] = $option;
+				} else {
+					$this->options_list[] = $option;
+				}
 			}
-
-			$parts = explode('=', $str);
-			$name = $parts[0];
-			$value = $parts[1] ?? '';
-
-			if (!$value) {
-				$value = true;
-			}
-
-			$this->options[$name] = $value;
 		}
 	}
 
-	/**
-	* Returns a color, based on type
-	* @param string $type The type of the color
-	* @return string The color
-	*/
-	public function getColor(string $type) : string
-	{
-		return $this->colors[$type] ?? $this->colorts['default'];
-	}
-	
 	/**
 	* Returns the options
 	* @return array The options
@@ -100,7 +105,7 @@ class Cli
 	{
 		return $this->options;
 	}
-	
+
 	/**
 	* Alias for getOptions
 	* @see \Mars\Cli::getOptions()
@@ -111,31 +116,91 @@ class Cli
 	}
 
 	/**
-	* Returns the value of a command line option
-	* @param string $name The name of the option
-	* @return string The option
+	* Checks if the specified options are found
+	* @param array $options The options to check
+	* @return bool Returns true if all options are found
 	*/
-	public function getOption(string $name) : string
+	public function checkOptions(array $options) : bool
 	{
-		if (!isset($this->options[$name])) {
-			return '';
+		$this->options_missing = [];
+		$found = true;
+
+		foreach ($options as $field => $option) {
+			$params = App::toArray($option);
+			$param_found = false;
+
+			foreach ($params as $name) {
+				if (isset($this->options[$name])) {
+					$param_found = true;
+					break;
+				}
+			}
+
+			if (!$param_found) {
+				$this->options_missing[] = $field;
+				$found = false;
+			}
 		}
 
-		return $this->options[$name];
+		return $found;
+	}
+
+	/**
+	* Returns an array listing the missing options, if checkOptions returned false
+	* @return array
+	*/
+	public function getOptionsMissing() : array
+	{
+		return $this->options_missing;
+	}
+
+	/**
+	* Returns the options list
+	* @param int $min_size If specified, will always return an array with $min_size elements
+	* @return array The options list
+	*/
+	public function getOptionsList(int $min_size = 0) : array
+	{
+		if ($min_size) {
+			return array_pad($this->options_list, $min_size, '');
+		}
+
+		return $this->options_list;
+	}
+	/**
+	* Returns the value of a command line option
+	* @param array|string $name The name of the option. String or array
+	* @return string The option
+	*/
+	public function getOption($name) : ?string
+	{
+		$names = App::getArray($name);
+
+		foreach ($names as $name) {
+			if (isset($this->options[$name])) {
+				return $this->options[$name];
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	* Returns true if a command line option has been defined
-	* @param string $name The name of the option
+	* @param array|string $name The name of the option. String or array
 	* @return bool
 	*/
-	public function isOption(string $name) : bool
+	public function isOption($name) : bool
 	{
-		if (!isset($this->options[$name])) {
-			return false;
+		$names = App::getArray($name);
+
+		foreach ($names as $name) {
+			if (isset($this->options[$name])) {
+				return true;
+			}
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -147,7 +212,7 @@ class Cli
 		if (!$this->commands) {
 			return '';
 		}
-		
+
 		return $this->commands[0];
 	}
 
@@ -158,8 +223,18 @@ class Cli
 	public function getCommandAction() : string
 	{
 		$slice = array_slice($this->commands, 1);
-		
+
 		return implode(':', $slice);
+	}
+
+	/**
+	* Returns a color, based on type
+	* @param string $type The type of the color
+	* @return string The color
+	*/
+	public function getColor(string $type) : string
+	{
+		return $this->colors[$type] ?? $this->colorts['default'];
 	}
 
 	/**
@@ -199,6 +274,11 @@ class Cli
 
 		echo $text;
 
+		if ($color) {
+			//reset to terminal's default
+			echo "\e[0m";
+		}
+
 		if ($newline) {
 			echo "\n";
 		}
@@ -206,10 +286,10 @@ class Cli
 		if ($die) {
 			die;
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	* Outputs a header
 	* @param string $text The text to output
@@ -221,16 +301,21 @@ class Cli
 	{
 		return $this->print($text, $this->colors['header'], $newline, $die);
 	}
-	
+
 	/**
 	* Outputs a message
 	* @param string $text The text to output
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
 	* @param bool $die If true, will die after printing the string
 	* @return $this
 	*/
-	public function message(string $text, bool $newline = true, bool $die = false)
+	public function message(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
+		if ($pad_left) {
+			$text = str_pad($text, $pad_left + strlen($text), ' ', STR_PAD_LEFT);
+		}
+
 		return $this->print($text, $this->colors['message'], $newline, $die);
 	}
 
@@ -243,9 +328,9 @@ class Cli
 	*/
 	public function error(string $text, bool $newline = true, bool $die = false)
 	{
-		return $this->print($text, $this->colors['error'], $newline, $die);
+		return $this->print("\n\n". $text, $this->colors['error'], $newline, $die);
 	}
-	
+
 	/**
 	* @see Cli::error()
 	*/
@@ -277,7 +362,7 @@ class Cli
 	{
 		static::print($text, $this->colors['info'], $newline, $die);
 	}
-	
+
 	/**
 	* Prints a list on two columns
 	* @param array $data The data to print in the format ['header1' => [['col1', 'col2'],['col1', 'col2']], 'header2' => ..]
@@ -298,25 +383,25 @@ class Cli
 		if (!$col2_color) {
 			$col2_color = $this->colors['list_2'];
 		}
-		
+
 		$max_length_1 = $this->getMaxLength($data, 0) + $col_2_left_pad;
 		$max_length_2 = $this->getMaxLength($data, 1);
-		
+
 		foreach ($data as $header => $list) {
 			if ($headers_show) {
 				$this->print($header, $headers_color);
 			}
-			
+
 			foreach ($list as $item) {
 				$this->print($this->padString($item[0], $max_length_1, $col_1_left_pad), $col1_color, false);
 				$this->print($this->padString($item[1], $max_length_2), $col2_color, false);
 				echo "\n";
 			}
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	* Pads a string to match a certain length
 	* @param string $str The string to pad
@@ -330,10 +415,10 @@ class Cli
 		if ($pad_length_left) {
 			$str = str_pad($str, strlen($str) + $pad_length_left, ' ', STR_PAD_LEFT);
 		}
-		
+
 		return $str;
 	}
-	
+
 	/**
 	* Returns the max length of a column
 	* @param array $data The data where to look for the max length
@@ -352,7 +437,7 @@ class Cli
 				}
 			}
 		}
-		
+
 		return $max_length;
 	}
 

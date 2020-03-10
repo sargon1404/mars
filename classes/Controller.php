@@ -7,11 +7,7 @@
 namespace Mars;
 
 use Mars\Response\Ajax;
-//use Mars\Alers\{Errors, Messages, Notifications, Warnings}; //preload
-use Mars\Alerts\Errors;
-use Mars\Alerts\Messages;
-use Mars\Alerts\Notifications;
-use Mars\Alerts\Warnings;
+use Mars\Alers\{Errors, Messages, Notifications, Warnings};
 
 /**
 * The Controller Class
@@ -51,7 +47,7 @@ abstract class Controller
 	* @var string $site_url Alias for $this->app->site_url
 	*/
 	protected string $site_url = '';
-	
+
 	/**
 	* @var Model $model The model object
 	*/
@@ -76,6 +72,11 @@ abstract class Controller
 	* @var Escape $escape Alias for $this->app->escape
 	*/
 	protected Escape $escape;
+
+	/**
+	* @var Validator $validator Alias for $this->app->validator
+	*/
+	protected Validator $validator;
 
 	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors
@@ -116,6 +117,7 @@ abstract class Controller
 		$this->request = $this->app->request;
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
+		$this->validator = $this->app->validator;
 		$this->errors = $this->app->errors;
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;

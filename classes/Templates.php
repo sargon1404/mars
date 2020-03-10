@@ -101,6 +101,33 @@ class Templates
 	}
 
 	/**
+	* Adds a supported modifier to the list
+	* @param string $name The name of the modifier
+	* @param string $function The name of the function handling the modifier
+	* @param int $priority The priority of the modifier
+	* @param bool $escape If false, the value won't be html escaped
+	* @return $this
+	*/
+	public function addSupportedModifier(string $name, string $function, int $priority, bool $escape = true)
+	{
+		$this->supported_modifiers[$name] = [$function, $priority, $escape];
+
+		return $this;
+	}
+
+	/**
+	* Deletes a supported modifier
+	* @param string $name The name of the modifier
+	* @return $this
+	*/
+	public function deleteSupportedModifier(string $name)
+	{
+		unset($this->supported_modifiers[$name]);
+
+		return $this;
+	}
+
+	/**
 	* Parses the template content and returns it
 	* @param string $content The content to parse
 	* @return string The parsed content

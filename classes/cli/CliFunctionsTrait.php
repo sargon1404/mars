@@ -11,7 +11,55 @@ namespace Mars\Cli;
 */
 trait CliFunctionsTrait
 {
-	
+
+	/**
+	* @see \Mars\Cli::getOptions()
+	*/
+	public function getOptions() : array
+	{
+		return $this->app->cli->getOptions();
+	}
+
+	/**
+	* @see \Mars\Cli::checkOptions()
+	*/
+	public function checkOptions(array $options) : bool
+	{
+		return $this->app->cli->checkOptions($options);
+	}
+
+	/**
+	* @see \Mars\Cli::getOptionsMissing()
+	*/
+	public function getOptionsMissing() : array
+	{
+		return $this->app->cli->getOptionsMissing();
+	}
+
+	/**
+	* @see \Mars\Cli::getOptionsLists()
+	*/
+	public function getOptionsList(int $min_size = 0) : array
+	{
+		return $this->app->cli->getOptionsList($min_size);
+	}
+
+	/**
+	* @see \Mars\Cli::getOption()
+	*/
+	public function getOption($name) : ?string
+	{
+		return $this->app->cli->getOption($name);
+	}
+
+	/**
+	* @see \Mars\Cli::isOption()
+	*/
+	public function isOption($name) : bool
+	{
+		return $this->app->cli->isOption($name);
+	}
+
 	/**
 	* @see \Mars\Cli::getColor()
 	*/
@@ -19,7 +67,7 @@ trait CliFunctionsTrait
 	{
 		return $this->app->cli->getColor($type);
 	}
-		
+
 	/**
 	* @see \Mars\Cli::print()
 	*/
@@ -27,7 +75,7 @@ trait CliFunctionsTrait
 	{
 		return $this->app->cli->print($text, $color, $newline, $die);
 	}
-	
+
 	/**
 	* @see \Mars\Cli::header()
 	*/
@@ -39,15 +87,15 @@ trait CliFunctionsTrait
 	/**
 	* Outputs a CLI message
 	* @param string $text The text of the message
-	* @param string $title Unused
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $escape_html Unused
 	* @return $this
 	*/
 	public function message(string $text, string $title = '', bool $escape_html = true)
 	{
-		return $this->app->cli->message($text);
+		return $this->app->cli->message($text, (int)$title);
 	}
-	
+
 	/**
 	* Outputs a CLI error
 	* @param string $text The text of the error
@@ -59,7 +107,7 @@ trait CliFunctionsTrait
 	{
 		return $this->app->cli->error($text);
 	}
-	
+
 	/**
 	* @see \Mars\Cli::errorAndDie()
 	*/
@@ -83,7 +131,7 @@ trait CliFunctionsTrait
 	{
 		return $this->app->cli->info($text, $newline, $die);
 	}
-	
+
 	/**
 	* @see \Mars\Cli::list()
 	*/

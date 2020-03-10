@@ -6,7 +6,7 @@
 
 namespace Mars\System;
 
-use Mars\App;
+use Mars\{App, Templates};
 
 /**
 * The System's Theme Class
@@ -22,6 +22,7 @@ class Theme extends \Mars\extensions\Basic
 	public function __construct(App $app)
 	{
 		$this->app = $app;
+		$this->engine = new Templates;
 
 		parent::__construct($this->app->config->theme);
 	}

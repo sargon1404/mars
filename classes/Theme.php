@@ -147,6 +147,34 @@ trait Theme
 	*/
 	protected static string $base_dir = 'themes';
 
+
+	/**
+	* Adds a supported modifier to the list
+	* @param string $name The name of the modifier
+	* @param string $function The name of the function handling the modifier
+	* @param int $priority The priority of the modifier
+	* @param bool $escape If false, the value won't be html escaped
+	* @return $this
+	*/
+	public function addSupportedModifier(string $name, string $function, int $priority, bool $escape = true)
+	{
+		$this->engine->addSupportedModifier($name, $function, $priority, $escape);
+
+		return $this;
+	}
+
+	/**
+	* Deletes a supported modifier
+	* @param string $name The name of the modifier
+	* @return $this
+	*/
+	public function deleteSupportedModifier(string $name)
+	{
+		$this->engine->deleteSupportedModifier($name);
+
+		return $this;
+	}
+
 	/**
 	* Prepares the theme
 	*/
@@ -515,10 +543,6 @@ trait Theme
 	*/
 	protected function parseTemplate(string $content) : string
 	{
-		if (!$this->engine) {
-			$this->engine = new Templates;
-		}
-
 		return $this->engine->parse($content);
 	}
 

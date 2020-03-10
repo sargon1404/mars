@@ -18,6 +18,7 @@ class Validator
 	* @var array $errors The list of validation errors, if any
 	*/
 	protected array $errors = [];
+
 	/**
 	* @var array $supported_rules The list of suported rules
 	*/
@@ -57,6 +58,15 @@ class Validator
 	}
 
 	/**
+	* Returns the validation errors, if any
+	* @return array The errors
+	*/
+	public function getErrors() : array
+	{
+		return $this->errors;
+	}
+
+	/**
 	* Validates the rules
 	* @param array|object $data The data to validate
 	* @param array $rules The rules to validate
@@ -65,7 +75,7 @@ class Validator
 	* @param array $ignore_array Array with the fields for which we'll skip validation, if any
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	public function validate($data, array $rules, string $table, string $id_field, array $ignore_array = []) : bool
+	public function validate($data, array $rules, string $table = '', string $id_field = '', array $ignore_array = []) : bool
 	{
 		$ok = true;
 		$this->errors = [];
@@ -77,10 +87,10 @@ class Validator
 				}
 
 				$value = (string)App::getProperty($field, $data);
-				$error_code = $rule;
+				$error = $rule;
 				$params  = '';
 				if (is_array($rule)) {
-					[$error_code, $params] = $rule;
+					[$error, $params] = $rule;
 				}
 
 				if (isset($this->supported_rules[$name])) {
@@ -89,7 +99,7 @@ class Validator
 
 					if (!$validator->validate($value, $params)) {
 						$ok = false;
-						$this->errors[] = $error_code;
+						$this->errors[] = $error;
 						break;
 					}
 				} else {
@@ -98,7 +108,7 @@ class Validator
 						$method = $rule[1];
 						if (!$method($value)) {
 							$ok = false;
-							$this->errors[] = $error_code;
+							$this->errors[] = $error;
 							break;
 						}
 					} else {
@@ -112,14 +122,7 @@ class Validator
 		return $ok;
 	}
 
-	/**
-	* Returns the validation errors, if any
-	* @return array The errors
-	*/
-	public function getErrors() : array
-	{
-		return $this->errors;
-	}
+
 
 	/**
 	* Validates $value based on $type

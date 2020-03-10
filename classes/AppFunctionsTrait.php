@@ -496,23 +496,23 @@ trait AppFunctionsTrait
 	* @param mixed $var The variable
 	* @param bool $die If true, will call die after var_dump
 	*/
-	public static function dd($var, bool $die = true)
+	/*public static function dd($var, bool $die = true)
 	{
 		\var_dump($var);
 
 		if ($die) {
 			die;
 		}
-	}
+	}*/
 
 	/**
 	* Alias for dd
 	* @see AppFunctions::dd()
 	*/
-	public static function var_dump($var, bool $die = true)
+	/*public static function var_dump($var, bool $die = true)
 	{
 		static::dd($var, $die);
-	}
+	}*/
 
 	/**
 	* Prints the debug backtrace
