@@ -71,65 +71,49 @@ trait CliFunctionsTrait
 	/**
 	* @see \Mars\Cli::print()
 	*/
-	public function print(string $text, string $color = '', bool $newline = true, bool $die = false)
+	public function print($text, string $color = '', int $pad_left = 0, bool $newline = true, bool $die = false, string $prefix = '', string $suffix = '')
 	{
-		return $this->app->cli->print($text, $color, $newline, $die);
+		return $this->app->cli->print($text, $color, $pad_left, $newline, $die, $prefix, $suffix);
 	}
 
 	/**
 	* @see \Mars\Cli::header()
 	*/
-	public function header(string $text, bool $newline = true, bool $die = false)
+	public function header(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		return $this->app->cli->header($text, $newline, $die);
+		return $this->app->cli->header($text, $pad_left, $newline, $die);
 	}
 
 	/**
-	* Outputs a CLI message
-	* @param string $text The text of the message
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $escape_html Unused
-	* @return $this
+	* @see \Mars\Cli::message()
 	*/
-	public function message(string $text, string $title = '', bool $escape_html = true)
+	public function message($text, string $title = '', bool $escape_html = true)
 	{
 		return $this->app->cli->message($text, (int)$title);
 	}
 
 	/**
-	* Outputs a CLI error
-	* @param string $text The text of the error
-	* @param string $title Unused
-	* @param bool $escape_html Unused
-	* @return $this
+	* @see \Mars\Cli::error()
 	*/
-	public function error(string $text, string $title = '', bool $escape_html = true)
+	public function error($text, string $title = '', bool $escape_html = true)
 	{
 		return $this->app->cli->error($text);
 	}
 
 	/**
-	* @see \Mars\Cli::errorAndDie()
-	*/
-	public function errorAndDie(string $text, bool $newline = true)
-	{
-		return $this->app->cli->errorAndDie($text, $newline);
-	}
-
-	/**
 	* @see \Mars\Cli::warning()
 	*/
-	public function warning(string $text, bool $newline = true, bool $die = false)
+	public function warning($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		return $this->app->cli->warning($text, $newline, $die);
+		return $this->app->cli->warning($text, $pad_left, $newline, $die);
 	}
 
 	/**
 	* @see \Mars\Cli::info()
 	*/
-	public function info(string $text, bool $newline = true, bool $die = false)
+	public function info($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		return $this->app->cli->info($text, $newline, $die);
+		return $this->app->cli->info($text, $pad_left, $newline, $die);
 	}
 
 	/**

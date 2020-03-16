@@ -56,19 +56,13 @@ class Alerts
 
 	/**
 	* Adds an alert to the alerts list.
-	* @param mixed $alert The alert text. String or array
+	* @param string|array $alert The alert text. String or array
 	* @param bool $escape_html If true will html escape $alert
 	* @return $this
 	*/
 	public function add($alert, bool $escape_html = true)
 	{
-		$alerts = [];
-
-		if (is_array($alert)) {
-			$alerts = $alert;
-		} else {
-			$alerts = [$alert];
-		}
+		$alerts = App::getArray($alert);
 
 		foreach ($alerts as $str) {
 			$this->alerts[] = new Alert($alert, '', $escape_html, true);

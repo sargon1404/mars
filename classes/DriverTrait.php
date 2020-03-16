@@ -55,7 +55,7 @@ trait DriverTrait
 
 		return $handle;
 	}
-	
+
 	/**
 	* Sets the driver's handle
 	* @param object $handle The handle
@@ -64,10 +64,10 @@ trait DriverTrait
 	public function setHandle(object $handle)
 	{
 		$this->handle = $handle;
-		
+
 		$this->checkHandle($handle);
 	}
-	
+
 	/**
 	* Checks the driver's handle
 	* @param object $handle The handle
@@ -76,13 +76,13 @@ trait DriverTrait
 	protected function checkHandle(object $handle)
 	{
 		$interface = $this->driver_namespace . '\\' . 'DriverInterface';
-		
+
 		if (!is_a($handle, $interface)) {
 			$class = get_class($handle);
-			
+
 			throw new \Exception("The {$class} driver must implement interface {$interface}");
 		}
-		
+
 		return $this;
 	}
 }

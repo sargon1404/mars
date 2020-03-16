@@ -260,19 +260,39 @@ class Cli
 
 	/**
 	* Outputs a text message
-	* @param string $text The text to output
-	* @param string $color The color to print the text with
+	* @param string $text The text to output. String or array for multiple lines
+	* @param string|array  $color The color to print the text with
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
 	* @param bool $die If true, will die after printing the string
+	* @param string $prefix Prefix to print before the text, if any
+	* @param string $suffix Suffix to add after text, if any
 	* @return $this
 	*/
-	public function print(string $text, string $color = '', bool $newline = true, bool $die = false)
+	public function print($text, string $color = '', int $pad_left = 0, bool $newline = true, bool $die = false, string $prefix = '', string $suffix = '')
 	{
 		if ($color != '') {
 			echo "\e[{$color}m";
 		}
 
-		echo $text;
+		if (is_array($text)) {
+			$text_array = [];
+			foreach ($text as $string) {
+				if ($pad_left) {
+					$string = $this->padStringLeft($string, $pad_left);
+				}
+
+				$text_array[] = $string;
+			}
+
+			$text = implode("\n", $text_array);
+		} else {
+			if ($pad_left) {
+				$text = $this->padStringLeft($text, $pad_left);
+			}
+		}
+
+		echo $prefix, $text, $suffix;
 
 		if ($color) {
 			//reset to terminal's default
@@ -293,74 +313,64 @@ class Cli
 	/**
 	* Outputs a header
 	* @param string $text The text to output
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the string
-	* @return $this
-	*/
-	public function header(string $text, bool $newline = true, bool $die = false)
-	{
-		return $this->print($text, $this->colors['header'], $newline, $die);
-	}
-
-	/**
-	* Outputs a message
-	* @param string $text The text to output
 	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
 	* @param bool $die If true, will die after printing the string
 	* @return $this
 	*/
-	public function message(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
+	public function header(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		if ($pad_left) {
-			$text = str_pad($text, $pad_left + strlen($text), ' ', STR_PAD_LEFT);
-		}
-
-		return $this->print($text, $this->colors['message'], $newline, $die);
+		return $this->print($text, $this->colors['header'], $pad_left, $newline, $die);
 	}
 
 	/**
-	* Outputs an error
-	* @param string $text The text to output
+	* Outputs a message
+	* @param string $text The text to output. String or array for multiple lines
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the error
+	* @param bool $die If true, will die after printing the string
 	* @return $this
 	*/
-	public function error(string $text, bool $newline = true, bool $die = false)
+	public function message($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		return $this->print("\n\n". $text, $this->colors['error'], $newline, $die);
+
+		return $this->print($text, $this->colors['message'], $pad_left, $newline, $die);
 	}
 
 	/**
-	* @see Cli::error()
+	* Outputs an error and dies
+	* @param string $text The text to output. String or array for multiple lines
+	* @param bool $newline If true will also output a newline
 	*/
-	public function errorAndDie(string $text, bool $newline = true)
+	public function error($text, bool $newline = true)
 	{
-		static::error($text, $newline, true);
+		$this->print($text, $this->colors['error'], 5, $newline, true, "\n\n", "\n");
 	}
 
 	/**
 	* Outputs a warning
-	* @param string $text The text to output
+	* @param string $text The text to output. String or array for multiple lines
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
 	* @param bool $die If true, will die after printing the error
 	* @return $this
 	*/
-	public function warning(string $text, bool $newline = true, bool $die = false)
+	public function warning(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		static::print($text, $this->colors['warning'], $newline, $die);
+		static::print($text, $this->colors['warning'], $pad_left, $newline, $die);
 	}
 
 	/**
 	* Outputs an info string
-	* @param string $text The text to output
+	* @param string $text The text to output. String or array for multiple lines
+	* @param int $pad_left The number of spaces to prefix $text with
 	* @param bool $newline If true will also output a newline
 	* @param bool $die If true, will die after printing the error
 	* @return $this
 	*/
-	public function info(string $text, bool $newline = true, bool $die = false)
+	public function info(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		static::print($text, $this->colors['info'], $newline, $die);
+		static::print($text, $this->colors['info'], $pad_left, $newline, $die);
 	}
 
 	/**
@@ -400,6 +410,17 @@ class Cli
 		}
 
 		return $this;
+	}
+
+	/**
+	* Prefixes the string with empty spaces
+	* @param string $str The string to pad
+	* @param int $pad_length The spaces to prefix the string with
+	* @return string The padded string
+	*/
+	protected function padStringLeft(string $str, int $pad_length) : string
+	{
+		return str_pad($str, strlen($str) + $pad_length, ' ', STR_PAD_LEFT);
 	}
 
 	/**

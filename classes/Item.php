@@ -204,13 +204,28 @@ abstract class Item extends Row
 	}
 
 	/**
+	* The same as skipRules
+	* @param string $rule The rule to skip
+	* @return $this
+	*/
+	public function skipRule(string $rule)
+	{
+		return $this->skipRules($rule);
+	}
+
+	/**
 	* Skips rules from validation
 	* @param array|string $skip_rules Rules which will be skipped at validation
 	* @return $this
 	*/
 	public function skipRules($skip_rules)
 	{
-		$this->_skip_rules = App::getArray($skip_rules);
+		$skip_rules = App::getArray($skip_rules);
+		foreach ($skip_rules as $rule) {
+			if (!in_array($rule, $this->_skip_rules)) {
+				$this->_skip_rules[] = $rule;
+			}
+		}
 
 		return $this;
 	}
@@ -757,14 +772,4 @@ abstract class Item extends Row
 		return $this;
 	}
 
-	/**
-	* Unsets the public "protected" data which shouldn't be inserted/updated. Eg: the public errors object
-	* @param array $data The data
-	*/
-	public function unsetProtectedData(array &$data)
-	{
-		if (isset($data['errors'])) {
-			unset($data['errors']);
-		}
-	}
 }

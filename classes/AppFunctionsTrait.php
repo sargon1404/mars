@@ -92,36 +92,50 @@ trait AppFunctionsTrait
 
 	/**
 	* Returns a language string
-	* @param $str The string index as defined in the languages file
-	* @param mixed $replace Array with key & values to be used for to search & replace
-	* @param bool $escape_html If true will html escape the string
-	* @return string The language string
+	* @param string|array $str The string index as defined in the languages file. Either string or array
+	* @param array $replace Array with key & values to be used for to search & replace
+	* @return string|array The language string(s)
 	*/
-	public static function __(string $str, array $replace = [], bool $escape_html = false) : string
+	public static function __($str, array $replace = [])
 	{
-		if (isset(static::$instance->lang->strings[$str])) {
-			$str = static::$instance->lang->strings[$str];
-		}
-
+		$search_array = [];
+		$replace_array = [];
 		if ($replace) {
-			$search = array_keys($replace);
-			$str = str_replace($search, $replace, $str);
+			$search_array = array_keys($replace);
+			$replace_array = $replace;
 		}
 
-		if ($escape_html) {
-			$str = static::e($str);
-		}
+		if (is_array($str)) {
+			$strings = [];
+			foreach ($str as $string) {
+				$string = static::$instance->lang->strings[$string] ?? $string;
 
-		return $str;
+				if ($replace) {
+					$string = str_replace($search_array, $replace_array, $string);
+				}
+
+				$strings[] = $string;
+			}
+
+			return $strings;
+		} else {
+			$str = static::$instance->lang->strings[$str] ?? $str;
+
+			if ($replace) {
+				$str = str_replace($search_array, $replace_array, $str);
+			}
+
+			return $str;
+		}
 	}
 
 	/**
 	* Alias for AppFunctionsTrait::__()
 	* @see AppFunctionsTrait::__()
 	*/
-	public static function str(string $str, $replace = [], bool $escape_html = false) : string
+	public static function str($str, $replace = [])
 	{
-		return static::__($str, $replace, $escape_html);
+		return static::__($str, $replace);
 	}
 
 	/**
@@ -130,16 +144,15 @@ trait AppFunctionsTrait
 	* @param string $str_single If count($items) == 1 will return $this->app->lang->strings[$str_single]
 	* @param string $str_multi If count($items) == 1 will return $this->app->lang->strings[$str_multi]. Will also replace {COUNT} with the actual count number
 	* @param string $count_str The part which will be replaced with the count number. Default: {COUNT}
-	* @param bool $escape_html If true will html escape the string
 	* @return string
 	*/
-	public static function strc(array $items, string $str_single, string $str_multi, string $count_str = '{COUNT}', bool $escape_html = false) : string
+	public static function strc(array $items, string $str_single, string $str_multi, string $count_str = '{COUNT}') : string
 	{
 		$count = count($items);
 		if ($count == 1) {
-			return static::str($str_single, [], $escape_html);
+			return static::str($str_single, []);
 		} else {
-			return static::str($str_multi, [$count_str => $count], $escape_html);
+			return static::str($str_multi, [$count_str => $count]);
 		}
 	}
 
@@ -151,7 +164,7 @@ trait AppFunctionsTrait
 	*/
 	public static function estr(string $str, array $replace = []) : string
 	{
-		return static::__($str, $replace, true);
+		return static::__($str, $replace);
 	}
 
 	/**
@@ -166,14 +179,13 @@ trait AppFunctionsTrait
 	}
 
 	/**
-	* Returns an array with strings built from $strings and $keys
-	* @param array $keys Array containing the keys for which values from $strings should be returned
-	* @param array $strings Array containing the strings in the format key => string
+	* Returns an array with strings built $keys
+	* @param array $keys Array containing the keys for which to return the strings
 	* @return array
 	*/
-	public static function getStrings(array $keys, array $strings) : array
+	public static function getStrings(array $keys) : array
 	{
-		$strings_list = [];
+		$strings = [];
 
 		foreach ($keys as $key) {
 			if (isset($strings[$key])) {
@@ -302,6 +314,16 @@ trait AppFunctionsTrait
 	public static function usl(string $filename) : string
 	{
 		return rtrim($filename, '/');
+	}
+
+	/**
+	* Returns the public properties of an object
+	* @param object $object The object
+	* @return array The properties
+	*/
+	public static function getObjectVars(object $object) : array
+	{
+		return get_object_vars($object);
 	}
 
 	/**
@@ -490,29 +512,6 @@ trait AppFunctionsTrait
 	{
 		static::pp($var, $escape_html, $die);
 	}
-
-	/**
-	* Does a var_dump on $var, then dies
-	* @param mixed $var The variable
-	* @param bool $die If true, will call die after var_dump
-	*/
-	/*public static function dd($var, bool $die = true)
-	{
-		\var_dump($var);
-
-		if ($die) {
-			die;
-		}
-	}*/
-
-	/**
-	* Alias for dd
-	* @see AppFunctions::dd()
-	*/
-	/*public static function var_dump($var, bool $die = true)
-	{
-		static::dd($var, $die);
-	}*/
 
 	/**
 	* Prints the debug backtrace

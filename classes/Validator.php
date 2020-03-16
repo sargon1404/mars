@@ -69,7 +69,7 @@ class Validator
 	/**
 	* Validates the rules
 	* @param array|object $data The data to validate
-	* @param array $rules The rules to validate
+	* @param array $rules The rules to validate, in the format ['field' => [error => validation_type]]
    * @param string $table The database table where we'll be looking for 'unique' rules
    * @param string $id_field The id field, which must be 0 in order to process unique' rules
 	* @param array $ignore_array Array with the fields for which we'll skip validation, if any
@@ -81,32 +81,34 @@ class Validator
 		$this->errors = [];
 
 		foreach ($rules as $field => $rules_array) {
-			foreach ($rules_array as $name => $rule) {
+
+			foreach ($rules_array as $error => $rule) {
 				if (in_array($field, $ignore_array)) {
 					continue;
 				}
 
 				$value = (string)App::getProperty($field, $data);
-				$error = $rule;
-				$params  = '';
-				if (is_array($rule)) {
-					[$error, $params] = $rule;
-				}
 
-				if (isset($this->supported_rules[$name])) {
-					$class = $this->supported_rules[$name];
-					$validator = new $class($this->app, $field, $table, $id_field);
-
-					if (!$validator->validate($value, $params)) {
+				if (is_callable($rule)) {
+					//the rule is a custom callable function rather than a supported rule
+					$function = $rule;
+					if (!$function($value)) {
 						$ok = false;
 						$this->errors[] = $error;
 						break;
 					}
 				} else {
-					//is rule a callable function/method?
-					if (is_array($rule) && is_callable($rule[1])) {
-						$method = $rule[1];
-						if (!$method($value)) {
+					$name = $rule;
+					$params  = '';
+					if (is_array($rule)) {
+						[$name, $params] = $rule;
+					}
+
+					if (isset($this->supported_rules[$name])) {
+						$class = $this->supported_rules[$name];
+						$validator = new $class($this->app, $field, $table, $id_field);
+
+						if (!$validator->validate($value, $params)) {
 							$ok = false;
 							$this->errors[] = $error;
 							break;
@@ -117,8 +119,7 @@ class Validator
 				}
 			}
 		}
-		var_dump($ok, $this->errors);
-		die;
+
 		return $ok;
 	}
 

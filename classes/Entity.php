@@ -51,9 +51,7 @@ class Entity
 				$data[$name] = $this->$name;
 			}
 		} else {
-			$data = get_object_vars($this);
-
-			$this->unsetProtectedData($data);
+			$data = App::getObjectVars($this);
 		}
 
 		return $data;
@@ -124,8 +122,6 @@ class Entity
 	{
 		$data = get_object_vars($this);
 
-		$this->unsetProtectedData($data);
-
 		if ($data) {
 			return true;
 		}
@@ -158,13 +154,6 @@ class Entity
 		}
 
 		return $this;
-	}
-
-	/**
-	* @internal
-	*/
-	public function unsetProtectedData(array &$data)
-	{
 	}
 
 	/**
