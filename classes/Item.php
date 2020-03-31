@@ -35,14 +35,14 @@ abstract class Item extends Row
 	protected array $errors = [];
 
 	/**
-	* @var array $_rules Validation rules
+	* @var array $_validation_rules Validation rules
 	*/
-	protected static array $_rules = [];
+	protected static array $_validation_rules = [];
 
 	/**
-	* @var array $_skip_rules Validation rules to skip when validating, if any
+	* @var array $_skip_validation_rules Validation rules to skip when validating, if any
 	*/
-	protected array $_skip_rules = [];
+	protected array $_skip_validation_rules = [];
 
 	/**
 	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
@@ -198,19 +198,19 @@ abstract class Item extends Row
 	* Returns the validation rules
 	* @return array The rules
 	*/
-	protected function getRules() : array
+	protected function getValidationRules() : array
 	{
-		return static::$_rules;
+		return static::$_validation_rules;
 	}
 
 	/**
-	* The same as skipRules
+	* The same as skipValidationRules
 	* @param string $rule The rule to skip
 	* @return $this
 	*/
-	public function skipRule(string $rule)
+	public function skipValidationRule(string $rule)
 	{
-		return $this->skipRules($rule);
+		return $this->skipValidationRules($rule);
 	}
 
 	/**
@@ -218,12 +218,12 @@ abstract class Item extends Row
 	* @param array|string $skip_rules Rules which will be skipped at validation
 	* @return $this
 	*/
-	public function skipRules($skip_rules)
+	public function skipValidationRules($skip_rules)
 	{
 		$skip_rules = App::getArray($skip_rules);
 		foreach ($skip_rules as $rule) {
-			if (!in_array($rule, $this->_skip_rules)) {
-				$this->_skip_rules[] = $rule;
+			if (!in_array($rule, $this->_skip_validation_rules)) {
+				$this->_skip_validation_rules[] = $rule;
 			}
 		}
 
@@ -384,17 +384,29 @@ abstract class Item extends Row
 	}
 
 	/**
+	* Determines if the loaded item is valid/has an id
+	*/
+	public function isValid() : bool
+	{
+		if ($this->getId()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Child classes can implement this method to validate the object when it's inserted/updated
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
 	protected function validate() : bool
 	{
-		$rules = $this->getRules();
+		$rules = $this->getValidationRules();
 		if (!$rules) {
 			return true;
 		}
 
-		if (!$this->validator->validate($this, $rules, $this->getTable(), $this->getIdName(), $this->_skip_rules)) {
+		if (!$this->validator->validate($this, $rules, $this->getTable(), $this->getIdName(), $this->_skip_validation_rules)) {
 			$this->errors = $this->validator->getErrors();
 
 			return false;

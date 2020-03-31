@@ -179,26 +179,6 @@ trait AppFunctionsTrait
 	}
 
 	/**
-	* Returns an array with strings built $keys
-	* @param array $keys Array containing the keys for which to return the strings
-	* @return array
-	*/
-	public static function getStrings(array $keys) : array
-	{
-		$strings = [];
-
-		foreach ($keys as $key) {
-			if (isset($strings[$key])) {
-				$strings_list[] = $strings[$key];
-			} else {
-				$strings_list[] = $key;
-			}
-		}
-
-		return $strings_list;
-	}
-
-	/**
 	* Encodes data
 	* @param mixed $data The data to encode
 	* @return string The encoded string

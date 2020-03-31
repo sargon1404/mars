@@ -15,9 +15,17 @@ trait CliFunctionsTrait
 	/**
 	* @see \Mars\Cli::getOptions()
 	*/
-	public function getOptions() : array
+	public function getOptions(array $list = []) : array
 	{
-		return $this->app->cli->getOptions();
+		return $this->app->cli->getOptions($list);
+	}
+
+	/**
+	* @see \Mars\Cli::checkArguments()
+	*/
+	public function checkArguments(int $size) : bool
+	{
+		return $this->app->cli->checkArguments($size);
 	}
 
 	/**
@@ -37,11 +45,27 @@ trait CliFunctionsTrait
 	}
 
 	/**
-	* @see \Mars\Cli::getOptionsLists()
+	* @see \Mars\Cli::getArguments()
 	*/
-	public function getOptionsList(int $min_size = 0) : array
+	public function getArguments(int $size) : array
 	{
-		return $this->app->cli->getOptionsList($min_size);
+		return $this->app->cli->getArguments($size);
+	}
+
+	/**
+	* @see \Mars\Cli::getArgument()
+	*/
+	public function getArgument() : string
+	{
+		return $this->app->cli->getArgument();
+	}
+
+	/**
+	* @see \Mars\Cli::getArguments()
+	*/
+	public function getArgs(int $size) : array
+	{
+		return $this->app->cli->getArguments($size);
 	}
 
 	/**
@@ -130,5 +154,29 @@ trait CliFunctionsTrait
 	public function del()
 	{
 		$this->app->cli->del();
+	}
+
+	/**
+	* @see \Mars\Cli::padStringLeft()
+	*/
+	public function padStringLeft(string $str, int $pad_length) : string
+	{
+		return $this->app->cli->padStringLeft($str, $pad_length);
+	}
+
+	/**
+	* @see \Mars\Cli::padStringRight()
+	*/
+	public function padStringRight(string $str, int $pad_length) : string
+	{
+		return $this->app->cli->padStringRight($str, $pad_length);
+	}
+
+	/**
+	* @see \Mars\Cli::padString()
+	*/
+	public function padString(string $str, int $pad_length, int $pad_length_left = 0) : string
+	{
+		return $this->app->cli->padStringRight($str, $pad_length, $pad_length_left);
 	}
 }

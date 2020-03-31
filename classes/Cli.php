@@ -31,14 +31,14 @@ class Cli
 	protected array $commands = [];
 
 	/**
+	* @param array $options_list List of options, passed without a name
+	*/
+	protected array $arguments = [];
+
+	/**
 	* @param array $options List of options
 	*/
 	protected array $options = [];
-
-	/**
-	* @param array $options_list List of options, passed without a name
-	*/
-	protected array $options_list = [];
 
 	/**
 	* List of missing options, when calling checkOptions
@@ -66,17 +66,13 @@ class Cli
 	}
 
 	/**
-	* Parses the command line options
+	* P	arses the command line options
 	* @param array $options The options to parse
 	*/
 	protected function parseOptions(array $options)
 	{
-		$current_arg = '';
-
 		foreach ($options as $option) {
 			if (strpos($option, '--') === 0) {
-				$current_arg = '';
-
 				$parts = explode('=', substr($option, 2));
 				$name = $parts[0];
 				$value = $parts[1] ?? '';
@@ -84,38 +80,124 @@ class Cli
 				$this->options[$name] = $value;
 
 			} elseif (strpos($option, '-') === 0) {
-				$current_arg = substr($option, 1);
-
-				$this->options[$current_arg] = true;
+				$name = substr($option, 1);
+				$this->options[$name] = true;
 			} else {
-				if ($current_arg) {
-					$this->options[$current_arg] = $option;
-				} else {
-					$this->options_list[] = $option;
-				}
+				$this->arguments[] = $option;
 			}
 		}
 	}
 
 	/**
 	* Returns the options
+	* @param array $list If specified, will only return the options matching the list
 	* @return array The options
 	*/
-	public function getOptions() : array
+	public function getOptions(array $list = []) : array
 	{
-		return $this->options;
+		if (!$list) {
+			return $this->options;
+		}
+
+		$options = [];
+		foreach ($list as $option) {
+			$names = App::getArray($option);
+
+			foreach ($names as $name) {
+				if (isset($this->options[$name])) {
+					$options[$name] = $this->options[$name];
+				}
+			}
+		}
+
+		return $options;
 	}
 
 	/**
-	* Alias for getOptions
-	* @see \Mars\Cli::getOptions()
+	* Returns the arguments list
+	* @param int $size The number of expected arguments
+	* @return array The arguments list
 	*/
-	public function getArgvs() : array
+	public function getArguments(int $size) : array
 	{
-		return $this->getOptions();
+		if ($size) {
+			return array_pad($this->arguments, $size, '');
+		}
+
+		return $this->arguments;
 	}
 
 	/**
+	* Returns the first argument
+	* @return string The first argument
+	*/
+	public function getArgument() : string
+	{
+		$arguments = $this->getArguments(1);
+
+		return reset($arguments);
+	}
+
+	/**
+	* Alias for getArguments
+	* @see \Mars\Cli::getArguments()
+	*/
+	public function getArgvs(int $size) : array
+	{
+		return $this->getArguments($size);
+	}
+
+	/**
+	* Checks that the right number of arguments have been passed
+	* @param int $size The
+	* @return bool
+	*/
+	public function checkArguments(int $size) : bool
+	{
+		if (count($this->arguments) == $size) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	* Returns the value of a command line option
+	* @param array|string $name The name of the option. String or array
+	* @return string The option
+	*/
+	public function getOption($name) : ?string
+	{
+		$names = App::getArray($name);
+
+		foreach ($names as $name) {
+			if (isset($this->options[$name])) {
+				return $this->options[$name];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	* Returns true if a command line option has been defined
+	* @param array|string $name The name of the option. String or array
+	* @return bool
+	*/
+	public function isOption($name) : bool
+	{
+		$names = App::getArray($name);
+
+		foreach ($names as $name) {
+			if (isset($this->options[$name])) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+		/**
 	* Checks if the specified options are found
 	* @param array $options The options to check
 	* @return bool Returns true if all options are found
@@ -152,55 +234,6 @@ class Cli
 	public function getOptionsMissing() : array
 	{
 		return $this->options_missing;
-	}
-
-	/**
-	* Returns the options list
-	* @param int $min_size If specified, will always return an array with $min_size elements
-	* @return array The options list
-	*/
-	public function getOptionsList(int $min_size = 0) : array
-	{
-		if ($min_size) {
-			return array_pad($this->options_list, $min_size, '');
-		}
-
-		return $this->options_list;
-	}
-	/**
-	* Returns the value of a command line option
-	* @param array|string $name The name of the option. String or array
-	* @return string The option
-	*/
-	public function getOption($name) : ?string
-	{
-		$names = App::getArray($name);
-
-		foreach ($names as $name) {
-			if (isset($this->options[$name])) {
-				return $this->options[$name];
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	* Returns true if a command line option has been defined
-	* @param array|string $name The name of the option. String or array
-	* @return bool
-	*/
-	public function isOption($name) : bool
-	{
-		$names = App::getArray($name);
-
-		foreach ($names as $name) {
-			if (isset($this->options[$name])) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -403,8 +436,8 @@ class Cli
 			}
 
 			foreach ($list as $item) {
-				$this->print($this->padString($item[0], $max_length_1, $col_1_left_pad), $col1_color, false);
-				$this->print($this->padString($item[1], $max_length_2), $col2_color, false);
+				$this->print($this->padString($item[0], $max_length_1), $col1_color, $col_1_left_pad, false);
+				$this->print($this->padString($item[1], $max_length_2), $col2_color, $col_2_left_pad, false);
 				echo "\n";
 			}
 		}
@@ -418,9 +451,20 @@ class Cli
 	* @param int $pad_length The spaces to prefix the string with
 	* @return string The padded string
 	*/
-	protected function padStringLeft(string $str, int $pad_length) : string
+	public function padStringLeft(string $str, int $pad_length) : string
 	{
 		return str_pad($str, strlen($str) + $pad_length, ' ', STR_PAD_LEFT);
+	}
+
+	/**
+	* Pads the string to the right with empty spaces
+	* @param string $str The string to pad
+	* @param int $pad_length The spaces to prefix the string with
+	* @return string The padded string
+	*/
+	public function padStringRight(string $str, int $pad_length) : string
+	{
+		return str_pad($str, $pad_length);
 	}
 
 	/**
@@ -430,7 +474,7 @@ class Cli
 	* @param int $pad_length_left If specified, will add $pad_length_left chars to the left
 	* @return string The padded string
 	*/
-	protected function padString(string $str, int $pad_length, int $pad_length_left = 0) : string
+	public function padString(string $str, int $pad_length, int $pad_length_left = 0) : string
 	{
 		$str = str_pad($str, $pad_length);
 		if ($pad_length_left) {
