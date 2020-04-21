@@ -15,6 +15,7 @@ use Mars\Db\DriverInterface;
 class Db
 {
 	use AppTrait;
+	use DriverTrait;
 
 	/**
 	* @var array $queries The list of executed queries, if debug is on
@@ -35,11 +36,6 @@ class Db
 	* @var Sql $sql The sql object
 	*/
 	public Sql $sql;
-
-	/**
-	* @var string $driver The used driver
-	*/
-	protected string $driver = '';
 
 	/**
 	* @var DriverInterface $handle The driver's handle
@@ -127,6 +123,19 @@ class Db
 	protected string $charset = '';
 
 	/**
+	* @var string $driver The used driver
+	*/
+	protected string $driver = '';
+
+	/**
+	* @var array $supported_drivers The supported drivers
+	*/
+	protected array $supported_drivers = [
+		'pdo' => '\Mars\Db\Pdo'
+	];
+
+
+	/**
 	* Constructs the db object
 	* @param App $app The app object
 	* @param string $driver The database driver. Currently supported: pdo
@@ -160,6 +169,8 @@ class Db
 
 		$this->setReadHost($hostname, $port, $username, $password, $database);
 		$this->setWriteHost($hostname, $port, $username, $password, $database);
+
+		$this->app->plugins->run('db_construct', $this);
 	}
 
 	/**
@@ -273,24 +284,6 @@ class Db
 
 		$this->read_handle->disconnect();
 		$this->write_handle->disconnect();
-	}
-
-	/**
-	* Returns the handle corresponding to the driver
-	* @param string $driver The driver name
-	* @return object The driver handle
-	*/
-	protected function getHandle(string $driver) : DriverInterface
-	{
-		$class = '\\Mars\\Db\\' . App::strToClass($this->driver);
-
-		$handle = new $class;
-
-		if (!$handle instanceof DriverInterface) {
-			throw new \Exception('The database driver must implement interface DriverInterface');
-		}
-
-		return $handle;
 	}
 
 	/**

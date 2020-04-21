@@ -11,7 +11,7 @@ use Mars\App;
 /**
 * The Base Validator Class
 */
-abstract class Base
+abstract class Rule
 {
 	use \Mars\AppTrait;
 
@@ -32,11 +32,11 @@ abstract class Base
 
 	/**
 	* Validates the value
-	* @param string $value The value to validate
-	* @param mixed $params Extra params
+	* @param string|array $value The value to validate
+	* @param string|array $params Extra params
 	* @return bool
 	*/
-	abstract public function validate(string $value, $params) : bool;
+	abstract public function validate($value, $params) : bool;
 
 	/**
 	* Builds the object

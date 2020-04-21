@@ -71,6 +71,8 @@ class Caching extends Cacheable
 
 		parent::__construct($app);
 
+		$this->app->plugins->run('caching_construct', $this);
+
 		$this->output();
 	}
 

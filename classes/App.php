@@ -449,7 +449,7 @@ class App
 		$content = ob_get_clean();
 
 		$content = $this->plugins->filter('app_output_filter_content', $content, $this);
-	
+
 		ob_start();
 		$this->theme->renderHeader();
 		echo $content;
@@ -457,7 +457,7 @@ class App
 		$output = ob_get_clean();
 
 		$output = $this->plugins->filter('app_output_filter_output', $output, $this);
-		
+
 		if ($this->config->debug) {
 			$output.= $this->getDebugOutput(strlen($output));
 
@@ -474,7 +474,7 @@ class App
 		if ($this->caching->can_cache) {
 			$this->caching->store($output, $this->can_gzip);
 		}
-		
+
 		$output = $this->plugins->filter('app_output_filter', $output, $this);
 
 		echo $output;

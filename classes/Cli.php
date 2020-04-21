@@ -63,10 +63,12 @@ class Cli
 
 			$this->parseOptions($options);
 		}
+
+		$this->app->plugins->run('cli_construct', $this);
 	}
 
 	/**
-	* P	arses the command line options
+	* Parses the command line options
 	* @param array $options The options to parse
 	*/
 	protected function parseOptions(array $options)

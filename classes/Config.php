@@ -24,7 +24,6 @@ class Config extends Data
 		'debug_ips' => '', //if specified, will enable debug only for the listed IPs. debug must be set to false
 
 		'development' => false, //set to true to enable development mode
-		'development_plugins' => false, //if true, will output the plugin hooks names
 		'development_device' => '', //will use this value as device, if specified
 
 		'device_start' => false,

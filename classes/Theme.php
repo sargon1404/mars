@@ -164,13 +164,13 @@ trait Theme
 	}
 
 	/**
-	* Deletes a supported modifier
+	* Removes a supported modifier
 	* @param string $name The name of the modifier
 	* @return $this
 	*/
-	public function deleteSupportedModifier(string $name)
+	public function removeSupportedModifier(string $name)
 	{
-		$this->engine->deleteSupportedModifier($name);
+		$this->engine->removeSupportedModifier($name);
 
 		return $this;
 	}

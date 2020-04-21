@@ -25,6 +25,9 @@ class AppBooter
 		$this->app->config = new Config($this->app);
 		$this->app->config->read();
 
+		$this->app->plugins = new Plugins($this->app);
+		$this->app->plugins->load();
+
 		$this->app->memcache = new Memcache($this->app);
 
 		$this->app->caching = new Caching($this->app);
@@ -119,9 +122,6 @@ class AppBooter
 	*/
 	public function system()
 	{
-		$this->app->plugins = new System\Plugins($this->app);
-		$this->app->plugins->load();
-
 		$this->app->lang = new System\Language($this->app);
 		$this->app->theme = new System\Theme($this->app);
 

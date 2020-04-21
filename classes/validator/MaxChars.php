@@ -1,6 +1,6 @@
 <?php
 /**
-* The Required Validator Class
+* The Min Chars Validator Class
 * @package Mars
 */
 
@@ -9,17 +9,17 @@ namespace Mars\Validator;
 use Mars\App;
 
 /**
-* The Required Validator Class
+* The MaxChars Validator Class
 */
-class Required extends Rule
+class MaxChars extends Rule
 {
 	/**
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate($value, $params) : bool
+	public function validate($value, $length) : bool
 	{
-		if ($value) {
+		if (strlen($value) <= $length) {
 			return true;
 		}
 

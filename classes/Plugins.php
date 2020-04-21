@@ -1,16 +1,16 @@
 <?php
 /**
-* The Plugins "Class"
+* The Plugins Class
 * @package Mars
 */
 
 namespace Mars;
 
 /**
-* The Plugins "Class"
-* Trait implementing the Plugins functionality
+* The Plugins Class
+* Class implementing the Plugins functionality
 */
-trait Plugins
+class Plugins
 {
 	/**
 	* @var array $exec_time The execution time for all plugins is stored here. Set only if debug is enabled
@@ -33,6 +33,16 @@ trait Plugins
 	protected array $hooks = [];
 
 	/**
+	* @var array $hooks_exec_time The execution time for all hooks is stored here. Set only if debug is enabled
+	*/
+	public array $hooks_exec_time = [];
+
+	/**
+	* @var array $exec_hooks Executed hooks. Set only if debug is enabled
+	*/
+	protected array $exec_hooks = [];
+
+	/**
 	* @var string $output_prefix The prefix to use when using the output function
 	*/
 	protected string $output_prefix = '';
@@ -45,7 +55,45 @@ trait Plugins
 	/**
 	* @var string $namespace The namespace used to load plugins
 	*/
-	protected static string $namespace = "plugins\\";
+	protected static string $namespace = "App\\Extensions\\Plugins\\";
+
+	/**
+	* Builds the plugins object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+
+		$this->enabled = $this->app->config->plugins_enable;
+	}
+
+	/**
+	* Loads the plugins
+	*/
+	public function load()
+	{
+		if (!$this->enabled) {
+			return;
+		}
+
+		$plugins = require($this->app->site_dir . 'config-plugins.php');
+		if (!$plugins) {
+			return;
+		}
+
+		foreach ($plugins as $name) {
+			$class = static::$namespace . App::strToClass($name) . "\\" . App::strToClass($name);
+
+			$plugin = new $class($this->app, $name);
+
+			if (!$plugin instanceof Plugin) {
+				throw new \Exception("Class {$class} must extend class Plugin");
+			}
+
+			$this->plugins[$name] = $plugin;
+		}
+	}
 
 	/**
 	* Returns the list of loaded plugins
@@ -57,23 +105,32 @@ trait Plugins
 	}
 
 	/**
+	* Returns the list of executed hooks
+	* @return array
+	*/
+	public function getHooks() : array
+	{
+		return $this->exec_hooks;
+	}
+
+	/**
 	* Registers hooks for execution
-	* @param int $pid The id of the plugin which registers the hooks
+	* @param string $name The name of the plugin which registers the hooks
 	* @param array $hooks The names of the hooks at which the plugin will be attached
 	* @return $this
 	*/
-	public function addHooks(int $pid, array $hooks)
+	public function addHooks(string $name, array $hooks)
 	{
 		if (!$this->enabled) {
 			return $this;
 		}
 
-		foreach ($hooks as $hook) {
+		foreach ($hooks as $hook => $method) {
 			if (!isset($this->hooks[$hook])) {
 				$this->hooks[$hook] = [];
 			}
 
-			$this->hooks[$hook][] = $pid;
+			$this->hooks[$hook][] = [$name, $method];
 		}
 
 		return $this;
@@ -91,6 +148,17 @@ trait Plugins
 	}
 
 	/**
+	* Filters a value, by running the hooks. Unlike run(), the args are not passed by reference
+	* @param string $hook The name of the hook
+	* @param mixed $args The arguments to be passed to the plugins
+	* @return mixed The filtered value
+	*/
+	public function filter(string $hook, ...$args)
+	{
+		return $this->exec($hook, $args, 0);
+	}
+
+	/**
 	* Executes the hooks
 	* @param string $hook The name of the hook
 	* @param array $args The arguments to be passed to the plugins
@@ -99,16 +167,20 @@ trait Plugins
 	*/
 	protected function exec(string $hook, array &$args, int $return_arg = null)
 	{
-		if (!$this->enabled || !$this->hooks || !isset($this->hooks[$hook])) {
+		if (!$this->enabled) {
+			return null;
+		}
+
+		if ($this->app->config->debug) {
+			$this->exec_hooks[] = $hook;
+		}
+
+		if (!$this->hooks || !isset($this->hooks[$hook])) {
 			if ($return_arg !== null) {
 				return $args[$return_arg];
 			}
 
-			return;
-		}
-
-		if ($this->app->config->development_plugins) {
-			\var_dump($hook);
+			return null;
 		}
 
 		$ret = null;
@@ -119,12 +191,14 @@ trait Plugins
 			$orig_value = $args[$return_arg];
 		}
 
-		foreach ($this->hooks[$hook] as $pid) {
+		foreach ($this->hooks[$hook] as $data) {
 			if ($this->app->config->debug) {
 				$this->startTimer();
 			}
 
-			$p_ret = call_user_func_array([$this->plugins[$pid], $hook], $args);
+			[$name, $method] = $data;
+
+			$p_ret = call_user_func_array([$this->plugins[$name], $method], $args);
 
 			if ($p_ret !== null) {
 				if ($return_arg !== null) {
@@ -135,7 +209,7 @@ trait Plugins
 			}
 
 			if ($this->app->config->debug) {
-				$this->endTimer($pid);
+				$this->endTimer($name, $hook);
 			}
 		}
 
@@ -157,26 +231,18 @@ trait Plugins
 
 	/**
 	* Ends the timer and stores the elapes time in exec_time, if debug is on
-	* @param int $pid The plugin's id
+	* @param string $name The plugin's name
+	* @param string $hook The hook's name
 	*/
-	protected function endTimer(int $pid)
+	protected function endTimer(string $name, string $hook)
 	{
-		if (!isset($this->exec_time[$pid])) {
-			$this->exec_time[$pid] = 0;
-		}
+		$time = $this->app->timer->end('plugin_run');
 
-		$this->exec_time[$pid]+= $this->app->timer->end('plugin_run');
-	}
+		$this->exec_time[$name] ??= 0;
+		$this->hooks_exec_time[$hook] ??= 0;
 
-	/**
-	* Filters a value, by running the hooks. Unlike run(), the args are not passed by reference
-	* @param string $hook The name of the hook
-	* @param mixed $args The arguments to be passed to the plugins
-	* @return mixed The filtered value
-	*/
-	public function filter(string $hook, ...$args)
-	{
-		return $this->exec($hook, $args, 0);
+		$this->exec_time[$name]+= $time;
+		$this->hooks_exec_time[$hook] += $time;
 	}
 
 	/**
@@ -190,7 +256,7 @@ trait Plugins
 		array_unshift($args, $this->output_obj);
 
 		$name = $this->output_prefix . '_' . $hook;
-		
+
 		if ($this->app->config->development_plugins) {
 			echo '<hr>' . $name . '<hr>';
 		}

@@ -24,7 +24,7 @@ class Memcache implements DriverInterface
 		$this->app = $app;
 
 		if (!$this->app->memcache->isEnabled()) {
-			throw new \Exception('Memcache must be enable to be able to use the memcache cachable driver');
+			throw new \Exception('Memcache must be enabled to be able to use the memcache cachable driver');
 		}
 	}
 

@@ -42,9 +42,17 @@ class Memcache
 	protected bool $connected = false;
 
 	/**
-	* @var string $driver_namespace The driver's namespace
+	* @var string $driver The used driver
 	*/
-	protected string $driver_namespace = '\\Mars\\Memcache';
+	protected string $driver = '';
+	/**
+	* @var array $supported_drivers The supported drivers
+	*/
+	protected array $supported_drivers = [
+		'redis' => '\Mars\Memcache\Redis',
+		'memcache' => '\Mars\Memcache\Memcache',
+		'memcached' => '\Mars\Memcache\Memcached'
+	];
 
 	/**
 	* Contructs the memcache object
@@ -74,6 +82,8 @@ class Memcache
 		$this->port = $port;
 		$this->key = $key;
 		$this->enabled = true;
+
+		$this->app->plugins->run('memcache_construct', $this);
 	}
 
 	/**

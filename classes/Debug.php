@@ -28,18 +28,28 @@ class Debug
 
 		$execution_time = $this->app->timer->getExecutionTime();
 
+		$this->app->plugins->run('debug_output_step1', $this);
+
 		$this->outputInfo($execution_time);
 		$this->outputExecutionTime($execution_time);
+
+		$this->app->plugins->run('debug_output_step2', $this);
 
 		$this->outputDbQueries($execution_time);
 
 		$this->outputPlugins($execution_time);
 
+		$this->app->plugins->run('debug_output_step3', $this);
+
 		$this->outputLoadedTemplates();
 
+		$this->app->plugins->run('debug_output_step4', $this);
+
 		$this->outputOpcacheInfo();
-		
+
 		$this->outputPreloadInfo();
+
+		$this->app->plugins->run('debug_output_step5', $this);
 
 		echo '</div>';
 	}
@@ -50,7 +60,7 @@ class Debug
 	*/
 	protected function outputInfo(float $execution_time)
 	{
-		echo '<table class="grid debug-grid" style="width:auto;">';
+		echo '<table class="grid-table debug-grid" style="width:auto;">';
 		echo '<tr><th colspan="3">Debug Info</th></tr>';
 		echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td></tr>';
 		echo '<tr><td><strong>Output Size</strong></td><td>' . $this->app->format->size($this->info['output_size'] / 1024) . '</td></tr>';
@@ -71,7 +81,7 @@ class Debug
 		$db_time = $this->app->db->queries_time;
 		$plugins_time = $this->getPluginsExecTime();
 
-		echo '<table class="grid debug-grid" style="width:auto;">';
+		echo '<table class="grid-table debug-grid" style="width:auto;">';
 		echo '<tr><th colspan="3">Execution Time</th></tr>';
 		echo '<tr><td><strong>Execution Time</strong></td><td>' . $execution_time . 's</td><td></td></tr>';
 		echo "<tr><td><strong>DB Queries</strong></td><td>{$db_time}s</td><td>" . $this->app->format->percentage($db_time, $execution_time) . '%</td></tr>';
@@ -88,7 +98,7 @@ class Debug
 	{
 		$db_time = $this->app->db->queries_time;
 
-		echo '<table class="grid debug-grid debug-db-grid" style="width:100%;text-align:left">';
+		echo '<table class="grid-table debug-grid debug-db-grid" style="width:100%;text-align:left">';
 		echo '<tr><th colspan="4">Queries</th></tr>';
 
 		$i = 1;
@@ -125,16 +135,41 @@ class Debug
 			return;
 		}
 
-		echo '<table class="grid debug-grid debug-grid-plugins" style="width:auto;">';
+		echo '<table class="grid-table debug-grid debug-grid-plugins" style="width:auto;">';
 		echo '<tr><th colspan="3">Plugins</th></tr>';
 
 		foreach ($plugins as $plugin) {
-			$plugin_execution_time = $this->app->plugins->exec_time[$plugin->pid];
+			if (!isset($this->app->plugins->exec_time[$plugin->name])) {
+				continue;
+			}
 
-			echo "<tr><td>" . App::e($plugin->title) . "</td><td>" . floatval($plugin_execution_time) . "</td><td>" . $this->app->format->percentage($plugin_execution_time, $execution_time) . '%</td></tr>';
+			$exec_time = $this->app->plugins->exec_time[$plugin->name];
+
+			echo "<tr><td>" . App::e($plugin->title) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
 		}
 
 		echo '</table><br><br>';
+
+		echo '<table class="grid-table debug-grid debug-grid-hooks" style="width:auto;">';
+		echo '<tr><th colspan="3">Hooks Execution Time</th></tr>';
+
+		foreach ($this->app->plugins->hooks_exec_time as $hook => $exec_time) {
+			echo "<tr><td>" . App::e($hook) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
+		}
+
+		echo '</table><br><br>';
+
+		if ($this->app->request->isGet('show_hooks')) {
+			$hooks = $this->app->plugins->getHooks();
+			echo '<table class="grid-table debug-grid debug-grid-hooks" style="width:auto;">';
+			echo '<tr><th colspan="3">Hooks</th></tr>';
+
+			foreach ($hooks as $hook) {
+				echo "<tr><td>" . App::e($hook) . '</td></tr>';
+			}
+
+			echo '</table><br><br>';
+		}
 	}
 
 	/**
@@ -156,7 +191,7 @@ class Debug
 	*/
 	protected function outputLoadedTemplates()
 	{
-		echo '<table class="grid debug-grid debug-grid-templates" style="width:auto;">';
+		echo '<table class="grid-table debug-grid debug-grid-templates" style="width:auto;">';
 		echo '<tr><th colspan="1">Loaded templates</th></tr>';
 		echo '<tr><td class="left">';
 		App::pp($this->app->theme->getLoadedTemplates(), false, false);
@@ -171,7 +206,7 @@ class Debug
 	{
 		$info = opcache_get_status(true);
 
-		echo '<table class="grid debug-grid" style="width:auto;">';
+		echo '<table class="grid-table debug-grid" style="width:auto;">';
 		echo '<tr><th colspan="3">Opcache Info</th></tr>';
 		echo '<tr><td><strong>Enabled</strong></td><td>' . ($info['opcache_enabled'] ? 'Yes' : 'No') . '</td></tr>';
 
@@ -205,7 +240,7 @@ class Debug
 		echo '</table><br><br>';
 
 		if ($uncached_files) {
-			echo '<table class="grid debug-grid debug-db-grid" style="width:100%;text-align:left">';
+			echo '<table class="grid-table debug-grid debug-db-grid" style="width:100%;text-align:left">';
 			echo '<tr><th>Files Read From Disk</th></tr>';
 			foreach ($uncached_files as $file) {
 				echo '<tr><td>' . App::e($file) . '</td></tr>';
@@ -213,15 +248,15 @@ class Debug
 			echo '</table><br><br>';
 		}
 	}
-	
+
 	protected function outputPreloadInfo()
 	{
 		$info = opcache_get_status(true);
 
-		echo '<table class="grid debug-grid" style="width:auto;">';
+		echo '<table class="grid-table debug-grid" style="width:auto;">';
 		echo '<tr><th colspan="3">Preload Info</th></tr>';
 		echo '<tr><td><strong>Enabled</strong></td><td>' . (isset($info['preload_statistics']) ? 'Yes' : 'No') . '</td></tr>';
-		
+
 		if (isset($info['preload_statistics'])) {
 			if (isset($info['preload_statistics']['functions'])) {
 				echo '<tr><td><strong>Preloaded Functions</strong></td><td>' . count($info['preload_statistics']['functions']) . '</td></tr>';
@@ -231,7 +266,7 @@ class Debug
 			}
 			echo '<tr><td><strong>Memory: Used</strong></td><td>' . $this->app->format->size($info['preload_statistics']['memory_consumption'] / 1024) . '</td></tr>';
 		}
-		
+
 		echo '</table><br><br>';
 	}
 

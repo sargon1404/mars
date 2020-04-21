@@ -11,20 +11,21 @@ use Mars\App;
 /**
 * The Ip Validator Class
 */
-class Ip extends Base
+class Ip extends Rule
 {
 	/**
-	* @see \Mars\Validator\Base::validate()
+	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate(string $value, $wildcards) : bool
+	public function validate($value, $wildcards) : bool
 	{
 		if (!$wildcards) {
 			return filter_var($value, FILTER_VALIDATE_IP);
 		}
 
 		//replace colons with dots if it's an IPv6 address
-		$value = str_replace(':', '.', strtolower($value);
+		$value = str_replace(':', '.', strtolower($value));
+
 		$segments = explode('.', $value);
 		$segments_count = count($segments);
 
@@ -38,15 +39,15 @@ class Ip extends Base
 		$regexp = '';
 		$max_size = 3;
 		if ($segments_count == 8) {
-			$regexp = '/[a-f0-9]{1,4}/';
+			$regexp = '/^[a-f0-9]{1,4}$/';
 			if ($wildcards) {
-				$regexp = '/[a-f0-9\*]{1,4}/';
+				$regexp = '/^[a-f0-9\*]{1,4}$/';
 			}
 			$max_size = 4;
 		} else {
-			$regexp = '/[a-f0-9]{1,3}/';
+			$regexp = '/^[0-9]{1,3}$/';
 			if ($wildcards) {
-				$regexp = '/[a-f0-9\*]{1,3}/';
+				$regexp = '/^[0-9\*]{1,3}$/';
 			}
 		}
 
@@ -54,6 +55,7 @@ class Ip extends Base
 			if (strlen($segment) > $max_size) {
 				return false;
 			}
+
 			if (!preg_match($regexp, $segment, $m)) {
 				return false;
 			}

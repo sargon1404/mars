@@ -12,13 +12,14 @@ namespace Mars;
 */
 class Plugin extends \Mars\Extensions\Basic
 {
-	/**
-	* @var int $pid The plugin's id
-	*/
-	public int $pid = 0;
 
 	/**
-	* @var array $hooks Array listing the defined hooks
+	* @var string $title The plugin's title
+	*/
+	public string $title = '';
+
+	/**
+	* @var array $hooks Array listing the defined hooks in the format [hook_name => method]
 	*/
 	protected array $hooks = [];
 
@@ -34,16 +35,17 @@ class Plugin extends \Mars\Extensions\Basic
 
 	/**
 	* Builds the plugin
+	* @param App $app The app object
 	* @param string $name The name of the plugin
-	* @param int $pid The plugin's id
 	*/
-	public function __construct(string $name, int $pid)
+	public function __construct(App $app, string $name)
 	{
-		$this->app = $this->getApp();
+		$this->app = $app;
+		$this->name = $name;
+		$this->title = $name;
 
-		$this->pid = $pid;
-
-		$this->load($name);
+		//$this->load($name);
+		$this->prepare();
 
 		$this->addHooks();
 	}
@@ -53,6 +55,6 @@ class Plugin extends \Mars\Extensions\Basic
 	*/
 	protected function addHooks()
 	{
-		$this->app->plugins->addHooks($this->pid, $this->hooks);
+		$this->app->plugins->addHooks($this->name, $this->hooks);
 	}
 }

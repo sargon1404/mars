@@ -52,6 +52,8 @@ class Log
 		$this->date = date('d-m-Y H:i:s');
 
 		set_error_handler([$this, 'handleError'], $this->app->config->log_error_types);
+
+		$this->app->plugins->run('log_construct', $this);
 	}
 
 	/**

@@ -24,5 +24,7 @@ class Language extends \Mars\Extensions\Basic
 		$this->app = $app;
 
 		parent::__construct($this->app->config->lang);
+
+		$this->app->plugins->run('system_language_construct', $this);
 	}
 }

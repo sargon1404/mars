@@ -9,17 +9,17 @@ namespace Mars\Validator;
 use Mars\App;
 
 /**
-* The Base Validator Class
+* The Min Validator Class
 */
-class Min extends Base
+class Min extends Rule
 {
 	/**
-	* @see \Mars\Validator\Base::validate()
+	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate(string $value, $length) : bool
-	{
-		if (strlen($value) >= $length) {
+	public function validate($value, $min) : bool
+	{		
+		if ($value >= $min) {
 			return true;
 		}
 

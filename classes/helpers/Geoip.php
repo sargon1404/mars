@@ -30,6 +30,8 @@ class Geoip
 		if (extension_loaded('geoip')) {
 			$this->enabled = true;
 		}
+
+		$this->app->plugins->run('helpers_geoip_construct', $this);
 	}
 
 	/**

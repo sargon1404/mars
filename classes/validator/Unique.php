@@ -11,13 +11,13 @@ use Mars\App;
 /**
 * The Unique Validator Class
 */
-class Unique extends Base
+class Unique extends Rule
 {
 	/**
-	* @see \Mars\Validator\Base::validate()
+	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate(string $value, $params) : bool
+	public function validate($value, $params) : bool
 	{
 		if ($this->app->db->exists($this->table, [$this->field => $value])) {
 			return false;

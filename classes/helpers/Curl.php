@@ -69,6 +69,8 @@ class Curl
 		if (isset($_SERVER['HTTP_USER_AGENT'])) {
 			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		}
+		
+		$this->app->plugins->run('helpers_curl_construct', $this);
 	}
 
 	/**

@@ -11,13 +11,13 @@ use Mars\App;
 /**
 * The Url Validator Class
 */
-class Url extends Base
+class Url extends Rule
 {
 	/**
-	* @see \Mars\Validator\Base::validate()
+	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate(string $value, $params) : bool
+	public function validate($value, $params) : bool
 	{
 		$url = strtolower($value);
 

@@ -24,16 +24,18 @@ class Device
 	* @var string $devices Array listing the supported devices
 	*/
 	public array $devices = ['desktop', 'tablet', 'smartphone'];
-	
+
 	/**
 	* @var string $driver The name of the driver
 	*/
-	protected string $driver = 'MobileDetect';
-	
+	protected string $driver = 'mobile_detect';
+
 	/**
-	* @var string $driver_namespace The driver's namespace
+	* @var array $supported_drivers The supported drivers
 	*/
-	protected string $driver_namespace = '\\Mars\\Device';
+	protected array $supported_drivers = [
+		'mobile_detect' => '\Mars\Device\MobileDetect'
+	];
 
 	/**
 	* Builds the device object
@@ -46,6 +48,8 @@ class Device
 		if (!$this->app->config->device_start) {
 			return;
 		}
+
+		$this->app->plugins->run('device_construct');
 
 		$this->type = $this->getDevice();
 	}
@@ -125,17 +129,17 @@ class Device
 		if ($device !== null) {
 			return $device;
 		}
-		
+
 		//do we get the device name from varnish?
 		if (isset($_SERVER['X-Device'])) {
 			if (in_array($_SERVER['X-Device'], $this->devices)) {
 				$device = $_SERVER['X-Device'];
 			}
 		}
-		
+
 		if (!$device) {
 			$detector = $this->getHandle();
-	
+
 			$device = 'desktop';
 			if ($detector->isTablet()) {
 				$device = 'tablet';

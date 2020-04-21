@@ -13,19 +13,42 @@ namespace Mars;
 trait DriverTrait
 {
 	/**
+	* @var object $handle The driver's handle
+	*/
+	//protected object $handle;
+
+	/**
 	* @var string $driver The name of the driver
 	*/
 	//protected string $driver = '';
 
 	/**
-	* @var string $driver_namespace The namespace where the driver's class can be found
+	* @var array $supported_drivers The supported drivers
 	*/
-	//protected string $driver_namespace = '';
+	//protected array $supported_drivers = [];
 
 	/**
-	* @var object $handle The driver's handle
+	* Adds a supported driver
+	* @param string $name The name of the driver
+	* @param string $class The class which will handle it
+	* @return $this
 	*/
-	protected object $handle;
+	public function addSupportedDriver(string $name, string $class)
+	{
+		$this->supported_drivers[$name] = $class;
+	}
+
+	/**
+	* Removes a supported driver
+	* @param string $name The name of the driver
+	* @return $this
+	*/
+	public function removeSupportedDriver(string $name)
+	{
+		unset($this->supported_drivers[$name]);
+
+		return $this;
+	}
 
 	/**
 	* Returns the name of the driver to use
@@ -47,42 +70,14 @@ trait DriverTrait
 			$driver = $this->driver;
 		}
 
-		$class = $this->driver_namespace . '\\' . App::strToClass($driver);
+		if (!isset($this->supported_drivers[$driver])) {
+			throw new \Exception("Driver {$driver} is not on the list of supported drivers");
+		}
+
+		$class = $this->supported_drivers[$driver];
 
 		$handle = new $class($this->app);
 
-		$this->checkHandle($handle);
-
 		return $handle;
-	}
-
-	/**
-	* Sets the driver's handle
-	* @param object $handle The handle
-	* @return $this
-	*/
-	public function setHandle(object $handle)
-	{
-		$this->handle = $handle;
-
-		$this->checkHandle($handle);
-	}
-
-	/**
-	* Checks the driver's handle
-	* @param object $handle The handle
-	* @return $this
-	*/
-	protected function checkHandle(object $handle)
-	{
-		$interface = $this->driver_namespace . '\\' . 'DriverInterface';
-
-		if (!is_a($handle, $interface)) {
-			$class = get_class($handle);
-
-			throw new \Exception("The {$class} driver must implement interface {$interface}");
-		}
-
-		return $this;
 	}
 }

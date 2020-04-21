@@ -88,6 +88,8 @@ class Request
 		if ($this->server('REQUEST_METHOD', true) == 'post') {
 			$this->method = 'post';
 		}
+
+		$this->app->plugins->run('request_construct', $this);
 	}
 
 	/**

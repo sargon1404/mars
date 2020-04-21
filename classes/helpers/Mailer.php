@@ -32,6 +32,8 @@ class Mailer
 		$this->mail = new PHPMailer;
 		$this->mail->setLanguage('en', $this->app->libraries_dir . 'php/vendor/phpmailer/phpmailer/language/');
 		$this->mail->CharSet = 'UTF-8';
+
+		$this->app->plugins->run('helpers_mailer_construct', $this);
 	}
 
 	/**

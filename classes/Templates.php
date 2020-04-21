@@ -116,11 +116,11 @@ class Templates
 	}
 
 	/**
-	* Deletes a supported modifier
+	* Removes a supported modifier
 	* @param string $name The name of the modifier
 	* @return $this
 	*/
-	public function deleteSupportedModifier(string $name)
+	public function removeSupportedModifier(string $name)
 	{
 		unset($this->supported_modifiers[$name]);
 

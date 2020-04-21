@@ -11,13 +11,13 @@ use Mars\App;
 /**
 * The Pattern Validator Class
 */
-class Pattern extends Base
+class Pattern extends Rule
 {
 	/**
-	* @see \Mars\Validator\Base::validate()
+	* @see \Mars\Validator\Rule::validate()
 	* {@inheritDocs}
 	*/
-	public function validate(string $value, $pattern) : bool
+	public function validate($value, $pattern) : bool
 	{
 		if (preg_match($pattern, $value, $m)) {
 			return false;

@@ -25,5 +25,7 @@ class Theme extends \Mars\extensions\Basic
 		$this->engine = new Templates;
 
 		parent::__construct($this->app->config->theme);
+
+		$this->app->plugins->run('system_theme_construct', $this);
 	}
 }

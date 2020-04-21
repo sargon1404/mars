@@ -51,9 +51,12 @@ abstract class Cacheable
 	protected string $driver = 'file';
 
 	/**
-	* @var string $driver_namespace The driver's namespace
+	* @var array $supported_drivers The supported drivers
 	*/
-	protected string $driver_namespace = '\\Mars\\Cacheable';
+	protected array $supported_drivers = [
+		'file' => '\Mars\Cacheable\File',
+		'memcache' => '\Mars\Cacheable\Memcache'
+	];
 
 	/**
 	* Returns the file used to cache the content
@@ -68,8 +71,12 @@ abstract class Cacheable
 	{
 		$this->app = $app;
 
-		$this->init();
-		$this->prepare();
+		$this->file = $this->getFile();
+		$this->filename = $this->dir . $this->file;
+
+		$this->app->plugins->run('cacheable_construct', $this);
+
+		$this->handle = $this->getHandle();
 	}
 
 	/**
@@ -93,15 +100,6 @@ abstract class Cacheable
 		}
 
 		return $this->driver;
-	}
-
-	/**
-	* Prepares the cache paths
-	*/
-	protected function prepare()
-	{
-		$this->file = $this->getFile();
-		$this->filename = $this->dir . $this->file;
 	}
 
 	/**

@@ -18,46 +18,25 @@ class Response
 	use DriverTrait;
 
 	/**
-	* @var bool $initialized Set to true, if the driver & handle have been set
+	* @var array $supported_drivers The supported drivers
 	*/
-	protected bool $initialized = false;
-
-	/**
-	* @var string $driver_namespace The driver's namespace
-	*/
-	protected string $driver_namespace = '\\Mars\\Response';
+	protected array $supported_drivers = [
+		'ajax' => '\Mars\Response\Ajax',
+		'html' => '\Mars\Response\Html'
+	];
 
 	/**
 	* Builds the Response object
 	* @param App $app The app object
-	* @param string $driver The driver used to output the content
 	*/
-	public function __construct(App $app, string $driver = '')
+	public function __construct(App $app)
 	{
 		$this->app = $app;
-
-		if (!$driver) {
-			$driver = $this->app->request->getResponse();
-		}
-
-		$this->driver = $driver;
-
-		$this->init();
-	}
-
-	/**
-	* Initializes the driver & handle
-	*/
-	protected function init()
-	{
-		if ($this->initialized) {
-			return;
-		}
-
 		$this->driver = $this->getDriver();
-		$this->handle = $this->getHandle();
 
-		$this->initialized = true;
+		$this->app->plugins->run('response_construct', $this);
+
+		$this->handle = $this->getHandle();
 	}
 
 	/**
@@ -66,15 +45,15 @@ class Response
 	*/
 	protected function getDriver() : string
 	{
-		switch ($this->driver) {
+		$driver = $this->app->request->getResponse();
+
+		switch ($driver) {
 			case 'ajax':
 			case 'json':
 				return 'ajax';
 			default:
 				return 'html';
 		}
-
-		return $this->driver;
 	}
 
 	/**

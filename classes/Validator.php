@@ -26,10 +26,16 @@ class Validator
 		'required' => '\Mars\Validator\Required',
 		'unique' => '\Mars\Validator\Unique',
 		'min' => '\Mars\Validator\Min',
+		'max' => '\Mars\Validator\Max',
+		'min_chars' => '\Mars\Validator\MinChars',
+		'max_chars' => '\Mars\Validator\MaxChars',
 		'pattern' => '\Mars\Validator\Pattern',
 		'email' => '\Mars\Validator\Email',
 		'url' => '\Mars\Validator\Url',
 		'ip' => '\Mars\Validator\Ip',
+		'time' => '\Mars\Validator\Time',
+		'date' => '\Mars\Validator\Date',
+		'datetime' => '\Mars\Validator\Datetime',
 	];
 
 	/**
@@ -46,11 +52,11 @@ class Validator
 	}
 
 	/**
-	* Deletes a supported validation rule
+	* Removes a supported validation rule
 	* @param string $name The name of the rule
 	* @return $this
 	*/
-	public function deleteSupportedRule(string $name)
+	public function removeSupportedRule(string $name)
 	{
 		unset($this->supported_rules[$name]);
 
@@ -64,6 +70,25 @@ class Validator
 	public function getErrors() : array
 	{
 		return $this->errors;
+	}
+
+	/**
+	* Checks a value agains a validator
+	* @param string|array $value The value to validate
+	* @param string $rule The rule to validate the value against
+	* @param string|array $params Extra params to pass to the validator
+	* @return bool Returns true if the value is valid
+	*/
+	public function check($value, string $rule, $params = '') : bool
+	{
+		if (!isset($this->supported_rules[$rule])) {
+			throw new \Exception("Unknown validator: {$rule}");
+		}
+
+		$class = $this->supported_rules[$rule];
+		$validator = new $class($this->app);
+
+		return $validator->validate($value, $params);
 	}
 
 	/**
@@ -123,30 +148,6 @@ class Validator
 		return $ok;
 	}
 
-
-
-	/**
-	* Validates $value based on $type
-	* @param string $value The value to validate
-	* @param string Validation's type. Eg: url/email/ip/file
-	* @return bool It returns true if $value passes validation, false otherwise. If will also return false, if $type is unknown
-	*/
-	public function check(string $value, string $type) : bool
-	{
-		switch ($type) {
-			case 'url':
-				return $this->isUrl($value);
-			case 'email':
-				return $this->isEmail($value);
-			case 'ip':
-				return $this->isIp($value);
-			case 'file':
-				return $this->isFile($value);
-		}
-
-		return false;
-	}
-
 	/**
 	* Validates a datetime
 	* @param int $year The year
@@ -159,14 +160,7 @@ class Validator
 	*/
 	public function isDatetime(int $year, int $month, int $day, int $hour, int $minute, int $second) : bool
 	{
-		if (!$this->isDate($year, $month, $day)) {
-			return false;
-		}
-		if (!$this->isTime($hour, $minute, $second)) {
-			return false;
-		}
-
-		return true;
+		return $this->check([$year, $month, $day, $hour, $minute, $second], 'datetime');
 	}
 
 	/**
@@ -178,7 +172,7 @@ class Validator
 	*/
 	public function isDate(int $year, int $month, int $day) : bool
 	{
-		return checkdate($month, $day, $year);
+		return $this->check([$year, $month, $day], 'date');
 	}
 
 	/**
@@ -190,17 +184,7 @@ class Validator
 	*/
 	public function isTime(int $hour, int $minute, int $second) : bool
 	{
-		if ($hour < 0 || $hour > 23) {
-			return false;
-		}
-		if ($minute < 0 || $minute > 59) {
-			return false;
-		}
-		if ($second < 0 || $second > 59) {
-			return false;
-		}
-
-		return true;
+		return $this->check([$hour, $minute, $second], 'time');
 	}
 
 	/**
@@ -210,17 +194,7 @@ class Validator
 	*/
 	public function isUrl(string $url) : bool
 	{
-		$l_url = strtolower($url);
-
-		if (strpos($l_url, 'ssh://') === 0) {
-			return false;
-		} elseif (strpos($l_url, 'ftp://') === 0) {
-			return false;
-		} elseif (strpos($l_url, 'mailto:') === 0) {
-			return false;
-		}
-
-		return filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED);
+		return $this->check($url, 'url');
 	}
 
 	/**
@@ -230,7 +204,7 @@ class Validator
 	*/
 	public function isEmail(string $email) : bool
 	{
-		return filter_var($email, FILTER_VALIDATE_EMAIL);
+		return $this->check($email, 'email');
 	}
 
 	/**
@@ -241,46 +215,6 @@ class Validator
 	*/
 	public function isIp(string $ip, bool $wildcards = false) : bool
 	{
-		if (!$wildcards) {
-			return filter_var($ip, FILTER_VALIDATE_IP);
-		}
-
-		//replace colons with dots if it's an IPv6 address
-		$ip = str_replace(':', '.', strtolower($ip));
-		$segments = explode('.', $ip);
-		$segments_count = count($segments);
-
-		if (!$segments_count) {
-			return false;
-		}
-		if ($segments_count != 4 && $segments_count != 8) {
-			return false;
-		}
-
-		$regexp = '';
-		$max_size = 3;
-		if ($segments_count == 8) {
-			$regexp = '/[a-f0-9]{1,4}/';
-			if ($wildcards) {
-				$regexp = '/[a-f0-9\*]{1,4}/';
-			}
-			$max_size = 4;
-		} else {
-			$regexp = '/[a-f0-9]{1,3}/';
-			if ($wildcards) {
-				$regexp = '/[a-f0-9\*]{1,3}/';
-			}
-		}
-
-		foreach ($segments as $segment) {
-			if (strlen($segment) > $max_size) {
-				return false;
-			}
-			if (!preg_match($regexp, $segment, $m)) {
-				return false;
-			}
-		}
-
-		return true;
+		return $this->check($ip, 'ip', $wildcards);
 	}
 }

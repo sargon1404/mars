@@ -39,11 +39,15 @@ class Session
 	* @var string $key Key in $_SESSION, where the data will be read/written from
 	*/
 	protected string $key = '';
-	
+
 	/**
-	* @var string $driver_namespace The driver's namespace
+	* @var array $supported_drivers The supported drivers
 	*/
-	protected string $driver_namespace = '\\Mars\\Session';
+	protected array $supported_drivers = [
+		'php' => '\Mars\Session\Php',
+		'db' => '\Mars\Session\Db',
+		'memcache' => '\Mars\Session\Memcache'
+	];
 
 	/**
 	* Builds the session object
@@ -57,6 +61,8 @@ class Session
 		$this->cookie_path = $this->app->config->session_cookie_path;
 		$this->cookie_domain = $this->app->config->session_cookie_domain;
 		$this->save_path = $this->app->config->session_save_path;
+
+		$this->app->plugins->run('session_construct', $this);
 
 		$this->handle = $this->getHandle();
 	}
