@@ -21,15 +21,33 @@ class AppBooter
 	public function minimum()
 	{
 		$this->app->timer = new Timer($this->app);
+		$this->app->uri = new Uri($this->app);
 
 		$this->app->config = new Config($this->app);
 		$this->app->config->read();
 
+		return $this;
+	}
+
+	/**
+	* Initializes the plugins
+	* @return $this
+	*/
+	public function plugins()
+	{
 		$this->app->plugins = new Plugins($this->app);
 		$this->app->plugins->load();
 
-		$this->app->memcache = new Memcache($this->app);
+		return $this;
+	}
 
+	/**
+	* Initializes the memcache and caching objects
+	* @return $this
+	*/
+	public function caching()
+	{
+		$this->app->memcache = new Memcache($this->app);
 		$this->app->caching = new Caching($this->app);
 
 		return $this;
@@ -63,7 +81,6 @@ class AppBooter
 
 		$this->app->request = new Request($this->app);
 		$this->app->file = new File($this->app);
-		$this->app->uri = new Uri($this->app);
 
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
@@ -74,14 +91,6 @@ class AppBooter
 		$this->app->device = new Device($this->app);
 
 		return $this;
-	}
-
-	/**
-	* Initializes the app's properties
-	*/
-	public function properties()
-	{
-		$this->app->setProperties();
 	}
 
 	/**

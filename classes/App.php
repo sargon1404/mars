@@ -238,25 +238,29 @@ class App
 	*/
 	public function boot()
 	{
-		$this->setData();
-		$this->setDirs();
-		$this->setUrls();
-		$this->setGzip();
-
 		$this->loadBooter();
-		$this->loadLibraries();
 
 		$this->boot->minimum();
+
+		$this->setData();
+		$this->setProperties();
+
+		$this->loadLibraries();
+
+		$this->boot->plugins();
+		var_dump($this->plugins);die;
+		$this->boot->caching();
 		$this->boot->db();
 		$this->boot->base();
-		$this->boot->properties();
 		$this->boot->env();
 		$this->boot->document();
 		$this->boot->system();
+
+		$this->plugins->run('app_boot', $this);
 	}
 
 	/**
-	* Prepares the data (ip, useragent)
+	* Prepares the data: ip/useragent/dirs/urls
 	*/
 	protected function setData()
 	{
@@ -264,6 +268,10 @@ class App
 			$this->ip = $_SERVER['REMOTE_ADDR'];
 			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		}
+
+		$this->setDirs();
+		$this->setUrls();
+		$this->setGzip();
 	}
 
 	/**
@@ -400,10 +408,7 @@ class App
 	*/
 	protected function getSiteUrl() : string
 	{
-		$host = $_SERVER['HTTP_HOST'];
-		$pi = pathinfo($_SERVER['PHP_SELF']);
-
-		return $this->scheme . $host . $pi['dirname'] . '/';
+		return $this->config->site_url;
 	}
 
 	/**

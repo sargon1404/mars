@@ -96,6 +96,17 @@ class Plugins
 	}
 
 	/**
+	* Prepares the plugins after the app booted
+	*/
+	public function reprepare()
+	{
+		foreach($this->plugins as $plugin)
+		{
+			$plugin->reprepare();
+		}
+	}
+
+	/**
 	* Returns the list of loaded plugins
 	* @return array
 	*/

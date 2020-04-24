@@ -44,10 +44,21 @@ class Plugin extends \Mars\Extensions\Basic
 		$this->name = $name;
 		$this->title = $name;
 
-		//$this->load($name);
 		$this->prepare();
 
 		$this->addHooks();
+	}
+
+	/**
+	* Calls the prepare() method after the app booted
+	*/
+	public function reprepare()
+	{
+		$this->dir = '';
+		$this->dir_url = '';
+		$this->dir_url_static = '';
+
+		$this->prepare();
 	}
 
 	/**
