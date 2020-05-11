@@ -18,6 +18,16 @@ class Response
 	use DriverTrait;
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'response';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Response\DriverInterface';
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
@@ -33,8 +43,6 @@ class Response
 	{
 		$this->app = $app;
 		$this->driver = $this->getDriver();
-
-		$this->app->plugins->run('response_construct', $this);
 
 		$this->handle = $this->getHandle();
 	}

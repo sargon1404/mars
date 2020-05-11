@@ -41,6 +41,16 @@ class Session
 	protected string $key = '';
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'session';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Session\DriverInterface';
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
@@ -61,8 +71,6 @@ class Session
 		$this->cookie_path = $this->app->config->session_cookie_path;
 		$this->cookie_domain = $this->app->config->session_cookie_domain;
 		$this->save_path = $this->app->config->session_save_path;
-
-		$this->app->plugins->run('session_construct', $this);
 
 		$this->handle = $this->getHandle();
 	}

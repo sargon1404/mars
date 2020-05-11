@@ -128,6 +128,17 @@ class Db
 	protected string $driver = '';
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'db';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Db\DriverInterface';
+
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
@@ -169,8 +180,6 @@ class Db
 
 		$this->setReadHost($hostname, $port, $username, $password, $database);
 		$this->setWriteHost($hostname, $port, $username, $password, $database);
-
-		$this->app->plugins->run('db_construct', $this);
 	}
 
 	/**

@@ -45,6 +45,17 @@ class Memcache
 	* @var string $driver The used driver
 	*/
 	protected string $driver = '';
+
+	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'memcache';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Memcache\DriverInterface';
+
 	/**
 	* @var array $supported_drivers The supported drivers
 	*/
@@ -82,8 +93,6 @@ class Memcache
 		$this->port = $port;
 		$this->key = $key;
 		$this->enabled = true;
-
-		$this->app->plugins->run('memcache_construct', $this);
 	}
 
 	/**

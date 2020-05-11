@@ -31,6 +31,17 @@ class Device
 	protected string $driver = 'mobile_detect';
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'device';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Device\DriverInterface';
+
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
@@ -48,8 +59,6 @@ class Device
 		if (!$this->app->config->device_start) {
 			return;
 		}
-
-		$this->app->plugins->run('device_construct');
 
 		$this->type = $this->getDevice();
 	}

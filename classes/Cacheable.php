@@ -51,6 +51,17 @@ abstract class Cacheable
 	protected string $driver = 'file';
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	protected string $driver_key = 'cachable';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	protected string $driver_interface = '\Mars\Cachable\DriverInterface';
+
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [

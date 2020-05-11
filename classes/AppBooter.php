@@ -15,6 +15,14 @@ class AppBooter
 	use AppTrait;
 
 	/**
+	* Initializes the libraries
+	*/
+	public function libraries()
+	{
+		require_once(dirname(__FILE__, 4) . '/' . App::DIRS['libraries'] . '/php/vendor/autoload.php');
+	}
+
+	/**
 	* Initializes the minimum number of objects needed to server content from the cache
 	* @return $this
 	*/
@@ -26,27 +34,6 @@ class AppBooter
 		$this->app->config = new Config($this->app);
 		$this->app->config->read();
 
-		return $this;
-	}
-
-	/**
-	* Initializes the plugins
-	* @return $this
-	*/
-	public function plugins()
-	{
-		$this->app->plugins = new Plugins($this->app);
-		$this->app->plugins->load();
-
-		return $this;
-	}
-
-	/**
-	* Initializes the memcache and caching objects
-	* @return $this
-	*/
-	public function caching()
-	{
 		$this->app->memcache = new Memcache($this->app);
 		$this->app->caching = new Caching($this->app);
 
@@ -78,17 +65,10 @@ class AppBooter
 		$this->app->escape = new Escape($this->app);
 		$this->app->validator = new Validator($this->app);
 		$this->app->format = new Format($this->app);
-
-		$this->app->request = new Request($this->app);
 		$this->app->file = new File($this->app);
-
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);
-
-		$this->app->cache = new Cache($this->app);
-
-		$this->app->device = new Device($this->app);
 
 		return $this;
 	}
@@ -102,7 +82,10 @@ class AppBooter
 		$this->app->session = new Session($this->app);
 		$this->app->session->start();
 
+		$this->app->device = new Device($this->app);
+		$this->app->request = new Request($this->app);
 		$this->app->response = new Response($this->app);
+		$this->app->cache = new Cache($this->app);
 
 		return $this;
 	}
@@ -131,6 +114,9 @@ class AppBooter
 	*/
 	public function system()
 	{
+		$this->app->plugins = new System\Plugins($this->app);
+		$this->app->plugins->load();
+
 		$this->app->lang = new System\Language($this->app);
 		$this->app->theme = new System\Theme($this->app);
 

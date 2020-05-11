@@ -1,16 +1,16 @@
 <?php
 /**
-* The Plugins Class
+* The Plugins Trait
 * @package Mars
 */
 
 namespace Mars;
 
 /**
-* The Plugins Class
-* Class implementing the Plugins functionality
+* The Plugins Trait
+* Trait implementing the Plugins functionality
 */
-class Plugins
+trait Plugins
 {
 	/**
 	* @var array $exec_time The execution time for all plugins is stored here. Set only if debug is enabled
@@ -53,11 +53,6 @@ class Plugins
 	protected ?object $output_obj = null;
 
 	/**
-	* @var string $namespace The namespace used to load plugins
-	*/
-	protected static string $namespace = "App\\Extensions\\Plugins\\";
-
-	/**
 	* Builds the plugins object
 	* @param App $app The app object
 	*/
@@ -77,7 +72,7 @@ class Plugins
 			return;
 		}
 
-		$plugins = require($this->app->site_dir . 'config-plugins.php');
+		$plugins = $this->app->config->plugins ?? [];
 		if (!$plugins) {
 			return;
 		}
@@ -92,17 +87,6 @@ class Plugins
 			}
 
 			$this->plugins[$name] = $plugin;
-		}
-	}
-
-	/**
-	* Prepares the plugins after the app booted
-	*/
-	public function reprepare()
-	{
-		foreach($this->plugins as $plugin)
-		{
-			$plugin->reprepare();
 		}
 	}
 

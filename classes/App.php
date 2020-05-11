@@ -241,19 +241,15 @@ class App
 		$this->loadBooter();
 
 		$this->boot->minimum();
-
-		$this->setData();
-		$this->setProperties();
-
-		$this->loadLibraries();
-
-		$this->boot->plugins();
-		var_dump($this->plugins);die;
-		$this->boot->caching();
+		$this->boot->libraries();
 		$this->boot->db();
 		$this->boot->base();
 		$this->boot->env();
 		$this->boot->document();
+
+		$this->setData();
+		$this->setProperties();
+
 		$this->boot->system();
 
 		$this->plugins->run('app_boot', $this);

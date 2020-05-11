@@ -23,32 +23,19 @@ trait DriverTrait
 	//protected string $driver = '';
 
 	/**
+	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	*/
+	//protected string $driver_key = '';
+
+	/**
+	* @var string $driver_interface The interface the driver must implement
+	*/
+	//protected string $driver_interface = '';
+
+	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	//protected array $supported_drivers = [];
-
-	/**
-	* Adds a supported driver
-	* @param string $name The name of the driver
-	* @param string $class The class which will handle it
-	* @return $this
-	*/
-	public function addSupportedDriver(string $name, string $class)
-	{
-		$this->supported_drivers[$name] = $class;
-	}
-
-	/**
-	* Removes a supported driver
-	* @param string $name The name of the driver
-	* @return $this
-	*/
-	public function removeSupportedDriver(string $name)
-	{
-		unset($this->supported_drivers[$name]);
-
-		return $this;
-	}
 
 	/**
 	* Returns the name of the driver to use
@@ -70,6 +57,12 @@ trait DriverTrait
 			$driver = $this->driver;
 		}
 
+		if ($this->driver_key) {
+			if (isset($this->app->config->drivers[$this->driver_key])) {
+				$this->supported_drivers = $this->supported_drivers + $this->app->config->drivers[$this->driver_key];
+			}
+		}
+
 		if (!isset($this->supported_drivers[$driver])) {
 			throw new \Exception("Driver {$driver} is not on the list of supported drivers");
 		}
@@ -77,6 +70,12 @@ trait DriverTrait
 		$class = $this->supported_drivers[$driver];
 
 		$handle = new $class($this->app);
+
+		if ($this->driver_interface) {
+			if (!is_a($handle, $this->driver_interface)) {
+				throw new \Exception("Driver {$driver} must implement interface {$this->driver_interface}");
+			}
+		}
 
 		return $handle;
 	}

@@ -50,18 +50,6 @@ class Plugin extends \Mars\Extensions\Basic
 	}
 
 	/**
-	* Calls the prepare() method after the app booted
-	*/
-	public function reprepare()
-	{
-		$this->dir = '';
-		$this->dir_url = '';
-		$this->dir_url_static = '';
-
-		$this->prepare();
-	}
-
-	/**
 	* Adds the hooks
 	*/
 	protected function addHooks()
