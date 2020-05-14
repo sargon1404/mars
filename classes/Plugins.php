@@ -163,6 +163,10 @@ trait Plugins
 	protected function exec(string $hook, array &$args, int $return_arg = null)
 	{
 		if (!$this->enabled) {
+			if ($return_arg !== null) {
+				return $args[$return_arg];
+			}
+
 			return null;
 		}
 
@@ -251,10 +255,6 @@ trait Plugins
 		array_unshift($args, $this->output_obj);
 
 		$name = $this->output_prefix . '_' . $hook;
-
-		if ($this->app->config->development_plugins) {
-			echo '<hr>' . $name . '<hr>';
-		}
 
 		return $this->exec($name, $args);
 	}

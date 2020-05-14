@@ -25,9 +25,14 @@ abstract class Data
 	protected string $key = '';
 
 	/**
-	* @var string $scope The scope from where to read the data
+	* @var array $read_scope The scope(s) from where to read the data
 	*/
-	protected string $scope = 'frontend';
+	protected array $read_scope = ['frontend'];
+
+	/**
+	* @var string $write_scope The scope where to insert/update, by default
+	*/
+	protected string $write_scope = 'frontend';
 
 	/**
 	* @var array $data Saved data
@@ -49,51 +54,33 @@ abstract class Data
 
 	/**
 	* Returns the memcache key used to store the data
-	* @param string The scope from where to read the data
 	* @return string
 	*/
-	public function getKey(?string $scope = null) : string
+	public function getKey() : string
 	{
 		if (!$this->key) {
 			throw new \Exception('The $key property must be set to be able to use class Data');
 		}
 
-		return $this->key . '_' . $scope;
-	}
-
-	/**
-	* Returns the scope
-	* @param string The scope from where to read the data
-	* @return string
-	*/
-	public function getScope(?string $scope = null) : string
-	{
-		if ($scope === null) {
-			return $this->scope;
-		}
-
-		return $scope;
+		return $this->key . '-' . implode('-', $this->read_scope);
 	}
 
 	/**
 	* Loads the data, either from memcache, if available, or from the database
-	* @param string The scope from where to load the data
-	* @param bool $save_data If true, will save the data in the $this->data array
 	* @return $this
 	*/
-	public function load(?string $scope = 'frontend', bool $save_data = false)
+	public function load()
 	{
-		$scope = $this->getScope($scope);
+		$key = $this->getKey();
 
-		$data = $this->app->memcache->get($this->getKey($scope));
+		$data = $this->app->memcache->get($key);
 		if (!$data) {
-			$data = $this->app->db->selectList($this->getTable(), 'name', 'value', ['scope' => $scope], 'name');
 
-			$this->app->memcache->set($this->getKey($scope), $data);
-		}
+			$data = $this->app->db->select($this->getTable(), 'name, value, scope', ['scope' => $this->read_scope]);
 
-		if ($save_data) {
-			$this->data[$scope] = $data;
+			$data = $this->processData($data);
+
+			$this->app->memcache->set($key, $data);
 		}
 
 		$this->assign($data);
@@ -102,13 +89,57 @@ abstract class Data
 	}
 
 	/**
+	* Processes the data
+	* @param array $data The data to process
+	* @return array The data
+	*/
+	protected function processData(array $data) : array
+	{
+		if (count($this->read_scope) > 1) {
+			$data_array = [];
+
+			foreach ($this->read_scope as $scope) {
+				$this->data[$scope] = $this->getData($data, $scope);
+
+				$data_array = array_merge($data_array, $this->data[$scope]);
+			}
+
+			return $data_array;
+		} else {
+			return $this->getData($data);
+		}
+	}
+
+	/***
+	* Returns the data in the name => val format
+	* @param array $data The data to return
+	* @param string $scope The scope of the data
+	* @return array The data
+	*/
+	protected function getData(array $data, string $scope = '') : array
+	{
+		$data_array = [];
+
+		foreach ($data as $d) {
+			if ($scope) {
+				if ($d->scope != $scope) {
+					continue;
+				}
+			}
+
+			$data_array[$d->name] = $d->value;
+		}
+
+		return $data_array;
+	}
+
+	/**
 	* Clears the data from memcache
-	* @param string The scope from where to read the data
 	* @return $this
 	*/
-	protected function clearMemcache(string $scope)
+	protected function clearMemcache()
 	{
-		$this->app->memcache->delete($this->getKey($scope));
+		$this->app->memcache->delete($this->getKey());
 
 		return $this;
 	}
@@ -163,7 +194,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
+	public function set(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
 	{
 		if (isset($this->$name)) {
 			$this->update($name, $value, $serialize, $scope, $default_value);
@@ -183,12 +214,13 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function insert(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
+	public function insert(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
 	{
-		$scope = $this->getScope($scope);
-
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
+		}
+		if (!$scope) {
+			$scope = $this->write_scope;
 		}
 
 		$this->$name = $value;
@@ -215,12 +247,13 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function update(string $name, $value, bool $serialize = false, ?string $scope = 'frontend', $default_value = '')
+	public function update(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
 	{
-		$scope = $this->getScope($scope);
-
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
+		}
+		if (!$scope) {
+			$scope = $this->write_scope;
 		}
 
 		$this->$name = $value;
@@ -239,9 +272,11 @@ abstract class Data
 	* @param string The scope where the data will be set
 	* @return $this
 	*/
-	public function delete(string $name, ?string $scope = 'frontend')
+	public function delete(string $name, ?string $scope = '')
 	{
-		$scope = $this->getScope($scope);
+		if (!$scope) {
+			$scope = $this->write_scope;
+		}
 
 		$table = $this->getTable();
 		$this->app->db->writeQuery("DELETE FROM {$table} WHERE name = :name AND scope = :scope", ['name' => $name, 'scope' => $scope]);

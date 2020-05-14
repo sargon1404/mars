@@ -241,15 +241,13 @@ class App
 		$this->loadBooter();
 
 		$this->boot->minimum();
+		$this->boot->data();
 		$this->boot->libraries();
 		$this->boot->db();
 		$this->boot->base();
 		$this->boot->env();
+		$this->boot->properties();
 		$this->boot->document();
-
-		$this->setData();
-		$this->setProperties();
-
 		$this->boot->system();
 
 		$this->plugins->run('app_boot', $this);
@@ -258,7 +256,7 @@ class App
 	/**
 	* Prepares the data: ip/useragent/dirs/urls
 	*/
-	protected function setData()
+	public function setData()
 	{
 		if (!$this->is_cli) {
 			$this->ip = $_SERVER['REMOTE_ADDR'];
