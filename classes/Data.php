@@ -194,7 +194,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
+	public function set(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
 	{
 		if (isset($this->$name)) {
 			$this->update($name, $value, $serialize, $scope, $default_value);
@@ -214,7 +214,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function insert(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
+	public function insert(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
 	{
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
@@ -247,7 +247,7 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function update(string $name, $value, bool $serialize = false, ?string $scope = '', $default_value = '')
+	public function update(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
 	{
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
@@ -272,7 +272,7 @@ abstract class Data
 	* @param string The scope where the data will be set
 	* @return $this
 	*/
-	public function delete(string $name, ?string $scope = '')
+	public function delete(string $name, string $scope = '')
 	{
 		if (!$scope) {
 			$scope = $this->write_scope;
