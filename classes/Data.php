@@ -25,14 +25,14 @@ abstract class Data
 	protected string $key = '';
 
 	/**
-	* @var array $read_scope The scope(s) from where to read the data
+	* @var array $scope The scope(s) from where to read the data
 	*/
-	protected array $read_scope = ['frontend'];
+	protected array $scope = ['frontend'];
 
 	/**
-	* @var string $write_scope The scope where to insert/update, by default
+	* @var string $default_scope The scope where used to insert/update, by default
 	*/
-	protected string $write_scope = 'frontend';
+	protected string $default_scope = 'frontend';
 
 	/**
 	* @var array $data Saved data
@@ -62,7 +62,7 @@ abstract class Data
 			throw new \Exception('The $key property must be set to be able to use class Data');
 		}
 
-		return $this->key . '-' . implode('-', $this->read_scope);
+		return $this->key . '-' . implode('-', $this->scope);
 	}
 
 	/**
@@ -76,7 +76,7 @@ abstract class Data
 		$data = $this->app->memcache->get($key);
 		if (!$data) {
 
-			$data = $this->app->db->select($this->getTable(), 'name, value, scope', ['scope' => $this->read_scope]);
+			$data = $this->app->db->select($this->getTable(), 'name, value, scope', ['scope' => $this->scope]);
 
 			$data = $this->processData($data);
 
@@ -95,10 +95,10 @@ abstract class Data
 	*/
 	protected function processData(array $data) : array
 	{
-		if (count($this->read_scope) > 1) {
+		if (count($this->scope) > 1) {
 			$data_array = [];
 
-			foreach ($this->read_scope as $scope) {
+			foreach ($this->scope as $scope) {
 				$this->data[$scope] = $this->getData($data, $scope);
 
 				$data_array = array_merge($data_array, $this->data[$scope]);
@@ -189,17 +189,17 @@ abstract class Data
 	* Sets the value of a data entry
 	* @param string $name The name of the  entry to set
 	* @param mixed $value The new value
-	* @param bool $serialize If true, will serialize the value
 	* @param string The scope where the data will be set
+	* @param bool $serialize If true, will serialize the value
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
+	public function set(string $name, $value, ?string $scope = null, bool $serialize = false, $default_value = '')
 	{
 		if (isset($this->$name)) {
-			$this->update($name, $value, $serialize, $scope, $default_value);
+			$this->update($name, $value, $scope, $serialize, $default_value);
 		} else {
-			$this->insert($name, $value, $serialize, $scope, $default_value);
+			$this->insert($name, $value, $scope, $serialize, $default_value);
 		}
 
 		return $this;
@@ -209,18 +209,18 @@ abstract class Data
 	* Inserts an entry into the data table
 	* @param string $name The name of the entry to insert
 	* @param mixed $value The value
-	* @param bool $serialize If true, will serialize the value
 	* @param string The scope where the data will be set
+	* @param bool $serialize If true, will serialize the value
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function insert(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
+	public function insert(string $name, $value, ?string $scope = null, bool $serialize = false, $default_value = '')
 	{
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
 		}
 		if (!$scope) {
-			$scope = $this->write_scope;
+			$scope = $this->default_scope;
 		}
 
 		$this->$name = $value;
@@ -242,18 +242,18 @@ abstract class Data
 	* Updates a data entry. Will not create the entry, if it doesn't already exist
 	* @param string $name The name of the value
 	* @param mixed $value The new value
-	* @param bool $serialize If true, will serialize the value
 	* @param string The scope where the data will be updated
+	* @param bool $serialize If true, will serialize the value
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function update(string $name, $value, bool $serialize = false, string $scope = '', $default_value = '')
+	public function update(string $name, $value, ?string $scope = null, bool $serialize = false, $default_value = '')
 	{
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
 		}
 		if (!$scope) {
-			$scope = $this->write_scope;
+			$scope = $this->default_scope;
 		}
 
 		$this->$name = $value;
@@ -272,10 +272,10 @@ abstract class Data
 	* @param string The scope where the data will be set
 	* @return $this
 	*/
-	public function delete(string $name, string $scope = '')
+	public function delete(string $name, ?string $scope = null)
 	{
 		if (!$scope) {
-			$scope = $this->write_scope;
+			$scope = $this->default_scope;
 		}
 
 		$table = $this->getTable();

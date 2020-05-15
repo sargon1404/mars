@@ -19,7 +19,6 @@ class MinChars extends Rule
 	*/
 	public function validate($value, $length) : bool
 	{
-		var_dump($value, $length);die;
 		if (strlen($value) >= $length) {
 			return true;
 		}

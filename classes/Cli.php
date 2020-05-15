@@ -11,6 +11,8 @@ namespace Mars;
 */
 class Cli
 {
+	use AppTrait;
+
 	/**
 	* @param array $colors Array defining the user colors
 	*/
@@ -47,10 +49,12 @@ class Cli
 
 	/**
 	* Builds the CLI object
+	* @param App $app The app object
 	*/
-	public function __construct()
+	public function __construct(App $app)
 	{
 		global $argv;
+		$this->app = $app;
 
 		if (!isset($argv[1])) {
 			return;
