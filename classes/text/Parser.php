@@ -71,7 +71,7 @@ class Parser
 	*/
 	protected function parseNofollowCallback($match) : string
 	{
-		if (strpos(strtolower($match[1]), 'rel="nofollow"') !== false || strpos(strtolower($match[3]), 'rel="nofollow"')) {
+		if (str_contains(strtolower($match[1]), 'rel="nofollow"') || str_contains(strtolower($match[3]), 'rel="nofollow"')) {
 			return $match[0];
 		}
 

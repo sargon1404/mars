@@ -13,12 +13,15 @@ namespace Mars;
 * protected static $table = ''; - The table from which the object will be loaded
 * protected static $id_name = ''; - The id column of the table from which the object will be loaded
 *
-* protected static::$_store Array listing the properties which must be separately stored as original data. This way, if any property changes, the user of the object will be able to tell, flip the values etc..
-* protected static::$_ignore Array listing the custom public properties(not found in the corresponding db table as columns) which should be ignored when inserting/updating
+* protected static::$store Array listing the properties which must be separately stored as original data. This way, if any property changes, the user of the object will be able to tell, flip the values etc..
+* protected static::$ignore Array listing the custom public properties(not found in the corresponding db table as columns) which should be ignored when inserting/updating
 */
 abstract class Item extends Row
 {
 	use AppTrait;
+	use ValidationTrait {
+		validate as protected _validate;
+	}
 
 	/**
 	* @var string $table The table from which the object will be loaded.
@@ -35,44 +38,39 @@ abstract class Item extends Row
 	protected array $errors = [];
 
 	/**
-	* @var array $_validation_rules Validation rules
+	* @var array $validation_rules Validation rules
 	*/
-	protected static array $_validation_rules = [];
+	protected static array $validation_rules = [];
 
 	/**
-	* @var array $_skip_validation_rules Validation rules to skip when validating, if any
+	* @var array $ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
 	*/
-	protected array $_skip_validation_rules = [];
+	protected static array $ignore = [];
 
 	/**
-	* @var array $_ignore Array listing the custom properties (not found in the corresponding db table) which should be ignored when inserting/updating
+	* @var array $store Array listing the properties which should be stored when the data is set
 	*/
-	protected static array $_ignore = [];
+	protected static array $store = [];
 
 	/**
-	* @var array $_store Array listing the properties which should be stored when the data is set
+	* @var array $stored Array containing the stored data. The stored data is the original properties of an object
 	*/
-	protected static array $_store = [];
+	protected array $stored = [];
 
 	/**
-	* @var array $_store Array containing the stored data. The stored data is the original properties of an object
+	* @var array $defaults_array Array containing defaults in the format name=>value
 	*/
-	protected array $_stored = [];
-
-	/**
-	* @var array $_defaults_array Array containing defaults in the format name=>value
-	*/
-	protected static array $_defaults_array = [];
+	protected static array $defaults_array = [];
 
 	/**
 	* @internal
 	*/
-	protected static array $_defaults = [];
+	protected static array $defaults = [];
 
 	/**
 	* @internal
 	*/
-	protected static array $_defaults_vals = [];
+	protected static array $defaults_vals = [];
 
 	/**
 	* @var Db $db The database object. Alias for $this->app->db
@@ -159,24 +157,6 @@ abstract class Item extends Row
 	}
 
 	/**
-	* Returns the generated errors, if any
-	* @return array
-	*/
-	public function getErrors() : array
-	{
-		return $this->errors;
-	}
-
-	/**
-	* Returns the first generated error, if any
-	* @return mixed
-	*/
-	public function getFirstError()
-	{
-		return reset($this->errors);
-	}
-
-	/**
 	* Returns the table name
 	* @return string The table name
 	*/
@@ -200,34 +180,7 @@ abstract class Item extends Row
 	*/
 	protected function getValidationRules() : array
 	{
-		return static::$_validation_rules;
-	}
-
-	/**
-	* The same as skipValidationRules
-	* @param string $rule The rule to skip
-	* @return $this
-	*/
-	public function skipValidationRule(string $rule)
-	{
-		return $this->skipValidationRules($rule);
-	}
-
-	/**
-	* Skips rules from validation
-	* @param array|string $skip_rules Rules which will be skipped at validation
-	* @return $this
-	*/
-	public function skipValidationRules($skip_rules)
-	{
-		$skip_rules = App::getArray($skip_rules);
-		foreach ($skip_rules as $rule) {
-			if (!in_array($rule, $this->_skip_validation_rules)) {
-				$this->_skip_validation_rules[] = $rule;
-			}
-		}
-
-		return $this;
+		return static::$validation_rules;
 	}
 
 	/**
@@ -235,7 +188,7 @@ abstract class Item extends Row
 	*/
 	protected function getDefaultsArray() : array
 	{
-		return static::$_defaults_array;
+		return static::$defaults_array;
 	}
 
 	/**
@@ -312,7 +265,7 @@ abstract class Item extends Row
 	/**
 	* Sets the object's properties
 	* @param mixed $data The data (array,object)
-	* @param bool $store If true will store the properties defined in static::$_store in $this->_stored
+	* @param bool $store If true will store the properties defined in static::$store in $this->stored
 	* @return $this
 	*/
 	public function setData($data, bool $store = true)
@@ -320,9 +273,9 @@ abstract class Item extends Row
 		$data = App::toArray($data);
 
 		foreach ($data as $name => $val) {
-			if ($store && static::$_store) {
-				if (in_array($name, static::$_store)) {
-					$this->_stored[$name] = $val;
+			if ($store && static::$store) {
+				if (in_array($name, static::$store)) {
+					$this->stored[$name] = $val;
 				}
 			}
 
@@ -401,18 +354,7 @@ abstract class Item extends Row
 	*/
 	protected function validate() : bool
 	{
-		$rules = $this->getValidationRules();
-		if (!$rules) {
-			return true;
-		}
-
-		if (!$this->validator->validate($this, $rules, $this->getTable(), $this->getIdName(), $this->_skip_validation_rules)) {
-			$this->errors = $this->validator->getErrors();
-
-			return false;
-		}
-
-		return true;
+		return $this->_validate($this);
 	}
 
 	/**
@@ -484,7 +426,7 @@ abstract class Item extends Row
 	}
 
 	/**
-	* Returns the 'updatable' data. Unsets the properties defined in static::$_ignore, which shouldn't be stored when inserting/updating
+	* Returns the 'updatable' data. Unsets the properties defined in static::$ignore, which shouldn't be stored when inserting/updating
 	* @param bool $unset_id If true will unset the ID field
 	* @param array $unset_extra Extra data to unset, if any
 	* @return array
@@ -500,7 +442,7 @@ abstract class Item extends Row
 			}
 		}
 
-		$unset_array = array_merge(static::$_ignore, $unset_extra);
+		$unset_array = array_merge(static::$ignore, $unset_extra);
 
 		if ($unset_array) {
 			foreach ($unset_array as $name) {
@@ -636,23 +578,23 @@ abstract class Item extends Row
 		$default_values = [$default_int, $default_char];
 		$class_name = get_class($this);
 
-		if (isset(static::$_defaults_vals[$class_name])) {
-			$default_values = static::$_defaults_vals[$class_name];
+		if (isset(static::$defaults_vals[$class_name])) {
+			$default_values = static::$defaults_vals[$class_name];
 		}
 
-		if (empty(static::$_defaults[$class_name])) {
+		if (empty(static::$defaults[$class_name])) {
 			//read the columns from the database and apply the default int and char values
-			static::$_defaults[$class_name] = $this->getDefaults($default_int, $default_char);
-			static::$_defaults_vals[$class_name] = [$default_int, $default_char];
+			static::$defaults[$class_name] = $this->getDefaults($default_int, $default_char);
+			static::$defaults_vals[$class_name] = [$default_int, $default_char];
 
-			$defaults = static::$_defaults[$class_name];
+			$defaults = static::$defaults[$class_name];
 		} else {
 			///are the default_int/default_char params different than the stored default_vals?
 			// If so,fill the data again as we can not use the stored defaults
 
-			$default_values = static::$_defaults_vals[$class_name];
+			$default_values = static::$defaults_vals[$class_name];
 			if ($default_values[0] === $default_int && $default_values[1] === $default_char) {
-				$defaults = static::$_defaults[$class_name];
+				$defaults = static::$defaults[$class_name];
 			} else {
 				$defaults = $this->getDefaults($default_int, $default_char);
 			}
@@ -711,8 +653,8 @@ abstract class Item extends Row
 			return false;
 		}
 
-		if (isset($this->_stored[$property])) {
-			if ($this->_stored[$property] == $this->$property) {
+		if (isset($this->stored[$property])) {
+			if ($this->stored[$property] == $this->$property) {
 				return false;
 			}
 		}
@@ -727,8 +669,8 @@ abstract class Item extends Row
 	*/
 	public function setStored(array $data)
 	{
-		foreach (static::$_store as $name) {
-			$this->_stored[$name] = $data[$name];
+		foreach (static::$store as $name) {
+			$this->stored[$name] = $data[$name];
 		}
 
 		return $this;
@@ -742,14 +684,14 @@ abstract class Item extends Row
 	public function getStored(string $property = '')
 	{
 		if (!$property) {
-			return $this->_stored;
+			return $this->stored;
 		}
 
-		if (!isset($this->_stored[$property])) {
+		if (!isset($this->stored[$property])) {
 			return false;
 		}
 
-		return $this->_stored[$property];
+		return $this->stored[$property];
 	}
 
 	/**
@@ -759,7 +701,7 @@ abstract class Item extends Row
 	*/
 	public function isStored(string $property) : bool
 	{
-		return isset($this->_stored[$property]);
+		return isset($this->stored[$property]);
 	}
 
 	/**
@@ -774,9 +716,9 @@ abstract class Item extends Row
 		}
 
 		foreach ($properties as $property) {
-			$val = $this->_stored[$property];
+			$val = $this->stored[$property];
 
-			$this->_stored[$property] = $this->$property;
+			$this->stored[$property] = $this->$property;
 
 			$this->$property = $val;
 		}

@@ -95,9 +95,9 @@ trait CliFunctionsTrait
 	/**
 	* @see \Mars\Cli::print()
 	*/
-	public function print($text, string $color = '', int $pad_left = 0, bool $newline = true, bool $die = false, string $prefix = '', string $suffix = '')
+	public function print($text, string $color = '', int $pad_left = 0, string $prefix = '', string $suffix = '', bool $newline = true, bool $die = false, int $empty_right = 5)
 	{
-		return $this->app->cli->print($text, $color, $pad_left, $newline, $die, $prefix, $suffix);
+		return $this->app->cli->print($text, $color, $pad_left, $prefix, $suffix, $newline, $die, $empty_right);
 	}
 
 	/**

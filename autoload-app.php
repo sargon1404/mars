@@ -5,7 +5,7 @@ namespace mars\autoload;
 * Autoloader for the app files
 */
 \spl_autoload_register(function ($name) {
-	if (strpos($name, 'App\\') !== 0) {
+	if (!str_contains($name, 'App\\')) {
 		return;
 	}
 

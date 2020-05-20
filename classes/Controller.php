@@ -17,6 +17,7 @@ abstract class Controller
 {
 	use AppTrait;
 	use ReflectionTrait;
+	use ValidationTrait;
 
 	/**
 	* @var string $url The controller's url
@@ -42,6 +43,11 @@ abstract class Controller
 	* @var string $current_method The name of the currently executed method
 	*/
 	public string $current_method = '';
+
+	/**
+	* @var array $validation_rules Validation rules
+	*/
+	protected array $validation_rules = [];
 
 	/**
 	* @var string $site_url Alias for $this->app->site_url
@@ -274,6 +280,15 @@ abstract class Controller
 	}
 
 	/**
+	* Returns true if no errors have been generated
+	* @return bool
+	*/
+	public function ok() : bool
+	{
+		return $this->app->ok();
+	}
+
+	/**
 	* Sends $content as ajax content
 	* @param string $content The content to output
 	* @param array $data Data to send, if any
@@ -363,5 +378,50 @@ abstract class Controller
 	public function render()
 	{
 		$this->view->render();
+	}
+
+	/**
+	* Returns the model's table
+	* @return string The table name
+	*/
+	public function getTable() : string
+	{
+		return $this->model->getTable();
+	}
+
+	/**
+	* Returns the model's id name
+	* @return string The id name
+	*/
+	public function getIdName() : string
+	{
+		return $this->model->getIdName();
+	}
+
+	/**
+	* Validates the input
+	* @param array $data The data to validate
+	* @param string $table The table used to validate, if any
+	* @param string $id_name The name of the id field used to validate, if any
+	* @return bool True if the validation passed all tests, false otherwise
+	*/
+	protected function validate(array $data = [], string $table = '', string $id_name = '') : bool
+	{
+		$rules = $this->getValidationRules();
+		if (!$rules) {
+			return true;
+		}
+
+		if (!$data) {
+			$data = $this->request->post;
+		}
+var_dump($this);die;
+		if (!$this->validator->validate($data, $rules, $table), $id_name, $this->skip_validation_rules)) {
+			$this->errors = $this->validator->getErrors();
+
+			return false;
+		}
+
+		return true;
 	}
 }

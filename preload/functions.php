@@ -10,13 +10,13 @@ function get_classes(array $files) : array
 {
 	$classes = [];
 	foreach ($files as $file) {
-		if (strpos($file, 'Interface') !== false || strpos($file, 'Trait') !== false) {
+		if (str_contains($file, 'Interface') || str_contains($file, 'Trait')) {
 			continue;
 		}
-		
+
 		$classes[] = $file;
 	}
-	
+
 	return $classes;
 }
 
@@ -28,23 +28,23 @@ function get_classes(array $files) : array
 function sort_classes(array $files) : array
 {
 	natsort($files);
-	
+
 	$classes = [];
 	foreach ($files as $file) {
 		$sort = 500;
-		
+
 		$cnt = file_get_contents($file);
 		if (preg_match('/class.*extends/isU', $cnt)) {
 			$sort = 100;
 		}
-			
-		
+
+
 		$classes[$file] = $sort;
 	}
-	
+
 	asort($classes);
 	$classes = array_reverse($classes);
-	
+
 	return array_keys($classes);
 }
 
@@ -57,11 +57,11 @@ function get_traits_and_interfaces(array $files) : array
 {
 	$t_i = [];
 	foreach ($files as $file) {
-		if (strpos($file, 'Interface') !== false || strpos($file, 'Trait') !== false) {
+		if (str_contains($file, 'Interface') || str_contains($file, 'Trait')) {
 			$t_i[] = $file;
 		}
 	}
-	
+
 	return $t_i;
 }
 
@@ -73,13 +73,13 @@ function get_traits_and_interfaces(array $files) : array
 function write_file(string $filename, array $files)
 {
 	natsort($files);
-	
+
 	$cnt = '<?php' . "\n\n";
 	$cnt.= 'return [' . "\n";
 	foreach ($files as $file) {
 		$cnt.= "'" . $file . "'," . "\n";
 	}
 	$cnt.= '];' . "\n";
-	
+
 	file_put_contents($filename, $cnt);
 }

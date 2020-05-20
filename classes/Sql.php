@@ -112,7 +112,7 @@ class Sql
 		}
 
 		//is the table specified? Eg: users.username
-		if (strpos($column, '.') === false) {
+		if (!str_contains($column, '.')) {
 			return '`' . $column . '`';
 		}
 

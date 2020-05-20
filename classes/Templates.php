@@ -339,12 +339,12 @@ class Templates
 		$value = ltrim($value, '$');
 
 		//replace . with ->, if not inside quotes
-		if (strpos($value, '.') !== false) {
+		if (str_contains($value, '.')) {
 			$value = preg_replace('/["\'][^"\']*["\'](*SKIP)(*FAIL)|\./i', '->', $value);
 		}
 
 		//replace # arrays with [] arrays. Eg: item#prop => item['prop']
-		if (strpos($value, '#') !== false) {
+		if (str_contains($value, '#')) {
 			$value = preg_replace('/#([^\-\[#]*)/s', "['$1']", $value);
 		}
 
@@ -496,7 +496,7 @@ class Templates
 		$key = '';
 		$value = '';
 
-		if (strpos($expression, '=>') !== false) {
+		if (str_contains($expression, '=>')) {
 			//there is also an expression in the foreach
 			$parts = explode('=>', $expression);
 			$key = ltrim(trim($parts[0]), '$');

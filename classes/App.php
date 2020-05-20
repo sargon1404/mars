@@ -259,13 +259,39 @@ class App
 	public function setData()
 	{
 		if (!$this->is_cli) {
-			$this->ip = $_SERVER['REMOTE_ADDR'];
-			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
+			$this->ip = $this->getIp();
+			$this->useragent = $this->getUseragent();
 		}
 
 		$this->setDirs();
 		$this->setUrls();
 		$this->setGzip();
+	}
+
+	/**
+	* Returns the user's IP
+	* @return string The ip
+	*/
+	public function getIp() : string
+	{
+		if ($this->ip) {
+			return $this->ip;
+		}
+
+		return $_SERVER['REMOTE_ADDR'];
+	}
+
+	/**
+	* Returns the user's useragent
+	* @return string The useragent
+	*/
+	public function getUseragent() : string
+	{
+		if ($this->useragent) {
+			return $this->usergroups;
+		}
+
+		return $_SERVER['HTTP_USER_AGENT'];
 	}
 
 	/**
@@ -376,7 +402,7 @@ class App
 		$this->accepts_gzip = false;
 
 		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-			if (strpos(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip') !== false) {
+			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
 				$this->accepts_gzip = true;
 			}
 		}

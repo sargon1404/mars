@@ -21,11 +21,11 @@ class Url extends Rule
 	{
 		$url = strtolower($value);
 
-		if (strpos($url, 'ssh://') === 0) {
+		if (str_starts_with($url, 'ssh://')) {
 			return false;
-		} elseif (strpos($url, 'ftp://') === 0) {
+		} elseif (str_starts_with(($url, 'ftp://')) {
 			return false;
-		} elseif (strpos($url, 'mailto:') === 0) {
+		} elseif (str_starts_with(($url, 'mailto:')) {
 			return false;
 		}
 

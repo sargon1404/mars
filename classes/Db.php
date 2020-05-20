@@ -1213,9 +1213,9 @@ class Db
 			$type = $arr['Type'];
 
 			$col_type = 'c';
-			if (strpos($type, 'int') !== false) {
+			if (str_contains($type, 'int')) {
 				$col_type = 'i';
-			} elseif (strpos($type, 'float') !== false) {
+			} elseif (str_contains($type, 'float')) {
 				$col_type = 'f';
 			}
 
@@ -1255,9 +1255,9 @@ class Db
 			}
 
 			$col_type = 'c';
-			if (strpos($type, 'int') !== false) {
+			if (str_contains($type, 'int')) {
 				$col_type = 'i';
-			} elseif (strpos($type, 'float') !== false) {
+			} elseif (str_contains($type, 'float')) {
 				$col_type = 'f';
 			}
 
@@ -1407,9 +1407,9 @@ class Db
 				continue;
 			}
 
-			if (strpos($type, 'int') !== false) {
+			if (str_contains($type, 'int')) {
 				$ret[$name] = $int_val;
-			} elseif (strpos($type, 'float') !== false) {
+			} elseif (str_contains($type, 'float')) {
 				$ret[$name] = $int_val;
 			} else {
 				$ret[$name] = $string_val;

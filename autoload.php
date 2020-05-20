@@ -5,7 +5,7 @@ namespace Mars\Autoload;
 * Autoloader for the mars files
 */
 \spl_autoload_register(function ($name) {
-	if (strpos($name, 'Mars\\') !== 0) {
+	if (!str_contains($name, 'Mars\\')) {
 		return;
 	}
 

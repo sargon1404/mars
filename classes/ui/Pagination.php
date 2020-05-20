@@ -121,7 +121,7 @@ class Pagination
 		$replace_seo_page = false;
 
 		if ($is_seo_url) {
-			if (strpos($base_url, $this->seo_page_param) !== false) {
+			if (str_contains($base_url, $this->seo_page_param)) {
 				$replace_seo_page = true;
 			}
 		}

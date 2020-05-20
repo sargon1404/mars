@@ -203,7 +203,7 @@ class File
 			return false;
 		}
 
-		if (strpos($filename, $dir) === false) {
+		if (!str_contains($filename, $dir)) {
 			return false;
 		}
 
@@ -256,7 +256,7 @@ class File
 	*/
 	public function checkForInvalidChars(string $filename)
 	{
-		if (strpos($filename, '../') !== false || strpos($filename, './') !== false || strpos($filename, '..\\') !== false || strpos($filename, '.\\') !== false) {
+		if (str_contains($filename, '../') || str_contains($filename, './') || str_contains($filename, '..\\') || str_contains($filename, '.\\')) {
 			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
 		}
 

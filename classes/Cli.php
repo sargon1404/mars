@@ -78,14 +78,14 @@ class Cli
 	protected function parseOptions(array $options)
 	{
 		foreach ($options as $option) {
-			if (strpos($option, '--') === 0) {
+			if (str_starts_with($option, '--')) {
 				$parts = explode('=', substr($option, 2));
 				$name = $parts[0];
 				$value = $parts[1] ?? '';
 
 				$this->options[$name] = $value;
 
-			} elseif (strpos($option, '-') === 0) {
+			} elseif (str_starts_with($option, '-')) {
 				$name = substr($option, 1);
 				$this->options[$name] = true;
 			} else {
@@ -277,6 +277,26 @@ class Cli
 	}
 
 	/**
+	* Determines the max line length from multiple lines of text
+	* @param array $lines The lines
+	* @return int The max length line
+	*/
+	protected function getMaxLineLength(array $lines) : int
+	{
+		$max_length = 0;
+
+		foreach ($lines as $line) {
+			$length = strlen($line);
+			if ($length > $max_length) {
+				$max_length = $length;
+			}
+		}
+
+
+		return $max_length;
+	}
+
+	/**
 	* Outputs a question and returns the answer from stdin
 	* @param string $question The question
 	* @return string The answer
@@ -302,18 +322,15 @@ class Cli
 	* @param string $text The text to output. String or array for multiple lines
 	* @param string|array  $color The color to print the text with
 	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the string
 	* @param string $prefix Prefix to print before the text, if any
 	* @param string $suffix Suffix to add after text, if any
+	* @param bool $newline If true will also output a newline
+	* @param bool $die If true, will die after printing the string
+	* @param int $empty_right The number of empty chars to add to the right, if a background is specified
 	* @return $this
 	*/
-	public function print($text, string $color = '', int $pad_left = 0, bool $newline = true, bool $die = false, string $prefix = '', string $suffix = '')
+	public function print($text, string $color = '', int $pad_left = 0, string $prefix = '', string $suffix = '', bool $newline = true, bool $die = false, int $empty_right = 5)
 	{
-		if ($color != '') {
-			echo "\e[{$color}m";
-		}
-
 		if (is_array($text)) {
 			$text_array = [];
 			foreach ($text as $string) {
@@ -331,11 +348,31 @@ class Cli
 			}
 		}
 
-		echo $prefix, $text, $suffix;
-
 		if ($color) {
-			//reset to terminal's default
-			echo "\e[0m";
+			//if a background might be specified, replace the newlines with empty spaces
+			$string = $prefix . $text . $suffix;
+
+			$lines = explode("\n", $string);
+			$lines_count = count($lines);
+			$max_length = $this->getMaxLineLength($lines) + $pad_left + $empty_right;
+
+			$i = 1;
+			foreach ($lines as $line) {
+				$length = strlen($line);
+				$empty = str_repeat(' ', $max_length - $length);
+
+				echo "\e[{$color}m";
+				echo $line, $empty;
+				echo "\e[0m";
+
+				if ($i < $lines_count) {
+					echo "\n";
+				}
+
+				$i++;
+			}
+		} else {
+			echo $prefix, $text, $suffix;
 		}
 
 		if ($newline) {
@@ -359,7 +396,7 @@ class Cli
 	*/
 	public function header(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		return $this->print($text, $this->colors['header'], $pad_left, $newline, $die);
+		return $this->print($text, $this->colors['header'], $pad_left, '', '', $newline, $die);
 	}
 
 	/**
@@ -372,8 +409,15 @@ class Cli
 	*/
 	public function message($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
+		echo "\n";
+		$this->print($text, $this->colors['message'], $pad_left, "\n\n", "\n\n", $newline);
+		echo "\n";
 
-		return $this->print($text, $this->colors['message'], $pad_left, $newline, $die);
+		if ($die) {
+			die;
+		}
+
+		return $this;
 	}
 
 	/**
@@ -383,7 +427,11 @@ class Cli
 	*/
 	public function error($text, bool $newline = true)
 	{
-		$this->print($text, $this->colors['error'], 5, $newline, true, "\n\n", "\n");
+		echo "\n";
+		$this->print($text, $this->colors['error'], 5, "\n\n", "\n\n", $newline);
+		echo "\n";
+
+		die;
 	}
 
 	/**
@@ -396,7 +444,15 @@ class Cli
 	*/
 	public function warning(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		static::print($text, $this->colors['warning'], $pad_left, $newline, $die);
+		echo "\n";
+		$this->print($text, $this->colors['warning'], $pad_left, "\n\n", "\n\n", $newline);
+		echo "\n";
+
+		if ($die) {
+			die;
+		}
+
+		return $this;
 	}
 
 	/**
@@ -409,7 +465,15 @@ class Cli
 	*/
 	public function info(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		static::print($text, $this->colors['info'], $pad_left, $newline, $die);
+		echo "\n";
+		$this->print($text, $this->colors['info'], $pad_left, "\n\n", "\n\n", $newline);
+		echo "\n";
+
+		if ($die) {
+			die;
+		}
+
+		return $this;
 	}
 
 	/**
@@ -436,16 +500,24 @@ class Cli
 		$max_length_1 = $this->getMaxLength($data, 0) + $col_2_left_pad;
 		$max_length_2 = $this->getMaxLength($data, 1);
 
+		$data_count = count($data);
+		$i = 1;
 		foreach ($data as $header => $list) {
 			if ($headers_show) {
 				$this->print($header, $headers_color);
 			}
 
 			foreach ($list as $item) {
-				$this->print($this->padString($item[0], $max_length_1), $col1_color, $col_1_left_pad, false);
-				$this->print($this->padString($item[1], $max_length_2), $col2_color, $col_2_left_pad, false);
+				$this->print($this->padString($item[0], $max_length_1), $col1_color, $col_1_left_pad, '', '', false);
+				$this->print($this->padString($item[1], $max_length_2), $col2_color, $col_2_left_pad, '', '', false);
 				echo "\n";
 			}
+
+			if ($i < $data_count) {
+				echo "\n";
+			}
+
+			$i++;
 		}
 
 		return $this;

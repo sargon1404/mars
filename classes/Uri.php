@@ -24,7 +24,7 @@ class Uri
 	public function build(string $base_url = '', array $params = [], bool $remove_empty_params = true) : string
 	{
 		$separator = '?';
-		if (strpos($base_url, '?') !== false) {
+		if (str_contains($base_url, '?')) {
 			$separator = '&';
 		}
 
@@ -118,7 +118,7 @@ class Uri
 	*/
 	public function toHttp(string $url) : string
 	{
-		if (strpos($url, 'http://') === 0) {
+		if (str_starts_with($url, 'http://')) {
 			return $url;
 		}
 
@@ -132,7 +132,7 @@ class Uri
 	*/
 	public function toHttps(string $url) : string
 	{
-		if (strpos($url, 'http://') !== 0) {
+		if (str_starts_with($url, 'https://')) {
 			return $url;
 		}
 
@@ -152,9 +152,9 @@ class Uri
 
 		$url = trim($url);
 
-		if (strpos($url, 'http://') === 0) {
+		if (str_starts_with($url, 'http://')) {
 			return $url;
-		} elseif (strpos($url, 'https://') === 0) {
+		} elseif (str_starts_with($url, 'https://')) {
 			return 'http://' . substr($url, 8);
 		} else {
 			return 'http://' . $url;
@@ -174,9 +174,9 @@ class Uri
 
 		$url = trim($url);
 
-		if (strpos($url, 'https://') === 0) {
+		if (str_starts_with($url, 'https://')) {
 			return $url;
-		} elseif (strpos($url, 'http://') === 0) {
+		} elseif (str_starts_with($url, 'http://')) {
 			return 'https://' . substr($url, 7);
 		} else {
 			return 'https://' . $url;
@@ -193,7 +193,7 @@ class Uri
 		$parts = parse_url($url);
 		$scheme = $parts['scheme'];
 
-		if (strpos($url, $scheme . '://www.') === 0) {
+		if (str_starts_with($url, $scheme . '://www.')) {
 			return $url;
 		} else {
 			return str_replace($scheme . '://', $scheme . '://www.', $url);
@@ -211,7 +211,7 @@ class Uri
 		$scheme = $parts['scheme'];
 		$host = $parts['host'];
 
-		if (strpos($host, 'www.') === 0) {
+		if (str_starts_with($host, 'www.')) {
 			return $scheme . '://' . substr($host, 4);
 		} else {
 			return $url;
@@ -233,12 +233,12 @@ class Uri
 			}
 		}
 
-		if (strpos($url, 'https:') === 0 || strpos($url, 'http:') === 0) {
+		if (str_starts_with($url, 'https:') || str_starts_with($url, 'http:')) {
 			return $url;
 		}
 
 		//does the url have :// ?
-		if (strpos($url, '//') !== 0) {
+		if (str_contains($url, '//')) {
 			$url = '//' . $url;
 		}
 
@@ -252,9 +252,9 @@ class Uri
 	*/
 	public function stripScheme(string $url) : string
 	{
-		if (strpos($url, 'https:') === 0) {
+		if (str_starts_with($url, 'https:')) {
 			return substr($url, 6);
-		} elseif (strpos($url, 'http:') === 0) {
+		} elseif (str_starts_with($url, 'http:')) {
 			return substr($url, 5);
 		}
 
