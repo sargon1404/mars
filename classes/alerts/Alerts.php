@@ -6,6 +6,8 @@
 
 namespace Mars\Alerts;
 
+use Mars\App;
+
 /**
 * The Alerts Class
 * Container for alerts
@@ -65,7 +67,7 @@ class Alerts
 		$alerts = App::getArray($alert);
 
 		foreach ($alerts as $str) {
-			$this->alerts[] = new Alert($alert, '', $escape_html, true);
+			$this->alerts[] = new Alert($str, '', $escape_html, true);
 		}
 
 		return $this;

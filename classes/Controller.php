@@ -17,7 +17,9 @@ abstract class Controller
 {
 	use AppTrait;
 	use ReflectionTrait;
-	use ValidationTrait;
+	use ValidationTrait {
+		validate as protected _validate;
+	}
 
 	/**
 	* @var string $url The controller's url
@@ -399,29 +401,36 @@ abstract class Controller
 	}
 
 	/**
-	* Validates the input
-	* @param array $data The data to validate
-	* @param string $table The table used to validate, if any
-	* @param string $id_name The name of the id field used to validate, if any
+	* Sets the generated errors
+	* @param array $errors The errors
+	*/
+	protected function setErrors(array $errors)
+	{
+		foreach ($errors as $error) {
+			$this->errors->add(App::__($error));
+		}
+	}
+
+	/**
+	* Returns the first generated error, if any
+	* @return mixed
+	*/
+	public function getFirstError()
+	{
+		return $this->errors->getFirst();
+	}
+
+	/**
+	* Validates the data
+	* @param array|object $data The data to validate
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	protected function validate(array $data = [], string $table = '', string $id_name = '') : bool
+	protected function validate($data = []) : bool
 	{
-		$rules = $this->getValidationRules();
-		if (!$rules) {
-			return true;
-		}
-
 		if (!$data) {
 			$data = $this->request->post;
 		}
-var_dump($this);die;
-		if (!$this->validator->validate($data, $rules, $table), $id_name, $this->skip_validation_rules)) {
-			$this->errors = $this->validator->getErrors();
 
-			return false;
-		}
-
-		return true;
+		return $this->_validate($data);
 	}
 }
