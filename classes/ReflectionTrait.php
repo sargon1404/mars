@@ -58,24 +58,4 @@ trait ReflectionTrait
 	{
 		return App::sl(dirname($this->getClassFilename()));
 	}
-
-	/**
-	* Returns a prefix out of the class's name
-	* @param string $suffix The suffix to append, if any
-	* @return string The prefix
-	*/
-	protected function getPrefix(string $suffix = '') : string
-	{
-		$prefix = $this->prefix;
-
-		if (!$prefix) {
-			$prefix = str_replace("\\", '_', strtolower($this->getClassName()));
-		}
-
-		if ($suffix) {
-			$prefix.= '_' . $suffix;
-		}
-
-		return $prefix;
-	}
 }
