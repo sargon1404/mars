@@ -18,7 +18,7 @@ abstract class Controller
 	use AppTrait;
 	use ReflectionTrait;
 	use ValidationTrait {
-		validate as protected _validate;
+		validate as protected validateData;
 	}
 
 	/**
@@ -431,6 +431,6 @@ abstract class Controller
 			$data = $this->request->post;
 		}
 
-		return $this->_validate($data);
+		return $this->validateData($data);
 	}
 }

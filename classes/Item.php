@@ -20,7 +20,7 @@ abstract class Item extends Row
 {
 	use AppTrait;
 	use ValidationTrait {
-		validate as protected _validate;
+		validate as protected validateData;
 	}
 
 	/**
@@ -85,7 +85,7 @@ abstract class Item extends Row
 	* Builds an item
 	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
 	*/
-	public function __construct($data = null)
+	public function __construct($data = 0)
 	{
 		$this->app = $this->getApp();
 		$this->db = $this->app->db;
@@ -332,6 +332,10 @@ abstract class Item extends Row
 	{
 		$this->db->readQuery($sql);
 		$data = $this->db->getRow();
+		if ($data === null) {
+			//don't load the defaults, if an empty row is returned
+			$data = 0;
+		}
 
 		return $this->load($data);
 	}
@@ -354,7 +358,7 @@ abstract class Item extends Row
 	*/
 	protected function validate() : bool
 	{
-		return $this->_validate($this);
+		return $this->validateData($this);
 	}
 
 	/**
