@@ -18,7 +18,7 @@ class Min extends Rule
 	* {@inheritDocs}
 	*/
 	public function validate($value, $min) : bool
-	{		
+	{
 		if ($value >= $min) {
 			return true;
 		}

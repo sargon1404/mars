@@ -84,7 +84,6 @@ class Cli
 				$value = $parts[1] ?? '';
 
 				$this->options[$name] = $value;
-
 			} elseif (str_starts_with($option, '-')) {
 				$name = substr($option, 1);
 				$this->options[$name] = true;
@@ -203,7 +202,7 @@ class Cli
 		return false;
 	}
 
-		/**
+	/**
 	* Checks if the specified options are found
 	* @param array $options The options to check
 	* @return bool Returns true if all options are found

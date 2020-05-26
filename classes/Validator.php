@@ -106,7 +106,6 @@ class Validator
 		$this->errors = [];
 
 		foreach ($rules as $field => $rules_array) {
-
 			foreach ($rules_array as $error => $rule) {
 				if (in_array($field, $ignore_array)) {
 					continue;

@@ -63,5 +63,4 @@ class Ip extends Rule
 
 		return true;
 	}
-
 }

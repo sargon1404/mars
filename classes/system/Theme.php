@@ -6,7 +6,8 @@
 
 namespace Mars\System;
 
-use Mars\{App, Templates};
+use Mars\App;
+use Mars\Templates;
 
 /**
 * The System's Theme Class

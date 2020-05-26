@@ -1397,7 +1397,8 @@ class Db
 	public function fill(string $table, array $override_array = [], int $int_val = 0, string $string_val = '', bool $primary_key = false) : array
 	{
 		$ret = [];
-debug_print_backtrace(2);die;
+		debug_print_backtrace(2);
+		die;
 		$result = $this->readQuery("SHOW COLUMNS FROM {$table}");
 		while (($arr = $this->fetchArray($result)) !== null) {
 			$name = $arr['Field'];

@@ -7,7 +7,10 @@
 namespace Mars;
 
 use Mars\Response\Ajax;
-use Mars\Alerts\{Errors, Messages, Notifications, Warnings};
+use Mars\Alerts\Errors;
+use Mars\Alerts\Messages;
+use Mars\Alerts\Notifications;
+use Mars\Alerts\Warnings;
 
 /**
 * The Controller Class

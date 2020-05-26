@@ -729,5 +729,4 @@ abstract class Item extends Row
 
 		return $this;
 	}
-
 }

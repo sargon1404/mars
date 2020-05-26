@@ -23,9 +23,11 @@ class Url extends Rule
 
 		if (str_starts_with($url, 'ssh://')) {
 			return false;
-		} elseif (str_starts_with(($url, 'ftp://')) {
+		} elseif (str_starts_with($url, 'ftp://')) {
 			return false;
-		} elseif (str_starts_with(($url, 'mailto:')) {
+		} elseif (str_starts_with($url, 'ftp://')) {
+			return false;
+		} elseif (str_starts_with($url, 'mailto:')) {
 			return false;
 		}
 
