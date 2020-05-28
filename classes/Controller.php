@@ -90,6 +90,11 @@ abstract class Controller
 	protected Validator $validator;
 
 	/**
+	* @var Plugins $plugins Alias for $this->app->plugins
+	*/
+	protected object $plugins;
+
+	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors
 	*/
 	protected Errors $errors;
@@ -129,6 +134,7 @@ abstract class Controller
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
 		$this->validator = $this->app->validator;
+		$this->plugins = $this->app->plugins;
 		$this->errors = $this->app->errors;
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;

@@ -36,9 +36,9 @@ class Session
 	protected string $save_path = '';
 
 	/**
-	* @var string $key Key in $_SESSION, where the data will be read/written from
+	* @var string $prefix Prefix to apply to all session keys
 	*/
-	protected string $key = '';
+	protected string $prefix = '';
 
 	/**
 	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
@@ -71,6 +71,10 @@ class Session
 		$this->cookie_path = $this->app->config->session_cookie_path;
 		$this->cookie_domain = $this->app->config->session_cookie_domain;
 		$this->save_path = $this->app->config->session_save_path;
+		$this->prefix = $this->app->config->session_prefix;
+		if ($this->prefix) {
+			$this->prefix = $this->prefix. '_';
+		}
 
 		$this->handle = $this->getHandle();
 	}
@@ -121,6 +125,15 @@ class Session
 	}
 
 	/**
+	* Returns the session prefix
+	* @return string
+	*/
+	public function getPrefix() : string
+	{
+		return $this->prefix;
+	}
+
+	/**
 	* Regenerates the session id
 	* @return string The new session id
 	*/
@@ -136,52 +149,32 @@ class Session
 	/**
 	* Determines if $_SESSION[$name] is set
 	* @param string $name The name of the var
-	* @param string $key The session key
 	* @return bool Returns true if $_SESSION[$name] is set, false otherwise
 	*/
-	public function isSet($name, $key = null) : bool
+	public function isSet(string $name) : bool
 	{
-		if ($key === null) {
-			$key = $this->key;
-		}
+		$key = $this->prefix . $name;
 
-		if ($key) {
-			return isset($_SESSION[$key][$name]);
-		} else {
-			return isset($_SESSION[$name]);
-		}
+		return isset($_SESSION[$key]);
 	}
 
 	/**
 	* Returns $_SESSION[$name] if set
 	* @param string $name The name of the var
 	* @param bool $unserialize If true, will unserialize the returned result
-	* @param string $key The session key
 	* @param mixed $not_set The return value, if $_SESSION[$name] isn't set
 	* @param mixed $default_value The default value to return if $unserialize is true
 	* @return mixed
 	*/
-	public function get(string $name, bool $unserialize = false, string $key = null, $not_set = null, $default_value = [])
+	public function get(string $name, bool $unserialize = false, $not_set = null, $default_value = [])
 	{
-		if ($key === null) {
-			$key = $this->key;
+		$key = $this->prefix . $name;
+
+		if (!isset($_SESSION[$key])) {
+			return $not_set;
 		}
 
-		$value = '';
-
-		if ($key) {
-			if (!isset($_SESSION[$key][$name])) {
-				return $not_set;
-			}
-
-			$value = $_SESSION[$key][$name];
-		} else {
-			if (!isset($_SESSION[$name])) {
-				return $not_set;
-			}
-
-			$value = $_SESSION[$name];
-		}
+		$value = $_SESSION[$key];
 
 		if ($unserialize) {
 			return App::unserialize($value, $default_value);
@@ -195,25 +188,18 @@ class Session
 	* @param string $name The name of the var
 	* @param mixed $value The value
 	* @param bool $serialize If true, will serialize the value
-	* @param string $key The session key
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, string $key = '', $default_value = '')
+	public function set(string $name, $value, bool $serialize = false, $default_value = '')
 	{
-		if ($key === null) {
-			$key = $this->key;
-		}
+		$key = $this->prefix . $name;
 
 		if ($serialize) {
 			$value = App::serialize($value, $default_value);
 		}
 
-		if ($key) {
-			$_SESSION[$key][$name] = $value;
-		} else {
-			$_SESSION[$name] = $value;
-		}
+		$_SESSION[$key] = $value;
 
 		return $this;
 	}
@@ -221,20 +207,13 @@ class Session
 	/**
 	* Unsets a session value
 	* @param string $name The name of the var
-	* @param string $key The session key
 	* @return $this
 	*/
-	public function unset(string $name, string $key = null)
+	public function unset(string $name)
 	{
-		if ($key === null) {
-			$key = $this->key;
-		}
+		$key = $this->prefix . $name;
 
-		if ($key) {
-			unset($_SESSION[$key][$name]);
-		} else {
-			unset($_SESSION[$name]);
-		}
+		unset($_SESSION[$key]);
 
 		return $this;
 	}

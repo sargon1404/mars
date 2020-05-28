@@ -33,6 +33,7 @@ class Config extends Data
 		'session_cookie_path' => '',
 		'session_cookie_domain' => '',
 		'session_save_path' => '',
+		'session_prefix' => '',
 		'session_table' => 'sessions',
 		'session_driver' => 'php',
 

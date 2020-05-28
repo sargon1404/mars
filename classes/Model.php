@@ -15,13 +15,27 @@ abstract class Model extends Items
 	use ReflectionTrait;
 
 	/**
+	* @var Plugins $plugins Alias for $this->app->plugins
+	*/
+	protected object $plugins;
+
+	/**
 	* Builds the Model
 	*/
 	public function __construct()
 	{
 		parent::__construct();
 
+		$this->prepare();
 		$this->init();
+	}
+
+	/**
+	* Prepares the model's properties
+	*/
+	protected function prepare()
+	{
+		$this->plugins = $this->app->plugins;
 	}
 
 	/**

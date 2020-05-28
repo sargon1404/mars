@@ -19,7 +19,7 @@ abstract class View
 	* @var string $url The url of the controller to which the view belongs.
 	*/
 	public string $url = '';
-	
+
 	/**
 	* @var string $site_url Alias for $this->app->site_url
 	*/
@@ -44,7 +44,7 @@ abstract class View
 	* @var string $dirname The dirname of the view. Populated only after render is called
 	*/
 	protected string $dirname = '';
-	
+
 	/**
 	* @var Controller $controller The controller
 	*/
@@ -86,6 +86,11 @@ abstract class View
 	public Text $text;
 
 	/**
+	* @var Plugins $plugins Alias for $this->app->plugins
+	*/
+	protected object $plugins;
+
+	/**
 	* Builds the View
 	* @param Controller $controller The controller the view belongs to
 	*/
@@ -110,6 +115,7 @@ abstract class View
 		$this->format = $this->app->format;
 		$this->text = $this->app->text;
 		$this->uri = $this->app->uri;
+		$this->plugins = $this->app->plugins;
 
 		$this->controller = $controller;
 		$this->model = $this->controller->model;
