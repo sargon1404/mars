@@ -61,11 +61,11 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
 	/**
 	* Reads the session data
 	* @see \SessionHandler::read()
-	* @param string $sid The session id
+	* @param string $id The session's id
 	*/
-	public function read($sid)
+	public function read($id)
 	{
-		$data = $this->app->db->selectResult($this->table, 'data', ['sid' => $sid]);
+		$data = $this->app->db->selectResult($this->table, 'data', ['id' => $id]);
 		if (!$data) {
 			return '';
 		}
@@ -76,13 +76,13 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
 	/**
 	* Writes the session data
 	* @see \SessionHandler::write()
-	* @param string $sid The session id
+	* @param string $id The session id
 	* @param string $data The data
 	*/
-	public function write($sid, $data)
+	public function write($id, $data)
 	{
 		$values = [
-			'sid' => $sid,
+			'id' => $id,
 			'timestamp' => time(),
 			'data' => $data
 		];
@@ -95,11 +95,11 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
 	/**
 	* Destroy the session data
 	* @see \SessionHandler::destroy()
-	* @param string $sid The session id
+	* @param string $id The session id
 	*/
-	public function destroy($sid)
+	public function destroy($id)
 	{
-		$this->app->db->deleteById($this->table, 'sid', $sid);
+		$this->app->db->deleteById($this->table, $id);
 
 		return true;
 	}
@@ -121,22 +121,22 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
 	/**
 	* Checks if a session identifier already exists or not
 	* @see \SessionUpdateTimestampHandlerInterface::valideId()
-	* @param string $sid The session id
+	* @param string $id The session id
 	*/
-	public function validateId($sid)
+	public function validateId($id)
 	{
-		return $this->app->db->exists($this->table, ['sid' => $sid], 'sid');
+		return $this->app->db->exists($this->table, ['id' => $id], 'id');
 	}
 
 	/**
 	* Updates the timestamp of a session when its data didn't change
 	* @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-	* @param string $sid The session id
+	* @param string $id The session id
 	* @param string $data The data
 	*/
-	public function updateTimestamp($sid, $data)
+	public function updateTimestamp($id, $data)
 	{
-		$this->app->db->update($this->table, ['timestamp' => time()], ['sid' => $sid]);
+		$this->app->db->update($this->table, ['timestamp' => time()], ['id' => $id]);
 
 		return true;
 	}

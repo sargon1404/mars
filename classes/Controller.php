@@ -85,6 +85,11 @@ abstract class Controller
 	protected Escape $escape;
 
 	/**
+	* @var Validator $uri Alias for $this->app->uri
+	*/
+	protected Uri $uri;
+
+	/**
 	* @var Validator $validator Alias for $this->app->validator
 	*/
 	protected Validator $validator;
@@ -133,6 +138,7 @@ abstract class Controller
 		$this->request = $this->app->request;
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
+		$this->uri = $this->app->uri;
 		$this->validator = $this->app->validator;
 		$this->plugins = $this->app->plugins;
 		$this->errors = $this->app->errors;
@@ -274,10 +280,6 @@ abstract class Controller
 	protected function canDispatch(string $method) : bool
 	{
 		$rm = new \ReflectionMethod($this, $method);
-
-		if ($rm->getDeclaringClass()->isAbstract()) {
-			return false;
-		}
 
 		if ($rm->isConstructor() || $rm->isDestructor()) {
 			return false;

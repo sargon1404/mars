@@ -307,10 +307,6 @@ abstract class View
 
 		$rm = new \ReflectionMethod($this, $method);
 
-		if ($rm->getDeclaringClass()->isAbstract()) {
-			return false;
-		}
-
 		if ($rm->isConstructor() || $rm->isDestructor()) {
 			return false;
 		}

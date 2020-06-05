@@ -28,7 +28,12 @@ abstract class Items extends Rows implements \ArrayAccess
 	/**
 	* @var string $id_name The id column of the table from which the objects will be loaded
 	*/
-	protected static string $id_name = '';
+	protected static string $id_name = 'id';
+
+	/**
+	* @var string|array $fields The database fields to load
+	*/
+	protected $fields = '*';
 
 	/**
 	* @var array $ids The ids of the currently loaded objects
@@ -141,6 +146,27 @@ abstract class Items extends Rows implements \ArrayAccess
 	}
 
 	/**
+	* Returns the fields which will be loaded
+	* @return array|string The fields
+	*/
+	public function getFields()
+	{
+		return $this->fields;
+	}
+
+	/**
+	* Sets the fields to load
+	* @param string|array $fields The fields to load
+	* @return $this
+	*/
+	public function setFields($fields = '*')
+	{
+		$this->fields = $fields;
+
+		return $this;
+	}
+
+	/**
 	* Returns an object
 	* @param int $id The id of the object to return
 	* @return object The object or null of not found
@@ -162,19 +188,13 @@ abstract class Items extends Rows implements \ArrayAccess
 	*/
 	public function getRow(int $id)
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
 		$class_name = $this->getClass();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call get_row()');
-		}
 
 		if ($class_name) {
 			return new $class_name($id);
 		}
 
-		return $this->db->selectById($table, $id_name, $id);
+		return $this->db->selectById($this->getTable(), $id, $this->fields, $this->getIdName());
 	}
 
 	/**
@@ -206,17 +226,11 @@ abstract class Items extends Rows implements \ArrayAccess
 	* @param string $order The order: asc/desc
 	* @param int $limit The limit
 	* @param int $limit_offset The limit offset, if any
-	* @param string $fields The fields to select
 	* @return array The loaded data
 	*/
-	public function load(array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string $fields = '*') : array
+	public function load(array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
 	{
-		$table = $this->getTable();
-		if (!$table) {
-			throw new \Exception('The $table static property must be set to be able to call load()');
-		}
-
-		$sql = $this->db->sql->select($fields)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
+		$sql = $this->db->sql->select($this->fields)->from($this->getTable())->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
 		return $this->loadBySql($sql);
 	}
@@ -236,8 +250,6 @@ abstract class Items extends Rows implements \ArrayAccess
 			$sql = $this->db->sql;
 		}
 
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
 		$class_name = $this->getClass();
 
 		$q = $this->db->readQuery($sql);
@@ -258,40 +270,36 @@ abstract class Items extends Rows implements \ArrayAccess
 	}
 
 	/**
-	* Alias for load, with the $fields param first
-	* @param string $fields The fields to select
-	* @param array $where Where conditions in the format col => val
-	* @param string $order_by The order by column
-	* @param string $order The order: asc/desc
-	* @param int $limit The limit
-	* @param int $limit_offset The limit offset, if any
-	* @return array The loaded data
-	*/
-	public function loadFields(string $fields = '*', array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
-	{
-		return $this->load($where, $order_by, $order, $limit, $limit_offset, $fields);
-	}
-
-	/**
 	* Loads a set of objects based on ids
 	* @param array $ids The ids of the objects to load
-	* @param string $fields The fields to load. By default, all fields are loaded (*)
 	* @return array The loaded data
 	*/
-	public function loadIds(array $ids, string $fields = '*') : array
+	public function loadIds(array $ids) : array
 	{
 		if (!$ids) {
 			return [];
 		}
 
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
+		$sql = $this->db->sql->select($this->fields)->from($this->getTable())->whereIn($this->getIdName(), $ids);
 
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call load_ids()');
-		}
+		return $this->loadBySql($sql);
+	}
 
-		$sql = $this->db->sql->select($fields)->from($table)->whereIn($id_name, $ids);
+	/**
+	* Loads a set of objects based on the based data. These keys might be specififed: where, order_by, order, limit, limit_offset
+	* @param array $data The data used to build the sql object from
+	* @return array The loaded data
+	*/
+	public function loadByData(array $data) : array
+	{
+		$where = $data['where'] ?? [];
+		$order_by = $data['order_by'] ?? '';
+		$order = $data['order'] ?? '';
+
+		$sql = $this->db->sql->select($this->fields)->from($this->getTable());
+
+		$sql->where($where)->orderBy($order_by, $order);
+		//echo $sql->getSql();die;
 
 		return $this->loadBySql($sql);
 	}
@@ -303,12 +311,11 @@ abstract class Items extends Rows implements \ArrayAccess
 	* @param string $order The order: asc/desc
 	* @param int $limit The limit
 	* @param int $limit_offset The limit offset, if any
-	* @param string $fields The fields to select
 	* @return array The data
 	*/
-	public function getAll(array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string $fields = '*') : array
+	public function getAll(array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
 	{
-		return $this->load($where, $order_by, $order, $limit, $limit_offset, $fields);
+		return $this->load($where, $order_by, $order, $limit, $limit_offset);
 	}
 
 	/**
@@ -322,14 +329,11 @@ abstract class Items extends Rows implements \ArrayAccess
 	*/
 	public function getList(array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-
-		if (!$id_name || !isset(static::$title_name)) {
-			throw new \Exception('The $id_name and $title_name static properties must be set, to use get_list()');
+		if (!isset(static::$title_name)) {
+			throw new \Exception('The $title_name static property must be set, to use getList()');
 		}
 
-		return $this->db->selectList($table, $id_name, static::$title_name, $where, $order_by, $order, $limit, $limit_offset);
+		return $this->db->selectList($this->getTable(), $this->getIdName(), static::$title_name, $where, $order_by, $order, $limit, $limit_offset);
 	}
 
 	/**
@@ -400,13 +404,6 @@ abstract class Items extends Rows implements \ArrayAccess
 	*/
 	public function update($data, $ids = []) : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call update()');
-		}
-
 		$ids = $this->getIds($ids);
 		if (!$ids) {
 			return 0;
@@ -422,7 +419,7 @@ abstract class Items extends Rows implements \ArrayAccess
 			return 0;
 		}
 
-		return $this->db->updateByIds($table, $data, $id_name, $ids);
+		return $this->db->updateByIds($this->getTable(), $data, $ids, $this->getIdName());
 	}
 
 	/**
@@ -473,12 +470,8 @@ abstract class Items extends Rows implements \ArrayAccess
 	*/
 	protected function updateStatus($ids = [], int $val = 1) : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-		$val = (int)$val;
-
-		if (!$table || !$id_name || !isset(static::$status_name)) {
-			throw new \Exception('The $table, $id_name and $status_name static properties must be set to be able to call update_status()');
+		if (!isset(static::$status_name)) {
+			throw new \Exception('The $status_name static property must be set to be able to call updateStatus()');
 		}
 
 		$ids = $this->getIds($ids);
@@ -486,7 +479,7 @@ abstract class Items extends Rows implements \ArrayAccess
 			return 0;
 		}
 
-		return $this->db->updateByIds($table, [$status_name => $val], $id_name, $ids);
+		return $this->db->updateByIds($this->getTable(), [$status_name => $val], $ids, $this->getIdName());
 	}
 
 	/**
@@ -496,24 +489,17 @@ abstract class Items extends Rows implements \ArrayAccess
 	*/
 	public function delete($ids = []) : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call delete()');
-		}
-
 		$ids = $this->getIds($ids);
 		if (!$ids) {
 			return 0;
 		}
 
-		return $this->db->deleteByIds($table, $id_name, $ids);
+		return $this->db->deleteByIds($this->getTable(), $ids, $this->getIdName());
 	}
 
 	/**
 	* Returns $ids if it's not empty; $this->ids otherwise
-	* @param mixed $ids The ids list
+	* @param string|array $ids The ids list
 	* @return array
 	*/
 	public function getIds($ids = []) : array

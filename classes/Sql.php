@@ -135,7 +135,7 @@ class Sql
 
 	/**
 	* Builds a SELECT query
-	* @param mixed $fields The fields to select. Either a string or an array. If array, the fields will be escaped, if string will NOT
+	* @param string|array $fields The fields to select. Either a string or an array. If array, the fields will be escaped, if string will NOT
 	* @return $this
 	*/
 	public function select($fields = '*')
@@ -802,9 +802,6 @@ class Sql
 			return $this;
 		}
 
-		$count = (int)$count;
-		$offset = (int)$offset;
-
 		if ($offset) {
 			$this->sql.= " LIMIT {$offset}, {$count}";
 		} else {
@@ -823,9 +820,6 @@ class Sql
 	*/
 	public function pageLimit(int $page = 0, int $page_items = 0, int $total_items = 0)
 	{
-		$page = (int)$page;
-		$page_items = (int)$page_items;
-
 		$page--;
 
 		if ($page < 0) {
@@ -840,8 +834,6 @@ class Sql
 		}
 
 		$offset = $page * $page_items;
-
-		$offset = (int)$offset;
 
 		$this->sql.= " LIMIT {$offset}, {$page_items}";
 

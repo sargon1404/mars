@@ -61,10 +61,9 @@ class ImageOptimizer
 	*/
 	protected function optimizeJpeg(string $filename) : bool
 	{
-		$quality = (int)$this->jpeg_quality;
 		$safe_filename = escapeshellarg($filename);
 
-		$command = "jpegoptim {$safe_filename} --strip-all -m {$quality}";
+		$command = "jpegoptim {$safe_filename} --strip-all -m {$this->jpeg_quality}";
 
 		exec($command);
 

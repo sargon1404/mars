@@ -30,7 +30,7 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 		$this->app = $app;
 
 		if (!$this->app->memcache->isEnabled()) {
-			throw new \Exception('Memcache must be enable to be able to use the session memcache driver');
+			throw new \Exception('Memcache must be enabled to be able to use the session memcache driver');
 		}
 
 		$this->lifetime = ini_get('session.gc_maxlifetime');
@@ -61,11 +61,11 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	/**
 	* Reads the session data
 	* @see \SessionHandler::read()
-	* @param string $sid The session id
+	* @param string $id The session id
 	*/
-	public function read($sid)
+	public function read($id)
 	{
-		$data = $this->app->memcache->get("session-{$sid}");
+		$data = $this->app->memcache->get("session-{$id}");
 		if (!$data) {
 			return '';
 		}
@@ -76,12 +76,12 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	/**
 	* Writes the session data
 	* @see \SessionHandler::write()
-	* @param string $sid The session id
+	* @param string $id The session id
 	* @param string $data The data
 	*/
-	public function write($sid, $data)
+	public function write($id, $data)
 	{
-		$this->app->memcache->set("session-{$sid}", $data, false, '', $this->lifetime);
+		$this->app->memcache->set("session-{$id}", $data, false, '', $this->lifetime);
 
 		return true;
 	}
@@ -89,11 +89,11 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	/**
 	* Destroy the session data
 	* @see \SessionHandler::destroy()
-	* @param string $sid The session id
+	* @param string $id The session id
 	*/
-	public function destroy($sid)
+	public function destroy($id)
 	{
-		$this->app->memcache->delete("session-{$sid}");
+		$this->app->memcache->delete("session-{$id}");
 
 		return true;
 	}
@@ -111,22 +111,22 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	/**
 	* Checks if a session identifier already exists or not
 	* @see \SessionUpdateTimestampHandlerInterface::valideId()
-	* @param string $sid The session id
+	* @param string $id The session id
 	*/
-	public function validateId($sid)
+	public function validateId($id)
 	{
-		return $this->app->memcache->exists("session-{$sid}");
+		return $this->app->memcache->exists("session-{$id}");
 	}
 
 	/**
 	* Updates the timestamp of a session when its data didn't change
 	* @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
-	* @param string $sid The session id
+	* @param string $id The session id
 	* @param string $data The data
 	*/
-	public function updateTimestamp($sid, $data)
+	public function updateTimestamp($id, $data)
 	{
-		$this->write($sid, $data);
+		$this->write($id, $data);
 
 		return true;
 	}

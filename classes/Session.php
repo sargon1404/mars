@@ -73,7 +73,7 @@ class Session
 		$this->save_path = $this->app->config->session_save_path;
 		$this->prefix = $this->app->config->session_prefix;
 		if ($this->prefix) {
-			$this->prefix = $this->prefix. '_';
+			$this->prefix = $this->prefix . '_';
 		}
 
 		$this->handle = $this->getHandle();

@@ -27,10 +27,16 @@ abstract class Item extends Row
 	* @var string $table The table from which the object will be loaded.
 	*/
 	protected static string $table = '';
+
 	/**
 	* @var string $id_name The id column of the table from which the object will be loaded
 	*/
-	protected static string $id_name = '';
+	protected static string $id_name = 'id';
+
+	/**
+	* @var string|array $fields The database fields to load
+	*/
+	protected $fields = '*';
 
 	/**
 	* @var array $errors  Contains the generated error codes, if any
@@ -76,6 +82,7 @@ abstract class Item extends Row
 	* @var Db $db The database object. Alias for $this->app->db
 	*/
 	protected Db $db;
+
 	/**
 	* @var Validator $validator The validator object. Alias for $this->app->validator
 	*/
@@ -94,8 +101,8 @@ abstract class Item extends Row
 		$table = $this->getTable();
 		$id_name = $this->getIdName();
 
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and $id_name static properties of class ' . get_class($this) . ' are not set!');
+		if (!$table) {
+			throw new \Exception('The $table static property of class ' . get_class($this) . ' is not set!');
 		}
 
 		if (empty($this->$id_name)) {
@@ -172,6 +179,27 @@ abstract class Item extends Row
 	public function getIdName() : string
 	{
 		return static::$id_name;
+	}
+
+	/**
+	* Returns the fields which will be loaded
+	* @return array|string The fields
+	*/
+	public function getFields()
+	{
+		return $this->fields;
+	}
+
+	/**
+	* Sets the fields to load
+	* @param string|array $fields The fields to load
+	* @return $this
+	*/
+	public function setFields($fields = '*')
+	{
+		$this->fields = $fields;
+
+		return $this;
 	}
 
 	/**
@@ -252,14 +280,7 @@ abstract class Item extends Row
 	*/
 	public function getRow(int $id) : ?object
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call get_row()');
-		}
-
-		return $this->db->selectById($table, $id_name, $id);
+		return $this->db->selectById($this->getTable(), $id, $this->getIdName());
 	}
 
 	/**
@@ -376,13 +397,6 @@ abstract class Item extends Row
 	*/
 	public function insert(bool $process = true, bool $keep_old_id = false) : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call insert()');
-		}
-
 		if (!$this->validate()) {
 			return 0;
 		}
@@ -393,7 +407,7 @@ abstract class Item extends Row
 
 		$data = $this->getUpdatableData();
 
-		$insert_id = $this->db->insert($table, $data);
+		$insert_id = $this->db->insert($this->getTable(), $data);
 
 		if (!$keep_old_id) {
 			$this->setId($insert_id);
@@ -408,14 +422,6 @@ abstract class Item extends Row
 	*/
 	public function update(bool $process = true) : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-		$id = $this->getId();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call update()');
-		}
-
 		if (!$this->validate()) {
 			return 0;
 		}
@@ -426,7 +432,7 @@ abstract class Item extends Row
 
 		$data = $this->getUpdatableData();
 
-		return $this->db->updateById($table, $data, $id_name, $id);
+		return $this->db->updateById($this->getTable(), $data, $this->getId(), $this->getIdName());
 	}
 
 	/**
@@ -481,15 +487,7 @@ abstract class Item extends Row
 	*/
 	public function delete() : int
 	{
-		$table = $this->getTable();
-		$id_name = $this->getIdName();
-		$id = $this->getId();
-
-		if (!$table || !$id_name) {
-			throw new \Exception('The $table and the $id_name static properties must be set to be able to call delete()');
-		}
-
-		return $this->db->deleteById($table, $id_name, $id);
+		return $this->db->deleteById($this->getTable(), $this->getId(), $this->getIdName());
 	}
 
 	/**
@@ -501,25 +499,14 @@ abstract class Item extends Row
 	*/
 	public function bind(array $data, ?array $ignore_columns_array = null, ?string $ignore_value = null)
 	{
-		$table = $this->getTable();
 		$id_name = $this->getIdName();
-
-		if (!$table) {
-			throw new \Exception('The $table static property must be set to be able to call bind()');
-		}
 
 		//if no ignore columns array are specified, include the id field automatically
 		if ($ignore_columns_array === null) {
-			if ($id_name) {
-				$ignore_columns_array = [$id_name];
-			} else {
-				$ignore_columns_array = [];
-			}
+			$ignore_columns_array = [$id_name];
 		}
 
-		if ($table) {
-			$data = $this->db->bind($table, $data, $ignore_columns_array, $ignore_value);
-		}
+		$data = $this->db->bind($this->getTable(), $data, $ignore_columns_array, $ignore_value);
 
 		$this->setData($data);
 
@@ -535,13 +522,7 @@ abstract class Item extends Row
 	*/
 	public function bindList(array $data, array $columns_array, ?string $ignore_value = null)
 	{
-		$table = $this->getTable();
-
-		if (!$table) {
-			throw new \Exception('The $table static property must be set to be able to call bind_list()');
-		}
-
-		$data = $this->db->bindList($table, $data, $columns_array, $ignore_value);
+		$data = $this->db->bindList($this->getTable(), $data, $columns_array, $ignore_value);
 
 		$this->setData($data);
 
