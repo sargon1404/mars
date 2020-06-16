@@ -27,7 +27,7 @@ abstract class Urls
 	/**
 	* Outputs an url
 	* @param string $url The url to output
-	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
 	*/
@@ -45,7 +45,7 @@ abstract class Urls
 	/**
 	* Returns an url with the version appended, if required
 	* @param string $url The url to append the version to
-	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @return string The url
 	*/
 	protected function getUrl(string $url, $version) : string
@@ -96,7 +96,7 @@ abstract class Urls
 	* @param string $url The url to load. Will only load it once, no matter how many times the function is called with the same url
 	* @param string $location The location of the url [head|footer]
 	* @param int $priority The url's output priority. The higher, the better
-	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
 	* @return $this
@@ -135,7 +135,7 @@ abstract class Urls
 	* @param string $url The url to change the properties for. If it's not found, it will be added
 	* @param string $location The location of the url [head|footer]. If null, the value isn't changed
 	* @param int $priority The url's output priority. The higher, the better. If null, the value isn't changed
-	* @param mixed $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr. If null, the value isn't changed
 	* @param bool Returns true if the url was found, false otherwise. If null, the value isn't changed
 	* @return $this

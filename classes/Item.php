@@ -90,7 +90,7 @@ abstract class Item extends Row
 
 	/**
 	* Builds an item
-	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
+	* @param int|array|object|null $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
 	*/
 	public function __construct($data = 0)
 	{
@@ -276,7 +276,7 @@ abstract class Item extends Row
 	/**
 	* Returns the row from the database, based on id
 	* @param int $id The id to return the data for
-	* @return mixed The row, or false on failure
+	* @return object The row, or null on failure
 	*/
 	public function getRow(int $id) : ?object
 	{
@@ -285,7 +285,7 @@ abstract class Item extends Row
 
 	/**
 	* Sets the object's properties
-	* @param mixed $data The data (array,object)
+	* @param array|object $data The data
 	* @param bool $store If true will store the properties defined in static::$store in $this->stored
 	* @return $this
 	*/
@@ -308,7 +308,7 @@ abstract class Item extends Row
 
 	/**
 	* Loads an object
-	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data
+	* @param int|array|object|null $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data
 	* @return bool True if the object was loaded with data, false otherwise
 	*/
 	public function load($data) : bool
@@ -346,7 +346,7 @@ abstract class Item extends Row
 
 	/**
 	* Loads an objects using a sql query
-	* @param mixed $sql The sql code used to load the object. Either string or a Sql object
+	* @param string|Sql $sql The sql code used to load the object
 	* @return bool True if the object was loaded with data, false otherwise
 	*/
 	public function loadBySql($sql = '') : bool
@@ -418,12 +418,12 @@ abstract class Item extends Row
 
 	/**
 	* Updates the object
-	* @return int The number of affected rows
+	* @return bool Returns true if the update operation was succesfull, false otherwise
 	*/
-	public function update(bool $process = true) : int
+	public function update(bool $process = true) : bool
 	{
 		if (!$this->validate()) {
-			return 0;
+			return false;
 		}
 
 		if ($process) {
@@ -432,7 +432,9 @@ abstract class Item extends Row
 
 		$data = $this->getUpdatableData();
 
-		return $this->db->updateById($this->getTable(), $data, $this->getId(), $this->getIdName());
+		$this->db->updateById($this->getTable(), $data, $this->getId(), $this->getIdName());
+
+		return true;
 	}
 
 	/**
@@ -508,7 +510,7 @@ abstract class Item extends Row
 
 		$data = $this->db->bind($this->getTable(), $data, $ignore_columns_array, $ignore_value);
 
-		$this->setData($data);
+		$this->setData($data, false);
 
 		return $this;
 	}
@@ -524,7 +526,7 @@ abstract class Item extends Row
 	{
 		$data = $this->db->bindList($this->getTable(), $data, $columns_array, $ignore_value);
 
-		$this->setData($data);
+		$this->setData($data, false);
 
 		return $this;
 	}
@@ -648,6 +650,22 @@ abstract class Item extends Row
 	}
 
 	/**
+	* Loads the data of the current item as stored data
+	* @return $this
+	*/
+	public function loadStored()
+	{
+		$id = $this->getId();
+		if (!$id) {
+			return;
+		}
+
+		$data = $this->db->selectById($this->getTable(), $id, '*', $this->getIdName(), true);
+
+		return $this->setStored($data);
+	}
+
+	/**
 	* Sets the stored data
 	* @param array $data The data to store
 	* @return $this
@@ -691,7 +709,7 @@ abstract class Item extends Row
 
 	/**
 	* Flips the stored values and the properties value
-	* @param mixed $properties The name of the stored properties to flip (string,array)
+	* @param string|array $properties The name of the stored properties to flip
 	* @return $this
 	*/
 	public function flipStored($properties)

@@ -92,8 +92,8 @@ class Request
 
 	/**
 	* Trims an input value
-	* @param mixed $value The value to trim (string|array)
-	* @return mixed
+	* @param string|array $value The value to trim
+	* @return string|array
 	*/
 	protected function trim($value)
 	{
@@ -230,7 +230,7 @@ class Request
 	* Returns a value from $_SERVER
 	* @param string $name The name of the get variable
 	* @param bool $to_lower If true, will return the value in lowercase
-	* @return mixed The $_SERVER[$name] value
+	* @return string The $_SERVER[$name] value
 	*/
 	public function server(string $name, bool $to_lower = false) : string
 	{
@@ -251,7 +251,7 @@ class Request
 	* @param string $source The source: get/post
 	* @param string $filter The filter to apply to the value. By default the value is filtered as a string. See class Filter for a list of filters
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed
+	* @return string|array
 	*/
 	protected function getFromSource(string $name, string $source, string $filter, bool $is_array)
 	{
@@ -265,7 +265,7 @@ class Request
 	* @param string $name The name of the get variable
 	* @param string $filter The filter to apply to the value. By default the value is filtered as a string. See class Filter for a list of filters
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The $_GET[$name] value
+	* @return string|array The $_GET[$name] value
 	*/
 	public function get(string $name, string $filter = '', bool $is_array = false)
 	{
@@ -288,7 +288,7 @@ class Request
 	* @param string $name The name of the post variable
 	* @param string $filter The filter to apply to the value. By default it's considered a string. See class filter for a list of filter type values
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The $_POST[$name] value
+	* @return string|array The $_POST[$name] value
 	*/
 	public function post(string $name, string $filter = '', bool $is_array = false)
 	{
@@ -311,7 +311,7 @@ class Request
 	* @param string $name The name of the get variable
 	* @param string $filter The filter to apply to the value. By default it's considered a string
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The $_POST[$name] or the $_GET value
+	* @return string|array The $_POST[$name] or the $_GET value
 	*/
 	public function value(string $name, string $filter = '', bool $is_array = false)
 	{
@@ -334,7 +334,7 @@ class Request
 	* @param string $name The name of the variable
 	* @param string $filter The filter to apply to the value. By default it's considered a string
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The $_COOKIE[$name] value
+	* @return string|array The $_COOKIE[$name] value
 	*/
 	public function cookie(string $name, string $filter = '', bool $is_array = false)
 	{
@@ -363,7 +363,7 @@ class Request
 	* @param bool $return_default If true and the value isn't found, will return the default value for this type of filter
 	* @param string $filter The filter to apply to the value.
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The value
+	* @return string|array The value
 	*/
 	protected function readValue(string $name, string $source, bool $return_default = true, string $filter = '', bool $is_array = false)
 	{
@@ -398,7 +398,7 @@ class Request
 	* Returns the default value for a certain filter
 	* @param string $filter The filter to apply to the value.
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed The default value
+	* @return string|array The default value
 	*/
 	protected function getDefaultValue(string $filter = '', bool $is_array = false)
 	{
@@ -414,7 +414,7 @@ class Request
 	* @param mixed $value The value
 	* @param string $filter The filter to apply to the value.
 	* @param bool $is_array If true, will force the returned value to an array
-	* @return mixed
+	* @return string|array
 	*/
 	protected function getValue($value, string $filter, bool $is_array = false)
 	{
@@ -444,7 +444,7 @@ class Request
 	/**
 	* For each element in the $data array, will check if a corresponding value with the same name exists in the post/get data.
 	* If it does, will set the value in the $data to those values.
-	* @param mixed $data Array or object containing the data
+	* @param array|object $data The data to be filled
 	* @param array $array_fields Fields which can be filled with arrays
 	* @param array $ignore_fields Fields to ignore when filling.
 	* @param string $key_prefix Key prefix which is used when filling the data
@@ -496,7 +496,7 @@ class Request
 
 	/**
 	* Fills with get data
-	* @param mixed $data Array or object containing the data
+	* @param array|object $data The data to be filled
 	* @param array $array_fields Fields which can be filled with arrays
 	* @param array $ignore_fields Fields to ignore when filling.
 	* @param string $key_prefix Key prefix which is used when filling the data
@@ -664,14 +664,14 @@ class Request
 	* Uploads a file/files
 	* @param string $name The $_FILES[$name] used
 	* @param string $upload_dir Destination folder
-	* @param mixed $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
+	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
 	* @param bool $append_suffix If true, will always generate a random character as a suffix for the uploaded filename
 	* @param bool $append_suffix_if_file_exists If $append_suffix is false and $append_suffix_if_file_exists is true and a file with the same name with the one being uploaded exists, a suffix will be used nonetheless
 	* @param bool $create_subdir If true, a subdir will be automatically be created inside $upload_dir and the file will be uploaded there
 	* @param bool $force_array If a single file is uploaded, by default it will be returned as string; If $force_arrray is true, it will be returned as an array
-	* @return mixed Returns the list of files uploaded, if the upload(s) was successful, false if there were errors
+	* @return array Returns the list of files uploaded, if the upload(s) was successful, null if there were errors
 	*/
-	public function upload(string $name, string $upload_dir, $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true, bool $create_subdir = false, bool $force_array = false)
+	public function upload(string $name, string $upload_dir, $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true, bool $create_subdir = false, bool $force_array = false) : ?array
 	{
 		$ok = true;
 		$is_array = true;
@@ -683,7 +683,7 @@ class Request
 		if (!isset($_FILES[$name])) {
 			$this->uploadHandleError(UPLOAD_ERR_NO_FILE, '');
 
-			return false;
+			return null;
 		}
 
 		if (!is_array($_FILES[$name]['name'])) {
@@ -699,7 +699,7 @@ class Request
 
 		$files_count = count($_FILES[$name]['name']);
 		if (!$files_count) {
-			return false;
+			return null;
 		}
 
 		for ($i = 0; $i < $files_count; $i++) {
@@ -786,14 +786,14 @@ class Request
 				}
 			}
 
-			return false;
+			return null;
 		}
 	}
 
 	/**
 	* Checks if $filename can be uploaded, based on extension
 	* @param string $filename The filename to check
-	* @param mixed $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
+	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
 	* @return bool Returns true if the file can be uploaded
 	*/
 	public function canUploadFile(string $filename, $allowed_extensions = []) : bool
@@ -827,8 +827,8 @@ class Request
 	/**
 	* Checks if $extension can be uploaded based on $allowed_extensions
 	* @param string $extension The extension
-	* @param mixed $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
-	* @param mixed $out_allowed_extensions Variable which lists the extensions which can be uploaded [out]
+	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
+	* @param array $out_allowed_extensions Variable which lists the extensions which can be uploaded [out]
 	* @return bool Returns true if the extension is on the allowed list
 	*/
 	public function uploadExtensionIsAllowed(string $extension, $allowed_extensions = '*', ?array &$out_allowed_extensions = []) : bool

@@ -691,7 +691,7 @@ class App
 
 	/**
 	* Sends a mail
-	* @param mixed $to The adress(es) where the mail will be sent (string,array)
+	* @param string|array $to The adress(es) where the mail will be sent
 	* @param string $subject The subject of the mail
 	* @param string $message The body of the mail
 	* @param string $from The email adress from which the email will be send.By default $this->app->config->mail_from is used

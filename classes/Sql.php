@@ -572,7 +572,7 @@ class Sql
 
 	/**
 	* Builds a WHERE statement
-	* @param mixed $where Either array or string. If array the format must be: column => value or column => [value,operator]. If string, the name of the column
+	* @param string|array $where Either array or string. If array the format must be: column => value or column => [value,operator]. If string, the name of the column
 	* @param string $value The value, if $where is specified as string
 	* @param string $operator The operator: =/</> etc...
 	* @param string $delimitator The delimitator to use between parts. By default AND is used.
@@ -689,7 +689,7 @@ class Sql
 
 	/**
 	* Returns either '= $values', if count($values) is 1 OR 'IN($values)' otherwise
-	* @param mixed $values The values. Either array or string|int
+	* @param int|string|array $values The values
 	* @param bool $is_int If true, will treat the elements from $in_array as int values
 	* @param array $params Variable which will receive the values to be used in the prepared statement [out]
 	* @return string
@@ -724,7 +724,7 @@ class Sql
 
 	/**
 	* Builds a HAVING statement
-	* @param mixed $where Either array or string. If array the format must be: column => value or column => [value,operator,alias]. If string, the name of the column
+	* @param string|array $where Either array or string. If array the format must be: column => value or column => [value,operator,alias]. If string, the name of the column
 	* @param string $value The value
 	* @param string $operator
 	* @param string alias

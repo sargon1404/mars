@@ -237,7 +237,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Loads objects using a sql query
-	* @param mixed $sql The sql query used to load the objects. Either a string or a Sql object
+	* @param string|Sql $sql The sql query used to load the objects. Either a string or a Sql object
 	* @return array The loaded data
 	*/
 	public function loadBySql($sql = null) : array
@@ -398,8 +398,8 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Updates multiple objects based on the properties of $data
-	* @param mixed $data The data used to update the properties (array,object)
-	* @param mixed $ids The IDs to update (int,array). If empty, all the current loaded objects will be updated
+	* @param array|object $data The data used to update the properties
+	* @param int|array $ids The IDs to update (int,array). If empty, all the current loaded objects will be updated
 	* @return int The number of affected rows
 	*/
 	public function update($data, $ids = []) : int
@@ -424,7 +424,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Publishes the specified IDS. The static $status_name property must point to the status column
-	* @param mixed $ids The IDs to publish (int,array). If empty, all the current loaded objects will be published
+	* @param int|array $ids The IDs to publish. If empty, all the current loaded objects will be published
 	* @return int The number of affected rows
 	*/
 	public function publish($ids = []) : int
@@ -434,7 +434,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Unpublishes the specified IDS. The The static $status_name property must point to the status column
-	* @param mixed $ids The IDs to unpublish (int,array). If empty, all the current loaded objects will be unpublished
+	* @param int|array $ids The IDs to unpublish. If empty, all the current loaded objects will be unpublished
 	* @return int The number of affected rows
 	*/
 	public function unpublish($ids = []) : int
@@ -444,7 +444,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Alias for publish
-	* @param mixed $ids The IDs to enable (int,array). If empty, all the current loaded objects will be enabled
+	* @param int|array $ids The IDs to enable. If empty, all the current loaded objects will be enabled
 	* @return int The number of affected rows
 	*/
 	public function enable($ids = []) : int
@@ -454,7 +454,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Alias for unpublish
-	* @param mixed $ids The IDs to disable (int,array). If empty, all the current loaded objects will be disable
+	* @param int|array $ids The IDs to disable. If empty, all the current loaded objects will be disable
 	* @return int The number of affected rows
 	*/
 	public function disable($ids = []) : int
@@ -464,7 +464,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Updates the status of multiple ids
-	* @param mixed $ids The IDs to update (int,array). If empty, all the current loaded objects will be updated
+	* @param int|array $ids The IDs to update. If empty, all the current loaded objects will be updated
 	* @param int $val The status value
 	* @return int The number of affected rows
 	*/
@@ -484,7 +484,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* Deletes the specified IDs.
-	* @param mixed $ids The IDs to delete (int,array). If empty, all the current loaded objects will be deleted
+	* @param int|array $ids The IDs to delete. If empty, all the current loaded objects will be deleted
 	* @return int The number of affected rows
 	*/
 	public function delete($ids = []) : int

@@ -408,9 +408,7 @@ class Cli
 	*/
 	public function message($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		echo "\n";
 		$this->print($text, $this->colors['message'], $pad_left, "\n\n", "\n\n", $newline);
-		echo "\n";
 
 		if ($die) {
 			die;
@@ -443,9 +441,7 @@ class Cli
 	*/
 	public function warning(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		echo "\n";
 		$this->print($text, $this->colors['warning'], $pad_left, "\n\n", "\n\n", $newline);
-		echo "\n";
 
 		if ($die) {
 			die;
@@ -464,9 +460,7 @@ class Cli
 	*/
 	public function info(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		echo "\n";
 		$this->print($text, $this->colors['info'], $pad_left, "\n\n", "\n\n", $newline);
-		echo "\n";
 
 		if ($die) {
 			die;

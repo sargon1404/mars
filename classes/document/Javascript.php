@@ -69,7 +69,7 @@ class Javascript extends Urls
 
 	/**
 	* Returns a javascript array from $data
-	* @param mixed $data The data to convert to a javascript array (array,object)
+	* @param array|object $data The data to convert to a javascript array
 	* @param bool $quote If true will put quotes around the array's elements
 	* @param string $key If specified will use array[$key] rather than the array itself
 	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
@@ -97,7 +97,7 @@ class Javascript extends Urls
 
 	/**
 	* Returns a javascript object from $data
-	* @param mixed $data The data to convert to a javascript object (array,object)
+	* @param array|object $data The data to convert to a javascript object
 	* @param bool $quote If true will put quotes around the array's elements
 	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
 	* @return string The javascript object
@@ -132,7 +132,7 @@ class Javascript extends Urls
 
 	/**
 	* Returns a javascript function params list from $array
-	* @param mixed $data The data to convert to a javascript params list (array, object)
+	* @param array|object $data The data to convert to a javascript params list
 	* @param bool $quote If true will put quotes around the array's elements
 	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
 	* @return string The javascript object
@@ -150,7 +150,7 @@ class Javascript extends Urls
 
 	/**
 	* Returns a javascript list from $array
-	* @param mixed $data The data to convert to a javascript list (array, object)
+	* @param array|object $data The data to convert to a javascript list
 	* @param bool $quote If true will put quotes around the array's elements
 	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
 	* @return string The javascript object

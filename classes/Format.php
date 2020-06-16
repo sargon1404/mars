@@ -16,8 +16,8 @@ class Format
 
 	/**
 	* Calls strtolower on $value
-	* @param mixed $value The value (string|array)
-	* @return mixed The formatted value
+	* @param string|array $value The value
+	* @return string The formatted value
 	*/
 	public function strtolower($value) : string
 	{
@@ -30,8 +30,8 @@ class Format
 
 	/**
 	* Calls strtolower on $value
-	* @param mixed $value The value (string|array)
-	* @return mixed The formatted value
+	* @param string|array $value The value
+	* @return string The formatted value
 	*/
 	public function strtoupper($value) : string
 	{

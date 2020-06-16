@@ -159,7 +159,7 @@ trait AppFunctionsTrait
 	/**
 	* Escapes a language string. Shorthand for e(__($str))
 	* @param string $str The string index as defined in the languages file
-	* @param mixed $replace Array with key & values to be used for to search&replace
+	* @param array $replace Array with key & values to be used for to search&replace
 	* @return string
 	*/
 	public static function estr(string $str, array $replace = []) : string
@@ -170,7 +170,7 @@ trait AppFunctionsTrait
 	/**
 	* Javascript escapes a language string. Shorthand for ejs(__($str))
 	* @param string $str The string index as defined in the languages file
-	* @param mixed $replace Array with key & values to be used for to search&replace
+	* @param array $replace Array with key & values to be used for to search&replace
 	* @return string
 	*/
 	public function ejsstr(string $str, array $replace = []) : string
@@ -365,7 +365,7 @@ trait AppFunctionsTrait
 
 	/**
 	* Merges all the sub-arrays from $array into a single array
-	* @param mixed $array The array
+	* @param array $array The array
 	*/
 	public static function arrayMerge(array $array) : array
 	{
@@ -380,7 +380,7 @@ trait AppFunctionsTrait
 	/**
 	* Unsets from $array the specified keys
 	* @param array $array The array
-	* @param mixed The keys to unset (string,array)
+	* @param string|array The keys to unset
 	* @return array The array
 	*/
 	public static function arrayUnset(array &$array, $keys) : array

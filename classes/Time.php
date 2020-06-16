@@ -25,7 +25,7 @@ class Time
 
 	/**
 	* Returns the timestamp from a date/string|timestamp
-	* @param mixed $date Either a timestamp (int) or a date/datetime, if string (int,string)
+	* @param int|string $date Either a timestamp (int) or a date/datetime, if string
 	* @return int The timestamp
 	*/
 	public function getTimestamp($date) : int
@@ -47,7 +47,7 @@ class Time
 
 	/**
 	* Converts a timestamp to a sql datetime representation
-	* @param mixed $timestamp The timestamp (int,string)
+	* @param int|string $timestamp The timestamp
 	* @param bool $date If true, will return the date part
 	* @param bool $time If true, will return the time part
 	* @return string The sql datetime

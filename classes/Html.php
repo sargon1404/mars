@@ -6,6 +6,9 @@
 
 namespace Mars;
 
+use Mars\Html\TagInterface;
+use Mars\Html\Tag;
+
 /**
 * The HTML Class
 * Html generating methods
@@ -14,19 +17,38 @@ class Html
 {
 	use AppTrait;
 
-	/**
-	* Html Escapes $value
-	* @param string $value The value to escape
-	* @param bool $escape_html If false, will return $value unchanged
-	* @return string The escaped value
-	*/
-	public function escape(string $value, bool $escape_html = true) : string
-	{
-		if ($escape_html) {
-			return App::e($value);
-		}
+	protected array $supported_tags = [
+		'ul' => '\Mars\Html\Lists\UL',
+		'ol' => '\Mars\Html\Lists\OL',
+		'checkbox' => '\Mars\Html\Input\Checkbox',
+		'radio' => '\Mars\Html\Input\Radio',
+		'select_options' => '\Mars\Html\Input\SelectOptions',
+		'select' => '\Mars\Html\Input\Select',
+	];
 
-		return $value;
+	/**
+	* Adds a supported tag to the list
+	* @param string $name The name of the tag
+	* @param string $class The name of the class handling the tag
+	* @return $this
+	*/
+	public function addSupportedTag(string $name, string $class)
+	{
+		$this->supported_tags[$name] = $class;
+
+		return $this;
+	}
+
+	/**
+	* Removes a supported tag
+	* @param string $name The name of the tag
+	* @return $this
+	*/
+	public function removeSupportedTag(string $name)
+	{
+		unset($this->supported_tag[$name]);
+
+		return $this;
 	}
 
 	/**
@@ -38,6 +60,8 @@ class Html
 		static $id_index = [];
 		$index = 1;
 
+		$name = $this->app->escape->id($name);
+
 		if (!isset($id_index[$name])) {
 			$id_index[$name] = 1;
 		} else {
@@ -48,151 +72,70 @@ class Html
 	}
 
 	/**
-	* Merges the attributes and returns the html code
-	* @param array $attributes The attributes in the format name => value
-	* @param bool $escape_html If true it will call escape on the values
-	* @return string The attribute's html code
+	* Returns a tag
+	* @param string $type The tag's type
+	* @param array $attributes
+	* @param string|array $text The tag's text, if any
+	* @param array $properties Extra properties to pass to the tag object
+	* @param string $escape If true, will escape text
+	* @return Tag The tag
 	*/
-	public function buildAttributes(array $attributes, bool $escape_html = true) : string
+	public function getTag(string $type, array $attributes = [], $text = '', array $properties = [], bool $escape = true) : TagInterface
 	{
-		$attributes_array = [];
+		$tag = null;
 
-		foreach ($attributes as $name => $value) {
-			//don't escape if $value is an array
-			$escape = $escape_html;
-			if (is_array($value)) {
-				$value = reset($value);
-				$escape = false;
-			}
-
-			if ($value) {
-				if (is_bool($value)) {
-					$attributes_array[] = $name;
-				} else {
-					$attributes_array[] = $name . '="' . $this->escape($value, $escape) . '"';
-				}
-			}
+		if (isset($this->supported_tags[$type])) {
+			$class = $this->supported_tags[$type];
+			$tag = new $class($attributes, $properties, $escape);
+		} else {
+			$tag = new Tag($type, $attributes, $text, $escape);
 		}
 
-		if (!$attributes_array) {
-			return '';
-		}
-
-		return ' ' . implode(' ', $attributes_array);
-	}
-
-	/**
-	* Returns the attributes
-	* @param string $class The class, if any
-	* @param string $id The id, if any
-	* @param array $attributes The attributes in the format name => value
-	* @param bool $escape_html If true it will call escape on the attribute values
-	* @return string The attribute's html code
-	*/
-	public function getAttributes(string $class = '', string $id = '', array $attributes = [], bool $escape_html = true) : string
-	{
-		$attributes = $attributes + ['class' => $class, 'id' => $this->app->escape->id($id)];
-
-		return $this->buildAttributes($attributes, $escape_html);
-	}
-
-	/**
-	* Returns a html tag
-	* @param string $type The type of the html tag. Eg: strong,div etc..
-	* @param string $text The text of the tag
-	* @param string $class The class of the tag,if any
-	* @param string $id The id of the tag, if any
-	* @param array $attributes Extra attributes in the format name => value
-	* @param bool $escape_html If true it will call escape on the text
-	* @return string The html code
-	*/
-	public function tag(string $type, string $text, string $class = '', string $id = '', array $attributes = [], bool $escape_html = true) : string
-	{
-		$text = $this->escape($text, $escape_html);
-		$attributes = $this->getAttributes($class, $id, $attributes);
-
-		return "<{$type}{$attributes}>{$text}</{$type}>\n";
+		return $tag;
 	}
 
 	/**
 	* Builds an unordered list
 	* @param array $items The lists's items
-	* @param string $class The class of the ul element, if any
-	* @param string $id The id of the ul element, if any
-	* @param bool $escape_html If true it will call escape on each element
+	* @param array $attributes The list's attributes
+	* @param bool $escape If true it will call escape on each item
 	* @return string The html code
 	*/
-	public function ul(array $items, string $class = '', string $id = '', bool $escape_html = true) : string
+	public function ul(array $items, array $attributes = [], bool $escape = true) : string
 	{
-		return $this->list('ul', $items, $class, $id, $escape_html);
+		return $this->getTag('ul', $attributes, '', ['items' => $items], $escape)->get();
 	}
 
 	/**
 	* Builds an ordered list
 	* @param array $items The lists's items
-	* @param string $class The class of the ul element, if any
-	* @param string $id The id of the ul element, if any
-	* @param bool $escape_html If true it will call escape on each element
+	* @param array $attributes The list's attributes
+	* @param bool $escape If true it will call escape on each item
 	* @return string The html code
 	*/
-	public function ol(array $items, string $class = '', string $id = '', bool $escape_html = true) : string
+	public function ol(array $items, array $attributes = [], bool $escape = true) : string
 	{
-		return $this->list('ol', $items, $class, $id, $escape_html);
-	}
-
-	/**
-	* Builds a list
-	* @param string $type The list's type. Eg: ul or ol
-	* @param array $items The list's items
-	* @param string $class The class of the ul element, if any
-	* @param string $id The id of the ul element, if any
-	* @param bool $escape_html If true it will call escape on each element
-	* @return string The html code
-	*/
-	public function list(string $type, array $items, string $class = '', string $id = '', bool $escape_html = true) : string
-	{
-		if (!$items) {
-			return '';
-		}
-
-		$attributes = $this->getAttributes($class, $id);
-
-		$html = "<{$type}{$attributes}>\n";
-
-		foreach ($items as $item) {
-			$html.= "<li>" . $this->escape($item, $escape_html) . "</li>\n";
-		}
-
-		$html.= "</{$type}>\n";
-
-		return $html;
+		return $this->getTag('ol', $attributes, '', ['items' => $items], $escape)->get();
 	}
 
 	/**
 	* Creates an img tag
-	* @param string $src The image's src attribute
+	* @param string $url The image's url
 	* @param int $width The image's width
 	* @param int $height The image's height
 	* @param alt $alt The alt attribute.If empty it will be determined from the basename of the source
-	* @param string $title The title attribute of the image
-	* @param string $class The class of the image,if any
-	* @param string $id The id of the image element,if any
-	* @param bool $escape_html If true it will call escape on the src attribute
+	* @param array $attributes The image's attributes
 	* @return string The html code
 	*/
-	public function img(string $src, int $width = 0, int $height = 0, string $alt = '', string $title = '', string $class = '', string $id = '', bool $escape_html = true) : string
+	public function img(string $url, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
 	{
-		if (!$src) {
-			return '';
-		}
 		if (!$alt) {
-			$alt = basename($src);
+			$alt = basename($url);
 		}
 
-		$src = $this->escape($src, $escape_html);
-		$attributes = $this->getAttributes($class, $id, ['width' => $width, 'height' => $height, 'alt' => $alt, 'title' => $title]);
+		$attributes = ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height] + $attributes;
 
-		return "<img src=\"{$src}\"{$attributes}>";
+		return $this->getTag('img', $attributes)->get();
 	}
 
 	/**
@@ -203,27 +146,18 @@ class Html
 	*/
 	public function imgWh(int $width = 0, int $height = 0) : string
 	{
-		return $this->buildAttributes(['width' => $width, 'height' => $height]);
+		return $this->getTag('img')->getAttributes(['width' => $width, 'height' => $height]);
 	}
 
 	/**
 	* Creates a link
 	* @param string $url The link's url
 	* @param string $text The link text.If empty $url will be displayed insteed
-	* @param string $class The class of the image,if any
-	* @param string $id The id of the image element,if any
-	* @param string $title Link's title.
-	* @param string $target Link's target.
-	* @param string $rel Link's rel attribute.
-	* @param bool $escape_html If true it will call escape on url&text
+	* @param array $attributes The link's attributes
 	* @return string The html code
 	*/
-	public function a(string $url, string $text = '', string $class = '', string $id = '', string $title = '', string $target = '', string $rel = '', bool $escape_html = true) : string
+	public function a(string $url, string $text = '', array $attributes = []) : string
 	{
-		if (!$url && !$text) {
-			return '';
-		}
-
 		if (!$url) {
 			$url = 'javascript:void(0)';
 		}
@@ -231,156 +165,22 @@ class Html
 			$text = $url;
 		}
 
-		$url = $this->escape($url, $escape_html);
-		$text = $this->escape($text, $escape_html);
-		$attributes = $this->getAttributes($class, $id, ['title' => $title, 'target' => $target, 'rel' => $rel]);
+		$attributes = ['href' => $url] + $attributes;
 
-		return "<a href=\"{$url}\"{$attributes}>{$text}</a>";
+		return $this->getTag('a', $attributes, $text)->get();
 	}
 
 	/**
 	* Alias for a()
 	* @see \Mars\Html::a()
 	*/
-	public function link(string $url, string $text = '', string $class = '', string $id = '', string $title = '', string $target = '', string $rel = '', bool $escape_html = true) : string
+	public function link(string $url, string $text = '', array $attributes = []) : string
 	{
-		return $this->a($url, $text, $class, $id, $title, $target, $rel, $escape_html);
+		return $this->a($url, $text, $attributes);
 	}
 
 	/**
-	* Builds the title/target/rel properties of a link
-	* @param string $title The value of the title property
-	* @param string $target The value of the target property
-	* @param string $rel The value of the rel property
-	* @return string The html code
-	*/
-	public function aAttributes(string $title = '', string $target = '', string $rel = '') : string
-	{
-		return $this->buildAttributes(['title' => $title, 'target' => $target, 'rel' => $rel]);
-	}
-
-	/**
-	* Alias for aAttributes
-	* @see \Mars\Html::aAttributes()
-	*/
-	public function linkAttributes(string $title = '', string $target = '', string $rel = '') : string
-	{
-		return $this->aAttributes($title, $target, $rel);
-	}
-
-	/**
-	* Builds a <form> tag
-	* @param string $url The url used as the form's action
-	* @param string $id The form's id, if any
-	* @param array $attributes Extra attributes in the format name => value
-	* @param string $method The form's method
-	* @return string The html code
-	*/
-	public function formStart(string $url, string $id = '', array $attributes = [], string $method = 'post') : string
-	{
-		$url = App::e($url);
-		$attributes = $this->getAttributes('', $id, $attributes + ['method' => $method]);
-
-		return "<form action=\"{$url}\"{$attributes}>\n";
-	}
-
-	/**
-	* Builds a </form> tag
-	* @return string The html code
-	*/
-	public function formEnd() : string
-	{
-		return '</form>' . "\n";
-	}
-
-	/**
-	* Builds an input field
-	* @param string $name The name of the field
-	* @param string $value The value of the field
-	* @param bool $required If true, this is a required field
-	* @param string $placeholder Placeholder text
-	* @param string $class The class of the input control.
-	* @param string $id The id of the input control
-	* @param array $attributes Extra attributes in the format name => value
-	* @param string $type The type of the field. Default: text
-	* @return string The html code
-	*/
-	public function input(string $name, string $value = '', bool $required = false, string $placeholder = '', string $class = '', string $id = '', array $attributes = [], string $type = 'text') : string
-	{
-		if (!$id) {
-			$id = $name;
-		}
-
-		$name = App::e($name);
-		$value = App::e($value);
-		$attributes = $this->getAttributes($class, $id, $attributes + ['placeholder' => $placeholder, 'required' => $required]);
-
-		return "<input type=\"{$type}\" name=\"{$name}\" value=\"{$value}\"{$attributes}>\n";
-	}
-
-	/**
-	* Builds a text input field
-	* @param string $name The name of the field
-	* @param string $value The value of the field
-	* @param bool $required If true, this is a required field
-	* @param string $placeholder Placeholder text
-	* @param string $class The class of the input control.
-	* @param string $id The id of the input control
-	* @param array $attributes Extra attributes in the format name => value
-	* @return string The html code
-	*/
-	public function inputText(string $name, string $value = '', bool $required = false, string $placeholder = '', string $class = '', string $id = '', array $attributes = []) : string
-	{
-		return $this->input($name, $value, $required, $placeholder, $class, $id, $attributes, 'text');
-	}
-
-	/**
-	* Builds an button input field
-	* @param string $name The name of the field
-	* @param string $value The value of the field
-	* @param string $class The class of the input control.
-	* @param string $id The id of the input control
-	* @param array $attributes Extra attributes in the format name => value
-	* @return string The html code
-	*/
-	public function inputButton(string $name, string $value = '', string $class = '', string $id = '', array $attributes = []) : string
-	{
-		return $this->input($name, $value, false, '', $class, $id, $attributes, 'button');
-	}
-
-	/**
-	* Builds an button input field
-	* @param string $value The value of the field
-	* @param string $class The class of the input control.
-	* @param string $id The id of the input control
-	* @param array $attributes Extra attributes in the format name => value
-	* @return string The html code
-	*/
-	public function inputSubmit(string $value = '', string $class = '', string $id = '', array $attributes = []) : string
-	{
-		$value = App::e($value);
-		$attributes = $this->getAttributes($class, $id, $attributes);
-
-		return "<input type=\"submit\" value=\"{$value}\"{$attributes}>\n";
-	}
-
-	/**
-	* Builds a form input submit
-	* @param string $name The name of the hidden field
-	* @param string $value The value of the hidden field
-	* @return string The html code
-	*/
-	public function inputHidden(string $name, string $value, string $id = '') : string
-	{
-		$name = App::e($name);
-		$value = App::e($value);
-		$attributes = $this->getAttributes('', $id);
-
-		return "<input type=\"hidden\" name=\"{$name}\" value=\"{$value}\"{$attributes}>\n";
-	}
-
-	/**
-	* Returns checked="checked" if $checked is true, empty if false
+	* Returns checked if $checked is true, empty if false
 	* @param bool $checked The checked flag
 	* @return string
 	*/
@@ -394,7 +194,7 @@ class Html
 	}
 
 	/**
-	* Returns checked="checked" if $value is found in $array
+	* Returns checked if $value is found in $array
 	* @param string $value The value to look for
 	* @param array $array The arrach to search for the value
 	* @return string
@@ -405,7 +205,7 @@ class Html
 	}
 
 	/**
-	* Returns disabled="disabled" if $disabled is true, empty if false
+	* Returns disabled if $disabled is true, empty if false
 	* @param bool $disabled The disabled flag
 	* @return string
 	*/
@@ -433,7 +233,7 @@ class Html
 	}
 
 	/**
-	* Returns required="required" if $required is true
+	* Returns required if $required is true
 	* @param bool $required The required flag
 	* @return string
 	*/
@@ -447,40 +247,139 @@ class Html
 	}
 
 	/**
+	* Returns the opening tag of a form
+	* @param string $url The url used as the form's action
+	* @param string $id The form's id, if any
+	* @param array $attributes Extra attributes in the format name => value
+	* @param string $method The form's method
+	* @return string The html code
+	*/
+	public function formOpen(string $url, string $id = '', array $attributes = [], string $method = 'post') : string
+	{
+		$attributes = $attributes + ['action' => $url, 'id' => $id, 'method' => $method];
+
+		return $this->getTag('form', $attributes)->get();
+	}
+
+	/**
+	* Returns the closing tag of a form
+	* @return string The html code
+	*/
+	public function formClose() : string
+	{
+		return $this->getTag('form')->close();
+	}
+
+	/**
+	* Builds an input field
+	* @param string $name The name of the field
+	* @param string $value The value of the field
+	* @param string $placeholder Placeholder text
+	* @param bool $required If true, this is a required field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function input(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+	{
+		$type = $attributes['type'] ?? 'text';
+		$id = $attributes['id'] ?? $this->app->escape->id($name);
+
+		$attributes = ['type' => $type, 'name' => $name, 'id' => $id, 'value'=> $value, 'placeholder' => $placeholder, 'required' => $required] + $attributes;
+
+		return $this->getTag('input', $attributes)->get();
+	}
+
+	/**
+	* Alias for input()
+	* @see \Mars\Html::input()
+	*/
+	public function inputText(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+	{
+		return $this->input($name, $value, $placeholder, $required, $attributes);
+	}
+
+	/**
+	* Builds a hidden input field
+	* @param string $name The name of the hidden field
+	* @param string $value The value of the hidden field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function inputHidden(string $name, string $value, array $attributes = []) : string
+	{
+		return $this->input($name, $value, '', false, ['type' => 'hidden'] + $attributes);
+	}
+
+	/**
+	* Builds an email input field
+	* @param string $name The name of the hidden field
+	* @param string $value The value of the hidden field
+	* @param string $placeholder Placeholder text
+	* @param bool $required If true, this is a required field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function inputEmail(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+	{
+		return $this->input($name, $value, $placeholder, $required, ['type' => 'email'] + $attributes);
+	}
+
+	/**
+	* Builds a password input field
+	* @param string $name The name of the hidden field
+	* @param string $value The value of the hidden field
+	* @param bool $required If true, this is a required field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function inputPassword(string $name, string $value = '', bool $required = false, array $attributes = []) : string
+	{
+		return $this->input($name, $value, '', $required, ['type' => 'password'] + $attributes);
+	}
+
+	/**
+	* Builds a phone input field
+	* @param string $name The name of the hidden field
+	* @param string $value The value of the hidden field
+	* @param string $placeholder Placeholder text
+	* @param bool $required If true, this is a required field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function inputPhone(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+	{
+		return $this->input($name, $value, $placeholder, $required, ['type' => 'tel'] + $attributes);
+	}
+
+	/**
+	* Builds an submit button field
+	* @param string $value The value of the field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function submit(string $value = '', array $attributes = []) : string
+	{
+		$attributes = ['type' => 'submit', 'value'=> $value] + $attributes;
+
+		return $this->getTag('input', $attributes)->get();
+	}
+
+	/**
 	* Returns a form checkbox field
 	* @param string $name The name of the field
 	* @param string $label The label of the checkbox
 	* @param string $value The value of the checkbox
 	* @param bool $checked If true the checkbox will be checked
-	* @param string $class The class of the checkbox, if any
-	* @param string $id The id of the checkbox, if any
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
 	*/
-	public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = true, string $class = '', string $id = '', array $attributes = []) : string
+	public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$name = App::e($name);
-		$value = App::e($value);
+		$id = $attributes['id'] ?? $this->getIdName($name);
 
-		if (!$id) {
-			$id = $this->getIdName($name);
-		}
+		$attributes = ['id' => $id, 'value' => $value, 'checked' => $checked];
 
-		$attributes = $this->getAttributes($class, $id, $attributes + ['checked' => $checked]);
-
-		return $this->getCheckbox($name, $value, $label, $id, $attributes);
-	}
-
-	/**
-	* Builds the html code of a checkbox
-	* @internal
-	*/
-	protected function getCheckbox(string $name, string $value, string $label, string $id, string $attributes) : string
-	{
-		$html = "<input type=\"checkbox\" name=\"{$name}\" value=\"{$value}\"{$attributes}>";
-		$html.= '<label for="' . $this->app->escape->id($id) . '">' . App::e($label) . '</label>';
-
-		return $html;
+		return $this->getTag('checkbox', $attributes, '', ['label' => $label])->get();
 	}
 
 	/**
@@ -489,169 +388,71 @@ class Html
 	* @param string $label The label of the radio
 	* @param string $value The value of the radio button
 	* @param bool $checked If true the radio button will be checked
-	* @param string $class The class of the radio, if any
-	* @param string $id The id of the radio, if any
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
 	*/
-	public function radio(string $name, string $label = '', string $value = '1', bool $checked = true, string $class = '', string $id = '', array $attributes = []) : string
+	public function radio(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$name = App::e($name);
-		$value = App::e($value);
+		$id = $attributes['id'] ?? $this->getIdName($name);
 
-		if (!$id) {
-			$id = $this->getIdName($name);
-		}
+		$attributes = ['id' => $id, 'value' => $value, 'checked' => $checked];
 
-		$attributes = $this->getAttributes($class, $id, $attributes + ['checked' => $checked]);
-
-		return $this->getRadio($name, $value, $label, $id, $attributes);
-	}
-
-	/**
-	* Builds the html code of a radio
-	* @internal
-	*/
-	protected function getRadio(string $name, string $value, string  $label, string $id, string $attributes) : string
-	{
-		$html = "<input type=\"radio\" name=\"{$name}\" value=\"{$value}\"{$attributes}>";
-		$html.= '<label for="' . $this->app->escape->id($id) . '">' . App::e($label) . '</label>';
-
-		return $html;
+		return $this->getTag('checkbox', $attributes, '', ['label' => $label])->get();
 	}
 
 	/**
 	* Builds a <select> tag
 	* @param string $name The name of the select control
-	* @param string $id The select's id, if any
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
 	*/
-	public function selectStart(string $name, string $id = '', array $attributes = []) : string
+	public function selectOpen(string $name, array $attributes = []) : string
 	{
 		$attributes['size'] = $attributes['size'] ?? 1;
+		$id = $attributes['id'] ?? $this->app->escape->id($name);
 
-		$attributes = $this->getAttributes('', $id, $attributes);
+		$attributes = ['name' => $name, 'id' => $id] + $attributes;
 
-		return "<select{$attributes}>\n";
+		return $this->getTag('select', $attributes)->open();
 	}
 
 	/**
 	* Builds a </select> tag
 	* @return string The html code
 	*/
-	public function selectEnd() : string
+	public function selectClose() : string
 	{
-		return '</select>' . "\n";
+		return $this->getTag('select')->close();
 	}
 
 	/**
 	* Builds a select control
 	* @param string $name The name of the select control
 	* @param array $options Array containing the options [$name=>$value]. If $value is an array the first element will be the actual value. The second is a bool value determining if the field is an optgroup rather than a option
-	* @param mixed $selected The name of the option that should be selected [string or array if $multiple =  true]
+	* @param string|array $selected The name of the option that should be selected [string or array if $multiple =  true]
 	* @param bool $required If true,it will be a required control
-	* @param string $class The class of the select,if any
-	* @param string $id The id of the select,if any
-	* @param int $size The size of the select control
-	* @param bool $multiple If true multiple options can be selected
-	* @param bool $use_only_value If true the field_name will be the same as field_value
 	* @param array $attributes Extra attributes in the format name => value
+	* @param bool $multiple If true multiple options can be selected
 	* @return string The html code
 	*/
-	public function select(string $name, array $options, $selected = '', bool $required = false, string $class = '', string $id = '', int $size = 1, bool $multiple = false, bool $use_only_value = false, array $attributes = []) : string
+	public function select(string $name, array $options, $selected = '', bool $required = false, array $attributes = [], bool $multiple = false) : string
 	{
-		if (!$options) {
-			return '';
-		}
+		$attributes['size'] = $attributes['size'] ?? 1;
+		$id = $attributes['id'] ?? $this->app->escape->id($name);
 
-		if (!$id) {
-			$id = $name;
-		}
+		$attributes = ['name' => $name, 'id' => $id, 'required' => $required, 'multiple' => $multiple] + $attributes;
 
-		$html = $this->selectStart($name, $id, $attributes + ['class' => $class, 'size' => $size, 'required' => $required, 'multiple' => $multiple]);
-		$html.= $this->selectOptions($options, $selected, $use_only_value);
-		$html.= $this->selectEnd();
-
-		return $html;
+		return $this->getTag('select', $attributes, '', ['options' => $options, 'selected' => $selected])->get();
 	}
 
 	/**
 	* Builds multiple options tags-used in drop-down boxes.
 	* @param array $options Array containing the options [$name=>$value]. If $value is an array the first element will be the actual value. The second is a bool value determining if the field is an optgroup rather than a option
-	* @param mixed $selected The name of the option that should be selected [string or array if $multiple =  true]
-	* @param bool $use_only_value If true the field_name will be the same as field_value
+	* @param string|array $selected The name of the option that should be selected [string or array if $multiple =  true]
 	* @return string The html code
 	*/
-	public function selectOptions(array $options, $selected = '', bool $use_only_value = false) : string
+	public function selectOptions(array $options, $selected = '') : string
 	{
-		if (!$options) {
-			return '';
-		}
-
-		$html = '';
-		$use_optgroup = false;
-		$first_optgroup = true;
-		$used_optgroup = false;
-
-		if (is_array(current($options))) {
-			$use_optgroup = true;
-		}
-
-		foreach ($options as $field_name => $field_value) {
-			$is_optgroup = false;
-			$field_name = App::e($field_name);
-			if ($use_optgroup) {
-				if ($field_value[1]) {
-					$is_optgroup = true;
-				}
-
-				$field_value = App::e($field_value[0]);
-			} else {
-				$field_value = App::e($field_value);
-			}
-
-			if ($use_only_value) {
-				$field_name = $field_value;
-			}
-
-			$sel = '';
-			if (is_array($selected)) {
-				if (in_array($field_name, $selected)) {
-					$sel = ' selected="selected"';
-				}
-			} else {
-				if ($use_only_value) {
-					if ($field_value == $selected) {
-						$sel = ' selected="selected"';
-					}
-				} else {
-					if ($field_name == $selected) {
-						$sel = ' selected="selected"';
-					}
-				}
-			}
-			if ($is_optgroup) {
-				if (!$first_optgroup) {
-					$html.= "</optgroup>\n";
-				} else {
-					$first_optgroup = false;
-				}
-
-				$html.= "<optgroup label=\"{$field_value}\"{$sel}>\n";
-				$used_optgroup = true;
-			} else {
-				if (!$field_value) {
-					$field_value = '&nbsp;';
-				}
-
-				$html.= "<option value=\"{$field_name}\"{$sel}>{$field_value}</option>\n";
-			}
-		}
-		if ($use_optgroup && $used_optgroup) {
-			$html.= "</optgroup>\n";
-		}
-
-		return $html;
+		return $this->getTag('select_options', [], '', ['options' => $options, 'selected' => $selected])->get();
 	}
 }

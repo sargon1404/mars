@@ -69,7 +69,7 @@ class Curl
 		if (isset($_SERVER['HTTP_USER_AGENT'])) {
 			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		}
-		
+
 		$this->app->plugins->run('helpers_curl_construct', $this);
 	}
 
@@ -113,7 +113,7 @@ class Curl
 	* @param resource $ch The curl handler
 	* @return string The result
 	*/
-	protected function exec($ch)
+	protected function exec($ch) : ?string
 	{
 		$result = curl_exec($ch);
 		$this->code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -127,15 +127,19 @@ class Curl
 
 		curl_close($ch);
 
+		if (!$result) {
+			$result = null;
+		}
+
 		return $result;
 	}
 
 	/**
 	* Fetches an url with a GET request
 	* @param string $url The url to retrieve
-	* @return mixed The contents of the url; false on failure
+	* @return string The contents of the url; null on failure
 	*/
-	public function get(string $url)
+	public function get(string $url) : ?string
 	{
 		$ch = $this->init($url);
 
@@ -146,13 +150,13 @@ class Curl
 	* Uses Curl to download a file with a get request
 	* @param string $url The url to retrieve
 	* @param string $filename The local filename under which the file will be stored
-	* @return mixed The contents of the url; false on failure
+	* @return string The contents of the url, null on failure
 	*/
-	public function getFile(string $url, string $filename)
+	public function getFile(string $url, string $filename) : ?string
 	{
 		$f = fopen($filename, 'wb');
 		if (!$f) {
-			return false;
+			return null;
 		}
 
 		$ch = $this->init($url);
@@ -171,9 +175,9 @@ class Curl
 	* @param string $url The url to retrieve
 	* @param array $data Array with the data to post
 	* @param array $files Files to send in the name=>filename format
-	* @return mixed The contents of the url; false on failure
+	* @return string The contents of the url; null on failure
 	*/
-	public function post(string $url, array $data, array $files = [])
+	public function post(string $url, array $data, array $files = []) : ?string
 	{
 		if ($files) {
 			foreach ($files as $name => $filename) {

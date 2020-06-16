@@ -90,7 +90,7 @@ class Mailer
 
 	/**
 	* Sets the recipient of the email
-	* @param mixed $to The address(es) where the mail will be sent (string,array)
+	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
 	public function setRecipient($to)
@@ -98,9 +98,8 @@ class Mailer
 		if (!$to) {
 			return $this;
 		}
-		if (!is_array($to)) {
-			$to = [$to];
-		}
+
+		$to = App::getArray($to);
 
 		foreach ($to as $address) {
 			$this->mail->addAddress($address);
@@ -111,7 +110,7 @@ class Mailer
 
 	/**
 	* Sets the mail's recipient as undisclosed-recipients:;
-	* @param mixed $to The address(es) where the mail will be sent (string,array)
+	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
 	public function setRecipientUndisclosed($to)
@@ -119,9 +118,8 @@ class Mailer
 		if (!$to) {
 			return $this;
 		}
-		if (!is_array($to)) {
-			$to = [$to];
-		}
+
+		$to = App::getArray($to);
 
 		$this->mail->addAddress('undisclosed-recipients:;');
 		$this->mail->addBCC(implode(', ', $to));
@@ -131,7 +129,7 @@ class Mailer
 
 	/**
 	* Sets the mail's recipients as bcc, except the first one
-	* @param mixed $to The address(es) where the mail will be sent (string,array)
+	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
 	public function setRecipientBcc($to)
@@ -139,9 +137,8 @@ class Mailer
 		if (!$to) {
 			return $this;
 		}
-		if (!is_array($to)) {
-			$to = [$to];
-		}
+
+		$to = App::getArray($to);
 
 		$i = 0;
 		foreach ($to as $address) {

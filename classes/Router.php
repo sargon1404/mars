@@ -13,7 +13,7 @@ namespace Mars;
 class Router
 {
 	use AppTrait;
-	
+
 	/**
 	* @var array $params The params of the currently executed route
 	*/
@@ -34,10 +34,10 @@ class Router
 	public function add(string $type, string $route, $action)
 	{
 		$this->routes[$type][$route] = $action;
-		
+
 		return $this;
 	}
-	
+
 	/**
 	* Outputs the content based on the matched route
 	* @return $this
@@ -50,13 +50,13 @@ class Router
 		}
 
 		$this->app->start();
-		
+
 		$this->output($route);
-		
+
 		$this->app->end();
-		
+
 		$this->app->output();
-		
+
 		return $this;
 	}
 
@@ -66,12 +66,12 @@ class Router
 	protected function output($route)
 	{
 		[$route, $params] = $route;
-		
+
 		$this->params = $params;
-		
+
 		if (is_string($route)) {
 			$parts = explode('@', $route);
-			
+
 			$method = '';
 			$class_name = $parts[0];
 			if (isset($parts[1])) {
@@ -100,11 +100,11 @@ class Router
 	protected function getRoute()
 	{
 		$method = $this->app->request->method;
-		
+
 		if (!isset($this->routes[$method])) {
 			return null;
 		}
-			
+
 		$routes = $this->routes[$method];
 		$path = $this->getPath();
 
@@ -113,10 +113,10 @@ class Router
 			$params = [];
 			$params_keys = [];
 			$route_path = preg_quote($route_path, '|');
-				
+
 			$route_path = preg_replace_callback('/\\\:([a-z0-9_]*)/is', function ($match) use (&$params_keys) {
 				$params_keys[] = $match[1];
-				
+
 				return '(.*)';
 			}, $route_path);
 
@@ -125,19 +125,19 @@ class Router
 					if (!$key) {
 						continue;
 					}
-					
+
 					$param_key = $params_keys[$key - 1];
-					
+
 					$params[$param_key] = $val;
 				}
 
 				return [$route, $params];
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	* Returns the current path
 	* @return string The current path
@@ -146,12 +146,12 @@ class Router
 	{
 		$request_uri = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
 		$script_name = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
-		
+
 		$parts = array_diff_assoc($request_uri, $script_name);
 		if (!$parts) {
 			return '/';
 		}
-		
+
 		return implode('/', $parts);
 	}
 
@@ -173,10 +173,10 @@ class Router
 	public function get(string $route, $action)
 	{
 		$this->add('get', $route, $action);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	* Handles a get request
 	* @param string $route The route to handle
@@ -187,7 +187,7 @@ class Router
 	{
 		$this->add('post', $route, $action);
 	}
-	
+
 	/**
 	* Handles a get request
 	* @param string $route The route to handle
@@ -198,7 +198,7 @@ class Router
 	{
 		$this->add('put', $route, $action);
 	}
-	
+
 	/**
 	* Handles a get request
 	* @param string $route The route to handle
