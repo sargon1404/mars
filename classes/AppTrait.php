@@ -23,11 +23,11 @@ trait AppTrait
 	*/
 	public function __construct(App $app = null)
 	{
-		if ($app) {
-			$this->app = $app;
-		} else {
-			$this->app = App::get();
+		if (!$app) {
+			$app = App::get();
 		}
+
+		$this->app = $app;
 	}
 
 	protected function getApp() : App

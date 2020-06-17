@@ -33,19 +33,6 @@ class Escape
 	}
 
 	/**
-	* Escapes an ID
-	* @param string $id The id to escape
-	* @return string The escaped value
-	*/
-	public function id(string $id) : string
-	{
-		$id = str_replace(['[', ']', ')', '(', '.', '#'], '', $id);
-		$id = str_replace(' ', '-', $id);
-
-		return $id;
-	}
-
-	/**
 	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
 	* @see \Mars\App::ejs()
 	*/

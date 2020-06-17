@@ -1,0 +1,40 @@
+<?php
+/**
+* The Checkbox Class
+* @package Mars
+*/
+
+namespace Mars\Html\Input;
+
+use Mars\App;
+
+/**
+* The Checkbox Class
+* Renders a checkbox
+*/
+class Checkbox extends \Mars\Html\Tag
+{
+	/**
+	* @var string $label The checkbox's label, if any
+	*/
+	public string $label = '';
+
+	/**
+	* @see \Mars\Html\TagInterface::get()
+	* {@inheritDocs}
+	*/
+	public function get() : string
+	{
+		$this->attributes['id'] = $this->attributes['id'] ?? $this->getIdName($this->attributes['name']);
+
+		$attributes = $this->getAttributes($this->attributes);
+
+		$html = "<input type=\"checkbox\"{$attributes}>";
+		if ($this->label) {
+			$html.= "<label for=\"{$this->attributes['id']}\">" . App::e($this->label) . '</label>';
+		}
+		$html.= "\n";
+
+		return $html;
+	}
+}

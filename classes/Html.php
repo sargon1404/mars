@@ -18,12 +18,24 @@ class Html
 	use AppTrait;
 
 	protected array $supported_tags = [
+		'img' => '\Mars\Html\Img',
+		'picture' => '\Mars\Html\Picture',
+		'a' => '\Mars\Html\A',
 		'ul' => '\Mars\Html\Lists\UL',
 		'ol' => '\Mars\Html\Lists\OL',
+		'form' => '\Mars\Html\Form',
+		'input' => '\Mars\Html\Input\Input',
+		'input_hidden' => '\Mars\Html\Input\Hidden',
+		'input_email' => '\Mars\Html\Input\Email',
+		'input_password' => '\Mars\Html\Input\Password',
+		'input_phone' => '\Mars\Html\Input\Phone',
+		'textarea' => '\Mars\Html\Input\Textarea',
+		'submit' => '\Mars\Html\Input\Submit',
 		'checkbox' => '\Mars\Html\Input\Checkbox',
 		'radio' => '\Mars\Html\Input\Radio',
+		'radio_group' => '\Mars\Html\Input\RadioGroup',
 		'select_options' => '\Mars\Html\Input\SelectOptions',
-		'select' => '\Mars\Html\Input\Select',
+		'select' => '\Mars\Html\Input\Select'
 	];
 
 	/**
@@ -52,70 +64,21 @@ class Html
 	}
 
 	/**
-	* Returns an id name for an input field
-	* @param string $name The name of the field
-	*/
-	protected function getIdName(string $name) : string
-	{
-		static $id_index = [];
-		$index = 1;
-
-		$name = $this->app->escape->id($name);
-
-		if (!isset($id_index[$name])) {
-			$id_index[$name] = 1;
-		} else {
-			$id_index[$name]++;
-		}
-
-		return $name . '-' . $id_index[$name];
-	}
-
-	/**
 	* Returns a tag
 	* @param string $type The tag's type
 	* @param array $attributes
-	* @param string|array $text The tag's text, if any
 	* @param array $properties Extra properties to pass to the tag object
 	* @param string $escape If true, will escape text
 	* @return Tag The tag
 	*/
-	public function getTag(string $type, array $attributes = [], $text = '', array $properties = [], bool $escape = true) : TagInterface
+	public function getTag(string $type, array $attributes = [], array $properties = [], bool $escape = true) : TagInterface
 	{
-		$tag = null;
-
-		if (isset($this->supported_tags[$type])) {
-			$class = $this->supported_tags[$type];
-			$tag = new $class($attributes, $properties, $escape);
-		} else {
-			$tag = new Tag($type, $attributes, $text, $escape);
+		if (!isset($this->supported_tags[$type])) {
+			throw new \Exception("Unknown tag: {$type}");
 		}
 
-		return $tag;
-	}
-
-	/**
-	* Builds an unordered list
-	* @param array $items The lists's items
-	* @param array $attributes The list's attributes
-	* @param bool $escape If true it will call escape on each item
-	* @return string The html code
-	*/
-	public function ul(array $items, array $attributes = [], bool $escape = true) : string
-	{
-		return $this->getTag('ul', $attributes, '', ['items' => $items], $escape)->get();
-	}
-
-	/**
-	* Builds an ordered list
-	* @param array $items The lists's items
-	* @param array $attributes The list's attributes
-	* @param bool $escape If true it will call escape on each item
-	* @return string The html code
-	*/
-	public function ol(array $items, array $attributes = [], bool $escape = true) : string
-	{
-		return $this->getTag('ol', $attributes, '', ['items' => $items], $escape)->get();
+		$class = $this->supported_tags[$type];
+		return new $class($attributes, $properties, $escape);
 	}
 
 	/**
@@ -133,7 +96,7 @@ class Html
 			$alt = basename($url);
 		}
 
-		$attributes = ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height] + $attributes;
+		$attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
 
 		return $this->getTag('img', $attributes)->get();
 	}
@@ -147,6 +110,27 @@ class Html
 	public function imgWh(int $width = 0, int $height = 0) : string
 	{
 		return $this->getTag('img')->getAttributes(['width' => $width, 'height' => $height]);
+	}
+
+	/**
+	* Creates a picture tag
+	* @param string $url The image's url
+	* @param array $source_images Array listing the source images in the format [['url' => <url>, 'min' => <min_width>, 'max' => 'max_width']]. Both min and max can be specified, or just one of it
+	* @param int $width The image's width
+	* @param int $height The image's height
+	* @param alt $alt The alt attribute.If empty it will be determined from the basename of the source
+	* @param array $attributes The image's attributes
+	* @return string The html code
+	*/
+	public function picture(string $url, array $source_images, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
+	{
+		if (!$alt) {
+			$alt = basename($url);
+		}
+
+		$attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
+
+		return $this->getTag('picture', $attributes, ['images' => $source_images])->get();
 	}
 
 	/**
@@ -165,9 +149,9 @@ class Html
 			$text = $url;
 		}
 
-		$attributes = ['href' => $url] + $attributes;
+		$attributes = $attributes + ['href' => $url];
 
-		return $this->getTag('a', $attributes, $text)->get();
+		return $this->getTag('a', $attributes, ['text' => $text])->get();
 	}
 
 	/**
@@ -177,6 +161,30 @@ class Html
 	public function link(string $url, string $text = '', array $attributes = []) : string
 	{
 		return $this->a($url, $text, $attributes);
+	}
+
+	/**
+	* Builds an unordered list
+	* @param array $items The lists's items
+	* @param array $attributes The list's attributes
+	* @param bool $escape If true it will call escape on each item
+	* @return string The html code
+	*/
+	public function ul(array $items, array $attributes = [], bool $escape = true) : string
+	{
+		return $this->getTag('ul', $attributes, ['items' => $items], $escape)->get();
+	}
+
+	/**
+	* Builds an ordered list
+	* @param array $items The lists's items
+	* @param array $attributes The list's attributes
+	* @param bool $escape If true it will call escape on each item
+	* @return string The html code
+	*/
+	public function ol(array $items, array $attributes = [], bool $escape = true) : string
+	{
+		return $this->getTag('ol', $attributes, ['items' => $items], $escape)->get();
 	}
 
 	/**
@@ -249,16 +257,15 @@ class Html
 	/**
 	* Returns the opening tag of a form
 	* @param string $url The url used as the form's action
-	* @param string $id The form's id, if any
 	* @param array $attributes Extra attributes in the format name => value
 	* @param string $method The form's method
 	* @return string The html code
 	*/
-	public function formOpen(string $url, string $id = '', array $attributes = [], string $method = 'post') : string
+	public function formOpen(string $url, array $attributes = [], string $method = 'post') : string
 	{
-		$attributes = $attributes + ['action' => $url, 'id' => $id, 'method' => $method];
+		$attributes = $attributes + ['action' => $url, 'method' => $method];
 
-		return $this->getTag('form', $attributes)->get();
+		return $this->getTag('form', $attributes)->open();
 	}
 
 	/**
@@ -277,16 +284,14 @@ class Html
 	* @param string $placeholder Placeholder text
 	* @param bool $required If true, this is a required field
 	* @param array $attributes Extra attributes in the format name => value
+	* @param string $tag The tag used to render the input
 	* @return string The html code
 	*/
-	public function input(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
+	public function input(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = [], string $tag = 'input') : string
 	{
-		$type = $attributes['type'] ?? 'text';
-		$id = $attributes['id'] ?? $this->app->escape->id($name);
+		$attributes = $attributes + ['name' => $name, 'value'=> $value, 'placeholder' => $placeholder, 'required' => $required];
 
-		$attributes = ['type' => $type, 'name' => $name, 'id' => $id, 'value'=> $value, 'placeholder' => $placeholder, 'required' => $required] + $attributes;
-
-		return $this->getTag('input', $attributes)->get();
+		return $this->getTag($tag, $attributes)->get();
 	}
 
 	/**
@@ -307,7 +312,9 @@ class Html
 	*/
 	public function inputHidden(string $name, string $value, array $attributes = []) : string
 	{
-		return $this->input($name, $value, '', false, ['type' => 'hidden'] + $attributes);
+		$attributes = $attributes + ['name' => $name, 'value'=> $value];
+
+		return $this->getTag('input_hidden', $attributes)->get();
 	}
 
 	/**
@@ -321,7 +328,7 @@ class Html
 	*/
 	public function inputEmail(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
 	{
-		return $this->input($name, $value, $placeholder, $required, ['type' => 'email'] + $attributes);
+		return $this->input($name, $value, $placeholder, $required, $attributes, 'input_email');
 	}
 
 	/**
@@ -334,7 +341,7 @@ class Html
 	*/
 	public function inputPassword(string $name, string $value = '', bool $required = false, array $attributes = []) : string
 	{
-		return $this->input($name, $value, '', $required, ['type' => 'password'] + $attributes);
+		return $this->input($name, $value, '', $required, $attributes, 'input_password');
 	}
 
 	/**
@@ -348,7 +355,21 @@ class Html
 	*/
 	public function inputPhone(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = []) : string
 	{
-		return $this->input($name, $value, $placeholder, $required, ['type' => 'tel'] + $attributes);
+		return $this->input($name, $value, $placeholder, $required, $attributes, 'input_phone');
+	}
+
+	/**
+	* Builds a textarea
+	* @param string $name The name of the textarea
+	* @param string $value The value of the field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function textarea(string $name, string $value = '', array $attributes = []) : string
+	{
+		$attributes = $attributes + ['name' => $name];
+
+		return $this->getTag('textarea', $attributes, ['text' => $value])->get();
 	}
 
 	/**
@@ -359,9 +380,9 @@ class Html
 	*/
 	public function submit(string $value = '', array $attributes = []) : string
 	{
-		$attributes = ['type' => 'submit', 'value'=> $value] + $attributes;
+		$attributes = $attributes + ['type' => 'submit', 'value'=> $value];
 
-		return $this->getTag('input', $attributes)->get();
+		return $this->getTag('submit', $attributes)->get();
 	}
 
 	/**
@@ -375,11 +396,9 @@ class Html
 	*/
 	public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$id = $attributes['id'] ?? $this->getIdName($name);
+		$attributes = $attributes + ['name' => $name, 'value' => $value, 'checked' => $checked];
 
-		$attributes = ['id' => $id, 'value' => $value, 'checked' => $checked];
-
-		return $this->getTag('checkbox', $attributes, '', ['label' => $label])->get();
+		return $this->getTag('checkbox', $attributes, ['label' => $label])->get();
 	}
 
 	/**
@@ -393,11 +412,24 @@ class Html
 	*/
 	public function radio(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$id = $attributes['id'] ?? $this->getIdName($name);
+		$attributes = $attributes + ['name' => $name, 'value' => $value, 'checked' => $checked];
 
-		$attributes = ['id' => $id, 'value' => $value, 'checked' => $checked];
+		return $this->getTag('radio', $attributes, ['label' => $label])->get();
+	}
 
-		return $this->getTag('checkbox', $attributes, '', ['label' => $label])->get();
+	/**
+	* Returns a radios group field
+	* @param string $name The name of the field
+	* @param array $values The values, in the format $value => $label
+	* @param string $checked The checked value
+	* @param array $attributes Extra attributes in the format name => value, which will be applied to all radios
+	* @return string The html code
+	*/
+	public function radioGroup(string $name, array $values, string $checked = '', array $attributes = []) : string
+	{
+		$attributes = $attributes + ['name' => $name];
+
+		return $this->getTag('radio_group', $attributes, ['values' => $values, 'checked' => $checked])->get();
 	}
 
 	/**
@@ -408,10 +440,7 @@ class Html
 	*/
 	public function selectOpen(string $name, array $attributes = []) : string
 	{
-		$attributes['size'] = $attributes['size'] ?? 1;
-		$id = $attributes['id'] ?? $this->app->escape->id($name);
-
-		$attributes = ['name' => $name, 'id' => $id] + $attributes;
+		$attributes = $attributes + ['name' => $name];
 
 		return $this->getTag('select', $attributes)->open();
 	}
@@ -437,12 +466,9 @@ class Html
 	*/
 	public function select(string $name, array $options, $selected = '', bool $required = false, array $attributes = [], bool $multiple = false) : string
 	{
-		$attributes['size'] = $attributes['size'] ?? 1;
-		$id = $attributes['id'] ?? $this->app->escape->id($name);
+		$attributes = $attributes + ['name' => $name, 'required' => $required, 'multiple' => $multiple];
 
-		$attributes = ['name' => $name, 'id' => $id, 'required' => $required, 'multiple' => $multiple] + $attributes;
-
-		return $this->getTag('select', $attributes, '', ['options' => $options, 'selected' => $selected])->get();
+		return $this->getTag('select', $attributes, ['options' => $options, 'selected' => $selected])->get();
 	}
 
 	/**
@@ -453,6 +479,6 @@ class Html
 	*/
 	public function selectOptions(array $options, $selected = '') : string
 	{
-		return $this->getTag('select_options', [], '', ['options' => $options, 'selected' => $selected])->get();
+		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
 	}
 }
