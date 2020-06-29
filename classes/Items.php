@@ -14,7 +14,6 @@ use Mars\Alerts\Errors;
 * The classes extending Items must set the following static properties:
 * protected static $table = ''; - The table from which the objects will be loaded
 * protected static $id_name = ''; - The id column of the table from which the objects will be loaded
-*
 * The static::$status_name property must be set if the items must be published/unpublished etc
 */
 abstract class Items extends Rows implements \ArrayAccess

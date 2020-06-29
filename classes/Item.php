@@ -12,7 +12,6 @@ namespace Mars;
 * The classes extending Item must set the following static properties:
 * protected static $table = ''; - The table from which the object will be loaded
 * protected static $id_name = ''; - The id column of the table from which the object will be loaded
-*
 * protected static::$store Array listing the properties which must be separately stored as original data. This way, if any property changes, the user of the object will be able to tell, flip the values etc..
 * protected static::$ignore Array listing the custom public properties(not found in the corresponding db table as columns) which should be ignored when inserting/updating
 */
