@@ -35,7 +35,10 @@ class Html
 		'radio' => '\Mars\Html\Input\Radio',
 		'radio_group' => '\Mars\Html\Input\RadioGroup',
 		'select_options' => '\Mars\Html\Input\SelectOptions',
-		'select' => '\Mars\Html\Input\Select'
+		'select' => '\Mars\Html\Input\Select',
+		'datetime' => '\Mars\Html\Input\Datetime',
+		'date' => '\Mars\Html\Input\Date',
+		'time' => '\Mars\Html\Input\Time'
 	];
 
 	/**
@@ -78,7 +81,7 @@ class Html
 		}
 
 		$class = $this->supported_tags[$type];
-		return new $class($attributes, $properties, $escape);
+		return new $class($attributes, $properties, $escape, $this->app);
 	}
 
 	/**
@@ -480,5 +483,50 @@ class Html
 	public function selectOptions(array $options, $selected = '') : string
 	{
 		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
+	}
+	
+	/**
+	* Returns controls from where the user will be able to select the date and time
+	* @param string $name The name of the control.
+	* @param string $date The value of the date control in the yyyy-mm-dd hh:mm:ss format
+	* @param bool $required If true the datetime control will be a required control
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function datetime(string $name, string $date = '', bool $required = false, array $attributes = []) : string
+	{
+		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date)];
+
+		return $this->getTag('datetime', $attributes)->get();
+	}
+
+	/**
+	* Returns a control from where the user will be able to select the date
+	* @param string $name The name of the control.
+	* @param string $date The value of the date control in the yyyy-mm-dd format
+	* @param bool $required If true the date control will be a required control
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function date(string $name, string $date = '', bool $required = false, array $attributes = []) : string
+	{
+		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date, true, false)];
+
+		return $this->getTag('date', $attributes)->get();
+	}
+
+	/**
+	* Returns a control from where the user will be able to select the time of the day
+	* @param string $name The name of the control.
+	* @param string $date The value of the date control in the hh:mm:ss format
+	* @param bool $required If true the date control will be a required control
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function time(string $name, string $date = '', bool $required = false, array $attributes = []) : string
+	{
+		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date, false, true)];
+
+		return $this->getTag('time', $attributes)->get();
 	}
 }

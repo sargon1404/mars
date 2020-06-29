@@ -78,6 +78,18 @@ class Time
 
 		return '0000-00-00 00:00:00';
 	}
+	
+	/**
+	* Converts a timestamp to an ISO 8601 datetime representation
+	* @param int|string $timestamp The timestamp
+	* @param bool $date If true, will return the date part
+	* @param bool $time If true, will return the time part
+	* @return string The datetime
+	*/
+	public function getISO($timestamp, bool $date = true, bool $time = true) : string
+	{
+		return $this->getSql($timestamp, $date, $time);
+	}
 
 	/**
 	* Adjusts $timestamp from UTC to user's timezone

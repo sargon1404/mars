@@ -419,10 +419,6 @@ trait AppFunctionsTrait
 	public static function padInt(int $number) : string
 	{
 		if ($number < 10) {
-			if ($number[0] == '0') {
-				return $number;
-			}
-
 			return '0' . $number;
 		}
 

@@ -142,7 +142,7 @@ class Format
 	/**
 	* Formats a timestamp
 	* @param int $timestamp The timestamp used.
-	* @param string $format The format in which the date will be formatted.identical with the one used with date().By default 'D M d, Y g:i a' will be used
+	* @param string $format The format in which the date will be formatted.identical with the one used with date(). By default 'D M d, Y g:i a' will be used
 	* @return string The formatted value
 	*/
 	public function timestamp(int $timestamp = 0, string $format = 'D M d, Y g:i a') : string
@@ -159,7 +159,7 @@ class Format
 	/**
 	* Alias of timestamp
 	* @param int $timestamp The timestamp used.
-	* @param string $format The format in which the date will be formatted.identical with the one used with date().By default 'D M d, Y g:i a' will be used
+	* @param string $format The format in which the date will be formatted.identical with the one used with date(). By default 'D M d, Y g:i a' will be used
 	* @return string The formatted value
 	*/
 	public function datetime(int $timestamp = 0, string $format = 'D M d, Y g:i a') : string

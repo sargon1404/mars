@@ -35,6 +35,11 @@ abstract class Tag implements TagInterface
 	protected string $tag = '';
 
 	/**
+	* @var App $app The app object
+	*/
+	protected App $app;
+
+	/**
 	* Builds the tag
 	* @param string $type The tag's type
 	* @param array $attributes The attributes of the tag, if any
@@ -42,10 +47,15 @@ abstract class Tag implements TagInterface
 	* @param bool $escape  If true, will escape the content
 	* @param App $app The app object
 	*/
-	public function __construct(array $attributes = [], array $properties = [], bool $escape = true)
+	public function __construct(array $attributes = [], array $properties = [], bool $escape = true, App $app = null)
 	{
+		if (!$app) {
+			$app = App::get();
+		}
+
 		$this->attributes = $attributes;
 		$this->escape = $escape;
+		$this->app = $app;
 
 		foreach ($properties as $name => $val) {
 			$this->$name = $val;
