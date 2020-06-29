@@ -1,12 +1,12 @@
 <?php
 if ((float) PHP_VERSION < 8) {
 
-/**
-* Replacer for php 8's str_contain
-* @param string $haystack The haystack
-* @param string $needed The needle
-* @return bool
-*/
+	/**
+	* Replacer for php 8's str_contain
+	* @param string $haystack The haystack
+	* @param string $needed The needle
+	* @return bool
+	*/
 	function str_contains(string $haystack, string $needle) : bool
 	{
 		if (strpos($haystack, $needle) !== false) {
