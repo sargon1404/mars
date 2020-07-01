@@ -16,4 +16,9 @@ class Hidden extends Input
 	* @var string $type The input's type
 	*/
 	protected string $type = 'hidden';
+	
+	/**
+	* {@inheritdocs}
+	*/
+	public bool $generate_id = false;
 }

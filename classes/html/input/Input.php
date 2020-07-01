@@ -13,6 +13,11 @@ namespace Mars\Html\Input;
 class Input extends \Mars\Html\Tag
 {
 	/**
+	* @var bool $generate_id If true, will generate ids for this type of inputs
+	*/
+	public bool $generate_id = true;
+	
+	/**
 	* @var string $type The input's type
 	*/
 	protected string $type = 'text';
@@ -28,7 +33,7 @@ class Input extends \Mars\Html\Tag
 	*/
 	public function get() : string
 	{
-		if (isset($this->attributes['name'])) {
+		if ($this->generate_id && isset($this->attributes['name'])) {
 			$this->attributes['id'] = $this->attributes['id'] ?? $this->escapeId($this->attributes['name']);
 		}
 

@@ -12,18 +12,8 @@ use Mars\App;
 * The Select Options Class
 * Renders the select options
 */
-class SelectOptions extends \Mars\Html\Tag
+class SelectOptions extends Options
 {
-	/**
-	* @var array $options The options
-	*/
-	public array $options = [];
-
-	/**
-	* @var string|array $selected The selected option(s)
-	*/
-	public $selected = '';
-
 	/**
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritDocs}

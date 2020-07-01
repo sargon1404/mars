@@ -30,10 +30,12 @@ class Html
 		'input_password' => '\Mars\Html\Input\Password',
 		'input_phone' => '\Mars\Html\Input\Phone',
 		'textarea' => '\Mars\Html\Input\Textarea',
+		'button' => '\Mars\Html\Input\Button',
 		'submit' => '\Mars\Html\Input\Submit',
 		'checkbox' => '\Mars\Html\Input\Checkbox',
 		'radio' => '\Mars\Html\Input\Radio',
 		'radio_group' => '\Mars\Html\Input\RadioGroup',
+		'options' => '\Mars\Html\Input\Options',
 		'select_options' => '\Mars\Html\Input\SelectOptions',
 		'select' => '\Mars\Html\Input\Select',
 		'datetime' => '\Mars\Html\Input\Datetime',
@@ -313,11 +315,11 @@ class Html
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
 	*/
-	public function inputHidden(string $name, string $value, array $attributes = []) : string
+	public function inputHidden(string $name, string $value, array $attributes = [], bool $generate_id = false) : string
 	{
 		$attributes = $attributes + ['name' => $name, 'value'=> $value];
 
-		return $this->getTag('input_hidden', $attributes)->get();
+		return $this->getTag('input_hidden', $attributes, ['generate_id' => $generate_id])->get();
 	}
 
 	/**
@@ -374,9 +376,22 @@ class Html
 
 		return $this->getTag('textarea', $attributes, ['text' => $value])->get();
 	}
+	
+	/**
+	* Builds a button field
+	* @param string $value The value of the field
+	* @param array $attributes Extra attributes in the format name => value
+	* @return string The html code
+	*/
+	public function button(string $value, array $attributes = []) : string
+	{
+		$attributes = $attributes + ['value'=> $value];
+
+		return $this->getTag('button', $attributes)->get();
+	}
 
 	/**
-	* Builds an submit button field
+	* Builds a submit button field
 	* @param string $value The value of the field
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
@@ -483,6 +498,17 @@ class Html
 	public function selectOptions(array $options, $selected = '') : string
 	{
 		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
+	}
+	
+	/**
+	* Builds multiple options tags-used in drop-down boxes.
+	* @param array $options Array containing the options [$text=>$value]. If $value is an array , it will be used as attributes
+	* @param string $selected The name of the option that should be selected
+	* @return string The html code
+	*/
+	public function options(array $options, string $selected = '') : string
+	{
+		return $this->getTag('options', [], ['options' => $options, 'selected' => $selected])->get();
 	}
 	
 	/**
