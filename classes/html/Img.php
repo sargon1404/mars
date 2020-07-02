@@ -13,7 +13,12 @@ namespace Mars\Html;
 class Img extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'img';
+
+	/**
+	* {@inheritdoc}
+	*/
+	protected string $newline = '';
 }

@@ -16,7 +16,7 @@ class File implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::get()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function get(string $filename) : string
 	{
@@ -25,7 +25,7 @@ class File implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::store()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function store(string $filename, string $content) : bool
 	{
@@ -34,7 +34,7 @@ class File implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::getLastModified()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function getLastModified(string $filename) : int
 	{
@@ -47,7 +47,7 @@ class File implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::delete()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function delete(string $filename) : bool
 	{

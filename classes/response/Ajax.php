@@ -58,7 +58,7 @@ class Ajax implements DriverInterface
 
 	/**
 	* @see \Mars\Response\DriverInterface::output()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function output(string $content, $data = [], bool $send_content_on_error = false)
 	{

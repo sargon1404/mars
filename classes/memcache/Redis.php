@@ -19,7 +19,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::connect()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function connect(string $host, string $port)
 	{
@@ -36,7 +36,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::disconnect()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function disconnect()
 	{
@@ -49,7 +49,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::add()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function add(string $key, $value, int $expires = 0)
 	{
@@ -64,7 +64,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::set()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function set(string $key, $value, int $expires = 0)
 	{
@@ -79,7 +79,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::get()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function get(string $key)
 	{
@@ -90,7 +90,7 @@ class Redis implements DriverInterface
 	
 	/**
 	* @see \Mars\Memcache\DriverInterface::exists()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function exists(string $key) : bool
 	{
@@ -103,7 +103,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::delete()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function delete(string $key)
 	{
@@ -112,7 +112,7 @@ class Redis implements DriverInterface
 
 	/**
 	* @see \Mars\Memcache\DriverInterface::deleteAll()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function deleteAll()
 	{

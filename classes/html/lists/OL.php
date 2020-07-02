@@ -13,7 +13,7 @@ namespace Mars\Html\Lists;
 class OL extends Listing
 {
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'ol';
 }

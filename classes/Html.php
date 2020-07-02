@@ -143,9 +143,10 @@ class Html
 	* @param string $url The link's url
 	* @param string $text The link text.If empty $url will be displayed insteed
 	* @param array $attributes The link's attributes
+	* @param bool $escape If true it will call escape on the text
 	* @return string The html code
 	*/
-	public function a(string $url, string $text = '', array $attributes = []) : string
+	public function a(string $url, string $text = '', array $attributes = [], bool $escape = true) : string
 	{
 		if (!$url) {
 			$url = 'javascript:void(0)';
@@ -156,16 +157,16 @@ class Html
 
 		$attributes = $attributes + ['href' => $url];
 
-		return $this->getTag('a', $attributes, ['text' => $text])->get();
+		return $this->getTag('a', $attributes, ['text' => $text], $escape)->get();
 	}
 
 	/**
 	* Alias for a()
 	* @see \Mars\Html::a()
 	*/
-	public function link(string $url, string $text = '', array $attributes = []) : string
+	public function link(string $url, string $text = '', array $attributes = [], bool $escape = true) : string
 	{
-		return $this->a($url, $text, $attributes);
+		return $this->a($url, $text, $attributes, $escape);
 	}
 
 	/**
@@ -376,7 +377,7 @@ class Html
 
 		return $this->getTag('textarea', $attributes, ['text' => $value])->get();
 	}
-	
+
 	/**
 	* Builds a button field
 	* @param string $value The value of the field
@@ -499,7 +500,7 @@ class Html
 	{
 		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
 	}
-	
+
 	/**
 	* Builds multiple options tags-used in drop-down boxes.
 	* @param array $options Array containing the options [$text=>$value]. If $value is an array , it will be used as attributes
@@ -510,7 +511,7 @@ class Html
 	{
 		return $this->getTag('options', [], ['options' => $options, 'selected' => $selected])->get();
 	}
-	
+
 	/**
 	* Returns controls from where the user will be able to select the date and time
 	* @param string $name The name of the control.

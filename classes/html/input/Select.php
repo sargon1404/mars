@@ -32,7 +32,7 @@ class Select extends SelectOptions
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{

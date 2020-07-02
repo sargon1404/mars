@@ -30,7 +30,7 @@ class Memcache implements DriverInterface
 
 	/**
 	* @see \Mars\Cacheable\DriverInterface::get()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function get(string $filename) : string
 	{
@@ -39,7 +39,7 @@ class Memcache implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::store()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function store(string $filename, string $content) : bool
 	{
@@ -51,7 +51,7 @@ class Memcache implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::getLastModified()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function getLastModified(string $filename) : int
 	{
@@ -60,7 +60,7 @@ class Memcache implements DriverInterface
 
 	/**
 	* @see \Mars\Cachable\DriverInterface::delete()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function delete(string $filename) : bool
 	{

@@ -14,18 +14,18 @@ class Datetime extends \Mars\Html\Tag
 {
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{
 		$name = $this->attributes['name'];
 		$value = $this->attributes['value'];
-			
+
 		$parts = explode(' ', $value);
-		
+
 		$date = new Date(['name' => $name . '-date', 'value' => $parts[0]] + $this->attributes);
 		$time = new Time(['name' => $name . '-time', 'value' => $parts[1]] + $this->attributes);
-			
+
 		$html = $date->get();
 		$html.= '&nbsp;';
 		$html.= $time->get();

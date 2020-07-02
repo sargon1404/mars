@@ -20,13 +20,13 @@ class Picture extends \Mars\Html\Tag
 	public array $images = [];
 
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'picture';
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{

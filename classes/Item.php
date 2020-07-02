@@ -89,7 +89,7 @@ abstract class Item extends Row
 
 	/**
 	* Builds an item
-	* @param int|array|object|null $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
+	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array, will assume the array contains the object's data. If null, will load the defaults
 	*/
 	public function __construct($data = 0)
 	{
@@ -283,6 +283,16 @@ abstract class Item extends Row
 	}
 
 	/**
+	* Returns the row from the database, based on name
+	* @param string $name The name to return the data for
+	* @return object The row, or null on failure
+	*/
+	public function getRowByName(string $name) : ?object
+	{
+		return $this->db->selectRow($this->getTable(), '*', ['name' => $name]);
+	}
+
+	/**
 	* Sets the object's properties
 	* @param array|object $data The data
 	* @param bool $store If true will store the properties defined in static::$store in $this->stored
@@ -307,7 +317,7 @@ abstract class Item extends Row
 
 	/**
 	* Loads an object
-	* @param int|array|object|null $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data
+	* @param int|string|array|object|null $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data
 	* @return bool True if the object was loaded with data, false otherwise
 	*/
 	public function load($data) : bool
@@ -324,6 +334,8 @@ abstract class Item extends Row
 		if (is_numeric($data)) {
 			//load the data from the database
 			$data = $this->getRow($data);
+		} elseif (is_string($data)) {
+			$data = $this->getRowByName($data);
 		}
 
 		$this->setData($data);
@@ -341,6 +353,16 @@ abstract class Item extends Row
 	public function loadById(int $id) : bool
 	{
 		return $this->load($id);
+	}
+
+	/**
+	* Loads the object by name. Must be implemented by child classes
+	* @param string $name The name
+	* @return bool True if the object was loaded with data, false otherwise
+	*/
+	public function loadByName(string $name) : bool
+	{
+		return $this->load($name);
 	}
 
 	/**

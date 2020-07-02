@@ -27,7 +27,7 @@ class Css extends Urls
 
 	/**
 	* @see \Mars\Document\Urls::outputUrl()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function outputUrl(string $url, $version = true, bool $async = false, bool $defer = false)
 	{

@@ -28,7 +28,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::connect()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function connect(string $hostname, string $port, string $username, string $password, string $database, string $charset)
 	{
@@ -39,7 +39,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::disconnect()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function disconnect()
 	{
@@ -50,7 +50,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::getError()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function getError() : string
 	{
@@ -65,7 +65,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::getDump()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function getDump() : string
 	{
@@ -81,7 +81,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::selectDb()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function selectDb(string $database)
 	{
@@ -90,7 +90,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::escape()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function escape(string $value) : string
 	{
@@ -99,7 +99,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::query()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function query(string $sql, array $params = []) : ?object
 	{
@@ -131,7 +131,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::free()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function free($result)
 	{
@@ -140,7 +140,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::lastId()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function lastId() : int
 	{
@@ -149,7 +149,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::affectedRows()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function affectedRows() : int
 	{
@@ -158,7 +158,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::numRows()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function numRows($result) : int
 	{
@@ -167,7 +167,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::fetchArray()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function fetchArray($result)
 	{
@@ -176,7 +176,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::fetchRow()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function fetchRow($result)
 	{
@@ -185,7 +185,7 @@ class Pdo implements DriverInterface
 
 	/**
 	* @see \Mars\Db\DriverInterface::fetchObject()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function fetchObject($result, string $class_name)
 	{

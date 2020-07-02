@@ -16,7 +16,7 @@ class SelectOptions extends Options
 {
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{

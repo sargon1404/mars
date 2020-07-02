@@ -18,7 +18,7 @@ class App extends \Mars\App
 
 	/**
 	* @see \Mars\App::loadBooter()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected function loadBooter()
 	{

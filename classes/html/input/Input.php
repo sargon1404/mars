@@ -16,20 +16,20 @@ class Input extends \Mars\Html\Tag
 	* @var bool $generate_id If true, will generate ids for this type of inputs
 	*/
 	public bool $generate_id = true;
-	
+
 	/**
 	* @var string $type The input's type
 	*/
 	protected string $type = 'text';
 
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'input';
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{

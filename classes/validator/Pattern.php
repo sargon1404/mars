@@ -15,7 +15,7 @@ class Pattern extends Rule
 {
 	/**
 	* @see \Mars\Validator\Rule::validate()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function validate($value, $pattern) : bool
 	{

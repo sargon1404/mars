@@ -15,7 +15,7 @@ class Date extends Rule
 {
 	/**
 	* @see \Mars\Validator\Rule::validate()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function validate($value, $params) : bool
 	{

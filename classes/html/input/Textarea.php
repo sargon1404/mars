@@ -13,13 +13,13 @@ namespace Mars\Html\Input;
 class Textarea extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'textarea';
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{

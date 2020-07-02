@@ -207,7 +207,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* @see \Mars\Entities::setData()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function setData(iterable $data, bool $convert = true)
 	{
@@ -377,7 +377,7 @@ abstract class Items extends Rows implements \ArrayAccess
 
 	/**
 	* @see \Mars\Entities::updateData()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function updateData(int $index, $data) : bool
 	{

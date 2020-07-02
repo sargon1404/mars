@@ -13,7 +13,7 @@ namespace Mars\Html;
 class Form extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'form';
 }

@@ -93,7 +93,7 @@ class Caching extends Cacheable
 
 	/**
 	* @see \Mars\Cachable::store()
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	public function store(string $content)
 	{

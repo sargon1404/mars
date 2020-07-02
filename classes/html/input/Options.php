@@ -23,15 +23,15 @@ class Options extends \Mars\Html\Tag
 	* @var string|array $selected The selected option(s)
 	*/
 	public $selected = '';
-	
+
 	/**
-	* {@inheritDoc}
+	* {@inheritdoc}
 	*/
 	protected string $tag = 'option';
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{
@@ -40,26 +40,26 @@ class Options extends \Mars\Html\Tag
 		}
 
 		$html = '';
-		
+
 		foreach ($this->options as $text => $value) {
 			$text = App::e($text);
-			
+
 			$attributes = $value;
-			if (!is_array ($value)) {
+			if (!is_array($value)) {
 				$attributes = ['value' => $value];
 			} else {
-				$value = $value['value'];			
+				$value = $value['value'];
 			}
-		
+
 			$selected = '';
 			if ($value == $this->selected) {
 				$attributes['selected'] = true;
 			}
-				
+
 			$attributes = $this->getAttributes($attributes);
 
 			$html.= "<option{$attributes}>{$text}</option>\n";
-		}		
+		}
 
 		return $html;
 	}

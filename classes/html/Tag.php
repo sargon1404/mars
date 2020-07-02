@@ -35,6 +35,11 @@ abstract class Tag implements TagInterface
 	protected string $tag = '';
 
 	/**
+	* @var string $newline Newline to add after the tag, if any
+	*/
+	protected string $newline = "\n";
+
+	/**
 	* @var App $app The app object
 	*/
 	protected App $app;
@@ -79,7 +84,7 @@ abstract class Tag implements TagInterface
 	{
 		$attributes = $this->getAttributes($this->attributes);
 
-		return "<{$this->tag}{$attributes}>\n";
+		return "<{$this->tag}{$attributes}>" . $this->newline;
 	}
 
 	/**
@@ -92,16 +97,16 @@ abstract class Tag implements TagInterface
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function get() : string
 	{
 		$attributes = $this->getAttributes($this->attributes);
 
 		if ($this->text) {
-			return "<{$this->tag}{$attributes}>" . $this->escape($this->text) . "</{$this->tag}>\n";
+			return "<{$this->tag}{$attributes}>" . $this->escape($this->text) . "</{$this->tag}>" . $this->newline;
 		} else {
-			return "<{$this->tag}{$attributes}>\n";
+			return "<{$this->tag}{$attributes}>" . $this->newline;
 		}
 	}
 

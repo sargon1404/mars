@@ -15,7 +15,7 @@ class Max extends Rule
 {
 	/**
 	* @see \Mars\Validator\Rule::validate()
-	* {@inheritDocs}
+	* {@inheritdoc}
 	*/
 	public function validate($value, $max) : bool
 	{
