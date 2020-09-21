@@ -408,7 +408,7 @@ class Cli
 	*/
 	public function message($text, int $pad_left = 0, bool $newline = true, bool $die = false)
 	{
-		$this->print($text, $this->colors['message'], $pad_left, "\n\n", "\n\n", $newline);
+		$this->print($text, $this->colors['message'], $pad_left, "\n", "\n", $newline);
 
 		if ($die) {
 			die;
