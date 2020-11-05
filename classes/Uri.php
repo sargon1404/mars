@@ -15,6 +15,20 @@ class Uri
 	use AppTrait;
 
 	/**
+	* Determines if $url is a valid url
+	* @param string $url The url
+	* @return bool
+	*/
+	public function isUrl(string $url) : bool
+	{
+		if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Builds an url appending $params to $url
 	* @param string $base_url The url to which params will be appended.
 	* @param array $params Array containing the values to be appended. Specified as $name=>$value

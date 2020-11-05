@@ -47,11 +47,12 @@ trait Body
 	/**
 	* @var string $type The type of the extension
 	*/
-	//protected static $type = '';
+	//protected static string $type = '';
+
 	/**
 	* @var string $base_dir The dir where these type of extensions are located
 	*/
-	//protected static $base_dir = '';
+	//protected static string $base_dir = '';
 
 	/**
 	* Returns the extension's type
