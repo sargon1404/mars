@@ -15,7 +15,7 @@ trait DriverTrait
 	/**
 	* @var object $handle The driver's handle
 	*/
-	//protected object $handle;
+	protected object $handle;
 
 	/**
 	* @var string $driver The name of the driver
@@ -73,7 +73,7 @@ trait DriverTrait
 
 		if ($this->driver_interface) {
 			if (!is_a($handle, $this->driver_interface)) {
-				throw new \Exception("Driver {$driver} must implement interface {$this->driver_interface}");
+				throw new \Exception("Driver {$class} must implement interface {$this->driver_interface}");
 			}
 		}
 

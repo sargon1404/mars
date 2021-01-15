@@ -95,7 +95,7 @@ class Request
 	* @param string|array $value The value to trim
 	* @return string|array
 	*/
-	protected function trim($value)
+	protected function trim(string|array $value)
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'trim'], $value);
@@ -451,7 +451,7 @@ class Request
 	* @param bool $use_post If true will use the post data. If false,the get data
 	* @return array Returns the filled $data
 	*/
-	public function fill(&$data, array $array_fields = [], array $ignore_fields = [], string $key_prefix = '', bool $use_post = true)
+	public function fill(array|object &$data, array $array_fields = [], array $ignore_fields = [], string $key_prefix = '', bool $use_post = true)
 	{
 		if (!$data) {
 			return $data;
@@ -502,7 +502,7 @@ class Request
 	* @param string $key_prefix Key prefix which is used when filling the data
 	* @return array Returns the filled $data
 	*/
-	public function fillFromGet(&$data, array $array_fields = [], array $ignore_fields = [], string $key_prefix = '')
+	public function fillFromGet(array|object &$data, array $array_fields = [], array $ignore_fields = [], string $key_prefix = '')
 	{
 		return $this->fill($data, $array_fields, $ignore_fields, $key_prefix, false);
 	}
@@ -671,7 +671,7 @@ class Request
 	* @param bool $force_array If a single file is uploaded, by default it will be returned as string; If $force_arrray is true, it will be returned as an array
 	* @return array Returns the list of files uploaded, if the upload(s) was successful, null if there were errors
 	*/
-	public function upload(string $name, string $upload_dir, $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true, bool $create_subdir = false, bool $force_array = false) : ?array
+	public function upload(string $name, string $upload_dir, string|array $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true, bool $create_subdir = false, bool $force_array = false) : ?array
 	{
 		$ok = true;
 		$is_array = true;
@@ -796,7 +796,7 @@ class Request
 	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
 	* @return bool Returns true if the file can be uploaded
 	*/
-	public function canUploadFile(string $filename, $allowed_extensions = []) : bool
+	public function canUploadFile(string $filename, string|array $allowed_extensions = []) : bool
 	{
 		$extension = $this->app->file->getExtension($filename);
 
@@ -831,7 +831,7 @@ class Request
 	* @param array $out_allowed_extensions Variable which lists the extensions which can be uploaded [out]
 	* @return bool Returns true if the extension is on the allowed list
 	*/
-	public function uploadExtensionIsAllowed(string $extension, $allowed_extensions = '*', ?array &$out_allowed_extensions = []) : bool
+	public function uploadExtensionIsAllowed(string $extension, string|array $allowed_extensions = '*', ?array &$out_allowed_extensions = []) : bool
 	{
 		$out_allowed_extensions = $allowed_extensions;
 

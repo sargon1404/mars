@@ -96,7 +96,7 @@ trait ValidationTrait
 	* @param array|object $data The data to validate
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	protected function validate($data = []) : bool
+	protected function validate(array|object $data = []) : bool
 	{
 		$rules = $this->getValidationRules();
 		if (!$rules) {

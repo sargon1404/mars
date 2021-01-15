@@ -22,7 +22,7 @@ class Options extends \Mars\Html\Tag
 	/**
 	* @var string|array $selected The selected option(s)
 	*/
-	public $selected = '';
+	public string|array $selected = '';
 
 	/**
 	* {@inheritdoc}

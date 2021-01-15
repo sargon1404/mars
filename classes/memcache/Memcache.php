@@ -50,7 +50,7 @@ class Memcache implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::add()
 	* {@inheritdoc}
 	*/
-	public function add(string $key, $value, int $expires = 0)
+	public function add(string $key, $value, int $expires = 0) : bool
 	{
 		return $this->handle->add($key, $value, false, $expires);
 	}
@@ -59,7 +59,7 @@ class Memcache implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::set()
 	* {@inheritdoc}
 	*/
-	public function set(string $key, $value, int $expires = 0)
+	public function set(string $key, $value, int $expires = 0) : bool
 	{
 		return $this->handle->set($key, $value, false, $expires);
 	}
@@ -91,7 +91,7 @@ class Memcache implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::delete()
 	* {@inheritdoc}
 	*/
-	public function delete(string $key)
+	public function delete(string $key) : bool
 	{
 		return $this->handle->delete($key);
 	}
@@ -100,7 +100,7 @@ class Memcache implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::delete()
 	* {@inheritdoc}
 	*/
-	public function deleteAll()
+	public function deleteAll() : bool
 	{
 		return $this->handle->flush();
 	}

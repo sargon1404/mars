@@ -32,7 +32,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	/**
 	* @var string|array $fields The database fields to load
 	*/
-	protected $fields = '*';
+	protected string|array $fields = '*';
 
 	/**
 	* @var array $ids The ids of the currently loaded objects
@@ -158,7 +158,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	* @param string|array $fields The fields to load
 	* @return $this
 	*/
-	public function setFields($fields = '*')
+	public function setFields(string|array $fields = '*')
 	{
 		$this->fields = $fields;
 
@@ -401,7 +401,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	* @param int|array $ids The IDs to update (int,array). If empty, all the current loaded objects will be updated
 	* @return int The number of affected rows
 	*/
-	public function update($data, $ids = []) : int
+	public function update(array|object $data, int|array $ids = []) : int
 	{
 		$ids = $this->getIds($ids);
 		if (!$ids) {
@@ -501,7 +501,7 @@ abstract class Items extends Rows implements \ArrayAccess
 	* @param string|array $ids The ids list
 	* @return array
 	*/
-	public function getIds($ids = []) : array
+	public function getIds(string|array $ids = []) : array
 	{
 		if ($ids) {
 			if (is_array($ids)) {

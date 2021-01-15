@@ -75,29 +75,14 @@ class App
 	public string $current_url = '';
 
 	/**
-	* @var string $site_url The site's url. Eg: http://mydomain.com/mars
-	*/
-	public string $site_url = '';
-
-	/**
-	* @var string $site_url_static The url from where static content is served
-	*/
-	public string $site_url_static = '';
-
-	/**
-	* @var string $site_url_rel The relative site url. Unlike $site_url it doesn't contain the scheme
-	*/
-	public string $site_url_rel = '';
-
-	/**
-	* @var string $site_dir The location on the disk where the site is installed Eg: /var/www/mysite
-	*/
-	public string $site_dir = '';
-
-	/**
 	* @var string $content The system's generated content
 	*/
 	public string $content = '';
+
+	/**
+	* @var Site $site The site object
+	*/
+	public Site $site;
 
 	/**
 	* @var Config $config The config object
@@ -241,12 +226,10 @@ class App
 		$this->loadBooter();
 
 		$this->boot->minimum();
-		$this->boot->data();
 		$this->boot->libraries();
 		$this->boot->db();
 		$this->boot->base();
 		$this->boot->env();
-		$this->boot->properties();
 		$this->boot->document();
 		$this->boot->system();
 
@@ -254,7 +237,7 @@ class App
 	}
 
 	/**
-	* Prepares the data: ip/useragent/dirs/urls
+	* Prepares the data
 	*/
 	public function setData()
 	{
@@ -263,9 +246,17 @@ class App
 			$this->useragent = $this->getUseragent();
 		}
 
-		$this->setDirs();
-		$this->setUrls();
 		$this->setGzip();
+		$this->setDirs();
+	}
+
+	/**
+	* Prepares the data, after the database is available
+	*/
+	public function setDataAfterDb()
+	{
+		$this->setUrls();
+		$this->setDevelopment();
 	}
 
 	/**
@@ -276,6 +267,16 @@ class App
 	{
 		if ($this->ip) {
 			return $this->ip;
+		}
+
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			if (in_array($_SERVER['REMOTE_ADDR'], $this->config->trusted_proxies)) {
+				//HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the last one
+				$ip = trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
+				if (filter_var($ip, FILTER_VALIDATE_IP)) {
+					return $ip;
+				}
+			}
 		}
 
 		return $_SERVER['REMOTE_ADDR'];
@@ -299,8 +300,6 @@ class App
 	*/
 	protected function setDirs()
 	{
-		$this->site_dir = dirname(__DIR__, 3) . '/';
-
 		$this->assignDirs(static::DIRS);
 	}
 
@@ -311,7 +310,7 @@ class App
 	protected function assignDirs(array $dirs, string $base_dir = '', string $prefix = '', string $suffix = 'dir')
 	{
 		if (!$base_dir) {
-			$base_dir = $this->site_dir;
+			$base_dir = $this->site->dir;
 		}
 		if ($prefix) {
 			$prefix.= '_';
@@ -337,13 +336,23 @@ class App
 		}
 
 		$this->scheme = $this->getScheme();
-		$this->site_url = $this->getSiteUrl();
-
 		$this->current_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
 		$this->full_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 		$this->url = $this->full_url;
 
+		$this->site->setUrls();
+
 		$this->assignUrls(static::URLS);
+	}
+
+	/**
+	* Returns the static url of a dir
+	* @param string $url The url key as defined in App::URLS
+	* @return string The static url
+	*/
+	public function getStaticUrl(string $url) : string
+	{
+		return $this->site->url_static . static::URLS[$url] . '/';
 	}
 
 	/**
@@ -356,7 +365,7 @@ class App
 	protected function assignUrls(array $urls, string $base_url = '', string $prefix = '', string $suffix = 'url')
 	{
 		if (!$base_url) {
-			$base_url = $this->site_url;
+			$base_url = $this->site->url;
 		}
 		if ($prefix) {
 			$prefix.= '_';
@@ -373,28 +382,6 @@ class App
 	}
 
 	/**
-	* Sets properties, after the config options have been loaded
-	*/
-	public function setProperties()
-	{
-		$this->site_url_rel = $this->uri->stripScheme($this->site_url);
-
-		if ($this->config->site_url_static) {
-			$this->site_url_static = $this->config->site_url_static;
-		} else {
-			$this->site_url_static = $this->site_url_rel;
-		}
-
-		if ($this->accepts_gzip && $this->config->gzip) {
-			$this->can_gzip = true;
-		}
-
-		if ($this->config->development) {
-			$this->development = true;
-		}
-	}
-
-	/**
 	* Sets the gzip properties
 	*/
 	protected function setGzip()
@@ -405,6 +392,20 @@ class App
 			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
 				$this->accepts_gzip = true;
 			}
+		}
+
+		if ($this->accepts_gzip && $this->config->gzip) {
+			$this->can_gzip = true;
+		}
+	}
+
+	/**
+	* Sets the development property
+	*/
+	protected function setDevelopment()
+	{
+		if ($this->config->development) {
+			$this->development = true;
 		}
 	}
 
@@ -420,25 +421,6 @@ class App
 		}
 
 		return 'http://';
-	}
-
-	/**
-	* Returns the site's base url
-	* @return string The base url
-	*/
-	protected function getSiteUrl() : string
-	{
-		return $this->config->site_url;
-	}
-
-	/**
-	* Returns the static url of a dir
-	* @param string $url The url key as defined in App::URLS
-	* @return string The static url
-	*/
-	public function getStaticUrl(string $url) : string
-	{
-		return $this->site_url_static . static::URLS[$url] . '/';
 	}
 
 	/**
@@ -680,7 +662,7 @@ class App
 	public function redirect(string $url = '')
 	{
 		if (!$url) {
-			$url = $this->site_url;
+			$url = $this->site->url;
 		}
 
 		header('Location: ' . $url);
@@ -702,7 +684,7 @@ class App
 	* @param array $attachments The attachments, if any, to the mail
 	* @return bool Returns true on success, false on failure
 	*/
-	public function mail($to, string $subject, string $message, string $from = '', string $from_name = '', string $reply_to = '', string $reply_to_name = '', bool $is_html = true, array $attachments = []) : bool
+	public function mail(string|array $to, string $subject, string $message, string $from = '', string $from_name = '', string $reply_to = '', string $reply_to_name = '', bool $is_html = true, array $attachments = []) : bool
 	{
 		if (!$to) {
 			return false;

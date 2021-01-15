@@ -96,7 +96,7 @@ trait AppFunctionsTrait
 	* @param array $replace Array with key & values to be used for to search & replace
 	* @return string|array The language string(s)
 	*/
-	public static function __($str, array $replace = [])
+	public static function __(string|array $str, array $replace = []) : string|array
 	{
 		$search_array = [];
 		$replace_array = [];
@@ -326,7 +326,7 @@ trait AppFunctionsTrait
 	* @param array|object $data The data to return the property from
 	* @return mixed The property
 	*/
-	public static function getProperty(string $name, $data)
+	public static function getProperty(string $name, array|object $data)
 	{
 		if (is_array($data)) {
 			return $data[$name] ?? null;
@@ -383,7 +383,7 @@ trait AppFunctionsTrait
 	* @param string|array The keys to unset
 	* @return array The array
 	*/
-	public static function arrayUnset(array &$array, $keys) : array
+	public static function arrayUnset(array &$array, string|array $keys) : array
 	{
 		if (!is_array($keys)) {
 			$keys = [$keys];

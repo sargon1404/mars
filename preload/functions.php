@@ -77,7 +77,7 @@ function write_file(string $filename, array $files)
 	$cnt = '<?php' . "\n\n";
 	$cnt.= 'return [' . "\n";
 	foreach ($files as $file) {
-		$cnt.= "'" . $file . "'," . "\n";
+		$cnt.= "\t'" . $file . "'," . "\n";
 	}
 	$cnt.= '];' . "\n";
 

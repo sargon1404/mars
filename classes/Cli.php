@@ -318,8 +318,8 @@ class Cli
 
 	/**
 	* Outputs a text message
-	* @param string $text The text to output. String or array for multiple lines
-	* @param string|array  $color The color to print the text with
+	* @param string|array $text The text to output. String or array for multiple lines
+	* @param string  $color The color to print the text with
 	* @param int $pad_left The number of spaces to prefix $text with
 	* @param string $prefix Prefix to print before the text, if any
 	* @param string $suffix Suffix to add after text, if any
@@ -328,7 +328,7 @@ class Cli
 	* @param int $empty_right The number of empty chars to add to the right, if a background is specified
 	* @return $this
 	*/
-	public function print($text, string $color = '', int $pad_left = 0, string $prefix = '', string $suffix = '', bool $newline = true, bool $die = false, int $empty_right = 5)
+	public function print(string|array $text, string $color = '', int $pad_left = 0, string $prefix = '', string $suffix = '', bool $newline = true, bool $die = false, int $empty_right = 5)
 	{
 		if (is_array($text)) {
 			$text_array = [];

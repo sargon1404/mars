@@ -30,7 +30,7 @@ interface DriverInterface
 	* @param int $expires The number of seconds after which the data will expire
 	* @return bool
 	*/
-	public function add(string $key, $value, int $expires = 0);
+	public function add(string $key, $value, int $expires = 0) : bool;
 
 	/**
 	* Adds a $key. If a key with the same name exists, it's value is overwritten
@@ -39,7 +39,7 @@ interface DriverInterface
 	* @param int $expires The number of seconds after which the data will expire
 	* @return bool
 	*/
-	public function set(string $key, $value, int $expires = 0);
+	public function set(string $key, $value, int $expires = 0) : bool;
 
 	/**
 	* Retrieves the value of $key
@@ -60,11 +60,11 @@ interface DriverInterface
 	* @param string $key The key to delete
 	* @return bool
 	*/
-	public function delete(string $key);
+	public function delete(string $key) : bool;
 
 	/**
 	* Deletes all the keys
 	* @return bool
 	*/
-	public function deleteAll();
+	public function deleteAll() : bool;
 }

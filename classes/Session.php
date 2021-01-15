@@ -88,6 +88,10 @@ class Session
 		if (!$this->app->config->session_start) {
 			return;
 		}
+		//don't start the session if the http accelerator is enabled
+		if ($this->app->config->accelerator_enable) {
+			//return;
+		}
 
 		if ($this->save_path) {
 			session_save_path($this->save_path);

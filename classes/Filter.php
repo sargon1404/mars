@@ -20,7 +20,7 @@ class Filter
 	* @param string $filter The filter type to be applied. Eg: int/float/url/email etc..
 	* @return mixed The filtered value
 	*/
-	public function value($value, string $filter = '')
+	public function value($value, string $filter = '') : mixed
 	{
 		switch ($filter) {
 			case 'e':
@@ -98,8 +98,9 @@ class Filter
 	/**
 	* Returns the default value of a filter
 	* @param string $filter The filter type to be applied. Eg: int/float/url/email etc..
+	* @return mixed
 	*/
-	public function defaultValue(string $filter)
+	public function defaultValue(string $filter) : mixed
 	{
 		switch ($filter) {
 			case 'i':
@@ -118,11 +119,11 @@ class Filter
 
 	/**
 	* Filters all non-alphanumeric chars from $value
-	* @param mixed $value The value (string|array)
+	* @param string|array  $value The value 
 	* @param bool $space If true, will allow spaces
-	* @return mixed The filtered string value
+	* @return string|array The filtered value
 	*/
-	public function alphanumeric($value, bool $space = false)
+	public function alphanumeric(string|array $value, bool $space = false) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'alphanumeric'], $value, $space);
@@ -138,11 +139,11 @@ class Filter
 
 	/**
 	* Filters all non-a-z chars from $value
-	* @param mixed $value The value (string|array)
+	* @param string|array $value The value 
 	* @param bool $space If true, will allow spaces
-	* @return mixed The filtered string value
+	* @return string|array The filtered value
 	*/
-	public function alpha($value, bool $space = false)
+	public function alpha(string|array $value, bool $space = false) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'alpha'], $value, $space);
@@ -158,10 +159,10 @@ class Filter
 
 	/**
 	* Filters a string value
-	* @param mixed $value The value (string|array)
-	* @return mixed The filtered string value
+	* @param string|array $value The value
+	* @return string|array The filtered value
 	*/
-	public function string($value)
+	public function string(string|array $value) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'string'], $value);
@@ -172,10 +173,10 @@ class Filter
 
 	/**
 	* Filters an int value
-	* @param mixed $value The value (int|array)
-	* @return mixed The filtered int value
+	* @param int|array $value The value
+	* @return int|array The filtered value
 	*/
-	public function int($value)
+	public function int(int|array $value) : int|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'int'], $value);
@@ -186,11 +187,11 @@ class Filter
 
 	/**
 	* Filters an int positive number
-	* @param mixed $value The value (int|array)
+	* @param int|array $value The value
 	* @param int $min If $value is <= 0 will return $min
-	* @return mixed The filtered int value
+	* @return int|array The filtered value
 	*/
-	public function intPos($value, int $min = 1)
+	public function intPos(int|array$value, int $min = 1) : int|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'intPos'], $value);
@@ -206,10 +207,10 @@ class Filter
 
 	/**
 	* Filters a float value
-	* @param mixed $value The value (int|array)
-	* @return mixed The filtered float value
+	* @param float|array $value The value
+	* @return float|array The filtered value
 	*/
-	public function float($value)
+	public function float(float|array $value) : float|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'float'], $value);
@@ -220,11 +221,11 @@ class Filter
 
 	/**
 	* Filters a float positive number
-	* @param mixed $value The value (int|array)
+	* @param float|array $value The value
 	* @param float $min If $value is <= 0 will return $min
-	* @return mixed The filtered float value
+	* @return float|array The filtered value
 	*/
-	public function floatPos($value, float $min = 1)
+	public function floatPos(float|array $value, float $min = 1) : float|array 
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'floatPos'], $value);
@@ -240,10 +241,10 @@ class Filter
 
 	/**
 	* Returns the absolute value of $value
-	* @param mixed $value The value (int|float|array)
-	* @return mixed The absolute value of $value
+	* @param int|float|array $value The value (int|float|array)
+	* @return int|float|array The absolute value of $value
 	*/
-	public function abs($value)
+	public function abs(int|float|array $value) : int|float|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'abs'], $value);
@@ -254,10 +255,10 @@ class Filter
 
 	/**
 	* Trims a value
-	* @param mixed $value The value (string|array)
-	* @return mixed The filtered value
+	* @param string|array $value The value
+	* @return string|array The filtered value
 	*/
-	public function trim($value)
+	public function trim(string|array $value) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'trim'], $value);
@@ -268,10 +269,10 @@ class Filter
 
 	/**
 	* Strips the tags from $value
-	* @param mixed $value The value (string|array)
-	* @return string The filtered value
+	* @param string|array $value The value
+	* @return string|array The filtered value
 	*/
-	public function stripTags($value)
+	public function stripTags(string|array $value) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'stripTags'], $value);
@@ -282,10 +283,10 @@ class Filter
 
 	/**
 	* Filters an id value
-	* @param mixed $value The value
+	* @param int|array $value The value
 	* @return int The filtered ID value
 	*/
-	public function id($value) : int
+	public function id(int|array $value) : int
 	{
 		if (is_array($value)) {
 			$value = reset($value);
@@ -296,10 +297,10 @@ class Filter
 
 	/**
 	* Filters IDs values
-	* @param mixed $values Array or comma delimited values
+	* @param string|array $values Array or comma delimited values
 	* @return array The filtered IDS value
 	*/
-	public function ids($values) : array
+	public function ids(string|array $values) : array
 	{
 		if (!is_array($values)) {
 			$values = explode(',', $values);
@@ -314,13 +315,13 @@ class Filter
 
 	/**
 	* Checks that $value is in the $min_value - $max_value interval. If it is, it returns $value. If not returns $default_value
-	* @param numeric $value The value
-	* @param numeric $min_value The min. value
-	* @param numeric $max_value The max. value
-	* @param numeric $default_value The value to return if $value is not in the $min-$max interval
-	* @return numeric The value
+	* @param int|float  $value The value
+	* @param int|float  $min_value The min. value
+	* @param int|float  $max_value The max. value
+	* @param int|float  $default_value The value to return if $value is not in the $min-$max interval
+	* @return int|float  The value
 	*/
-	public function interval($value, $min_value, $max_value, $default_value)
+	public function interval(int|float $value, int|float $min_value, int|float $max_value, int|float $default_value) : int|float
 	{
 		if ($value >= $min_value && $value <= $max_value) {
 			return $value;
@@ -331,10 +332,10 @@ class Filter
 
 	/**
 	* Filters an url
-	* @param mixed $url The url to filter (string|array)
-	* @return string The filtered url
+	* @param string|array $url The url to filter
+	* @return string|array The filtered url
 	*/
-	public function url($url)
+	public function url(string|array $url) : string|array
 	{
 		if (is_array($url)) {
 			return array_map([$this, 'url'], $url);
@@ -345,10 +346,10 @@ class Filter
 
 	/**
 	* Filters an email address
-	* @param string $email The email to filter (string|array)
-	* @return string The filtered email
+	* @param string|array $email The email to filter (string|array)
+	* @return string|array The filtered email
 	*/
-	public function email(string $email)
+	public function email(string|array $email) : string|array
 	{
 		if (is_array($email)) {
 			return array_map([$this, 'email'], $email);
@@ -359,11 +360,11 @@ class Filter
 
 	/**
 	* Filters a slug param
-	* @param mixed $param The param to escape
+	* @param string|array $param The param to escape
 	* @param bool $allow_slash If true will allow slashes in the returned value
-	* @return string The filtered slug
+	* @return string|array The filtered slug
 	*/
-	public function slug($param, bool $allow_slash = false)
+	public function slug(string|array $param, bool $allow_slash = false) : string|array
 	{
 		if (is_array($param)) {
 			return array_map([$this, 'slug'], $param, $allow_slash);
@@ -398,11 +399,11 @@ class Filter
 
 	/**
 	* Filters a file name for invalid characters
-	* @param mixed $filename The filename to filter
+	* @param string|array $filename The filename to filter
 	* @param bool $is_path If true will treat $filename as a path rather than just a filename
-	* @return string The filtered filename
+	* @return string|array The filtered filename
 	*/
-	public function filename($filename, bool $is_path = false)
+	public function filename(string|array $filename, bool $is_path = false) : string|array
 	{
 		if (is_array($filename)) {
 			return array_map([$this, 'filename'], $filename);
@@ -446,20 +447,20 @@ class Filter
 
 	/**
 	* Alias for filename
-	* @param string $filename The filename to filter
-	* @return string The filtered filename
+	* @param string|array $filename The filename to filter
+	* @return string|array The filtered filename
 	*/
-	public function file(string $filename) : string
+	public function file(string|array $filename) : string|array
 	{
 		return $this->filename($filename, false);
 	}
 
 	/**
 	* Filters a filepath
-	* @param string $filepath The filepath
-	* @return string The filtered filepath
+	* @param string|array $filepath The filepath
+	* @return string|array The filtered filepath
 	*/
-	public function filepath(string $filepath) : string
+	public function filepath(string|array $filepath) : string|array
 	{
 		return $this->filename($filepath, true);
 	}
@@ -467,10 +468,10 @@ class Filter
 	/**
 	* Removes from $value the $remove_value element
 	* @param array $value Array with the values
-	* @param mixed $remove_value The value(s) to remove (string|array)
+	* @param string|array $remove_value The value(s) to remove
 	* @return array Array with the filtered values
 	*/
-	public function remove(array $value, $remove_value) : array
+	public function remove(array $value, string|array $remove_value) : array
 	{
 		if (!is_array($remove_value)) {
 			$remove_value = [$remove_value];
@@ -487,12 +488,12 @@ class Filter
 
 	/**
 	* Removes from $value the elements which aren't found in $allowed
-	* @param mixed $value The values (string|array)
-	* @param mixed $allowed Array with the allowed elements (string|array)
+	* @param string|array $value The values
+	* @param string|array $allowed Array with the allowed elements
 	* @param mixed $not_exists_value The value returned if $value isn't included in $allowed
 	* @return mixed Array with the filtered values
 	*/
-	public function exists($value, $allowed, $not_exists_value = false)
+	public function exists(string|array $value, string|array $allowed, mixed $not_exists_value = false) : mixed
 	{
 		if (!is_array($allowed)) {
 			$allowed = [$allowed];

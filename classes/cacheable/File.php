@@ -10,7 +10,7 @@ namespace Mars\Cacheable;
 * The Cachable File Driver
 * Driver which stores on disk the cached resources
 */
-class File implements DriverInterface
+class File implements \Mars\Cacheable\DriverInterface
 {
 	use \Mars\AppTrait;
 

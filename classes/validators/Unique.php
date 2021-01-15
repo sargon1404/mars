@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -17,7 +17,7 @@ class Unique extends Rule
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate($value, $params) : bool
+	public function validate(string|array $value, string|array $params) : bool
 	{
 		if ($this->app->db->exists($this->table, [$this->field => $value])) {
 			return false;

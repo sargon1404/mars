@@ -17,9 +17,9 @@ class Format
 	/**
 	* Calls strtolower on $value
 	* @param string|array $value The value
-	* @return string The formatted value
+	* @return string|array The formatted value
 	*/
-	public function strtolower($value) : string
+	public function strtolower(string|array$value) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'strtolower'], $value);
@@ -31,9 +31,9 @@ class Format
 	/**
 	* Calls strtolower on $value
 	* @param string|array $value The value
-	* @return string The formatted value
+	* @return string|array The formatted value
 	*/
-	public function strtoupper($value) : string
+	public function strtoupper($value) : string|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'strtoupper'], $value);
@@ -59,7 +59,7 @@ class Format
 	* @param mixed $is_empty The value which will be returned if $value is false
 	* @return mixed
 	*/
-	public function empty($value, $is_empty = '')
+	public function empty(mixed $value, mixed $is_empty = '') : mixed
 	{
 		if (!$value) {
 			return $is_empty;

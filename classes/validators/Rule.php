@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -36,7 +36,7 @@ abstract class Rule
 	* @param string|array $params Extra params
 	* @return bool
 	*/
-	abstract public function validate($value, $params) : bool;
+	abstract public function validate(string|array $value, string|array $params) : bool;
 
 	/**
 	* Builds the object

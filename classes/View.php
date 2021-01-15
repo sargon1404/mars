@@ -21,9 +21,9 @@ abstract class View
 	public string $url = '';
 
 	/**
-	* @var string $site_url Alias for $this->app->site_url
+	* @var Site $site Alias for $this->app->site
 	*/
-	public string $site_url = '';
+	protected Site $site;
 
 	/**
 	* @var string $layout The name of the layout (subdir) from where the template is rendered
@@ -108,6 +108,7 @@ abstract class View
 	*/
 	protected function prepare(Controller $controller)
 	{
+		$this->site = $this->app->site;
 		$this->html = $this->app->html;
 		$this->ui = $this->app->ui;
 		$this->filter = $this->app->filter;
@@ -119,8 +120,7 @@ abstract class View
 
 		$this->controller = $controller;
 		$this->model = $this->controller->model;
-
-		$this->site_url = $this->app->site_url;
+		
 		$this->url = $this->controller->url;
 	}
 

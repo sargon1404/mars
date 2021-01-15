@@ -483,7 +483,7 @@ class Html
 	* @param bool $multiple If true multiple options can be selected
 	* @return string The html code
 	*/
-	public function select(string $name, array $options, $selected = '', bool $required = false, array $attributes = [], bool $multiple = false) : string
+	public function select(string $name, array $options, string|array $selected = '', bool $required = false, array $attributes = [], bool $multiple = false) : string
 	{
 		$attributes = $attributes + ['name' => $name, 'required' => $required, 'multiple' => $multiple];
 
@@ -496,7 +496,7 @@ class Html
 	* @param string|array $selected The name of the option that should be selected [string or array if $multiple =  true]
 	* @return string The html code
 	*/
-	public function selectOptions(array $options, $selected = '') : string
+	public function selectOptions(array $options, string|array $selected = '') : string
 	{
 		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
 	}

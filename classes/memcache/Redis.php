@@ -51,14 +51,14 @@ class Redis implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::add()
 	* {@inheritdoc}
 	*/
-	public function add(string $key, $value, int $expires = 0)
+	public function add(string $key, $value, int $expires = 0) : bool
 	{
 		$ret = $this->handle->set($key, serialize($value));
-		
+
 		if ($expires) {
 			$this->handle->expireAt($key, time() + $expires);
 		}
-			
+
 		return $ret;
 	}
 
@@ -66,14 +66,14 @@ class Redis implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::set()
 	* {@inheritdoc}
 	*/
-	public function set(string $key, $value, int $expires = 0)
+	public function set(string $key, $value, int $expires = 0) : bool
 	{
 		$ret = $this->handle->set($key, serialize($value));
-		
+
 		if ($expires) {
 			$this->handle->expireAt($key, time() + $expires);
 		}
-		
+
 		return $ret;
 	}
 
@@ -87,7 +87,7 @@ class Redis implements DriverInterface
 
 		return unserialize($value);
 	}
-	
+
 	/**
 	* @see \Mars\Memcache\DriverInterface::exists()
 	* {@inheritdoc}
@@ -105,7 +105,7 @@ class Redis implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::delete()
 	* {@inheritdoc}
 	*/
-	public function delete(string $key)
+	public function delete(string $key) : bool
 	{
 		return $this->handle->delete($key);
 	}
@@ -114,7 +114,7 @@ class Redis implements DriverInterface
 	* @see \Mars\Memcache\DriverInterface::deleteAll()
 	* {@inheritdoc}
 	*/
-	public function deleteAll()
+	public function deleteAll() : bool
 	{
 		return $this->handle->flushAll();
 	}

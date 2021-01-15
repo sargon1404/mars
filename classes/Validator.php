@@ -23,19 +23,19 @@ class Validator
 	* @var array $supported_rules The list of suported rules
 	*/
 	protected array $supported_rules = [
-		'required' => '\Mars\Validator\Required',
-		'unique' => '\Mars\Validator\Unique',
-		'min' => '\Mars\Validator\Min',
-		'max' => '\Mars\Validator\Max',
-		'min_chars' => '\Mars\Validator\MinChars',
-		'max_chars' => '\Mars\Validator\MaxChars',
-		'pattern' => '\Mars\Validator\Pattern',
-		'email' => '\Mars\Validator\Email',
-		'url' => '\Mars\Validator\Url',
-		'ip' => '\Mars\Validator\Ip',
-		'time' => '\Mars\Validator\Time',
-		'date' => '\Mars\Validator\Date',
-		'datetime' => '\Mars\Validator\Datetime',
+		'required' => '\Mars\Validators\Required',
+		'unique' => '\Mars\Validators\Unique',
+		'min' => '\Mars\Validators\Min',
+		'max' => '\Mars\Validators\Max',
+		'min_chars' => '\Mars\Validators\MinChars',
+		'max_chars' => '\Mars\Validators\MaxChars',
+		'pattern' => '\Mars\Validators\Pattern',
+		'email' => '\Mars\Validators\Email',
+		'url' => '\Mars\Validators\Url',
+		'ip' => '\Mars\Validators\Ip',
+		'time' => '\Mars\Validators\Time',
+		'date' => '\Mars\Validators\Date',
+		'datetime' => '\Mars\Validators\Datetime',
 	];
 
 	/**
@@ -79,7 +79,7 @@ class Validator
 	* @param string|array $params Extra params to pass to the validator
 	* @return bool Returns true if the value is valid
 	*/
-	public function check($value, string $rule, $params = '') : bool
+	public function check(string|array $value, string $rule, string|array $params = '') : bool
 	{
 		if (!isset($this->supported_rules[$rule])) {
 			throw new \Exception("Unknown validator: {$rule}");
@@ -100,7 +100,7 @@ class Validator
 	* @param array $ignore_array Array with the fields for which we'll skip validation, if any
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	public function validate($data, array $rules, string $table = '', string $id_field = '', array $ignore_array = []) : bool
+	public function validate(array|object $data, array $rules, string $table = '', string $id_field = '', array $ignore_array = []) : bool
 	{
 		$ok = true;
 		$this->errors = [];

@@ -27,7 +27,7 @@ class AppBooter extends \Mars\AppBooter
 
 		$this->app->lang = new Language($this->app);
 		
-		$this->app->cli = new Cli;
+		$this->app->cli = new Cli($this->app);
 
 		return $this;
 	}

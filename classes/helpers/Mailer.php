@@ -93,7 +93,7 @@ class Mailer
 	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
-	public function setRecipient($to)
+	public function setRecipient(string|array $to)
 	{
 		if (!$to) {
 			return $this;
@@ -113,7 +113,7 @@ class Mailer
 	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
-	public function setRecipientUndisclosed($to)
+	public function setRecipientUndisclosed(string|array $to)
 	{
 		if (!$to) {
 			return $this;
@@ -132,7 +132,7 @@ class Mailer
 	* @param string|array $to The address(es) where the mail will be sent
 	* @return $this
 	*/
-	public function setRecipientBcc($to)
+	public function setRecipientBcc(string|array $to)
 	{
 		if (!$to) {
 			return $this;

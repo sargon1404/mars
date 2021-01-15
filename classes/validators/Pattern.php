@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -17,7 +17,7 @@ class Pattern extends Rule
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate($value, $pattern) : bool
+	public function validate(string|array $value, string|array $pattern) : bool
 	{
 		if (preg_match($pattern, $value, $m)) {
 			return false;

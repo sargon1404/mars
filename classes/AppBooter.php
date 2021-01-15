@@ -15,24 +15,19 @@ class AppBooter
 	use AppTrait;
 
 	/**
-	* Initializes the libraries
-	*/
-	public function libraries()
-	{
-		require_once(dirname(__FILE__, 4) . '/' . App::DIRS['libraries'] . '/php/vendor/autoload.php');
-	}
-
-	/**
 	* Initializes the minimum number of objects needed to server content from the cache
 	* @return $this
 	*/
 	public function minimum()
 	{
+		$this->app->site = new Site($this->app);
 		$this->app->timer = new Timer($this->app);
 		$this->app->uri = new Uri($this->app);
 
 		$this->app->config = new Config($this->app);
 		$this->app->config->read();
+
+		$this->app->setData();
 
 		$this->app->memcache = new Memcache($this->app);
 		$this->app->caching = new Caching($this->app);
@@ -41,19 +36,11 @@ class AppBooter
 	}
 
 	/**
-	* Sets the app's data
+	* Initializes the libraries
 	*/
-	public function data()
+	public function libraries()
 	{
-		$this->app->setData();
-	}
-
-	/**
-	* Sets the app's properties
-	*/
-	public function properties()
-	{
-		$this->app->setProperties();
+		require_once($this->app->libraries_dir . '/php/vendor/autoload.php');
 	}
 
 	/**
@@ -64,6 +51,8 @@ class AppBooter
 	{
 		$this->app->db = new Db($this->app);
 		$this->app->sql = new Sql($this->app);
+
+		$this->app->setDataAfterDb();
 
 		return $this;
 	}
@@ -94,6 +83,8 @@ class AppBooter
 	*/
 	public function env()
 	{
+		$this->app->accelerator = new Accelerator($this->app);
+
 		$this->app->session = new Session($this->app);
 		$this->app->session->start();
 

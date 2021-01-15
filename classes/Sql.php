@@ -138,7 +138,7 @@ class Sql
 	* @param string|array $fields The fields to select. Either a string or an array. If array, the fields will be escaped, if string will NOT
 	* @return $this
 	*/
-	public function select($fields = '*')
+	public function select(string|array $fields = '*')
 	{
 		$this->reset();
 
@@ -578,7 +578,7 @@ class Sql
 	* @param string $delimitator The delimitator to use between parts. By default AND is used.
 	* @return $this
 	*/
-	public function where($where, string $value = '', string $operator = '=', string $delimitator = 'AND')
+	public function where(string|array $where, string $value = '', string $operator = '=', string $delimitator = 'AND')
 	{
 		if (!$where) {
 			return $this;
@@ -694,7 +694,7 @@ class Sql
 	* @param array $params Variable which will receive the values to be used in the prepared statement [out]
 	* @return string
 	*/
-	public function getEqualOrIn($values, bool $is_int = true, ?array &$params = []) : string
+	public function getEqualOrIn(int|string|array $values, bool $is_int = true, ?array &$params = []) : string
 	{
 		$params = [];
 
@@ -731,7 +731,7 @@ class Sql
 	* @param string $delimitator The delimitator to use between parts. By default AND is used.
 	* @return $this
 	*/
-	public function having($where, string $value = '', string $operator = '=', string $alias = '', string $delimitator = 'AND')
+	public function having(string|array $where, string $value = '', string $operator = '=', string $alias = '', string $delimitator = 'AND')
 	{
 		if (!$where) {
 			return $this;

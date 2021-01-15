@@ -62,7 +62,7 @@ class Alerts
 	* @param bool $escape_html If true will html escape $alert
 	* @return $this
 	*/
-	public function add($alert, bool $escape_html = true)
+	public function add(string|array $alert, bool $escape_html = true)
 	{
 		$alerts = App::getArray($alert);
 

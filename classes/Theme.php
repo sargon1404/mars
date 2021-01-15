@@ -38,14 +38,9 @@ trait Theme
 	public string $url = '';
 
 	/**
-	* @var string $site_url Alias for $this->app->site_url
+	* @var string $site Alias for $this->app->site
 	*/
-	public string $site_url = '';
-
-	/**
-	* @var string $site_url_static Alias for $this->app->site_url_static
-	*/
-	public string $site_url_static = '';
+	public Site $site;
 
 	/**
 	* @var string $templates_dir The path for the theme's templates folder
@@ -215,14 +210,11 @@ trait Theme
 	*/
 	protected function prepareVars()
 	{
-		$this->site_url = $this->app->site_url;
-		$this->site_url_static = $this->app->site_url_static;
+		$this->site = $this->app->site;
 		$this->url = &$this->app->url;
 
 		$this->addVar('app', $this->app);
-		$this->addVar('site_url', $this->site_url);
-		$this->addVar('site_url_static', $this->site_url_static);
-		$this->addVar('static_site_url', $this->site_url_static);
+		$this->addVar('site', $this->site);
 		$this->addVar('this', $this);
 		$this->addVar('theme', $this);
 		$this->addVar('config', $this->app->config);
@@ -818,7 +810,7 @@ trait Theme
 	public function outputFavicon(string $icon_url = '')
 	{
 		if (!$icon_url) {
-			$icon_url = $this->app->site_url_static . 'favicon.png';
+			$icon_url = $this->app->site->url_static . 'favicon.png';
 		}
 
 		echo '<link rel="shortcut icon" type="image/png" href="' . App::e($icon_url) . '" />' . "\n";

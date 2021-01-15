@@ -20,16 +20,6 @@ class Caching extends Cacheable
 	public bool $can_cache = false;
 
 	/**
-	* @var string $content_type The cached content's type
-	*/
-	protected string $content_type = '';
-
-	/**
-	* @var string $content_type The cached content's id
-	*/
-	protected string $content_id = '';
-
-	/**
 	* @var bool $minify True, if the output can be minified
 	*/
 	protected bool $minify = true;
@@ -42,36 +32,24 @@ class Caching extends Cacheable
 	{
 		$this->app = $app;
 
-		if (!$this->app->config->content_cache_enable || !defined('CONTENT_CACHE_ENABLE')) {
+		if (!$this->app->config->content_cache_enable || defined('CONTENT_CACHE_DISABLE')) {
 			return;
 		}
 		if (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
 			return;
 		}
 
-		if (!defined('CONTENT_CACHE_TYPE') || !defined('CONTENT_CACHE_ID')) {
-			throw new \Exception('CONTENT_CACHE_TYPE and CONTENT_CACHE_ID must be defined to be able to use the content caching engine');
-		}
-
 		$this->dir = $this->app->cache_dir . 'content/';
 		$this->driver = $this->app->config->content_cache_driver;
 		$this->expires_interval = $this->app->config->content_cache_expires_interval;
 		$this->minify = $this->app->config->content_cache_minify;
-		$this->content_type = CONTENT_CACHE_TYPE;
-		$this->content_id = CONTENT_CACHE_ID;
 		$this->can_cache = true;
 
 		if ($this->app->accepts_gzip && $this->app->config->content_cache_gzip) {
 			$this->gzip = true;
 		}
 
-		if (defined('CONTENT_CACHE_DRIVER')) {
-			$this->driver = CONTENT_CACHE_DRIVER;
-		}
-
 		parent::__construct($app);
-
-		$this->app->plugins->run('caching_construct', $this);
 
 		$this->output();
 	}
@@ -82,7 +60,7 @@ class Caching extends Cacheable
 	*/
 	protected function getFile() : string
 	{
-		$file = $this->content_type . '-' . $this->content_id . '.' . $this->extension;
+		$file = hash('sha256', $this->app->full_url) . '.' . $this->extension;
 
 		if ($this->gzip) {
 			$file.= '.gz';

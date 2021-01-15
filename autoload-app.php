@@ -1,5 +1,5 @@
 <?php
-namespace mars\autoload;
+namespace Mars\Autoload;
 
 /**
 * Autoloader for the app files

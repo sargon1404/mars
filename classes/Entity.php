@@ -16,7 +16,7 @@ class Entity
 	* Builds an object
 	* @param array|object $data If $data is an array, will assume the array contains the object's data. If $data is an object, will built the object from $data's properties. If null, will load the default values
 	*/
-	public function __construct($data = [])
+	public function __construct(array|object $data = [])
 	{
 		$this->setData($data);
 	}
@@ -26,7 +26,7 @@ class Entity
 	* @param array|object $data The data
 	* @return $this
 	*/
-	public function setData($data)
+	public function setData(array|object $data)
 	{
 		$data = App::toArray($data);
 
@@ -61,7 +61,7 @@ class Entity
 	* Assigns data as properties. Alias for set_data
 	* @param array|object $data The data
 	*/
-	public function assign($data)
+	public function assign(array|object$data)
 	{
 		$this->setData($data);
 
@@ -74,7 +74,7 @@ class Entity
 	* @param mixed $value The value of the properties, if any
 	* @return $this
 	*/
-	public function addData($data, $value = '')
+	public function addData(array|object $data, $value = '')
 	{
 		$data = App::toArray($data);
 

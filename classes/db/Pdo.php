@@ -169,7 +169,7 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::fetchArray()
 	* {@inheritdoc}
 	*/
-	public function fetchArray($result)
+	public function fetchArray($result) : bool|array
 	{
 		return $result->fetch(\PDO::FETCH_ASSOC);
 	}
@@ -178,7 +178,7 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::fetchRow()
 	* {@inheritdoc}
 	*/
-	public function fetchRow($result)
+	public function fetchRow($result) : bool|array
 	{
 		return $result->fetch(\PDO::FETCH_NUM);
 	}
@@ -187,7 +187,7 @@ class Pdo implements DriverInterface
 	* @see \Mars\Db\DriverInterface::fetchObject()
 	* {@inheritdoc}
 	*/
-	public function fetchObject($result, string $class_name)
+	public function fetchObject($result, string $class_name) : bool|object
 	{
 		return $result->fetchObject($class_name);
 	}

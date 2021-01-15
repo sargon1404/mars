@@ -90,14 +90,14 @@ interface DriverInterface
 	* @param resource $result The result
 	* @return array The data, or false on failure
 	*/
-	public function fetchArray($result);
+	public function fetchArray($result) : bool|array;
 
 	/**
 	* Returns the next row, as an array, from a results set
 	* @param resource $result The result
 	* @return array The data, or false on failure
 	*/
-	public function fetchRow($result);
+	public function fetchRow($result) : bool|array;
 
 	/**
 	* Returns the next row, as an object, from a results set
@@ -105,5 +105,5 @@ interface DriverInterface
 	* @param string $class_name The class name
 	* @return object The data, or false on failure
 	*/
-	public function fetchObject($result, string $class_name);
+	public function fetchObject($result, string $class_name) : bool|object;
 }

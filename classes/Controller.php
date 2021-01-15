@@ -55,9 +55,9 @@ abstract class Controller
 	protected array $validation_rules = [];
 
 	/**
-	* @var string $site_url Alias for $this->app->site_url
+	* @var Site $site Alias for $this->app->site
 	*/
-	protected string $site_url = '';
+	protected Site $site;
 
 	/**
 	* @var Model $model The model object
@@ -97,7 +97,7 @@ abstract class Controller
 	/**
 	* @var Plugins $plugins Alias for $this->app->plugins
 	*/
-	protected object $plugins;
+	protected Plugins $plugins;
 
 	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors
@@ -135,6 +135,7 @@ abstract class Controller
 	*/
 	protected function prepare()
 	{
+		$this->site = $this->app->site;
 		$this->request = $this->app->request;
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
@@ -144,9 +145,8 @@ abstract class Controller
 		$this->errors = $this->app->errors;
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;
-		$this->notifications = $this->app->notifications;
-
-		$this->site_url = $this->app->site_url;
+		$this->notifications = $this->app->notifications;		
+		
 		$this->url = $this->app->url;
 	}
 
@@ -436,7 +436,7 @@ abstract class Controller
 	* @param array|object $data The data to validate
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	protected function validate($data = []) : bool
+	protected function validate(array|object $data = []) : bool
 	{
 		if (!$data) {
 			$data = $this->request->post;

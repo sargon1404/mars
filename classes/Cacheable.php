@@ -58,8 +58,7 @@ abstract class Cacheable
 	/**
 	* @var string $driver_interface The interface the driver must implement
 	*/
-	protected string $driver_interface = '\Mars\Cachable\DriverInterface';
-
+	protected string $driver_interface = '\Mars\Cacheable\DriverInterface';
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -84,8 +83,6 @@ abstract class Cacheable
 
 		$this->file = $this->getFile();
 		$this->filename = $this->dir . $this->file;
-
-		$this->app->plugins->run('cacheable_construct', $this);
 
 		$this->handle = $this->getHandle();
 	}
@@ -174,7 +171,7 @@ abstract class Cacheable
 			$expires = gmdate('D, d M Y H:i:s', time() + $seconds);
 
 			header('Expires: ' . $expires . ' GMT');
-			header('Cache-Control: max-age = ' . $seconds . ', must-revalidate');
+			header('Cache-Control: max-age = ' . $seconds);
 		} else {
 			header('Cache-Control: public');
 		}

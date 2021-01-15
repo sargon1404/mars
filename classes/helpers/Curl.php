@@ -13,6 +13,11 @@ namespace Mars\Helpers;
 class Curl
 {
 	/**
+	* @var int $timeout The timeout, in seconds
+	*/
+	public int $timeout = 3;
+
+	/**
 	* @var string $useragent The useragent used when making requests
 	*/
 	public string $useragent = '';
@@ -26,6 +31,11 @@ class Curl
 	* @var bool $header If true,the headers will be also returned
 	*/
 	public bool $header = false;
+
+	/**
+	* @var array $headers Array listing the custom headers to be sent
+	*/
+	public array $headers = [];
 
 	/**
 	* @var int $code The http code of the last request
@@ -69,8 +79,6 @@ class Curl
 		if (isset($_SERVER['HTTP_USER_AGENT'])) {
 			$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		}
-
-		$this->app->plugins->run('helpers_curl_construct', $this);
 	}
 
 	/**
@@ -83,6 +91,16 @@ class Curl
 		$this->options = $this->options + $options;
 
 		return $this;
+	}
+
+	/**
+	* Adds a custom header
+	* @param string $header The header to add
+	* @return $this
+	*/
+	public function addHeader(string $header)
+	{
+		$this->headers[] = $header;
 	}
 
 	/**
@@ -100,6 +118,10 @@ class Curl
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+		if ($this->headers) {
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
+		}
 
 		foreach ($this->options as $name => $val) {
 			curl_setopt($ch, $name, $val);
@@ -120,7 +142,11 @@ class Curl
 		$this->info = curl_getinfo($ch);
 
 		if ($this->code) {
-			$this->request_header = $this->info['request_header'];
+			if (is_array($this->info['request_header'])) {
+				$this->request_header = $this->info['request_header'];
+			} else {
+				$this->request_header = explode("\n", $this->info['request_header']);
+			}
 		} else {
 			$this->error = curl_error($ch);
 		}
@@ -132,6 +158,19 @@ class Curl
 		}
 
 		return $result;
+	}
+
+	/**
+	* Fetches an url with a custom request
+	* @param string $url The url to retrieve
+	* @param string $request The custom request
+	* @return string The contents of the url; null on failure
+	*/
+	public function request(string $url, string $request) : ?string
+	{
+		$this->setOptions([CURLOPT_CUSTOMREQUEST => $request]);
+
+		return $this->get($url);
 	}
 
 	/**

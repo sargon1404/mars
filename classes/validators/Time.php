@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -17,7 +17,7 @@ class Time extends Rule
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate($value, $params) : bool
+	public function validate(string|array $value, string|array $params) : bool
 	{
 		if (!is_array($value)) {
 			throw new \Exception('The Time validator accepts an array with [$hour, $minute, $second] as the value parameter');

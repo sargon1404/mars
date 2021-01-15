@@ -149,7 +149,7 @@ class Log
 	* Callback for set_error_handler
 	* @internal
 	*/
-	public function handleError(string $err_no, string $err_str, string $err_file, string $err_line) : bool
+	public function handleError(int $err_no, string $err_str, string $err_file, int $err_line) : bool
 	{
 		$str = $err_str . "\n";
 		$this->error($str, $err_file, $err_line);

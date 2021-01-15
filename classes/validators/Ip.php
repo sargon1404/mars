@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -17,7 +17,7 @@ class Ip extends Rule
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate($value, $wildcards) : bool
+	public function validate(string|array $value, string|array $wildcards) : bool
 	{
 		if (!$wildcards) {
 			return filter_var($value, FILTER_VALIDATE_IP);

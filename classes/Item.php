@@ -35,7 +35,7 @@ abstract class Item extends Row
 	/**
 	* @var string|array $fields The database fields to load
 	*/
-	protected $fields = '*';
+	protected string|array $fields = '*';
 
 	/**
 	* @var array $errors  Contains the generated error codes, if any
@@ -194,7 +194,7 @@ abstract class Item extends Row
 	* @param string|array $fields The fields to load
 	* @return $this
 	*/
-	public function setFields($fields = '*')
+	public function setFields(string|array $fields = '*')
 	{
 		$this->fields = $fields;
 
@@ -298,7 +298,7 @@ abstract class Item extends Row
 	* @param bool $store If true will store the properties defined in static::$store in $this->stored
 	* @return $this
 	*/
-	public function setData($data, bool $store = true)
+	public function setData(array|object $data, bool $store = true)
 	{
 		$data = App::toArray($data);
 
@@ -317,10 +317,10 @@ abstract class Item extends Row
 
 	/**
 	* Loads an object
-	* @param int|string|array|object|null $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data
+	* @param mixed $data If data is an int, will load the data with id = data from the database. If an array/object, will assume it contains the object's data. If null, will return the default data
 	* @return bool True if the object was loaded with data, false otherwise
 	*/
-	public function load($data) : bool
+	public function load(mixed $data) : bool
 	{
 		if ($data === null) {
 			//load defaults
@@ -733,7 +733,7 @@ abstract class Item extends Row
 	* @param string|array $properties The name of the stored properties to flip
 	* @return $this
 	*/
-	public function flipStored($properties)
+	public function flipStored(string|array $properties)
 	{
 		if (!is_array($properties)) {
 			$properties = [$properties];

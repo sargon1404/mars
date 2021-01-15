@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Validator;
+namespace Mars\Validators;
 
 use Mars\App;
 
@@ -17,7 +17,7 @@ class MaxChars extends Rule
 	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate($value, $length) : bool
+	public function validate(string|array $value, string|array $length) : bool
 	{
 		if (strlen($value) <= $length) {
 			return true;

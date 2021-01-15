@@ -28,7 +28,7 @@ class Time
 	* @param int|string $date Either a timestamp (int) or a date/datetime, if string
 	* @return int The timestamp
 	*/
-	public function getTimestamp($date) : int
+	public function getTimestamp(int|string $date) : int
 	{
 		if (!$date) {
 			return 0;
@@ -52,7 +52,7 @@ class Time
 	* @param bool $time If true, will return the time part
 	* @return string The sql datetime
 	*/
-	public function getSql($timestamp, bool $date = true, bool $time = true) : string
+	public function getSql(int|string $timestamp, bool $date = true, bool $time = true) : string
 	{
 		$timestamp = $this->getTimestamp($timestamp);
 
@@ -86,7 +86,7 @@ class Time
 	* @param bool $time If true, will return the time part
 	* @return string The datetime
 	*/
-	public function getISO($timestamp, bool $date = true, bool $time = true) : string
+	public function getISO(int|string $timestamp, bool $date = true, bool $time = true) : string
 	{
 		return $this->getSql($timestamp, $date, $time);
 	}
