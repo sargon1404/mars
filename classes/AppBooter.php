@@ -20,7 +20,6 @@ class AppBooter
 	*/
 	public function minimum()
 	{
-		$this->app->site = new Site($this->app);
 		$this->app->timer = new Timer($this->app);
 		$this->app->uri = new Uri($this->app);
 

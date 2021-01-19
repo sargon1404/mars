@@ -36,7 +36,7 @@ class Varnish implements DriverInterface
 	{
 		$curl = new Curl;
 		$curl->addHeader('X-Ban-Pattern: ' . $pattern);
-		$curl->request($this->app->site->url, 'BAN');
+		$curl->request($this->app->url, 'BAN');
 
 		return true;
 	}
@@ -48,7 +48,7 @@ class Varnish implements DriverInterface
 	public function deleteAll() : bool
 	{
 		$curl = new Curl;
-		$curl->request($this->app->site->url, 'FULLBAN');
+		$curl->request($this->app->url, 'FULLBAN');
 
 		return true;
 	}

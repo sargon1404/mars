@@ -55,11 +55,6 @@ abstract class Controller
 	protected array $validation_rules = [];
 
 	/**
-	* @var Site $site Alias for $this->app->site
-	*/
-	protected Site $site;
-
-	/**
 	* @var Model $model The model object
 	*/
 	public Model $model;
@@ -135,7 +130,6 @@ abstract class Controller
 	*/
 	protected function prepare()
 	{
-		$this->site = $this->app->site;
 		$this->request = $this->app->request;
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
@@ -145,8 +139,8 @@ abstract class Controller
 		$this->errors = $this->app->errors;
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;
-		$this->notifications = $this->app->notifications;		
-		
+		$this->notifications = $this->app->notifications;
+
 		$this->url = $this->app->url;
 	}
 

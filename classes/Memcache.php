@@ -27,9 +27,9 @@ class Memcache
 	protected string $port = '';
 
 	/**
-	* @var string $key Key used to identify the site
+	* @var string $secret Secret key used to identify the site
 	*/
-	protected string $key = '';
+	protected string $secret = '';
 
 	/**
 	* @var bool $enabled Will be set to true, if memcache is enabled
@@ -71,9 +71,9 @@ class Memcache
 	* @param string $driver The driver to use. redis and memcache are supported
 	* @param string $host The host to connect to
 	* @param string $port The port to connect to
-	* @param string $key Key used to identify the site
+	* @param string $secret Secret key used to identify the site
 	*/
-	public function __construct(App $app, string $driver = '', string $host = '', string $port = '', string $key = '')
+	public function __construct(App $app, string $driver = '', string $host = '', string $port = '', string $secret = '')
 	{
 		$this->app = $app;
 
@@ -85,13 +85,13 @@ class Memcache
 			$driver = $this->app->config->memcache_driver;
 			$host = $this->app->config->memcache_memcache_host;
 			$port = $this->app->config->memcache_memcache_port;
-			$key = $this->app->config->site_key;
+			$secret = $this->app->config->secret;
 		}
 
 		$this->driver = $driver;
 		$this->host = $host;
 		$this->port = $port;
-		$this->key = $key;
+		$this->secret = $secret;
 		$this->enabled = true;
 	}
 
@@ -163,7 +163,7 @@ class Memcache
 			$value = App::serialize($value, $default_value);
 		}
 
-		$this->handle->add($key . '-' . $this->key, $value, $expires);
+		$this->handle->add($key . '-' . $this->secret, $value, $expires);
 
 		return $this;
 	}
@@ -190,7 +190,7 @@ class Memcache
 			$value = App::serialize($value, $default_value);
 		}
 
-		$this->handle->set($key . '-' . $this->key, $value, $expires);
+		$this->handle->set($key . '-' . $this->secret, $value, $expires);
 
 		return $this;
 	}
@@ -211,7 +211,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$value = $this->handle->get($key . '-' . $this->key);
+		$value = $this->handle->get($key . '-' . $this->secret);
 
 		if ($unserialize) {
 			return App::unserialize($value, $default_value);
@@ -234,7 +234,7 @@ class Memcache
 			$this->connect();
 		}
 
-		return $this->handle->exists($key . '-' . $this->key);
+		return $this->handle->exists($key . '-' . $this->secret);
 	}
 
 	/**
@@ -252,7 +252,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$this->handle->delete($key . '-' . $this->key);
+		$this->handle->delete($key . '-' . $this->secret);
 
 		return $this;
 	}

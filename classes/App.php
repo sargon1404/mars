@@ -55,14 +55,24 @@ class App
 	public bool $development = false;
 
 	/**
+	* @var string $dir The location on the disk where the site is installed Eg: /var/www/mysite
+	*/
+	public string $dir = '';
+
+	/**
 	* @var string $scheme The page's scheme: http:// or https://
 	*/
 	public string $scheme = '';
 
 	/**
-	* @var string $url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
+	* @var string $url The url. Eg: http://mydomain.com/mars
 	*/
 	public string $url = '';
+
+	/**
+	* @var string $url_static The url from where static content is served
+	*/
+	public string $url_static = '';
 
 	/**
 	* @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
@@ -78,11 +88,6 @@ class App
 	* @var string $content The system's generated content
 	*/
 	public string $content = '';
-
-	/**
-	* @var Site $site The site object
-	*/
-	public Site $site;
 
 	/**
 	* @var Config $config The config object
@@ -195,6 +200,13 @@ class App
 	*/
 	protected function __construct()
 	{
+		$this->dir = $this->getDir();
+
+		if (!$this->is_cli) {
+			$this->scheme = $this->getScheme();
+			$this->current_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+			$this->full_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		}
 	}
 
 	/**
@@ -260,6 +272,90 @@ class App
 	}
 
 	/**
+	* Prepares the base dirs
+	*/
+	protected function setDirs()
+	{
+		$this->assignDirs(static::DIRS);
+	}
+
+	/**
+	* Sets the urls
+	*/
+	protected function setUrls()
+	{
+		$this->url = $this->config->url;
+		$this->url_static = $this->url;
+
+		if ($this->config->url_static) {
+			$this->url_static = $this->config->url_static;
+		}
+
+		$this->assignUrls(static::URLS);
+	}
+
+	/**
+	* Returns the static url of a dir
+	* @param string $url The url key as defined in App::URLS
+	* @return string The static url
+	*/
+	public function getStaticUrl(string $url) : string
+	{
+		return $this->url_static . static::URLS[$url] . '/';
+	}
+
+	/**
+	* Sets the gzip properties
+	*/
+	protected function setGzip()
+	{
+		$this->accepts_gzip = false;
+
+		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
+				$this->accepts_gzip = true;
+			}
+		}
+
+		if ($this->accepts_gzip && $this->config->gzip) {
+			$this->can_gzip = true;
+		}
+	}
+
+	/**
+	* Sets the development property
+	*/
+	protected function setDevelopment()
+	{
+		if ($this->config->development) {
+			$this->development = true;
+		}
+	}
+
+	/**
+	* Returns the location on the disk where the site is installed
+	* @return string
+	*/
+	protected function getDir() : string
+	{
+		return dirname(__DIR__, 3) . '/';
+	}
+
+	/**
+	* Returns the scheme: http/https
+	* @return string
+	*/
+	protected function getScheme() : string
+	{
+		if (isset($_SERVER['HTTPS'])) {
+			$this->is_https = true;
+			return 'https://';
+		}
+
+		return 'http://';
+	}
+
+	/**
 	* Returns the user's IP
 	* @return string The ip
 	*/
@@ -296,21 +392,13 @@ class App
 	}
 
 	/**
-	* Prepares the base dirs
-	*/
-	protected function setDirs()
-	{
-		$this->assignDirs(static::DIRS);
-	}
-
-	/**
 	* Assigns the dirs as app properties
 	* @param array $dirs The dirs to assign
 	*/
 	protected function assignDirs(array $dirs, string $base_dir = '', string $prefix = '', string $suffix = 'dir')
 	{
 		if (!$base_dir) {
-			$base_dir = $this->site->dir;
+			$base_dir = $this->dir;
 		}
 		if ($prefix) {
 			$prefix.= '_';
@@ -327,35 +415,6 @@ class App
 	}
 
 	/**
-	* Sets the base urls
-	*/
-	protected function setUrls()
-	{
-		if ($this->is_cli) {
-			return;
-		}
-
-		$this->scheme = $this->getScheme();
-		$this->current_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
-		$this->full_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-		$this->url = $this->full_url;
-
-		$this->site->setUrls();
-
-		$this->assignUrls(static::URLS);
-	}
-
-	/**
-	* Returns the static url of a dir
-	* @param string $url The url key as defined in App::URLS
-	* @return string The static url
-	*/
-	public function getStaticUrl(string $url) : string
-	{
-		return $this->site->url_static . static::URLS[$url] . '/';
-	}
-
-	/**
 	* Assigns the urls as app properties
 	* @param array $urls The urls to assign
 	* @param string $base_url The base url
@@ -365,7 +424,7 @@ class App
 	protected function assignUrls(array $urls, string $base_url = '', string $prefix = '', string $suffix = 'url')
 	{
 		if (!$base_url) {
-			$base_url = $this->site->url;
+			$base_url = $this->url;
 		}
 		if ($prefix) {
 			$prefix.= '_';
@@ -379,48 +438,6 @@ class App
 
 			$this->$name = $base_url . $url . '/';
 		}
-	}
-
-	/**
-	* Sets the gzip properties
-	*/
-	protected function setGzip()
-	{
-		$this->accepts_gzip = false;
-
-		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
-				$this->accepts_gzip = true;
-			}
-		}
-
-		if ($this->accepts_gzip && $this->config->gzip) {
-			$this->can_gzip = true;
-		}
-	}
-
-	/**
-	* Sets the development property
-	*/
-	protected function setDevelopment()
-	{
-		if ($this->config->development) {
-			$this->development = true;
-		}
-	}
-
-	/**
-	* Returns the scheme: http/https
-	* @return string
-	*/
-	protected function getScheme() : string
-	{
-		if (isset($_SERVER['HTTPS'])) {
-			$this->is_https = true;
-			return 'https://';
-		}
-
-		return 'http://';
 	}
 
 	/**
@@ -662,7 +679,7 @@ class App
 	public function redirect(string $url = '')
 	{
 		if (!$url) {
-			$url = $this->site->url;
+			$url = $this->url;
 		}
 
 		header('Location: ' . $url);

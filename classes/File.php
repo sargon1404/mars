@@ -41,7 +41,7 @@ class File
 			$filename = $this->stripExtension($filename);
 		}
 
-		return str_replace($this->app->site->dir, '', $filename);
+		return str_replace($this->app->dir, '', $filename);
 	}
 
 	/**

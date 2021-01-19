@@ -130,6 +130,6 @@ class Escape
 	*/
 	public function dir(string $dir) : string
 	{
-		return str_replace($this->app->site->dir, '', $dir);
+		return str_replace($this->app->dir, '', $dir);
 	}
 }

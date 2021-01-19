@@ -33,16 +33,6 @@ trait Theme
 	public string $layout = '';
 
 	/**
-	* @var string $url Alias for $this->app->url
-	*/
-	public string $url = '';
-
-	/**
-	* @var string $site Alias for $this->app->site
-	*/
-	public Site $site;
-
-	/**
 	* @var string $templates_dir The path for the theme's templates folder
 	*/
 	public string $templates_dir = '';
@@ -193,7 +183,7 @@ trait Theme
 		$this->templates_cache_dir = $this->cache_dir . App::CACHE_DIRS['templates'];
 		$this->templates_dir = $this->dir . App::EXTENSIONS_DIRS['templates'];
 		$this->images_dir = $this->dir . App::EXTENSIONS_DIRS['images'];
-		$this->images_url = $this->dir_url_static . App::EXTENSIONS_DIRS['images'];
+		$this->images_url = $this->url_static . App::EXTENSIONS_DIRS['images'];
 	}
 
 	/**
@@ -210,11 +200,7 @@ trait Theme
 	*/
 	protected function prepareVars()
 	{
-		$this->site = $this->app->site;
-		$this->url = &$this->app->url;
-
 		$this->addVar('app', $this->app);
-		$this->addVar('site', $this->site);
 		$this->addVar('this', $this);
 		$this->addVar('theme', $this);
 		$this->addVar('config', $this->app->config);
@@ -475,7 +461,7 @@ trait Theme
 			$this->cleanCacheFilenamePart($this->layout),
 			$this->cleanCacheFilenamePart($template),
 			$this->app->device->type,
-			$this->app->config->site_key,
+			$this->app->config->secret,
 			'theme'
 		];
 
@@ -498,7 +484,7 @@ trait Theme
 			$this->cleanCacheFilenamePart($layout),
 			$this->cleanCacheFilenamePart($template),
 			$this->app->device->type,
-			$this->app->config->site_key,
+			$this->app->config->secret,
 			'ext'
 		];
 
@@ -768,7 +754,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->dir_url_static . $this->css_file;
+		$url = $this->url_static . $this->css_file;
 
 		$this->app->css->outputUrl($url);
 	}
@@ -782,7 +768,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->dir_url_static . $this->javascript_file;
+		$url = $this->url_static . $this->javascript_file;
 
 		$this->app->javascript->outputUrl($url);
 	}
@@ -810,7 +796,7 @@ trait Theme
 	public function outputFavicon(string $icon_url = '')
 	{
 		if (!$icon_url) {
-			$icon_url = $this->app->site->url_static . 'favicon.png';
+			$icon_url = $this->app->url_static . 'favicon.png';
 		}
 
 		echo '<link rel="shortcut icon" type="image/png" href="' . App::e($icon_url) . '" />' . "\n";

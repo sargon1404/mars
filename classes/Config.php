@@ -18,7 +18,7 @@ class Config extends Data
 	protected array $defaults = [
 		'log_error_types' => E_ALL & ~E_NOTICE,
 
-		'site_url_static' => '',
+		'url_static' => '',
 
 		'debug' => false, //set to true to enable debug mode
 		'debug_ips' => '', //if specified, will enable debug only for the listed IPs. debug must be set to false
