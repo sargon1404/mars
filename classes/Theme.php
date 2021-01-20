@@ -183,7 +183,7 @@ trait Theme
 		$this->templates_cache_dir = $this->cache_dir . App::CACHE_DIRS['templates'];
 		$this->templates_dir = $this->dir . App::EXTENSIONS_DIRS['templates'];
 		$this->images_dir = $this->dir . App::EXTENSIONS_DIRS['images'];
-		$this->images_url = $this->url_static . App::EXTENSIONS_DIRS['images'];
+		$this->images_url = $this->base_url . App::EXTENSIONS_DIRS['images'];
 	}
 
 	/**

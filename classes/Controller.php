@@ -90,9 +90,9 @@ abstract class Controller
 	protected Validator $validator;
 
 	/**
-	* @var Plugins $plugins Alias for $this->app->plugins
+	* @var object $plugins Alias for $this->app->plugins
 	*/
-	protected Plugins $plugins;
+	protected object $plugins;
 
 	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors

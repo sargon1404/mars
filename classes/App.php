@@ -235,6 +235,7 @@ class App
 	*/
 	public function boot()
 	{
+		die("iiiii");
 		$this->loadBooter();
 
 		$this->boot->minimum();

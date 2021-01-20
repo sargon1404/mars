@@ -25,14 +25,19 @@ trait Body
 	public string $dir = '';
 
 	/**
-	* @var string $url The url pointing to the folder where the extension is installed
+	* @var string $url Alias for dir_url
 	*/
 	public string $url = '';
 
 	/**
-	* @var string $url_static The static url pointing to the folder where the extension is installed
+	* @var string $dir_url The url pointing to the folder where the extension is installed
 	*/
-	public string $url_static = '';
+	public string $dir_url = '';
+
+	/**
+	* @var string $base_url The url pointing to the folder where the extension is installed. It uses the static base url
+	*/
+	public string $base_url = '';
 
 	/**
 	* @var bool $development If true, the extension is run in development mode
@@ -87,8 +92,10 @@ trait Body
 	protected function preparePaths()
 	{
 		$this->dir = $this->getDir();
-		$this->url = $this->getUrl();
-		$this->url_static = $this->getUrlStatic();
+		$this->dir_url = $this->getDirUrl();
+		$this->base_url = $this->getBaseUrl();
+
+		$this->url =  $this->dir_url;
 	}
 
 	/**
@@ -148,7 +155,7 @@ trait Body
 	* @param string $name The name of the extension. If empty, the name of the current extension is used
 	* @return string The base url
 	*/
-	public function getUrl(string $name = '') : string
+	public function getDirUrl(string $name = '') : string
 	{
 		if (!$name) {
 			if ($this->url) {
@@ -166,11 +173,11 @@ trait Body
 	* @param string $name The name of the extension. If empty, the name of the current extension is used
 	* @return string The base url
 	*/
-	public function getUrlStatic(string $name = '') : string
+	public function getBaseUrl(string $name = '') : string
 	{
 		if (!$name) {
-			if ($this->url_static) {
-				return $this->url_static;
+			if ($this->base_url) {
+				return $this->base_url;
 			}
 
 			$name = $this->name;
