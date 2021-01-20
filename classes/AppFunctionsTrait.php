@@ -462,10 +462,10 @@ trait AppFunctionsTrait
 	/**
 	* Does a print_r on $var and outputs <pre> tags
 	* @param mixed $var The variable
-	* @param bool $escape_html If true, will call html escape $var before calling print_r
 	* @param bool $die If true, will call die after
+	* @param bool $escape_html If true, will call html escape $var before calling print_r
 	*/
-	public static function pp($var, bool $escape_html = false, bool $die = true)
+	public static function pp($var, bool $die = false, bool $escape_html = false)
 	{
 		if ($escape_html) {
 			$var = static::e($var);
@@ -484,7 +484,7 @@ trait AppFunctionsTrait
 	* Alias for pp
 	* @see AppFunctionsTrait::pp()
 	*/
-	public static function print_r($var, bool $escape_html = false, bool $die = true)
+	public static function print_r($var, bool $die = false, bool $escape_html = false)
 	{
 		static::pp($var, $escape_html, $die);
 	}
