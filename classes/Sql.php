@@ -149,7 +149,7 @@ class Sql
 		if (is_array($fields)) {
 			//escape the fields
 			foreach ($fields as $i => $field) {
-				$field[$i] = $this->escapeColumn($field);
+				$fields[$i] = $this->escapeColumn($field);
 			}
 
 			$fields = implode(', ', $fields);

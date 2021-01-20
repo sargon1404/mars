@@ -85,6 +85,9 @@ class Session
 	*/
 	public function start()
 	{
+		if ($this->app->is_cli) {
+			return;
+		}
 		if (!$this->app->config->session_start) {
 			return;
 		}
