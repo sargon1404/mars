@@ -47,6 +47,31 @@ trait DriverTrait
 	}
 
 	/**
+	* Adds a driver to the list of supported drivers
+	* @param string $name The name of the driver
+	* @param string $class The class handling the driver
+	* @return $this
+	*/
+	public function addSupportedDriver(string $name, string $class)
+	{
+		$this->supported_drivers[$name] = $class;
+
+		return $this;
+	}
+
+	/**
+	* Adds multiple drivers to the list of supported drivers
+	* @param array $drivers The drivers to add
+	* @return $this
+	*/
+	public function addSupportedDrivers(array $drivers)
+	{
+		$this->supported_drivers = array_merge($this->supported_drivers, $drivers);
+
+		return $this;
+	}
+
+	/**
 	* Returns the handle corresponding to the driver
 	* @param string $driver The driver's name
 	* @return object The handle

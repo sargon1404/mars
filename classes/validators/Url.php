@@ -31,6 +31,6 @@ class Url extends Rule
 			return false;
 		}
 
-		return filter_var($value, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED);
+		return filter_var($value, FILTER_VALIDATE_URL);
 	}
 }

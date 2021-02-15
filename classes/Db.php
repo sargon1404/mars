@@ -385,9 +385,10 @@ class Db
 			$sql = $sql->getSql();
 		}
 
-		$this->result = $this->handle->query($sql, $params);
-		if (!$this->result) {
-			$this->handleError($this->handle, $sql, $params);
+		try {
+			$this->result = $this->handle->query($sql, $params);
+		} catch (\Exception $e) {
+			$this->handleError($e->getMessage(), $sql, $params);
 		}
 
 		//reset the sql object, if it was used
@@ -407,13 +408,12 @@ class Db
 
 	/**
 	* Handles a database error. Logs it in the errors log and triggers an error
-	* @param object handle The driver's handle
+	* @param string $error_str The error string
 	* @param string $sql The sql code which generated the error
 	* @param array $params The query params
 	*/
-	protected function handleError(DriverInterface $handle, string $sql, array $params)
+	protected function handleError(string $error_str, string $sql, array $params)
 	{
-		$error_str = $handle->getError();
 		$error_params = serialize($params);
 
 		if (isset($this->app->log)) {

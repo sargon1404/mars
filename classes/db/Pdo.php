@@ -12,11 +12,6 @@ namespace Mars\Db;
 class Pdo implements DriverInterface
 {
 	/**
-	* @var string $error_sql The sql which was executed when the error was generated
-	*/
-	public string $error_sql = '';
-
-	/**
 	* @var PDO $handle The PDO handle
 	*/
 	protected \PDO $handle;
@@ -46,21 +41,6 @@ class Pdo implements DriverInterface
 		if (isset($this->handle)) {
 			unset($this->handle);
 		}
-	}
-
-	/**
-	* @see \Mars\Db\DriverInterface::getError()
-	* {@inheritdoc}
-	*/
-	public function getError() : string
-	{
-		if ($this->result) {
-			$error = $this->result->errorInfo();
-		} else {
-			$error = $this->handle->errorInfo();
-		}
-
-		return $error[2];
 	}
 
 	/**
@@ -103,27 +83,23 @@ class Pdo implements DriverInterface
 	*/
 	public function query(string $sql, array $params = []) : ?object
 	{
-		if ($params) {
-			$this->result = $this->handle->prepare($sql);
+		try {
+			if ($params) {
+				$this->result = $this->handle->prepare($sql);
 
-			//bind the params
-			foreach ($params as $key => &$val) {
-				$this->result->bindParam(':' . $key, $val, \PDO::PARAM_STR);
+				//bind the params
+				foreach ($params as $key => &$val) {
+					$this->result->bindParam(':' . $key, $val, \PDO::PARAM_STR);
+				}
+
+				$this->result->execute();
+			} else {
+				$this->result = $this->handle->query($sql);
 			}
-
-			//execute the prepared statment
-			if (!$this->result->execute()) {
-				$this->error_sql = $sql;
-
-				return null;
-			}
-		} else {
-			$this->result = $this->handle->query($sql);
-		}
-
-		if (!$this->result) {
-			$this->error_sql = $sql;
+		} catch (\PDOException $e) {
 			$this->result = null;
+
+			throw new \Exception($e->getMessage());
 		}
 
 		return $this->result;

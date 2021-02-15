@@ -119,7 +119,7 @@ class Filter
 
 	/**
 	* Filters all non-alphanumeric chars from $value
-	* @param string|array  $value The value 
+	* @param string|array  $value The value
 	* @param bool $space If true, will allow spaces
 	* @return string|array The filtered value
 	*/
@@ -139,7 +139,7 @@ class Filter
 
 	/**
 	* Filters all non-a-z chars from $value
-	* @param string|array $value The value 
+	* @param string|array $value The value
 	* @param bool $space If true, will allow spaces
 	* @return string|array The filtered value
 	*/
@@ -225,7 +225,7 @@ class Filter
 	* @param float $min If $value is <= 0 will return $min
 	* @return float|array The filtered value
 	*/
-	public function floatPos(float|array $value, float $min = 1) : float|array 
+	public function floatPos(float|array $value, float $min = 1) : float|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'floatPos'], $value);

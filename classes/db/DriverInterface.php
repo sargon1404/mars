@@ -28,12 +28,6 @@ interface DriverInterface
 	public function disconnect();
 
 	/**
-	* Returns the error, if one was generated
-	* @return string The error
-	*/
-	public function getError() : string;
-
-	/**
 	* Returns a params dump
 	* @return string
 	*/
