@@ -414,7 +414,7 @@ class Db
 	*/
 	protected function handleError(string $error_str, string $sql, array $params)
 	{
-		$error_params = serialize($params);
+		$error_params = $this->app->encoder->encode($params);
 
 		if (isset($this->app->log)) {
 			$this->app->log->error("MYSQL-ERROR--{$sql}---{$error_str}--{$error_params}", __FILE__, __LINE__);

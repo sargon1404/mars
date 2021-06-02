@@ -92,7 +92,7 @@ class File
 	*/
 	public function getRandomFilename(string $extension = '') : string
 	{
-		$filename = App::randStr();
+		$filename = $this->app->random->getString();
 		if (!$extension) {
 			return $filename;
 		}

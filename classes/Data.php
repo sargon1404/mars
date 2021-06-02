@@ -20,9 +20,19 @@ abstract class Data
 	protected string $table = '';
 
 	/**
-	* @var string $key The memcache key used to store the data
+	* @var string $memcache_key The memcache key used to store the data
 	*/
-	protected string $key = '';
+	protected string $memcache_key = '';
+
+	/**
+	* @var bool $serialize If true, by default, will serialize/unserialize the data
+	*/
+	protected bool $serialize = false;
+
+	/**
+	* @var bool $serialize_php_driver If true, will always use the php driver for serialization
+	*/
+	protected bool $serialize_php_driver = true;
 
 	/**
 	* @var array $scope The scope(s) from where to read the data
@@ -58,11 +68,11 @@ abstract class Data
 	*/
 	public function getKey() : string
 	{
-		if (!$this->key) {
-			throw new \Exception('The $key property must be set to be able to use class Data');
+		if (!$this->memcache_key) {
+			throw new \Exception('The $memcache_key property must be set to be able to use class Data');
 		}
 
-		return $this->key . '-' . implode('-', $this->scope);
+		return $this->memcache_key . '-' . implode('-', $this->scope);
 	}
 
 	/**
@@ -175,10 +185,12 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $unserialize is true
 	* @return mixed
 	*/
-	public function get(string $name, bool $unserialize = false, $default_value = null)
+	public function get(string $name, ?bool $unserialize = null, $default_value = [])
 	{
+		$unserialize = $unserialize ?? $this->serialize;
+
 		if ($unserialize) {
-			return App::unserialize($this->$name, $default_value);
+			return $this->app->serializer->unserialize($this->$name, $default_value, true, $this->serialize_php_driver);
 		}
 
 		return $this->$name;
@@ -193,13 +205,17 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function add(string $name, $value, ?string $scope = null, bool $serialize = false, $default_value = '')
+	public function add(string $name, $value, ?string $scope = null, ?bool $serialize = null, $default_value = '')
 	{
+		$scope = $scope ?? $this->default_scope;
+		$serialize = $serialize ?? $this->serialize;
+
 		if ($serialize) {
-			$value = App::serialize($value, $default_value);
-		}
-		if (!$scope) {
-			$scope = $this->default_scope;
+			if (!$value) {
+				$value = $default_value;
+			} else {
+				$value = $this->app->serializer->serialize($value, true, $this->serialize_php_driver);
+			}
 		}
 
 		$this->$name = $value;
@@ -226,13 +242,17 @@ abstract class Data
 	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, ?string $scope = null, bool $serialize = false, $default_value = '')
+	public function set(string $name, $value, ?string $scope = null, ?bool $serialize = null, $default_value = '')
 	{
+		$scope = $scope ?? $this->default_scope;
+		$serialize = $serialize ?? $this->serialize;
+
 		if ($serialize) {
-			$value = App::serialize($value, $default_value);
-		}
-		if (!$scope) {
-			$scope = $this->default_scope;
+			if (!$value) {
+				$value = $default_value;
+			} else {
+				$value = $this->app->serializer->serialize($value, true, $this->serialize_php_driver);
+			}
 		}
 
 		$this->$name = $value;
@@ -253,9 +273,7 @@ abstract class Data
 	*/
 	public function delete(string $name, ?string $scope = null)
 	{
-		if (!$scope) {
-			$scope = $this->default_scope;
-		}
+		$scope = $scope ?? $this->default_scope;
 
 		$table = $this->getTable();
 		$this->app->db->writeQuery("DELETE FROM {$table} WHERE name = :name AND scope = :scope", ['name' => $name, 'scope' => $scope]);

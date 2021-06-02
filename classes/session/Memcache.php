@@ -81,7 +81,7 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	*/
 	public function write($id, $data)
 	{
-		$this->app->memcache->set("session-{$id}", $data, false, '', $this->lifetime);
+		$this->app->memcache->set("session-{$id}", $data, false, $this->lifetime);
 
 		return true;
 	}

@@ -16,6 +16,16 @@ use Mars\System\Theme;
 class Cache extends Data
 {
 	/**
+	* @internal
+	*/
+	protected bool $serialize = true;
+
+	/**
+	* @internal
+	*/
+	protected bool $serialize_php_driver = false;
+
+	/**
 	* Clears the templates cache
 	* @return $this
 	*/

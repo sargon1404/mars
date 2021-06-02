@@ -179,100 +179,6 @@ trait AppFunctionsTrait
 	}
 
 	/**
-	* Encodes data
-	* @param mixed $data The data to encode
-	* @return string The encoded string
-	*/
-	public static function encode($data) : string
-	{
-		if (!$data) {
-			return '';
-		}
-
-		return json_encode($data);
-	}
-
-	/**
-	* Decodes a string
-	* @param string $string The string to decode
-	* @return mixed The decoded data
-	*/
-	public static function decode(string $string)
-	{
-		if (!$string) {
-			return '';
-		}
-
-		return json_decode($string, true);
-	}
-
-	/**
-	* Returns a random string
-	* @param int $max The maximum number of chars. the string should have
-	* @return string A random string
-	*/
-	public static function randStr(int $max = 20) : string
-	{
-		$str = bin2hex(random_bytes($max));
-
-		return substr($str, 0, $max);
-	}
-
-	/**
-	* Returns a random number
-	* @param int $min Lowest value to be returned
-	* @param int $max Highest value to be returned
-	* @return int A random number
-	*/
-	public static function randInt(int $min = 0, int $max = 0) : int
-	{
-		return random_int($min, $max);
-	}
-
-	/**
-	* If $data is not empty will serialize it. Otherwise will return $default_value
-	* @param mixed $data The data to serialize
-	* @param mixed $default_value The value to return if $data is empty
-	* @param bool $encode If true, the serialized content will be base64 encoded
-	* @return string The serialized string
-	*/
-	public static function serialize($data, $default_value = '', bool $encode = true) : string
-	{
-		if ($data) {
-			if ($encode) {
-				return base64_encode(serialize($data));
-			} else {
-				return serialize($data);
-			}
-		} else {
-			return $default_value;
-		}
-	}
-
-	/**
-	* Will unserialize a value
-	* @param string $value The serialized value
-	* @param mixed $default_value The value to return if $value is empty
-	* @param string $decode If true, will base64 decode the result
-	* @return mixed The unserialized data
-	*/
-	public static function unserialize($value, $default_value = [], bool $decode = true)
-	{
-		if (!$value) {
-			return $default_value;
-		}
-		if (!is_string($value)) {
-			return $value;
-		}
-
-		if ($decode) {
-			return unserialize(base64_decode($value));
-		} else {
-			return unserialize($value);
-		}
-	}
-
-	/**
 	* Adds a slash at the end of the filename. Will add it, only if it's not already there
 	* @param string $filename The filename
 	* @return string The filename with an ending slash
@@ -359,7 +265,11 @@ trait AppFunctionsTrait
 		} elseif (is_iterable($array)) {
 			return iterator_to_array($array);
 		} else {
-			return (array)$array;
+			if ($array) {
+				return (array)$array;
+			} else {
+				return [];
+			}
 		}
 	}
 

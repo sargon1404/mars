@@ -28,6 +28,7 @@ class AppBooter
 
 		$this->app->setData();
 
+		$this->app->serializer = new Serializer($this->app);
 		$this->app->memcache = new Memcache($this->app);
 		$this->app->caching = new Caching($this->app);
 
@@ -64,6 +65,8 @@ class AppBooter
 	{
 		$this->app->log = new Log($this->app);
 		$this->app->time = new Time($this->app);
+		$this->app->encoder = new Encoder($this->app);
+		$this->app->random = new Random($this->app);
 		$this->app->filter = new Filter($this->app);
 		$this->app->escape = new Escape($this->app);
 		$this->app->validator = new Validator($this->app);

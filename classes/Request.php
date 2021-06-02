@@ -185,7 +185,7 @@ class Request
 	public function setCookie(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, bool $encode = true, bool $secure = false, bool $httponly = true)
 	{
 		if ($encode) {
-			$data = App::encode($data);
+			$data = $this->app->encoder->encode($data);
 		}
 
 		if ($expires === null) {
@@ -353,7 +353,7 @@ class Request
 			return [];
 		}
 
-		return App::decode($this->cookie[$name]);
+		return $this->app->encoder->decode($this->cookie[$name]);
 	}
 
 	/**
@@ -876,7 +876,7 @@ class Request
 	{
 		$suffix_chars = 18;
 
-		return '-' . App::randStr($suffix_chars);
+		return '-' . $this->app->random->getString($suffix_chars);
 	}
 
 	/**

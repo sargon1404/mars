@@ -27,9 +27,9 @@ class Memcache
 	protected string $port = '';
 
 	/**
-	* @var string $secret Secret key used to identify the site
+	* @var string $key Secret key used to identify the site
 	*/
-	protected string $secret = '';
+	protected string $key = '';
 
 	/**
 	* @var bool $enabled Will be set to true, if memcache is enabled
@@ -71,9 +71,9 @@ class Memcache
 	* @param string $driver The driver to use. redis and memcache are supported
 	* @param string $host The host to connect to
 	* @param string $port The port to connect to
-	* @param string $secret Secret key used to identify the site
+	* @param string $key Secret key used to identify the site
 	*/
-	public function __construct(App $app, string $driver = '', string $host = '', string $port = '', string $secret = '')
+	public function __construct(App $app, string $driver = '', string $host = '', string $port = '', string $key = '')
 	{
 		$this->app = $app;
 
@@ -85,13 +85,13 @@ class Memcache
 			$driver = $this->app->config->memcache_driver;
 			$host = $this->app->config->memcache_memcache_host;
 			$port = $this->app->config->memcache_memcache_port;
-			$secret = $this->app->config->secret;
+			$key = $this->app->config->key;
 		}
 
 		$this->driver = $driver;
 		$this->host = $host;
 		$this->port = $port;
-		$this->secret = $secret;
+		$this->key = $key;
 		$this->enabled = true;
 	}
 
@@ -146,11 +146,10 @@ class Memcache
 	* @param string $key The key
 	* @param string $value The value
 	* @param bool $serialize If true, will serialize the value
-	* @param mixed $default_value The default value to return if $serialize is true
 	* @param int $expires The number of seconds after which the data will expire
 	* @return $this
 	*/
-	public function add(string $key, $value, bool $serialize = false, $default_value = '', int $expires = 0)
+	public function add(string $key, $value, bool $serialize = false, int $expires = 0)
 	{
 		if (!$this->enabled) {
 			return $this;
@@ -160,10 +159,10 @@ class Memcache
 		}
 
 		if ($serialize) {
-			$value = App::serialize($value, $default_value);
+			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		$this->handle->add($key . '-' . $this->secret, $value, $expires);
+		$this->handle->add($key . '-' . $this->key, $value, $expires);
 
 		return $this;
 	}
@@ -173,11 +172,10 @@ class Memcache
 	* @param string $key The key
 	* @param string $value The value
 	* @param bool $serialize If true, will serialize the value
-	* @param mixed $default_value The default value to return if $serialize is true
 	* @param int $expires The number of seconds after which the data will expire
 	* @return $this
 	*/
-	public function set(string $key, $value, bool $serialize = false, $default_value = '', int $expires = 0)
+	public function set(string $key, $value, bool $serialize = false, int $expires = 0)
 	{
 		if (!$this->enabled) {
 			return $this;
@@ -187,10 +185,10 @@ class Memcache
 		}
 
 		if ($serialize) {
-			$value = App::serialize($value, $default_value);
+			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		$this->handle->set($key . '-' . $this->secret, $value, $expires);
+		$this->handle->set($key . '-' . $this->key, $value, $expires);
 
 		return $this;
 	}
@@ -199,10 +197,9 @@ class Memcache
 	* Retrieves the value of $key from the memcache
 	* @param string $key The key
 	* @param bool $unserialize If true, will unserialize the returned result
-	* @param mixed $default_value The default value to return if $unserialize is true
 	* @return mixed The value of $key
 	*/
-	public function get(string $key, bool $unserialize = false, $default_value = [])
+	public function get(string $key, bool $unserialize = false)
 	{
 		if (!$this->enabled) {
 			return false;
@@ -211,10 +208,10 @@ class Memcache
 			$this->connect();
 		}
 
-		$value = $this->handle->get($key . '-' . $this->secret);
+		$value = $this->handle->get($key . '-' . $this->key);
 
 		if ($unserialize) {
-			return App::unserialize($value, $default_value);
+			return $this->app->serializer->unserialize(data: $value, decode: false);
 		}
 
 		return $value;
@@ -234,7 +231,7 @@ class Memcache
 			$this->connect();
 		}
 
-		return $this->handle->exists($key . '-' . $this->secret);
+		return $this->handle->exists($key . '-' . $this->key);
 	}
 
 	/**
@@ -252,7 +249,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$this->handle->delete($key . '-' . $this->secret);
+		$this->handle->delete($key . '-' . $this->key);
 
 		return $this;
 	}

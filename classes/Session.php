@@ -170,10 +170,9 @@ class Session
 	* @param string $name The name of the var
 	* @param bool $unserialize If true, will unserialize the returned result
 	* @param mixed $not_set The return value, if $_SESSION[$name] isn't set
-	* @param mixed $default_value The default value to return if $unserialize is true
 	* @return mixed
 	*/
-	public function get(string $name, bool $unserialize = false, $not_set = null, $default_value = [])
+	public function get(string $name, bool $unserialize = false, $not_set = null)
 	{
 		$key = $this->prefix . $name;
 
@@ -184,7 +183,7 @@ class Session
 		$value = $_SESSION[$key];
 
 		if ($unserialize) {
-			return App::unserialize($value, $default_value);
+			return $this->app->serializer->unserialize(data: $value, decode: false);
 		}
 
 		return $value;
@@ -195,15 +194,14 @@ class Session
 	* @param string $name The name of the var
 	* @param mixed $value The value
 	* @param bool $serialize If true, will serialize the value
-	* @param mixed $default_value The default value to return if $serialize is true
 	* @return $this
 	*/
-	public function set(string $name, $value, bool $serialize = false, $default_value = '')
+	public function set(string $name, $value, bool $serialize = false)
 	{
 		$key = $this->prefix . $name;
 
 		if ($serialize) {
-			$value = App::serialize($value, $default_value);
+			$value = $this->app->serializer->serialize($value, false);
 		}
 
 		$_SESSION[$key] = $value;

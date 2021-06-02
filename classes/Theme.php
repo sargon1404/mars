@@ -461,7 +461,7 @@ trait Theme
 			$this->cleanCacheFilenamePart($this->layout),
 			$this->cleanCacheFilenamePart($template),
 			$this->app->device->type,
-			$this->app->config->secret,
+			$this->app->config->key,
 			'theme'
 		];
 
@@ -484,7 +484,7 @@ trait Theme
 			$this->cleanCacheFilenamePart($layout),
 			$this->cleanCacheFilenamePart($template),
 			$this->app->device->type,
-			$this->app->config->secret,
+			$this->app->config->key,
 			'ext'
 		];
 
