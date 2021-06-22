@@ -46,7 +46,7 @@ class Serializer
 		'igbinary' => '\Mars\Serializers\Igbinary'
 	];
 
-		/**
+	/**
 	* Constructs the db object
 	* @param App $app The app object
 	* @param string $driver The serializer driver. Currently supported: php and igbinary
