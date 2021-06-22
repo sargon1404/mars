@@ -104,9 +104,7 @@ class Serializer
 	{
 		if ($data === '' || $data === null) {
 			return $default_value;
-		} /*elseif (!is_string($data)) {
-			return $data;
-		}*/
+		}
 
 		if ($decode) {
 			$data = base64_decode($data);
