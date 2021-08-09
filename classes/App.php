@@ -55,9 +55,9 @@ class App
 	public bool $development = false;
 
 	/**
-	* @var string $dir The location on the disk where the site is installed Eg: /var/www/mysite
+	* @var string $path The location on the disk where the site is installed Eg: /var/www/mysite
 	*/
-	public string $dir = '';
+	public string $path = '';
 
 	/**
 	* @var string $scheme The page's scheme: http:// or https://
@@ -110,24 +110,24 @@ class App
 	public string $extensions_namespace = "App\\Extensions\\";
 
 	/**
-	* @var string $log_dir The folder where the log files are stored
+	* @var string $log_path The folder where the log files are stored
 	*/
-	public string $log_dir = '';
+	public string $log_path = '';
 
 	/**
-	* @var string $cache_dir The folder where the cache files are stored
+	* @var string $cache_path The folder where the cache files are stored
 	*/
-	public string $cache_dir = '';
+	public string $cache_path = '';
 
 	/**
-	* @var string $libraries_dir The folder where the php libraries are stored
+	* @var string $libraries_path The folder where the php libraries are stored
 	*/
-	public string $libraries_dir = '';
+	public string $libraries_path = '';
 
 	/**
-	* @var string $extensions_dir The folder where the extensions are stored
+	* @var string $extensions_path The folder where the extensions are stored
 	*/
-	public string $extensions_dir = '';
+	public string $extensions_path = '';
 
 	/**
 	* @var string $extensions_url The url of the extensions folder
@@ -200,7 +200,7 @@ class App
 	*/
 	protected function __construct()
 	{
-		$this->dir = $this->getDir();
+		$this->path = $this->getPath();
 
 		if (!$this->is_cli) {
 			$this->scheme = $this->getScheme();
@@ -337,7 +337,7 @@ class App
 	* Returns the location on the disk where the site is installed
 	* @return string
 	*/
-	protected function getDir() : string
+	protected function getPath() : string
 	{
 		return dirname(__DIR__, 3) . '/';
 	}
@@ -396,10 +396,10 @@ class App
 	* Assigns the dirs as app properties
 	* @param array $dirs The dirs to assign
 	*/
-	protected function assignDirs(array $dirs, string $base_dir = '', string $prefix = '', string $suffix = 'dir')
+	protected function assignDirs(array $dirs, string $base_path = '', string $prefix = '', string $suffix = 'path')
 	{
-		if (!$base_dir) {
-			$base_dir = $this->dir;
+		if (!$base_path) {
+			$base_path = $this->path;
 		}
 		if ($prefix) {
 			$prefix.= '_';
@@ -411,7 +411,7 @@ class App
 		foreach ($dirs as $name => $dir) {
 			$name = $prefix . $name . $suffix;
 
-			$this->$name = $base_dir . $dir . '/';
+			$this->$name = $base_path . $dir . '/';
 		}
 	}
 
@@ -454,7 +454,7 @@ class App
 	*/
 	protected function loadLibraries()
 	{
-		require_once($this->libraries_dir . 'php/vendor/autoload.php');
+		require_once($this->libraries_path . 'php/vendor/autoload.php');
 	}
 
 	/**

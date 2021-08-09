@@ -107,7 +107,7 @@ abstract class Urls
 			return $this;
 		}
 
-		$this->urls[$location][$url] = ['priority' => $priority, 'version' => $version, 'async' => $async, 'defer' => $defer];
+		$this->urls[$location][$url] = ['priority' => $priority, 'version' => $version, 'async' => $async, 'defer' => $defer, 'is_local' => $this->app->uri->isLocal($url)];
 
 		return $this;
 	}

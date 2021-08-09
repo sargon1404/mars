@@ -16,9 +16,9 @@ abstract class Cacheable
 	use DriverTrait;
 
 	/**
-	* @var string $dir The folder where the content will be cached
+	* @var string $path The folder where the content will be cached
 	*/
-	protected string $dir = '';
+	protected string $path = '';
 
 	/**
 	* @var string $file The name of the file used to cache the content
@@ -82,7 +82,7 @@ abstract class Cacheable
 		$this->app = $app;
 
 		$this->file = $this->getFile();
-		$this->filename = $this->dir . $this->file;
+		$this->filename = $this->path . $this->file;
 
 		$this->handle = $this->getHandle();
 	}
@@ -235,7 +235,7 @@ abstract class Cacheable
 	*/
 	public function deleteFile(string $file)
 	{
-		$filename = $this->dir . basename($file);
+		$filename = $this->path . basename($file);
 
 		$this->handle->delete($filename);
 

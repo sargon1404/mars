@@ -128,7 +128,7 @@ class Log
 	*/
 	protected function start(string $type)
 	{
-		$filename = $this->app->log_dir . basename($type) . '-' . $this->suffix;
+		$filename = $this->app->log_path . basename($type) . '-' . $this->suffix;
 
 		$exists = false;
 		if (is_file($filename)) {

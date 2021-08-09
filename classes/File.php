@@ -15,9 +15,55 @@ class File
 	use AppTrait;
 
 	/**
-	* @internal
+	* Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
+	* @param string $filename The filename
+	* @return $this
 	*/
-	protected int $error_code = 0;
+	public function checkForInvalidChars(string $filename)
+	{
+		if (str_contains($filename, '../') || str_contains($filename, './') || str_contains($filename, '..\\') || str_contains($filename, '.\\')) {
+			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
+		}
+
+		return $this;
+	}
+
+	/**
+	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+	* @param string $filename The filename
+	* @param string $secure_dir The folder where $filename is supposed to be, if any
+	* @return $this
+	*/
+	public function checkFilename(string $filename, string $secure_dir = '')
+	{
+		if (!$filename) {
+			return $this;
+		}
+
+		$max_chars = 500;
+
+		if (strlen(basename($filename)) > $max_chars) {
+			throw new \Exception("Invalid filename! Filename {$filename} contains to many characters!");
+		}
+
+		$this->checkForInvalidChars($filename);
+
+		if (!$secure_dir) {
+			return $this;
+		}
+
+		$filename = realpath($filename);
+		if (!$filename) {
+			return $this;
+		}
+
+		//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
+		if (!$this->isInsideDir($secure_dir, $filename)) {
+			throw new \Exception("Invalid filename! Filename {$filename} is not inside the secure dir: {$secure_dir}");
+		}
+
+		return $this;
+	}
 
 	/**
 	* Returns the basename from $filename with invalid characters removed
@@ -41,7 +87,7 @@ class File
 			$filename = $this->stripExtension($filename);
 		}
 
-		return str_replace($this->app->dir, '', $filename);
+		return str_replace($this->app->path, '', $filename);
 	}
 
 	/**
@@ -250,57 +296,6 @@ class File
 	}
 
 	/**
-	* Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
-	* @param string $filename The filename
-	* @return $this
-	*/
-	public function checkForInvalidChars(string $filename)
-	{
-		if (str_contains($filename, '../') || str_contains($filename, './') || str_contains($filename, '..\\') || str_contains($filename, '.\\')) {
-			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
-		}
-
-		return $this;
-	}
-
-	/**
-	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
-	* @param string $filename The filename
-	* @param string $secure_dir The folder where $filename is supposed to be, if any
-	* @return $this
-	*/
-	public function checkFilename(string $filename, string $secure_dir = '')
-	{
-		if (!$filename) {
-			return $this;
-		}
-
-		$max_chars = 500;
-
-		if (strlen(basename($filename)) > $max_chars) {
-			throw new \Exception("Invalid filename! Filename {$filename} contains to many characters!");
-		}
-
-		$this->checkForInvalidChars($filename);
-
-		if (!$secure_dir) {
-			return $this;
-		}
-
-		$filename = realpath($filename);
-		if (!$filename) {
-			return $this;
-		}
-
-		//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
-		if (!$this->isInsideDir($secure_dir, $filename)) {
-			throw new \Exception("Invalid filename! Filename {$filename} is not inside the secure dir: {$secure_dir}");
-		}
-
-		return $this;
-	}
-
-	/**
 	* Reads the content of a file
 	* @param string $filename
 	* @param string $secure_dir The folder where $filename is supposed to be
@@ -479,21 +474,7 @@ class File
 		}
 	}
 
-	/**
-	* @internal
-	*/
-	protected function getListFileName(string $dir, string $base_dir, string $file, bool $full_path, bool $include_extension) : string
-	{
-		if (!$include_extension) {
-			$file = $this->getFilename($file);
-		}
 
-		if ($full_path) {
-			return $dir . $file;
-		} else {
-			return str_replace($base_dir, '', $dir . $file);
-		}
-	}
 
 	/**
 	* @internal
@@ -508,174 +489,7 @@ class File
 		return $str;
 	}
 
-	/**
-	* Create a folder.Does nothing if the folder already exists
-	* @param string $dir The name of the folder to create
-	* @return bool Returns true on success or false on failure
-	*/
-	public function createDir(string $dir) : bool
-	{
-		$this->app->plugins->run('file_create_dir', $dir, $this);
 
-		if (is_dir($dir)) {
-			return true;
-		}
-
-		return mkdir($dir);
-	}
-
-	/**
-	* Copies a dir
-	* @param string $source_dir The source folder
-	* @param string $destination_dir The destination folder
-	* @param $recursive	If trye,will copy recursive
-	* @return bool Returns true on success or false on failure
-	*/
-	public function copyDir(string $source_dir, string $destination_dir, bool $recursive = true) : bool
-	{
-		$this->app->plugins->run('file_copy_dir', $source_dir, $destination_dir, $recursive, $this);
-
-		$this->checkFilename($source_dir);
-		$this->checkFilename($destination_dir);
-
-		$dirs = App::sl($source_dir);
-		$dird = App::sl($destination_dir);
-
-		$dh = opendir($dirs);
-		if (!$dh) {
-			return false;
-		}
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
-
-			if (is_dir($dirs . $file)) {
-				if ($recursive) {
-					if ($this->createDir($dird . $file)) {
-						$this->copyDir($dirs . $file, $dird . $file, $recursive);
-					}
-				}
-			} else {
-				$this->copyFile($dirs . $file, $dird . $file);
-			}
-		}
-
-		closedir($dh);
-
-		return true;
-	}
-
-	/**
-	* Moves a dir
-	* @param string $source_dir The source folder
-	* @param string $destination_dir The destination folder
-	* @return bool Returns true on success or false on failure
-	*/
-	public function moveDir(string $source_dir, string $destination_dir) : bool
-	{
-		$this->app->plugins->run('file_move_dir', $source_dir, $destination_dir, $this);
-
-		$this->checkFilename($source_dir);
-		$this->checkFilename($destination_dir);
-
-		return rename($source_dir, $destination_dir);
-	}
-
-	/**
-	* Deletes a folder
-	* @param string $dir The name of the folder to delete
-	* @param bool $recursive If true will delete recursively
-	* @param string $secure_dir The folder where $dir is supposed to be
-	* @return bool Returns true on success or false on failure
-	*/
-	public function deleteDir(string $dir, bool $recursive = true, string $secure_dir = '') : bool
-	{
-		$this->app->plugins->run('file_delete_dir', $dir, $recursive, $secure_dir, $this);
-
-		$this->checkFilename($dir, $secure_dir);
-
-		$dir = App::sl($dir);
-
-		$dh = opendir($dir);
-		if (!$dh) {
-			$this->error_code = 1;
-
-			return false;
-		}
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
-
-			if (is_dir($dir . $file)) {
-				if ($recursive) {
-					if (!$this->deleteDir($dir . $file, $recursive)) {
-						break;
-					}
-				}
-			} else {
-				if (!$this->deleteFile($dir . $file)) {
-					break;
-				}
-			}
-		}
-
-		closedir($dh);
-
-		if (!rmdir($dir)) {
-			$this->error_code = 2;
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	* Deletes all the files/subdirectories from a directory but does not delete the folder itself
-	* @param string $dir The name of the folder to clear
-	* @param bool $recursive If true will clear recursively
-	* @param string $secure_dir The folder where $dir is supposed to be
-	* @return bool Returns true on success or false on failure
-	*/
-	public function cleanDir(string $dir, bool $recursive = true, string $secure_dir = '') : bool
-	{
-		$this->app->plugins->run('file_clean_dir', $dir, $recursive, $secure_dir, $this);
-
-		$this->checkFilename($dir, $secure_dir);
-
-		$dir = App::sl($dir);
-
-		$dh = opendir($dir);
-		if (!$dh) {
-			return false;
-		}
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
-
-			if (is_dir($dir . $file)) {
-				if ($recursive) {
-					if (!$this->deleteDir($dir . $file, $recursive)) {
-						break;
-					}
-				}
-			} else {
-				if (!$this->deleteFile($dir . $file)) {
-					break;
-				}
-			}
-		}
-
-		closedir($dh);
-
-		return true;
-	}
 
 	/**
 	* Returns the mime type based on extension

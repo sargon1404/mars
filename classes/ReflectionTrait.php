@@ -99,10 +99,10 @@ trait ReflectionTrait
 	}
 
 	/**
-	* Returns the name of the folder where the class is defined
-	* @return string The dir
+	* Returns the path of the folder where the class is defined
+	* @return string The path
 	*/
-	protected function getClassDir() : string
+	protected function getClassPath() : string
 	{
 		return App::sl(dirname($this->getClassFilename()));
 	}

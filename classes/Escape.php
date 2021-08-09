@@ -124,12 +124,12 @@ class Escape
 	}
 
 	/**
-	* Escapes a folder name by hiding the server dir
-	* @param string $dir The folder
+	* Escapes a folder path by hiding the server path
+	* @param string $path The folder
 	* @return string
 	*/
-	public function dir(string $dir) : string
+	public function path(string $path) : string
 	{
-		return str_replace($this->app->dir, '', $dir);
+		return str_replace($this->app->path, '', $path);
 	}
 }

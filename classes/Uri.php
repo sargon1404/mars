@@ -21,11 +21,27 @@ class Uri
 	*/
 	public function isUrl(string $url) : bool
 	{
+		$url = trim($url);
+
 		if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	* Determines if $url is a local url
+	* @param string $url The url
+	* @return bool True if the url is local
+	*/
+	public function isLocal(string $url) : bool
+	{
+		if (!str_starts_with(trim($url), $this->app->url)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

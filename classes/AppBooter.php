@@ -40,7 +40,7 @@ class AppBooter
 	*/
 	public function libraries()
 	{
-		require_once($this->app->libraries_dir . '/php/vendor/autoload.php');
+		require_once($this->app->libraries_path . '/php/vendor/autoload.php');
 	}
 
 	/**
@@ -72,6 +72,7 @@ class AppBooter
 		$this->app->validator = new Validator($this->app);
 		$this->app->format = new Format($this->app);
 		$this->app->file = new File($this->app);
+		$this->app->dir = new Dir($this->app);
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);
@@ -94,6 +95,7 @@ class AppBooter
 		$this->app->request = new Request($this->app);
 		$this->app->response = new Response($this->app);
 		$this->app->cache = new Cache($this->app);
+		$this->app->registry = new Registry($this->app);
 
 		return $this;
 	}

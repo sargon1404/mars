@@ -10,7 +10,7 @@ namespace Mars;
 * The Templates Engine Class
 *
 * The currently supported modifiers are:
-* raw,js,jscode,lower,upper,url,urlencode,urlrawencode,timestamp,date,date,cut,cut_middle,empty,strip_tags,nl2br,trim,http,https,ajax,to_url,ip,e,escape,round,count,number,dir
+* raw,js,jscode,lower,upper,url,urlencode,urlrawencode,timestamp,date,date,cut,cut_middle,empty,strip_tags,nl2br,trim,http,https,ajax,to_url,ip,e,escape,round,count,number,path
 *
 * Syntax for including subtemplates
 * {% include template_name %}
@@ -79,7 +79,7 @@ class Templates
 		'ajax' => ['$this->app->uri->addAjax', 10],
 
 		//misc
-		'dir' => ['$this->app->escape->dir', 10],
+		'path' => ['$this->app->escape->path', 10],
 	];
 
 	/**

@@ -79,7 +79,7 @@ trait Language
 
 		$this->loaded_file[] = $file;
 
-		$this->loadFilename($this->dir . $file . '.php');
+		$this->loadFilename($this->path . $file . '.php');
 
 		return $this;
 	}

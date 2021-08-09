@@ -114,7 +114,7 @@ class Text
 
 		static $html_purifier_init = false;
 		if (!$html_purifier_init) {
-			require_once($this->libraries_dir . 'php/vendor/masterjoa/htmlpurifier-standalone/HTMLPurifier.standalone.php');
+			require_once($this->libraries_path . 'php/vendor/masterjoa/htmlpurifier-standalone/HTMLPurifier.standalone.php');
 
 			$html_purifier_init = true;
 		}

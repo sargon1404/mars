@@ -31,10 +31,19 @@ class Cache extends Data
 	*/
 	public function clearTemplates()
 	{
-		$dir = $this->app->cache_dir . Theme::$DIRS['cache'] . '/';
-
-		$this->clearDir($dir);
+		$this->clearDir($this->app->cache_path . Theme::$DIRS['cache']);
 
 		return $this;
+	}
+
+	/**
+	* Clears a folder and copies the empty index.htm file
+	* @param string $dir The folder's name
+	*/
+	protected function clearDir($dir)
+	{
+		$this->app->dir->clean($dir);
+
+		$this->app->file->copy($this->app->path . 'src/index.htm', $dir . 'index.htm');
 	}
 }

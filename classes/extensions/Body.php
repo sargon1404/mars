@@ -20,19 +20,19 @@ trait Body
 	public string $name = '';
 
 	/**
-	* @var string $dir The path of the folder where the extension is installed
+	* @var string $path The path of the folder where the extension is installed
 	*/
-	public string $dir = '';
+	public string $path = '';
 
 	/**
-	* @var string $url Alias for dir_url
+	* @var string $url Alias for path_url
 	*/
 	public string $url = '';
 
 	/**
-	* @var string $dir_url The url pointing to the folder where the extension is installed
+	* @var string $path_url The url pointing to the folder where the extension is installed
 	*/
-	public string $dir_url = '';
+	public string $path_url = '';
 
 	/**
 	* @var string $base_url The url pointing to the folder where the extension is installed. It uses the static base url
@@ -91,11 +91,11 @@ trait Body
 	*/
 	protected function preparePaths()
 	{
-		$this->dir = $this->getDir();
-		$this->dir_url = $this->getDirUrl();
+		$this->path = $this->getPath();
+		$this->path_url = $this->getPathUrl();
 		$this->base_url = $this->getBaseUrl();
 
-		$this->url =  $this->dir_url;
+		$this->url =  $this->path_url;
 	}
 
 	/**
@@ -109,11 +109,11 @@ trait Body
 	}
 
 	/**
-	* Returns the root dir where extensions of this type are located
+	* Returns the root path where extensions of this type are located
 	*/
-	public function getRootDir() : string
+	public function getRootPath() : string
 	{
-		return $this->app->extensions_dir;
+		return $this->app->extensions_path;
 	}
 
 	/**
@@ -135,19 +135,19 @@ trait Body
 	/**
 	* Returns the path of the folder where the extension is installed
 	* @param string $name The name of the extension. If empty, the name of the current extension is used
-	* @return string The base dir
+	* @return string The path
 	*/
-	public function getDir(string $name = '') : string
+	public function getPath(string $name = '') : string
 	{
 		if (!$name) {
-			if ($this->dir) {
-				return $this->dir;
+			if ($this->path) {
+				return $this->path;
 			}
 
 			$name = $this->name;
 		}
 
-		return $this->getRootDir() . static::$base_dir . '/' . App::sl($name);
+		return $this->getRootPath() . static::$base_dir . '/' . App::sl($name);
 	}
 
 	/**
@@ -155,7 +155,7 @@ trait Body
 	* @param string $name The name of the extension. If empty, the name of the current extension is used
 	* @return string The base url
 	*/
-	public function getDirUrl(string $name = '') : string
+	public function getPathUrl(string $name = '') : string
 	{
 		if (!$name) {
 			if ($this->url) {
@@ -202,7 +202,7 @@ trait Body
 	{
 		$this->startOutput();
 
-		include($this->dir . 'index.php');
+		include($this->path . 'index.php');
 
 		return $this->endOutput();
 	}

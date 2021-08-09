@@ -33,14 +33,14 @@ trait Theme
 	public string $layout = '';
 
 	/**
-	* @var string $templates_dir The path for the theme's templates folder
+	* @var string $templates_path The path for the theme's templates folder
 	*/
-	public string $templates_dir = '';
+	public string $templates_path = '';
 
 	/**
-	* @var string $images_dir The path for the theme's images folder
+	* @var string $images_path The path for the theme's images folder
 	*/
-	public string $images_dir = '';
+	public string $images_path = '';
 
 	/**
 	* @var string $images_url The url of the theme's images folder
@@ -113,9 +113,9 @@ trait Theme
 	protected string $javascript_file = 'javascript.js';
 
 	/**
-	* @var string $cache_dir The folder where the cache files are stored
+	* @var string $cache_path The folder where the cache files are stored
 	*/
-	protected string $cache_dir = '';
+	protected string $cache_path = '';
 
 	/**
 	* @var string $cache_url The url pointing to the folder where the cache files are stored
@@ -123,9 +123,9 @@ trait Theme
 	protected string $cache_url = '';
 
 	/**
-	* @var string $templates_cache_dir The folder where the templates will be cached
+	* @var string $templates_cache_path The folder where the templates will be cached
 	*/
-	protected string $templates_cache_dir = '';
+	protected string $templates_cache_path = '';
 
 	/**
 	* @internal
@@ -178,11 +178,11 @@ trait Theme
 	{
 		parent::preparePaths();
 
-		$this->cache_dir = $this->app->cache_dir;
+		$this->cache_path = $this->app->cache_path;
 		$this->cache_url = $this->app->cache_url;
-		$this->templates_cache_dir = $this->cache_dir . App::CACHE_DIRS['templates'];
-		$this->templates_dir = $this->dir . App::EXTENSIONS_DIRS['templates'];
-		$this->images_dir = $this->dir . App::EXTENSIONS_DIRS['images'];
+		$this->templates_cache_path = $this->cache_path . App::CACHE_DIRS['templates'];
+		$this->templates_path = $this->path . App::EXTENSIONS_DIRS['templates'];
+		$this->images_path = $this->path . App::EXTENSIONS_DIRS['images'];
 		$this->images_url = $this->base_url . App::EXTENSIONS_DIRS['images'];
 	}
 
@@ -435,7 +435,7 @@ trait Theme
 	*/
 	public function getTemplateFilename(string $template) : string
 	{
-		return $this->templates_dir . $template . '.' . App::FILE_EXTENSIONS['templates'];
+		return $this->templates_path . $template . '.' . App::FILE_EXTENSIONS['templates'];
 	}
 
 	/**
@@ -501,7 +501,7 @@ trait Theme
 		//filter out the empty parts
 		$parts = array_filter($parts);
 
-		return $this->templates_cache_dir . implode('-', $parts) . '.php';
+		return $this->templates_cache_path . implode('-', $parts) . '.php';
 	}
 
 	/**
