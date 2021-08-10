@@ -58,7 +58,7 @@ class File
 		}
 
 		//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
-		if (!$this->isInsideDir($secure_dir, $filename)) {
+		if (!$this->app->dir->contains($secure_dir, $filename)) {
 			throw new \Exception("Invalid filename! Filename {$filename} is not inside the secure dir: {$secure_dir}");
 		}
 
@@ -238,25 +238,6 @@ class File
 	}
 
 	/**
-	* Checks if a filename is inside a dir
-	* @param string $dir The dir
-	* @param string $filename The filename to check
-	* @return bool True if $filename is inside $dir
-	*/
-	public function isInsideDir(string $dir, string $filename) : bool
-	{
-		if ($filename == $dir) {
-			return false;
-		}
-
-		if (!str_contains($filename, $dir)) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	* Returns the name of a subdir, generated from a file. Usually the first 4 chars
 	* @param string $file The name of the file
 	* @param bool $rawurlencode If true will call $rawurlencode
@@ -301,9 +282,9 @@ class File
 	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return string Returns the contents of the file, or false on error
 	*/
-	public function readFile(string $filename, string $secure_dir = '')
+	public function read(string $filename, string $secure_dir = '')
 	{
-		$this->app->plugins->run('file_read_file', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_read', $filename, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -318,9 +299,9 @@ class File
 	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function writeFile(string $filename, string $content, bool $append = false, string $secure_dir = '') : bool
+	public function write(string $filename, string $content, bool $append = false, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('file_write_file', $filename, $content, $append, $secure_dir, $this);
+		$this->app->plugins->run('file_write', $filename, $content, $append, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -338,9 +319,9 @@ class File
 	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function deleteFile(string $filename, string $secure_dir = '') : bool
+	public function delete(string $filename, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('file_delete_file', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_delete', $filename, $secure_dir, $this);
 
 		$this->checkFilename($filename, $secure_dir);
 
@@ -358,9 +339,9 @@ class File
 	* @param string $secure_dir The folder where $destination is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function copyFile(string $source, string $destination, string $secure_dir = '') : bool
+	public function copy(string $source, string $destination, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('file_copy_file', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_copy', $source, $destination, $secure_dir, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination, $secure_dir);
@@ -375,121 +356,15 @@ class File
 	* @param string $secure_dir The folder where $destination is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function moveFile(string $source, string $destination, string $secure_dir = '') : bool
+	public function move(string $source, string $destination, string $secure_dir = '') : bool
 	{
-		$this->app->plugins->run('file_move_file', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_move', $source, $destination, $secure_dir, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination, $secure_dir);
 
 		return rename($source, $destination);
 	}
-
-	/**
-	* Lists the dirs/files from the specified folder
-	* @param string $dir The folder to be searched
-	* @param array $dirs Output array with all the found folders
-	* @param array $files Output array with all the found files
-	* @param bool $full_path If true it will set $dirs/$files to the absolute paths of the found folders/files,if false the relative paths
-	* @param bool $recursive If true will enum. recursive
-	* @param bool $include_extension If false,will strip the extension from the filename
-	* @param array $skip_dirs Array of folders to exclude, if the listing is recursive
-	* @param bool $use_dir_as_file_key If true, the $files array will have the dir name as a key
-	* @param bool $is_tree If true, will return the $dirs as a tree
-	* @param string $tree_prefix The tree's prefix, if $is_tree is true
-	* @param int $tree_level [internal]
-	* @param string $base_dir [internal]
-	* @return bool Returns true on success or false on failure
-	*/
-	public function listDir(string $dir, ?array &$dirs, ?array &$files, bool $full_path = false, bool $recursive = false, bool $include_extension = true, array $skip_dirs = [], bool $use_dir_as_file_key = false, bool $is_tree = false, string $tree_prefix = '--', int $tree_level = 0, string $base_dir = '') : bool
-	{
-		$this->checkFilename($dir);
-
-		$dir = App::sl($dir);
-
-		if ($recursive && $skip_dirs) {
-			if (in_array($dir, $skip_dirs)) {
-				return true;
-			}
-		}
-
-		if (!$base_dir) {
-			$base_dir = $dir;
-		}
-
-		if ($dh = opendir($dir)) {
-			$dirs_array = [];
-
-			while (($file = readdir($dh)) !== false) {
-				if ($file == '.' || $file == '..') {
-					continue;
-				}
-
-				if (is_file($dir . $file)) {
-					if ($is_tree) {
-						continue;
-					}
-
-					if ($use_dir_as_file_key) {
-						$files[$dir][] = $this->getListFileName($dir, $base_dir, $file, $full_path, $include_extension);
-					} else {
-						$files[] = $this->getListFileName($dir, $base_dir, $file, $full_path, $include_extension);
-					}
-				} else {
-					$dirs_array[] = $dir . $file;
-				}
-			}
-
-			foreach ($dirs_array as $dir_name) {
-				if ($is_tree) {
-					$key = $this->getListDirName($dir_name, $base_dir, $full_path);
-					$dirs[$key] = $this->getListTreePrefix($tree_level, $tree_prefix) . basename($dir_name);
-				} else {
-					$dirs[] = $this->getListDirName($dir_name, $base_dir, $full_path);
-				}
-
-				if ($recursive) {
-					$this->listDir($dir_name, $dirs, $files, $full_path, $recursive, $include_extension, $skip_dirs, $use_dir_as_file_key, $is_tree, $tree_prefix, $tree_level + 1, $base_dir);
-				}
-			}
-		} else {
-			$dirs = [];
-			$files = [];
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	* @internal
-	*/
-	protected function getListDirName(string $dir, string $base_dir, string $full_path) : string
-	{
-		if ($full_path) {
-			return $dir;
-		} else {
-			return str_replace($base_dir, '', $dir);
-		}
-	}
-
-
-
-	/**
-	* @internal
-	*/
-	protected function getListTreePrefix(int $level, string $prefix) : string
-	{
-		$str = '';
-		for ($i = 1; $i <= $level; $i++) {
-			$str.= $prefix;
-		}
-
-		return $str;
-	}
-
-
 
 	/**
 	* Returns the mime type based on extension

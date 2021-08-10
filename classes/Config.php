@@ -65,7 +65,7 @@ class Config extends Data
 	*/
 	public function read()
 	{
-		$this->readFilename('config.php');
+		$this->readFile('config.php');
 
 		$this->setDefault();
 
@@ -79,7 +79,7 @@ class Config extends Data
 	* @param string $filename The filename
 	* @return $this
 	*/
-	public function readFilename(string $filename)
+	public function readFile(string $filename)
 	{
 		$config = require($filename);
 
