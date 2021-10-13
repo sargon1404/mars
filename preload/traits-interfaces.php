@@ -8,7 +8,7 @@ return [
 	'src/mars/classes/ValidationTrait.php',
 	'src/mars/classes/accelerators/DriverInterface.php',
 	'src/mars/classes/cacheable/DriverInterface.php',
-	'src/mars/classes/cli/CliFunctionsTrait.php',
+	'src/mars/classes/bin/BinFunctionsTrait.php',
 	'src/mars/classes/db/DriverInterface.php',
 	'src/mars/classes/device/DriverInterface.php',
 	'src/mars/classes/html/TagInterface.php',

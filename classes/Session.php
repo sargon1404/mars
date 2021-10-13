@@ -85,7 +85,7 @@ class Session
 	*/
 	public function start()
 	{
-		if ($this->app->is_cli) {
+		if ($this->app->is_bin) {
 			return;
 		}
 		if (!$this->app->config->session_start) {

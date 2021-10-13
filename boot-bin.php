@@ -1,5 +1,5 @@
 <?php
-namespace Mars\Cli;
+namespace Mars\Bin;
 
 try {
 	require('src/mars/autoload.php');
@@ -8,7 +8,7 @@ try {
 	$app = App::instantiate();
 	$app->boot();
 
-	$app->plugins->run('boot_cli');
+	$app->plugins->run('boot_bin');
 } catch (\Exception $e) {
 	$app->fatalError($e->getMessage());
 }

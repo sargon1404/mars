@@ -56,12 +56,13 @@ class Dir
 	* @param string $dir The folder to be searched
 	* @param bool $recursive If true will enum. recursive
 	* @param bool $full_path If true it will set will return the file's full path
+	* @param array $extensions If specified, will return only the files matching the extensions
 	* @param array $skip_dirs Array of folders to exclude, if the listing is recursive
 	* @param bool $use_dir_as_file_key If true, the $files array will have the dir name as a key
 	* @param string $base_dir [internal]
 	* @return array The files
 	*/
-	public function getFiles(string $dir, bool $recursive = false, bool $full_path = true, array $skip_dirs = [], bool $use_dir_as_file_key = false, string $base_dir = '') : array
+	public function getFiles(string $dir, bool $recursive = false, bool $full_path = true, array $skip_dirs = [], array $extensions = [], bool $use_dir_as_file_key = false, string $base_dir = '') : array
 	{
 		$this->checkFilename($dir);
 
@@ -90,15 +91,23 @@ class Dir
 			}
 
 			if (is_file($dir . $file)) {
+				if ($extensions) {
+					$ext = $this->app->file->getExtension($file);
+					if (!in_array($ext, $extensions)) {
+						continue;
+					}
+				}
+
 				if ($use_dir_as_file_key) {
 					$files[$dir][] = $this->formatFilename($dir, $base_dir, $file, $full_path);
 				} else {
 					$files[] = $this->formatFilename($dir, $base_dir, $file, $full_path);
 				}
 			} elseif ($recursive) {
-				$files = array_merge($files, $this->getFiles($dir . $file, $recursive, $full_path, $skip_dirs, $use_dir_as_file_key, $base_dir));
+				$files = array_merge($files, $this->getFiles($dir . $file, $recursive, $full_path, $skip_dirs, $extensions, $use_dir_as_file_key, $base_dir));
 			}
 		}
+
 		closedir($dh);
 
 		return $files;
@@ -120,13 +129,14 @@ class Dir
 	* Returns the files from the specified folder in a tree format
 	* @param string $dir The folder to be searched
 	* @param bool $full_path If true it will set will return the file's full path
+	* @param array $extensions If specified, will return only the files matching the extensions
 	* @param array $skip_dirs Array of folders to exclude, if the listing is recursive
 	* @param string $tree_prefix The tree's prefix
 	* @param string $tree_level [internal]
 	* @param string $base_dir [internal]
 	* @return array The files
 	*/
-	public function getFilesTree(string $dir, bool $full_path = true, array $skip_dirs = [], string $tree_prefix = '--', int $tree_level = 0, string $base_dir = '') : array
+	public function getFilesTree(string $dir, bool $full_path = true, array $skip_dirs = [], array $extensions = [], string $tree_prefix = '--', int $tree_level = 0, string $base_dir = '') : array
 	{
 		$this->checkFilename($dir);
 
@@ -153,6 +163,13 @@ class Dir
 			}
 
 			if (is_file($dir . $file)) {
+				if ($extensions) {
+					$ext = $this->app->file->getExtension($file);
+					if (!in_array($ext, $extensions)) {
+						continue;
+					}
+				}
+
 				$key = $this->formatFilename($dir, $base_dir, $file, $full_path);
 
 				if ($full_path) {
@@ -161,9 +178,10 @@ class Dir
 					$files[$key] = $this->getFilesTreePrefix($tree_level, $tree_prefix) . $key;
 				}
 			} else {
-				$files = array_merge($files, $this->getFilesTree($dir . $file, $full_path, $skip_dirs, $tree_prefix, $tree_level + 1, $base_dir));
+				$files = array_merge($files, $this->getFilesTree($dir . $file, $full_path, $skip_dirs, $extensions, $tree_prefix, $tree_level + 1, $base_dir));
 			}
 		}
+
 		closedir($dh);
 
 		return $files;

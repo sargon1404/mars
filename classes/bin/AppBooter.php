@@ -4,9 +4,9 @@
 * @package Mars
 */
 
-namespace Mars\Cli;
+namespace Mars\Bin;
 
-use Mars\Cli;
+use Mars\Bin;
 use Mars\System\Plugins;
 use Mars\System\Language;
 
@@ -27,7 +27,7 @@ class AppBooter extends \Mars\AppBooter
 
 		$this->app->lang = new Language($this->app);
 		
-		$this->app->cli = new Cli($this->app);
+		$this->app->bin = new Bin($this->app);
 
 		return $this;
 	}

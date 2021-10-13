@@ -391,6 +391,15 @@ trait AppFunctionsTrait
 	}
 
 	/**
+	* Alias for dd
+	* @see AppFunctionsTrait::pp()
+	*/
+	public static function dd($var, bool $die = false, bool $escape_html = false)
+	{
+		static::pp($var, $escape_html, $die);
+	}
+
+	/**
 	* Alias for pp
 	* @see AppFunctionsTrait::pp()
 	*/

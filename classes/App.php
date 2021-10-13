@@ -30,9 +30,9 @@ class App
 	public string $useragent = '';
 
 	/**
-	* @var bool $is_cli True if the app is run as a cli script
+	* @var bool $is_bin True if the app is run as a bin script
 	*/
-	public bool $is_cli = false;
+	public bool $is_bin = false;
 
 	/**
 	* @var bool $is_https True if the page is loaded with https, false otherwise
@@ -202,7 +202,7 @@ class App
 	{
 		$this->path = $this->getPath();
 
-		if (!$this->is_cli) {
+		if (!$this->is_bin) {
 			$this->scheme = $this->getScheme();
 			$this->current_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
 			$this->full_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
@@ -254,7 +254,7 @@ class App
 	*/
 	public function setData()
 	{
-		if (!$this->is_cli) {
+		if (!$this->is_bin) {
 			$this->ip = $this->getIp();
 			$this->useragent = $this->getUseragent();
 		}

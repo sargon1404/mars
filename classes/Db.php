@@ -1,6 +1,6 @@
 <?php
 /**
-* The Database Class-
+* The Database Class
 * @package Mars
 */
 

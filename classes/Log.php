@@ -30,9 +30,9 @@ class Log
 	protected array $handles = [];
 
 	/**
-	* @var bool $is_cli If true, will use the cli log file
+	* @var bool $is_bin If true, will use the bin log file
 	*/
-	protected bool $is_cli = false;
+	protected bool $is_bin = false;
 
 	/**
 	* Builds the log objects
@@ -41,11 +41,11 @@ class Log
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->is_cli = $this->app->is_cli;
+		$this->is_bin = $this->app->is_bin;
 
 		$ext = '.php';
-		if ($this->is_cli) {
-			$ext = '.cli.php';
+		if ($this->is_bin) {
+			$ext = '.bin.php';
 		}
 
 		$this->suffix = date('d-F-Y') . '.php';
@@ -102,7 +102,7 @@ class Log
 		}
 
 		$text = '[DATE: ' . $this->date . ']' . "\n";
-		if (!$this->is_cli) {
+		if (!$this->is_bin) {
 			$text.= '[URL: ' . $this->app->full_url . ']' . "\n";
 		}
 

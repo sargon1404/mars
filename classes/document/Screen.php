@@ -27,7 +27,7 @@ class Screen
 			$text = App::e($text);
 		}
 		
-		if (!$this->app->is_cli) {
+		if (!$this->app->is_bin) {
 			$text = nl2br($text);
 		}
 

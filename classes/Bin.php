@@ -1,15 +1,15 @@
 <?php
 /**
-* The Cli Class
+* The Bin Class
 * @package Mars
 */
 
 namespace Mars;
 
 /**
-* The Cli Class
+* The Bin Class
 */
-class Cli
+class Bin
 {
 	use AppTrait;
 
@@ -48,7 +48,7 @@ class Cli
 	protected array $options_missing = [];
 
 	/**
-	* Builds the CLI object
+	* Builds the Bin object
 	* @param App $app The app object
 	*/
 	public function __construct(App $app)
@@ -68,7 +68,7 @@ class Cli
 			$this->parseOptions($options);
 		}
 
-		$this->app->plugins->run('cli_construct', $this);
+		$this->app->plugins->run('bin_construct', $this);
 	}
 
 	/**
@@ -145,7 +145,7 @@ class Cli
 
 	/**
 	* Alias for getArguments
-	* @see \Mars\Cli::getArguments()
+	* @see \Mars\Bin::getArguments()
 	*/
 	public function getArgvs(int $size) : array
 	{
