@@ -15,6 +15,26 @@ class File
 	use AppTrait;
 
 	/**
+	* If specified, will limit that can be accessed to folder $open_basedir
+	*/
+	protected string $open_basedir = '';
+
+	/**
+	* Constructs the file object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+
+		if ($this->app->config->open_basedir === true) {
+			$this->open_basedir = $this->app->path;
+		} else {
+			$this->open_basedir = $this->app->config->open_basedir;
+		}
+	}
+
+	/**
 	* Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
 	* @param string $filename The filename
 	* @return $this
@@ -31,10 +51,9 @@ class File
 	/**
 	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
 	* @param string $filename The filename
-	* @param string $secure_dir The folder where $filename is supposed to be, if any
 	* @return $this
 	*/
-	public function checkFilename(string $filename, string $secure_dir = '')
+	public function checkFilename(string $filename)
 	{
 		if (!$filename) {
 			return $this;
@@ -43,12 +62,12 @@ class File
 		$max_chars = 500;
 
 		if (strlen(basename($filename)) > $max_chars) {
-			throw new \Exception("Invalid filename! Filename {$filename} contains to many characters!");
+			throw new \Exception("Invalid filename! Filename {$filename} contains too many characters!");
 		}
 
 		$this->checkForInvalidChars($filename);
 
-		if (!$secure_dir) {
+		if (!$this->open_basedir) {
 			return $this;
 		}
 
@@ -58,8 +77,8 @@ class File
 		}
 
 		//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
-		if (!$this->app->dir->contains($secure_dir, $filename)) {
-			throw new \Exception("Invalid filename! Filename {$filename} is not inside the secure dir: {$secure_dir}");
+		if (!$this->app->dir->contains($this->open_basedir, $filename)) {
+			throw new \Exception("Invalid filename! Filename {$filename} is not inside the base dir: {$this->open_basedir}");
 		}
 
 		return $this;
@@ -279,14 +298,13 @@ class File
 	/**
 	* Reads the content of a file
 	* @param string $filename
-	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return string Returns the contents of the file, or false on error
 	*/
-	public function read(string $filename, string $secure_dir = '')
+	public function read(string $filename)
 	{
-		$this->app->plugins->run('file_read', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_read', $filename, $this);
 
-		$this->checkFilename($filename, $secure_dir);
+		$this->checkFilename($filename);
 
 		return file_get_contents($filename);
 	}
@@ -296,14 +314,13 @@ class File
 	* @param string $filename The name of the file to write
 	* @param string $content The content to write
 	* @param bool $append If true will append the data to the file rather than create the file
-	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function write(string $filename, string $content, bool $append = false, string $secure_dir = '') : bool
+	public function write(string $filename, string $content, bool $append = false) : bool
 	{
-		$this->app->plugins->run('file_write', $filename, $content, $append, $secure_dir, $this);
+		$this->app->plugins->run('file_write', $filename, $content, $append, $this);
 
-		$this->checkFilename($filename, $secure_dir);
+		$this->checkFilename($filename);
 
 		$flags = 0;
 		if ($append) {
@@ -316,14 +333,13 @@ class File
 	/**
 	* Deletes a file
 	* @param string filename The filename to delete
-	* @param string $secure_dir The folder where $filename is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function delete(string $filename, string $secure_dir = '') : bool
+	public function delete(string $filename) : bool
 	{
-		$this->app->plugins->run('file_delete', $filename, $secure_dir, $this);
+		$this->app->plugins->run('file_delete', $filename, $this);
 
-		$this->checkFilename($filename, $secure_dir);
+		$this->checkFilename($filename);
 
 		if (!is_file($filename)) {
 			return true;
@@ -336,15 +352,14 @@ class File
 	* Copies a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @param string $secure_dir The folder where $destination is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function copy(string $source, string $destination, string $secure_dir = '') : bool
+	public function copy(string $source, string $destination) : bool
 	{
-		$this->app->plugins->run('file_copy', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_copy', $source, $destination, $this);
 
 		$this->checkFilename($source);
-		$this->checkFilename($destination, $secure_dir);
+		$this->checkFilename($destination);
 
 		return copy($source, $destination);
 	}
@@ -353,15 +368,14 @@ class File
 	* Moves a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @param string $secure_dir The folder where $destination is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function move(string $source, string $destination, string $secure_dir = '') : bool
+	public function move(string $source, string $destination) : bool
 	{
-		$this->app->plugins->run('file_move', $source, $destination, $secure_dir, $this);
+		$this->app->plugins->run('file_move', $source, $destination, $this);
 
 		$this->checkFilename($source);
-		$this->checkFilename($destination, $secure_dir);
+		$this->checkFilename($destination);
 
 		return rename($source, $destination);
 	}

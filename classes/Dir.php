@@ -18,9 +18,9 @@ class Dir
 	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
 	* @see \Mars\File::checkFilename()
 	*/
-	public function checkFilename(string $filename, string $secure_dir = '')
+	public function checkFilename(string $filename)
 	{
-		return $this->app->file->checkFilename($filename, $secure_dir);
+		return $this->app->file->checkFilename($filename);
 	}
 
 	/**
@@ -52,147 +52,104 @@ class Dir
 	}
 
 	/**
+	* Returns the dirs from the specified folder
+	* @param string $dir The folder to be searched
+	* @param bool $recursive If true will enum. recursive
+	* @param bool $full_path If true it will set will return the file's full path
+	* @param array $exclude_dirs Array of dirs to exclude, if any
+	* @return array The files
+	*/
+	public function getDirs(string $dir, bool $recursive = false, bool $full_path = true, array $exclude_dirs = []) : array
+	{
+		$this->checkFilename($dir);
+
+		$iterator = $this->getIterator($dir, $recursive, $exclude_dirs);
+
+		$dirs = [];
+		foreach ($iterator as $file) {
+			if ($file->isFile()) {
+				continue;
+			}
+
+			$dirs[] = $this->getName($file, $full_path);
+		}
+
+		return $dirs;
+	}
+
+	/**
 	* Returns the files from the specified folder
 	* @param string $dir The folder to be searched
 	* @param bool $recursive If true will enum. recursive
 	* @param bool $full_path If true it will set will return the file's full path
+	* @param array $exclude_dirs Array of dirs to exclude, if any
 	* @param array $extensions If specified, will return only the files matching the extensions
-	* @param array $skip_dirs Array of folders to exclude, if the listing is recursive
-	* @param bool $use_dir_as_file_key If true, the $files array will have the dir name as a key
-	* @param string $base_dir [internal]
 	* @return array The files
 	*/
-	public function getFiles(string $dir, bool $recursive = false, bool $full_path = true, array $skip_dirs = [], array $extensions = [], bool $use_dir_as_file_key = false, string $base_dir = '') : array
+	public function getFiles(string $dir, bool $recursive = false, bool $full_path = true, array $exclude_dirs = [], array $extensions = []) : array
 	{
 		$this->checkFilename($dir);
 
-		$dir = App::sl($dir);
-
-		if ($recursive && $skip_dirs) {
-			if (in_array($dir, $skip_dirs)) {
-				return [];
-			}
-		}
-
-		if (!$base_dir) {
-			$base_dir = $dir;
-		}
-
-		$dh = opendir($dir);
-		if (!$dh) {
-			return [];
-		}
+		$iterator = $this->getIterator($dir, $recursive, $exclude_dirs);
 
 		$files = [];
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
+		foreach ($iterator as $file) {
+			if ($file->isDir()) {
 				continue;
 			}
-
-			if (is_file($dir . $file)) {
-				if ($extensions) {
-					$ext = $this->app->file->getExtension($file);
-					if (!in_array($ext, $extensions)) {
-						continue;
-					}
+			if ($extensions) {
+				if (!in_array($file->getExtension(), $extensions)) {
+					continue;
 				}
-
-				if ($use_dir_as_file_key) {
-					$files[$dir][] = $this->formatFilename($dir, $base_dir, $file, $full_path);
-				} else {
-					$files[] = $this->formatFilename($dir, $base_dir, $file, $full_path);
-				}
-			} elseif ($recursive) {
-				$files = array_merge($files, $this->getFiles($dir . $file, $recursive, $full_path, $skip_dirs, $extensions, $use_dir_as_file_key, $base_dir));
 			}
-		}
 
-		closedir($dh);
+			$files[] = $this->getName($file, $full_path);
+		}
 
 		return $files;
 	}
 
 	/**
+	* Returns the iterator used to generate the files
+	* @param string $dir The folder to be searched
+	* @param bool $recursive If true will enum. recursive
+	* @param array $exclude_dirs Array of dirs to exclude, if any
+	* @param int $flag Flag to pass to \RecursiveIteratorIterator
+	* @return Iterator The iterator
+	*/
+	public function getIterator(string $dir, bool $recursive = true, array $exclude_dirs = [], int $flag = \RecursiveIteratorIterator::SELF_FIRST) : \Iterator
+	{
+		$iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::CURRENT_AS_SELF);
+
+		if ($exclude_dirs) {
+			$iterator = new \RecursiveCallbackFilterIterator($iterator, function ($current, $key, $dir_iterator) use ($exclude_dirs) {
+				if (in_array($dir_iterator->getSubPathname(), $exclude_dirs)) {
+					return false;
+				}
+
+				return true;
+			});
+		}
+
+		if ($recursive) {
+			$iterator = new \RecursiveIteratorIterator($iterator, $flag);
+		} else {
+			$iterator = new \IteratorIterator($iterator);
+		}
+
+		return $iterator;
+	}
+
+	/**
 	* @internal
 	*/
-	protected function formatFilename(string $dir, string $base_dir, string $file, bool $full_path) : string
+	protected function getName($file, bool $full_path = false) : string
 	{
 		if ($full_path) {
-			return $dir . $file;
+			return $file->getPathname();
 		} else {
-			return str_replace($base_dir, '', $dir . $file);
+			return $file->getSubPathname();
 		}
-	}
-
-	/**
-	* Returns the files from the specified folder in a tree format
-	* @param string $dir The folder to be searched
-	* @param bool $full_path If true it will set will return the file's full path
-	* @param array $extensions If specified, will return only the files matching the extensions
-	* @param array $skip_dirs Array of folders to exclude, if the listing is recursive
-	* @param string $tree_prefix The tree's prefix
-	* @param string $tree_level [internal]
-	* @param string $base_dir [internal]
-	* @return array The files
-	*/
-	public function getFilesTree(string $dir, bool $full_path = true, array $skip_dirs = [], array $extensions = [], string $tree_prefix = '--', int $tree_level = 0, string $base_dir = '') : array
-	{
-		$this->checkFilename($dir);
-
-		$dir = App::sl($dir);
-
-		if (in_array($dir, $skip_dirs)) {
-			return [];
-		}
-
-		if (!$base_dir) {
-			$base_dir = $dir;
-		}
-
-		$dh = opendir($dir);
-		if (!$dh) {
-			return [];
-		}
-
-		$files = [];
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
-
-			if (is_file($dir . $file)) {
-				if ($extensions) {
-					$ext = $this->app->file->getExtension($file);
-					if (!in_array($ext, $extensions)) {
-						continue;
-					}
-				}
-
-				$key = $this->formatFilename($dir, $base_dir, $file, $full_path);
-
-				if ($full_path) {
-					$files[$key] = $this->getFilesTreePrefix($tree_level, $tree_prefix) . $this->formatFilename($dir, $base_dir, $file, false);
-				} else {
-					$files[$key] = $this->getFilesTreePrefix($tree_level, $tree_prefix) . $key;
-				}
-			} else {
-				$files = array_merge($files, $this->getFilesTree($dir . $file, $full_path, $skip_dirs, $extensions, $tree_prefix, $tree_level + 1, $base_dir));
-			}
-		}
-
-		closedir($dh);
-
-		return $files;
-	}
-
-	/**
-	* @internal
-	*/
-	protected function getFilesTreePrefix(int $level, string $prefix) : string
-	{
-		return str_repeat($prefix, $level);
 	}
 
 	/**
@@ -217,41 +174,36 @@ class Dir
 	* Copies a dir
 	* @param string $source_dir The source folder
 	* @param string $destination_dir The destination folder
-	* @param $recursive	If trye,will copy recursive
 	* @return bool Returns true on success or false on failure
 	*/
-	public function copy(string $source_dir, string $destination_dir, bool $recursive = true) : bool
+	public function copy(string $source_dir, string $destination_dir) : bool
 	{
 		$this->app->plugins->run('dir_copy', $source_dir, $destination_dir, $recursive, $this);
 
 		$this->checkFilename($source_dir);
 		$this->checkFilename($destination_dir);
 
-		$dirs = App::sl($source_dir);
-		$dird = App::sl($destination_dir);
-
-		$dh = opendir($dirs);
-		if (!$dh) {
+		if (!$this->create($destination_dir)) {
 			return false;
 		}
 
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
+		$source_dir = App::sl($source_dir);
+		$destination_dir = App::sl($destination_dir);
 
-			if (is_dir($dirs . $file)) {
-				if ($recursive) {
-					if ($this->create($dird . $file)) {
-						$this->copy($dirs . $file, $dird . $file, $recursive);
-					}
+		$iterator = $this->getIterator($source_dir);
+		foreach ($iterator as $file) {
+			$target_file = $destination_dir . $this->getName($file);
+
+			if ($file->isDir()) {
+				if (!mkdir($target_file)) {
+					return false;
 				}
 			} else {
-				$this->file->copy($dirs . $file, $dird . $file);
+				if (!copy($file->getPathname(), $target_file)) {
+					return false;
+				}
 			}
 		}
-
-		closedir($dh);
 
 		return true;
 	}
@@ -275,43 +227,27 @@ class Dir
 	/**
 	* Deletes a dir
 	* @param string $dir The name of the folder to delete
-	* @param bool $recursive If true will delete recursively
 	* @param bool $delete_dir If true, will delete the dir itself; if false, will clean it
-	* @param string $secure_dir The folder where $dir is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function delete(string $dir, bool $recursive = true, bool $delete_dir = true, string $secure_dir = '') : bool
+	public function delete(string $dir, bool $delete_dir = true) : bool
 	{
-		$this->app->plugins->run('dir_delete', $dir, $recursive, $delete_dir, $secure_dir, $this);
+		$this->app->plugins->run('dir_delete', $dir, $delete_dir, $this);
 
-		$this->checkFilename($dir, $secure_dir);
+		$this->checkFilename($dir);
 
-		$dir = App::sl($dir);
-
-		$dh = opendir($dir);
-		if (!$dh) {
-			return false;
-		}
-
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') {
-				continue;
-			}
-
-			if (is_dir($dir . $file)) {
-				if ($recursive) {
-					if (!$this->delete($dir . $file, $recursive)) {
-						break;
-					}
+		$iterator = $this->getIterator($dir, flag: \RecursiveIteratorIterator::CHILD_FIRST);
+		foreach ($iterator as $file) {
+			if ($file->isDir()) {
+				if (!rmdir($file->getPathname())) {
+					return false;
 				}
 			} else {
-				if (!$this->app->file->delete($dir . $file)) {
-					break;
+				if (!unlink($file->getPathname())) {
+					return false;
 				}
 			}
 		}
-
-		closedir($dh);
 
 		if ($delete_dir) {
 			if (!rmdir($dir)) {
@@ -325,14 +261,12 @@ class Dir
 	/**
 	* Deletes all the files/subdirectories from a directory but does not delete the folder itself
 	* @param string $dir The name of the folder to clear
-	* @param bool $recursive If true will clear recursively
-	* @param string $secure_dir The folder where $dir is supposed to be
 	* @return bool Returns true on success or false on failure
 	*/
-	public function clean(string $dir, bool $recursive = true, string $secure_dir = '') : bool
+	public function clean(string $dir) : bool
 	{
-		$this->app->plugins->run('dir_clean', $dir, $recursive, $secure_dir, $this);
+		$this->app->plugins->run('dir_clean', $dir, $this);
 
-		return $this->delete($dir, $recursive, false, $secure_dir);
+		return $this->delete($dir, false);
 	}
 }
