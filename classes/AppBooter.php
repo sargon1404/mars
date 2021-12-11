@@ -40,7 +40,7 @@ class AppBooter
 	*/
 	public function libraries()
 	{
-		require_once($this->app->libraries_path . '/php/vendor/autoload.php');
+		require_once($this->app->libraries_path . 'php/vendor/autoload.php');
 	}
 
 	/**
@@ -76,6 +76,7 @@ class AppBooter
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);
+		$this->app->mail = new Mail($this->app);
 
 		return $this;
 	}

@@ -38,10 +38,13 @@ class File
 	* Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
 	* @param string $filename The filename
 	* @return $this
+	* @throws Exception if the filename contains invalid chars
 	*/
 	public function checkForInvalidChars(string $filename)
 	{
-		if (str_contains($filename, '../') || str_contains($filename, './') || str_contains($filename, '..\\') || str_contains($filename, '.\\')) {
+		if (str_contains($filename, '../') || str_contains($filename, './')
+		    || str_contains($filename, '..\\') || str_contains($filename, '.\\')
+		    || str_starts_with($filename, 'php:')) {
 			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
 		}
 
@@ -52,6 +55,7 @@ class File
 	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
 	* @param string $filename The filename
 	* @return $this
+	* @throws Exception if the filename is not valid
 	*/
 	public function checkFilename(string $filename)
 	{
@@ -85,28 +89,22 @@ class File
 	}
 
 	/**
-	* Returns the basename from $filename with invalid characters removed
+	* Returns the basename from $filename
 	* @param string $filename The filename for which the basename will be returned
 	* @return string The basename of filename
 	*/
 	public function basename(string $filename) : string
 	{
-		return $this->app->filter->filename(basename($filename));
+		return basename($filename);
 	}
 
 	/**
-	* Returns the relative path of a filename. Eg: /var/www/mars/dir/some_file.txt => dir/some_file.txt
-	* @param string $filename The filename
-	* @param bool $ext If false, will strip out the extension
-	* @return string The relative path
+	* Alias for getDirname
+	* @see File::getDirname()
 	*/
-	public function getRel(string $filename, bool $ext = true) : string
+	public function dirname(string $filename) : string
 	{
-		if (!$ext) {
-			$filename = $this->stripExtension($filename);
-		}
-
-		return str_replace($this->app->path, '', $filename);
+		return $this->getDirname($filename);
 	}
 
 	/**
@@ -125,29 +123,23 @@ class File
 	}
 
 	/**
-	* Alias for get_dirname
-	* @see File::getDirname()
+	* Returns the relative path of a filename. Eg: /var/www/mars/dir/some_file.txt => dir/some_file.txt
+	* @param string $filename The filename
+	* @return string The relative path
 	*/
-	public function dirname(string $filename) : string
+	public function getRel(string $filename) : string
 	{
-		return $this->getDirname($filename);
+		return str_replace($this->app->path, '', $filename);
 	}
 
 	/**
 	* Returns the filename(strips the extension) of a file
 	* @param string $filename The filename for which the filename will be returned
-	* @param string $dirname If true, will also include the dirname
 	* @return string The filename, without the extension
 	*/
-	public function getFilename(string $filename, bool $dirname = false) : string
+	public function getFilename(string $filename) : string
 	{
-		$pi = pathinfo($filename);
-
-		if ($dirname && $pi['dirname'] != '.') {
-			return $pi['dirname'] . '/' . $pi['filename'];
-		} else {
-			return $pi['filename'];
-		}
+		return pathinfo($filename, PATHINFO_FILENAME);
 	}
 
 	/**
@@ -168,16 +160,12 @@ class File
 	/**
 	* Appends $append_str to $filename (before the extension)
 	* @param string $filename The filename
-	* @param string $append_str The text to append
-	* @param string $dirname If true, will also include the dirname. If false, will strip it
+	* @param string $append The text to append
 	* @return string The filename with $append_str appended
 	*/
-	public function appendToFilename(string $filename, string $append_str, bool $dirname = true) : string
+	public function appendToFilename(string $filename, string $append) : string
 	{
-		$ext = $this->getExtension($filename, true);
-		$file = $this->getFilename($filename, $dirname);
-
-		return $file . $append_str . $ext;
+		return $this->getFilename($filename) . $append . $this->getExtension($filename, true);
 	}
 
 	/**
@@ -188,12 +176,10 @@ class File
 	*/
 	public function getExtension(string $filename, bool $include_dot = false) : string
 	{
-		$pi = pathinfo($filename);
-		if (empty($pi['extension'])) {
+		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+		if (!$ext) {
 			return '';
 		}
-
-		$ext = strtolower($pi['extension']);
 
 		if ($include_dot) {
 			return '.' . $ext;
@@ -204,33 +190,17 @@ class File
 
 	/**
 	* Adds extension to filename
+	* @param string $filename The filename to append the extension to
 	* @param string $extension The extension
-	* @param string $filename The filename to append the extension to, if any
 	* @return string The filename + extension
 	*/
-	public function addExtension(string $extension, string $filename = '') : string
+	public function addExtension(string $filename, string $extension) : string
 	{
 		if (!$extension) {
 			return $filename;
 		}
 
 		return $filename . '.' . $extension;
-	}
-
-	/**
-	* Strips the extension of a filename
-	* @param string $filename The filename
-	* @return string The filename without the extension
-	*/
-	public function stripExtension(string $filename) : string
-	{
-		$pi = pathinfo($filename);
-
-		if ($pi['dirname'] == '.') {
-			return $pi['filename'];
-		} else {
-			return $pi['dirname'] . '/' . $pi['filename'];
-		}
 	}
 
 	/**
@@ -244,16 +214,9 @@ class File
 			return '';
 		}
 
-		$path = '';
-		foreach ($elements as $element) {
-			if (!$element) {
-				continue;
-			}
+		$elements = array_filter($elements);
 
-			$path.= App::sl($element);
-		}
-
-		return $path;
+		return '/' . implode('/', $elements);
 	}
 
 	/**
@@ -298,15 +261,21 @@ class File
 	/**
 	* Reads the content of a file
 	* @param string $filename
-	* @return string Returns the contents of the file, or false on error
+	* @return string Returns the contents of the file
+	* @throws Exception if the file can't be read
 	*/
-	public function read(string $filename)
+	public function read(string $filename) : string
 	{
 		$this->app->plugins->run('file_read', $filename, $this);
 
 		$this->checkFilename($filename);
 
-		return file_get_contents($filename);
+		$content = file_get_contents($filename);
+		if ($content === false) {
+			throw new \Exception("Unable to read file: {$filename}");
+		}
+
+		return $content;
 	}
 
 	/**
@@ -314,9 +283,10 @@ class File
 	* @param string $filename The name of the file to write
 	* @param string $content The content to write
 	* @param bool $append If true will append the data to the file rather than create the file
-	* @return bool Returns true on success or false on failure
+	* @return bool Returns the number of written bytes
+	* @throws Exception if the file can't be written
 	*/
-	public function write(string $filename, string $content, bool $append = false) : bool
+	public function write(string $filename, string $content, bool $append = false) : int
 	{
 		$this->app->plugins->run('file_write', $filename, $content, $append, $this);
 
@@ -327,83 +297,96 @@ class File
 			$flags = FILE_APPEND;
 		}
 
-		return file_put_contents($filename, $content, $flags);
+		$bytes = file_put_contents($filename, $content, $flags);
+		if ($bytes === false) {
+			throw new \Exception("Unable to write file: {$filename}");
+		}
+
+		return $bytes;
 	}
 
 	/**
 	* Deletes a file
 	* @param string filename The filename to delete
-	* @return bool Returns true on success or false on failure
+	* @return $this
+	* @throws Exception if the file can't be deleted
 	*/
-	public function delete(string $filename) : bool
+	public function delete(string $filename)
 	{
 		$this->app->plugins->run('file_delete', $filename, $this);
 
 		$this->checkFilename($filename);
 
-		if (!is_file($filename)) {
-			return true;
+		if (unlink($filename) === false) {
+			throw new \Exception("Unable to delete file: {$filename}");
 		}
 
-		return unlink($filename);
+		return $this;
 	}
 
 	/**
 	* Copies a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @return bool Returns true on success or false on failure
+	* @return $this
+	* @throws Exception if the file can't be copied
 	*/
-	public function copy(string $source, string $destination) : bool
+	public function copy(string $source, string $destination)
 	{
 		$this->app->plugins->run('file_copy', $source, $destination, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination);
 
-		return copy($source, $destination);
+		if (copy($source, $destination) === false) {
+			throw new \Exception("Unable to copy file: {$source} to {$destination}");
+		}
+
+		return $this;
 	}
 
 	/**
 	* Moves a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @return bool Returns true on success or false on failure
+	* @return $this
+	* @throws Exception if the file can't be moved
 	*/
-	public function move(string $source, string $destination) : bool
+	public function move(string $source, string $destination)
 	{
 		$this->app->plugins->run('file_move', $source, $destination, $this);
 
 		$this->checkFilename($source);
 		$this->checkFilename($destination);
 
-		return rename($source, $destination);
+		if (rename($source, $destination) === false) {
+			throw new \Exception("Unable to move file: {$source} to {$destination}");
+		}
+
+		return $this;
 	}
 
 	/**
-	* Returns the mime type based on extension
-	* @param string $extension The extension
+	* Returns the mime type of a file
+	* @param string $filename The filename
 	* @return string The mime type of $extension
 	*/
-	public function getMimeType(string $extension) : string
+	public function getMimeType(string $filename) : string
 	{
-		$file_browser = new Helpers\FileBrowser;
-		$type = $file_browser->getMimeType($extension);
-
-		return $type;
+		return mime_content_type($filename);
 	}
 
 	/**
 	* Outputs a file for download. Notice: It doesn't call die after it outputs the content,it is the caller's job to do it
-	* @param string $filename The filename on the disk to output
+	* @param string $filename The filename to output
 	* @param string $output_name The name under which the user will be prompted to save the file
-	* @return bool Returns true on success or false on failure
+	* @throws Exception if the file can't be opened
 	*/
-	public function promptForDownload(string $filename, string $output_name = '') : bool
+	public function promptForDownload(string $filename, string $output_name = '')
 	{
 		$f = fopen($filename, 'r');
 		if ($f === false) {
-			return false;
+			throw new \Exception("Unable to open file: {$filename}");
 		}
 
 		$size = filesize($filename);
@@ -411,38 +394,14 @@ class File
 			$output_name = basename($filename);
 		}
 
-		$ext = $this->getExtension($filename);
-		$type = $this->getMimeType($ext);
-
-		header('Content-Type: ' . $type);
+		header('Content-Type: ' . $this->getMimeType($filename));
 		header('Content-Length: ' . $size);
-		header('Content-Disposition: attachment; filename="' . str_replace(['"', '/'], ['\\"'], $output_name) . '"');
+		header('Content-Disposition: attachment; filename="' . $this->app->filter->filename($output_name) . '"');
 
 		while ($data = fread($f, 4096)) {
 			echo $data;
 		}
 
 		fclose($f);
-
-		return true;
-	}
-
-	/**
-	* Outputs content for download.It doesn't call die after it outputs the content,it is the caller's job to do it
-	* @param string $file The name of the file under which the user is prompted to download the content
-	* @param string $content The content to be outputed
-	*/
-	public function outputForDownload(string $file, string $content)
-	{
-		$ext = $this->getExtension($file);
-		$type = $this->getMimeType($ext);
-		$file = str_replace(['"', '/'], ['\\"'], $file);
-		$file = basename($file);
-
-		header('Content-type: ' . $type);
-		header('Content-Length: ' . strlen($content));
-		header('Content-Disposition: attachment; filename="' . $file . '"');
-
-		echo $content;
 	}
 }

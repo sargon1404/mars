@@ -43,7 +43,7 @@ class Accelerator
 	];
 
 	/**
-	* Contructs the accelerator object
+	* Constructs the accelerator object
 	* @param App $app The app object
 	*/
 	public function __construct(App $app)

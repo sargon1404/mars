@@ -461,7 +461,7 @@ trait Theme
 			$this->cleanCacheFilenamePart($this->layout),
 			$this->cleanCacheFilenamePart($template),
 			$this->app->device->type,
-			$this->app->config->key,
+			$this->app->config->secret,
 			'theme'
 		];
 
@@ -754,7 +754,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->url_static . $this->css_file;
+		$url = $this->app->url_static . $this->css_file;
 
 		$this->app->css->outputUrl($url);
 	}
@@ -768,7 +768,7 @@ trait Theme
 			return;
 		}
 
-		$url = $this->url_static . $this->javascript_file;
+		$url = $this->app->url_static . $this->javascript_file;
 
 		$this->app->javascript->outputUrl($url);
 	}

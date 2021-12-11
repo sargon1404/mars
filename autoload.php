@@ -20,9 +20,10 @@ namespace Mars\Autoload;
 * Returns the autoload filename from the namespace parts
 * @param array $parts The namespace parts
 * @param int $base_parts The number of base parts in the namespace
+* @param bool $convert_path If not null, will convert the specified path index part of the path. Eg: MyNamespace to my-namespace
 * @return string The filename
 */
-function get_filename(array $parts, int $base_parts = 1) : string
+function get_filename(array $parts, int $base_parts = 1, ?int $convert_path = null) : string
 {
 	$parts_count = count($parts);
 
@@ -33,43 +34,42 @@ function get_filename(array $parts, int $base_parts = 1) : string
 	if ($parts_count > $base_parts + 1) {
 		$path_parts = array_slice($parts, $base_parts, $parts_count - ($base_parts + 1));
 
-		$path = get_path($path_parts);
+		if ($convert_path !== null) {
+			for ($i = 0; $i < $convert_path; $i++) {
+				if (isset($path_parts[$i])) {
+					$path_parts[$i] = convert_part($path_parts[$i]);
+				}
+			}
+		}
+
+		$path = implode('/', $path_parts) . '/';
 	}
 
 	return $path . $name . '.php';
 }
 
 /**
-* Converts the parts of a namespace to a path. Converts a namespace part like MyNamespace to folder my-namespace
+* Converts the path. Converts a namespace part like MyNamespace to folder my-namespace
 * @param array $parts The namespace parts
 * @return string The dir
 */
-function get_path(array $parts) : string
+function convert_part(string $part) : string
 {
-	$path_parts = [];
+	$new_part = '';
+	$len = strlen($part);
 
-	foreach ($parts as &$part) {
-		$dir = '';
+	for ($i = 0; $i < $len; $i++) {
+		$char = $part[$i];
+		$ord = ord($char);
 
-		$len = strlen($part);
-
-		for ($i = 0; $i < $len; $i++) {
-			$char = $part[$i];
-			$ord = ord($char);
-
-			if ($i && $ord >= 65 && $ord <= 90) {
-				if ($i) {
-					$dir.= '-';
-				}
+		if ($i && $ord >= 65 && $ord <= 90) {
+			if ($i) {
+				$new_part.= '-';
 			}
-
-			$dir.= $char;
 		}
 
-		$path_parts[] = $dir;
+		$new_part.= $char;
 	}
 
-	$path = implode('/', $path_parts) . '/';
-
-	return strtolower($path);
+	return strtolower($new_part);
 }

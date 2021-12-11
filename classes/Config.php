@@ -49,6 +49,17 @@ class Config extends Data
 		'content_cache_gzip' => false,
 		'content_cache_minify' => false,
 
+		'mail_from' => '',
+		'mail_from_name' => '',
+		'mail_reply_to' => '',
+		'mail_reply_to_name' => '',
+		'mail_smtp' => false,
+		'mail_smtp_host' => '',
+		'mail_smtp_port' => '',
+		'mail_smtp_username' => '',
+		'mail_smtp_password' => '',
+		'mail_smtp_secure' => '',
+
 		'lang' => 'english',
 		'theme' => 'default',
 

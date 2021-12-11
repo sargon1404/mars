@@ -18,33 +18,30 @@ interface DriverInterface
 	* @param string $username The db username
 	* @param string $password The db password
 	* @param string $database The database to use
+	* @param bool $persistent If true, the db connection will be persistent
 	* @param string $charset The database charset
 	*/
-	public function connect(string $hostname, string $port, string $username, string $password, string $database, string $charset);
+	public function connect(string $hostname, string $port, string $username, string $password, string $database, bool $persistent, string $charset);
 
 	/**
 	* Disconnects from the database
 	*/
 	public function disconnect();
-
+	
 	/**
-	* Returns a params dump
-	* @return string
+	* Begins a transaction
 	*/
-	public function getDump() : string;
-
+	public function begin();
+	
 	/**
-	* Selects a database
-	* @param string $database The database name
+	* Commits a transaction
 	*/
-	public function selectDb(string $database);
-
+	public function commit();
+	
 	/**
-	* Escapes a value
-	* @param string $value The value to escape
-	* @return string The escaped value
+	* Rollback a transaction
 	*/
-	public function escape(string $value) : string;
+	public function rollback();
 
 	/**
 	* Executes a query
@@ -82,22 +79,46 @@ interface DriverInterface
 	/**
 	* Returns the next row, as an array, from a results set
 	* @param resource $result The result
-	* @return array The data, or false on failure
+	* @return array The row
 	*/
-	public function fetchArray($result) : bool|array;
+	public function fetchArray($result) : array;
 
 	/**
 	* Returns the next row, as an array, from a results set
 	* @param resource $result The result
-	* @return array The data, or false on failure
+	* @return array The row
 	*/
-	public function fetchRow($result) : bool|array;
+	public function fetchRow($result) : array;
 
 	/**
 	* Returns the next row, as an object, from a results set
 	* @param resource $result The result
 	* @param string $class_name The class name
-	* @return object The data, or false on failure
+	* @return object The data. If no row was found, null is returned
 	*/
-	public function fetchObject($result, string $class_name) : bool|object;
+	public function fetchObject($result, string $class_name = '') : ?object;
+	
+	/**
+	* Returns a single column from the results set
+	* @param resource $result The result
+	* @param int $column The column index
+	* @return string The column or null if there isn't any
+	*/
+	public function fetchColumn($result, int $column = 0) : ?string;
+
+	/**
+	* Returns all the rows as objects
+	* @param resource $result The result
+	* @param string $class_name The class name, if any. If true is passed, will return the rows as arrays
+	* @return array The rows
+	*/
+	public function fetchAll($result, bool|string $class_name = '') : array;
+	
+	/**
+	* Returns all the results from a column
+	* @param resource $result The result
+	* @param int $column The column
+	* @return array The rows
+	*/
+	public function fetchAllFromColumn($result, int $column = 0) : array;
 }

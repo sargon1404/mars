@@ -66,7 +66,7 @@ class Memcache
 	];
 
 	/**
-	* Contructs the memcache object
+	* Constructs the memcache object
 	* @param App $app The app object
 	* @param string $driver The driver to use. redis and memcache are supported
 	* @param string $host The host to connect to

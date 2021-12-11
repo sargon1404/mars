@@ -155,37 +155,37 @@ class Dir
 	/**
 	* Create a folder. Does nothing if the folder already exists
 	* @param string $dir The name of the folder to create
-	* @return bool Returns true on success or false on failure
+	* @throws Exception if the folder can't be created
 	*/
-	public function create(string $dir) : bool
+	public function create(string $dir)
 	{
 		$this->app->plugins->run('dir_create', $dir, $this);
 
 		$this->checkFilename($dir);
 
 		if (is_dir($dir)) {
-			return true;
+			return;
 		}
 
-		return mkdir($dir);
+		if(!mkdir($dir)) {
+			throw new \Exception("Unable to create dir: {$dir}");
+		}
 	}
 
 	/**
 	* Copies a dir
 	* @param string $source_dir The source folder
 	* @param string $destination_dir The destination folder
-	* @return bool Returns true on success or false on failure
+	* @throws Exception If folders can't be created/files can't be copied
 	*/
-	public function copy(string $source_dir, string $destination_dir) : bool
+	public function copy(string $source_dir, string $destination_dir)
 	{
 		$this->app->plugins->run('dir_copy', $source_dir, $destination_dir, $recursive, $this);
 
 		$this->checkFilename($source_dir);
 		$this->checkFilename($destination_dir);
 
-		if (!$this->create($destination_dir)) {
-			return false;
-		}
+		$this->create($destination_dir);
 
 		$source_dir = App::sl($source_dir);
 		$destination_dir = App::sl($destination_dir);
@@ -196,41 +196,41 @@ class Dir
 
 			if ($file->isDir()) {
 				if (!mkdir($target_file)) {
-					return false;
+					throw new \Exception("Unable to create dir: {$target_file}");
 				}
 			} else {
 				if (!copy($file->getPathname(), $target_file)) {
-					return false;
+					throw new \Exception("Unable to move file: {$file->getPathname()} to {$target_file}");
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
 	* Moves a dir
 	* @param string $source_dir The source folder
 	* @param string $destination_dir The destination folder
-	* @return bool Returns true on success or false on failure
+	* @throws Exception if the dir can't be moved
 	*/
-	public function move(string $source_dir, string $destination_dir) : bool
+	public function move(string $source_dir, string $destination_dir)
 	{
 		$this->app->plugins->run('dir_move', $source_dir, $destination_dir, $this);
 
 		$this->checkFilename($source_dir);
 		$this->checkFilename($destination_dir);
 
-		return rename($source_dir, $destination_dir);
+		if (!rename($source_dir, $destination_dir)) {
+			throw new \Exception("Unable to move dir: {$source_dir} to {$destination_dir}");
+		}
 	}
 
 	/**
 	* Deletes a dir
 	* @param string $dir The name of the folder to delete
 	* @param bool $delete_dir If true, will delete the dir itself; if false, will clean it
-	* @return bool Returns true on success or false on failure
+	* @throws Exception if the dir can't be deleted
 	*/
-	public function delete(string $dir, bool $delete_dir = true) : bool
+	public function delete(string $dir, bool $delete_dir = true)
 	{
 		$this->app->plugins->run('dir_delete', $dir, $delete_dir, $this);
 
@@ -240,18 +240,18 @@ class Dir
 		foreach ($iterator as $file) {
 			if ($file->isDir()) {
 				if (!rmdir($file->getPathname())) {
-					return false;
+					throw new \Exception("Unable to delete dir: {$file->getPathname()}");
 				}
 			} else {
 				if (!unlink($file->getPathname())) {
-					return false;
+					throw new \Exception("Unable to delete file: {$file->getPathname()}");
 				}
 			}
 		}
 
 		if ($delete_dir) {
 			if (!rmdir($dir)) {
-				return false;
+				throw new \Exception("Unable to delete dir: {$dir}");
 			}
 		}
 
@@ -261,12 +261,12 @@ class Dir
 	/**
 	* Deletes all the files/subdirectories from a directory but does not delete the folder itself
 	* @param string $dir The name of the folder to clear
-	* @return bool Returns true on success or false on failure
+	* @throws Exception if the dir can't be cleaned
 	*/
-	public function clean(string $dir) : bool
+	public function clean(string $dir)
 	{
 		$this->app->plugins->run('dir_clean', $dir, $this);
 
-		return $this->delete($dir, false);
+		$this->delete($dir, false);
 	}
 }

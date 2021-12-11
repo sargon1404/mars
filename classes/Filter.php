@@ -173,10 +173,10 @@ class Filter
 
 	/**
 	* Filters an int value
-	* @param int|array $value The value
+	* @param $value The value to filter
 	* @return int|array The filtered value
 	*/
-	public function int(int|array $value) : int|array
+	public function int($value) : int|array
 	{
 		if (is_array($value)) {
 			return array_map([$this, 'int'], $value);

@@ -235,7 +235,6 @@ class App
 	*/
 	public function boot()
 	{
-		die("iiiii");
 		$this->loadBooter();
 
 		$this->boot->minimum();
@@ -366,17 +365,24 @@ class App
 			return $this->ip;
 		}
 
+		$ip = $_SERVER['REMOTE_ADDR'];
+
 		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 			if (in_array($_SERVER['REMOTE_ADDR'], $this->config->trusted_proxies)) {
 				//HTTP_X_FORWARDED_FOR can contain multiple IPs. Use only the last one
-				$ip = trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
-				if (filter_var($ip, FILTER_VALIDATE_IP)) {
-					return $ip;
+				$proxy_ip = trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])));
+
+				if (filter_var($proxy_ip, FILTER_VALIDATE_IP)) {
+					return $proxy_ip;
 				}
 			}
 		}
 
-		return $_SERVER['REMOTE_ADDR'];
+		if (filter_var($ip, FILTER_VALIDATE_IP)) {
+			return $ip;
+		}
+
+		throw new \Exception("Invalid IP: {$ip}");
 	}
 
 	/**
@@ -685,58 +691,5 @@ class App
 
 		header('Location: ' . $url);
 		die;
-	}
-
-	/**********************EMAIL FUNCTIONS***************************************/
-
-	/**
-	* Sends a mail
-	* @param string|array $to The adress(es) where the mail will be sent
-	* @param string $subject The subject of the mail
-	* @param string $message The body of the mail
-	* @param string $from The email adress from which the email will be send.By default $this->app->config->mail_from is used
-	* @param string $from_name The from name field of the email.by default $this->app->config->mail_from_name is used
-	* @param string $reply_to The email address to which to reply to
-	* @param string $reply_to_name The reply name associated with the $reply_to email
-	* @param bool $is_html If true the mail will be a html mail
-	* @param array $attachments The attachments, if any, to the mail
-	* @return bool Returns true on success, false on failure
-	*/
-	public function mail(string|array $to, string $subject, string $message, string $from = '', string $from_name = '', string $reply_to = '', string $reply_to_name = '', bool $is_html = true, array $attachments = []) : bool
-	{
-		if (!$to) {
-			return false;
-		}
-
-		$this->plugins->run('app_mail', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
-
-		$mailer = $this->getMailer($to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments);
-
-		return $mailer->send();
-	}
-
-	/**
-	* Sets the properties of the mailer object and returns it
-	* @internal
-	*/
-	protected function getMailer($to, string $subject, string $message, string $from, string $from_name, string $reply_to, string $reply_to_name, bool $is_html, array $attachments)
-	{
-		$mailer = $this->getMailerObj();
-		$mailer->setRecipient($to);
-		$mailer->setSubject($subject);
-		$mailer->setBody($message, $is_html);
-		$mailer->setFrom($from, $from_name);
-		$mailer->setSender($reply_to, $reply_to_name);
-		$mailer->setAttachments($attachments);
-
-		return $mailer;
-	}
-
-	/**
-	* @internal
-	*/
-	protected function getMailerObj()
-	{
-		return new Helpers\Mailer;
 	}
 }

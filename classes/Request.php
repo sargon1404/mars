@@ -747,7 +747,7 @@ class Request
 			///generate the suffix
 			$suffix_str = $this->uploadGetSuffix($filename, $append_suffix, $append_suffix_if_file_exists);
 			if ($suffix_str) {
-				$filename = $upload_dir . $this->app->file->getFilename($file) . $suffix_str . $this->app->file->addExtension($extension);
+				$filename = $upload_dir . $this->app->file->getFilename($file) . $suffix_str . '.' . $extension;
 			}
 
 			if (move_uploaded_file($_FILES[$name]['tmp_name'][$i], $filename)) {
