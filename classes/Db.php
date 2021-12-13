@@ -292,7 +292,7 @@ class Db
 	*/
 	public function getSql() : Sql
 	{
-		return new Sql;
+		return new Sql($this->app);
 	}
 	
 	/**
@@ -333,7 +333,7 @@ class Db
 		if ($sql instanceof Sql) {
 			$params = $sql->getParams();
 			$is_read = $sql->isRead();
-			$sql = $sql->getSql();			
+			$sql = $sql->getSql();
 		}
 
 		$this->handle = $this->getQueryHandle($sql, $is_read);
@@ -404,209 +404,131 @@ class Db
 	protected function getQueryError(string $error, string $sql, array $params)
 	{
 		$error = $error . "\n\n" . $sql;
-		if ($params) {		
+		if ($params) {
 			$error.= "\n\n" . print_r($params, true);
 		}
 		
 		return $error;
 	}
-
+	
 	/**
-	* Selects data from a table
+	* Selects data from a table and returns the result
 	* @param string $table The table name
 	* @param array $where Where conditions in the format col => val
 	* @param string $order_by The order by column
 	* @param string $order The order: asc/desc
 	* @param int $limit The limit
 	* @param int $limit_offset The limit offset, if any
-	* @return array Returns an with the rows as array/objects. If there are no rows, will return an empty array
+	* @param string|array $cols The columns to select
+	* @return DbResult The result
 	*/
-	public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
+	public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : DbResult
 	{
-		$sql = $this->getSql()->select()->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
+		$sql = $this->getSql()->select($cols)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
-		return $this->query($sql)->fetchAll();
+		return $this->query($sql);
 	}
-
+	
 	/**
-	* Selects data from a table and uses $key as a key of the returned array
+	* Selects a single row from the database, by id
 	* @param string $table The table name
-	* @param string $key The column to use as a key.
-	* @param string|array $fields The fields to select
-	* @param array $where Where conditions in the format col => val
+	* @param int $id The id of the row to return
+	* @param string $id_col The name of the id column
+	* @param string|array $cols The columns to select
+	* @return object The row
+	*/
+	public function selectById(string $table, int $id, string $id_col = 'id', string|array $cols = '*') : ?object
+	{
+		$sql = $this->getSql()->select($cols)->from($table)->where([$id_col => $id])->limit(1);
+
+		return $this->query($sql)->fetchObject();
+	}
+	
+	/**
+	* Selects multiple rows from the database, by id
+	* @param string $table The table name
+	* @param array $ids Array with the ids for which we're retriving data
 	* @param string $order_by The order by column
 	* @param string $order The order: asc/desc
-	* @param int $limit The limit
-	* @param int $limit_offset The limit offset, if any
-	* @param bool $load_array If true, will return the result as an array
-	* @return array
+	* @param string $id_col The name of the id column
+	* @param string|array $cols The columns to select
+	* @return array Returns the rows as an array with the id as a key
 	*/
-	public function selectWithKey(string $table, string $key, string|array $fields = '*', array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, bool $load_array = false) : array
+	public function selectByIds(string $table, array $ids, string $order_by = '', string $order = '', string $id_col = 'id', string|array $cols = '*') : array
 	{
-		$this->sql->select($fields)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
+		if (!$ids) {
+			return [];
+		}
+		
+		$sql = $this->getSql()->select($cols)->from($table)->whereIn($id_col, $ids)->orderBy($order_by, $order);
 
-		$this->readQuery();
+		return $this->query($sql)->get($id_col);
+	}
+	
+	/**
+	* Selects a single column and returns the result
+	* @param string $col The column to select
+	* @see Db::select()
+	* @return array The IDs
+	*/
+	public function selectCol(string $table, string $col, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
+	{
+		$sql = $this->getSql()->select($col)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
-		return $this->get($key, null, $load_array);
+		return $this->query($sql)->getCol();
 	}
 
 	/**
-	* Selects data from a table and returns it as an array
+	* Returns all the Ids from a table
+	* @param string $col The id col
+	* @see Db::select()
+	* @return array The IDs
+	*/
+	public function selectIds(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string $col = 'id') : array
+	{
+		return $this->selectCol($table, $col, $where, $order_by, $order, $limit, $limit_offset);
+	}
+	
+	/**
+	* Returns a key=>value pair with values from two columns
+	* @param string $key_col The name of the column used as the key
+	* @param string $key_col The name of the column used as the value
 	* @see Db::select()
 	* @return array
 	*/
-	public function selectArray(string $table, $fields = '*', array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
+	public function selectList(string $table, string $key_col, string $col, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
 	{
-		return $this->select($table, $fields, $where, $order_by, $order, $limit, $limit_offset, true);
-	}
+		$sql = $this->getSql()->select([$key_col, $col])->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
-	/**
-	* Similar with selectWithKey but will return the data as array
-	* @see Db::selectWithKey()
-	* @return array
-	*/
-	public function selectArrayWithKey(string $table, string $key, $fields = '*', array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
-	{
-		$this->sql->select($fields)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
-
-		$this->readQuery();
-
-		return $this->get($key, null, true);
-	}
-
-	/**
-	* Selects a single column from multiple rows and returns the results
-	* @param string $table The table name
-	* @param string $key_field The name of the field whose value will be used as the returned array's key
-	* @param string $field The name of the field to return
-	* @param array $where Where conditions in the format col => val
-	* @param string $order_by The order by column
-	* @param string $order The order: asc/desc
-	* @param int $limit The limit
-	* @param int $limit_offset The limit offset, if any
-	* @return array
-	*/
-	public function selectList(string $table, string $key_field, string $field, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0) : array
-	{
-		$this->sql->select([$key_field, $field])->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
-
-		$this->readQuery();
-
-		return $this->getList($key_field, $field);
-	}
-
-	/**
-	* Selects a single column from multiple rows and returns the results
-	* @param string $table The table name
-	* @param string $field The name of the field to return
-	* @param array $where Where conditions in the format col => val
-	* @param string $order_by The order by column
-	* @param string $order The order: asc/desc
-	* @param int $limit The limit
-	* @param int $limit_offset The limit offset, if any
-	* @return array
-	*/
-	public function selectField($table, $field, $where = [], $order_by = '', $order = '', $limit = 0, $limit_offset = 0) : array
-	{
-		$this->sql->select($field)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
-
-		$this->readQuery();
-
-		return $this->get('', '', true, true);
-	}
-
-	/**
-	* Selects a single row from the database
-	* @param string $table The table name
-	* @param string|array $fields The fields to select
-	* @param array $where Where conditions in the format col => val
-	* @param bool $load_array If true, will return the result as an array
-	* @return array|object|null Returns the row as an object/array. If only a single column/field is requested will return it as a string; Returns null on failure
-	*/
-	public function selectRow(string $table, string|array $fields = '*', array $where = [], bool $load_array = false) : array|object|null
-	{
-		$this->sql->select($fields)->from($table)->where($where)->limit(1);
-
-		$this->readQuery();
-
-		return $this->getRow($load_array);
+		return $this->query($sql)->get($key_col, $col);
 	}
 
 	/**
 	* Returns the first column from the first row generated by a query
 	* @param string $table The table name
-	* @param string|array $fields The fields to select. If only a single column/field is requested will return it as a string instead of array/object
+	* @param string $col The column to return
 	* @param array $where Where conditions in the format col => val
-	* @return string The first column from the first row or null
+	* @return string The result
 	*/
-	public function selectResult(string $table, string|array $fields = '*', array $where = []) : ?string
+	public function selectResult(string $table, string $col, array $where = []) : ?string
 	{
-		$this->sql->select($fields)->from($table)->where($where)->limit(1);
+		$sql = $this->getSql()->select([$col])->from($table)->where($where)->limit(1);
 
-		$this->readQuery();
-
-		return $this->getResult();
-	}
-
-	/**
-	* Selects a single row from the database based on it's id
-	* @param string $table The table name
-	* @param int $id The id of the row to return
-	* @param string|array $fields The fields to select
-	* @param string $id_col The name of the id column
-	* @param bool $load_array If true, will return the result as an array
-	* @return array Returns the row with the id matching $id_value as an object; Returns null on failure
-	*/
-	public function selectById(string $table, int $id, string|array $fields = '*', string $id_col = 'id', bool $load_array = false)
-	{
-		$this->sql->select($fields)->from($table)->where([$id_col => $id])->limit(1);
-
-		$this->readQuery();
-
-		return $this->getRow($load_array);
-	}
-
-	/**
-	* Selects multiple rows from the database based on id
-	* @param string $table The table name
-	* @param array $ids Array with the ids for which we're retriving data
-	* @param string $order_by The order by column
-	* @param string $order The order: asc/desc
-	* @param string|array $fields The fields to select
-	* @param string $id_col The name of the id column
-	* @return array Returns the rows as an array with the id as a key
-	*/
-	public function selectByIds(string $table, array $ids, string $order_by = '', string $order = '', string|array $fields = '*', string $id_col = 'id', bool $load_array = false) : array
-	{
-		if (!$ids) {
-			return [];
-		}
-
-		$this->sql->select($fields)->from($table)->whereIn($id_col, $ids)->orderBy($order_by, $order);
-
-		$this->readQuery();
-
-		return $this->get($id_col, null, $load_array);
+		return $this->query($sql)->getResult();
 	}
 
 	/**
 	* Determines if a row matching some conditions exists
 	* @param string $table The table name
 	* @param array $where Where conditions in the format col => val
-	* @param string $field The field to include in the FROM clause. Should be the primary key, for performance purposes, if possible
+	* @param string $col The column to include in the FROM clause. Should be the primary key, for performance purposes, if possible
 	* @return bool True if the row exists, false otherwise
 	*/
-	public function exists(string $table, array $where, string $field = '*') : bool
+	public function exists(string $table, array $where, string $col = 'id') : bool
 	{
-		$this->sql->select($field)->from($table)->where($where)->limit(1);
-
-		$this->readQuery();
-
-		if ($this->getRow() === null) {
-			return false;
-		}
-
-		return true;
+		$sql = $this->getSql()->select([$col])->from($table)->where($where)->limit(1);
+		
+		return (bool)$this->query($sql)->numRows();
 	}
 
 	/**
@@ -617,11 +539,9 @@ class Db
 	*/
 	public function count(string $table, array $where = []) : int
 	{
-		$this->sql->select('COUNT(*)')->from($table)->where($where);
-
-		$this->readQuery();
-
-		return $this->getCount();
+		$sql = $this->getSql()->select('COUNT(*)')->from($table)->where($where);
+		
+		return $this->query($sql)->getCount();
 	}
 
 	/**
@@ -636,57 +556,50 @@ class Db
 		if (!$ids) {
 			return 0;
 		}
-
-		$this->sql->select('COUNT(*)')->from($table)->whereIn($id_col, $ids);
-
-		$this->readQuery();
-
-		return (int)$this->getResult();
+		
+		$sql = $this->getSql()->select('COUNT(*)')->from($table)->whereIn($id_col, $ids);
+		
+		return $this->query($sql)->getCount();
 	}
 
 	/**
-	* Inserts data
+	* Inserts data into a table
 	* @param string $table The table
-	* @param array $values The data to insert in the column => value format. If value is an array it will be inserted without quotes/escaping. Usefull if a mysql function needs to be called (EG: NOW() )
+	* @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
 	* @return int Returns the id of the newly inserted row
 	*/
 	public function insert(string $table, array $values) : int
-	{
+	{		
 		if (!$values) {
 			return 0;
 		}
+		
+		$sql = $this->getSql()->insert($table)->values($values);
 
-		$this->sql->insert($table)->values($values);
-
-		$this->writeQuery();
-
-		return $this->lastId();
+		return $this->query($sql)->lastId();
 	}
 
 	/**
 	* Does a multiple insert
 	* @param string $table The table
 	* @param array $values_list Array containing the list of data to insert. Eg: [ ['foo' => 'bar'], ['foo' => 'bar2'] ... ]
-	* @param bool $columns If true, will also add the columns list
 	* @return int The number of inserted rows
 	*/
-	public function insertMultiple(string $table, array $values_list, bool $columns = true) : int
+	public function insertMulti(string $table, array $values_list) : int
 	{
 		if (!$values_list) {
 			return 0;
 		}
+		
+		$sql = $this->getSql()->insert($table)->valuesMulti($values_list);
 
-		$this->sql->insert($table)->valuesMulti($values_list, $columns);
-
-		$this->writeQuery();
-
-		return $this->affectedRows();
+		return $this->query($sql)->affectedRows();
 	}
 
 	/**
 	* Updates data
 	* @param string $table The table
-	* @param array $values The data to update in the column => value format. If value is an array it will be inserted without quotes/escaping. Usefull if a mysql function needs to be called (EG: NOW() )
+	* @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
 	* @param array $where Where conditions in the format col => val
 	* @param int $limit The limit, if any
 	* @return int The number of affected rows
@@ -696,18 +609,16 @@ class Db
 		if (!$values) {
 			return 0;
 		}
+		
+		$sql = $this->getSql()->update($table)->set($values)->where($where)->limit($limit);
 
-		$this->sql->update($table)->set($values)->where($where)->limit($limit);
-
-		$this->writeQuery();
-
-		return $this->affectedRows();
+		return $this->query($sql)->affectedRows();
 	}
 
 	/**
 	* Updates a single row in the database based on id
 	* @param $table The table
-	* @param array $values @see update
+	* @param array $values The data to be updated. @see Db::update()
 	* @param int $id The id of the row to be updated
 	* @param string $id_col The name of the id column
 	* @return int The number of affected rows
@@ -727,15 +638,13 @@ class Db
 	*/
 	public function updateByIds(string $table, array $values, array $ids, string $id_col = 'id') : int
 	{
-		if (!$ids) {
+		if (!$values || !$ids) {
 			return 0;
 		}
+		
+		$sql = $this->getSql()->update($table)->set($values)->whereIn($id_col, $ids);
 
-		$this->sql->update($table)->set($values)->whereIn($id_col, $ids);
-
-		$this->writeQuery();
-
-		return $this->affectedRows();
+		return $this->query($sql)->affectedRows();
 	}
 
 	/**
@@ -749,12 +658,10 @@ class Db
 		if (!$values) {
 			return 0;
 		}
+		
+		$sql = $this->getSql()->replace($table)->set($values);
 
-		$this->sql->replace($table)->set($values);
-
-		$this->writeQuery();
-
-		return $this->lastId();
+		return $this->query($sql)->lastId();
 	}
 
 	/**
@@ -766,11 +673,9 @@ class Db
 	*/
 	public function delete(string $table, array $where = [], int $limit = 0) : int
 	{
-		$this->sql->delete()->from($table)->where($where)->limit($limit);
+		$sql = $this->getSql()->delete()->from($table)->where($where)->limit($limit);
 
-		$this->writeQuery();
-
-		return $this->affectedRows();
+		return $this->query($sql)->affectedRows();
 	}
 
 	/**
@@ -798,13 +703,19 @@ class Db
 			return 0;
 		}
 
-		$this->sql->delete()->from($table)->whereIn($id_col, $ids);
+		$sql = $this->getSql()->delete()->from($table)->whereIn($id_col, $ids);
 
-		$this->writeQuery();
-
-		return $this->affectedRows();
+		return $this->query($sql)->affectedRows();
 	}
 	
+	/**
+	* Returns the NOW function
+	* @return array
+	*/
+	public function now() : array
+	{
+		return ['function' => 'NOW'];
+	}
 	
 	/**
 	* Returns the UNIX_TIMESTAMP function
@@ -824,6 +735,10 @@ class Db
 	{
 		return ['function' => 'CRC32', 'value' => $value];
 	}
+
+
+
+
 
 	/**
 	* Returns the columns of table $table

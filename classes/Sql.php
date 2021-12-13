@@ -37,7 +37,17 @@ class Sql
 	/**
 	* @internal
 	*/
-	protected array $has = [];	
+	protected bool $having = false;	
+	
+	/**
+	* @internal
+	*/
+	protected int $param_index = 0;
+	
+	/**
+	* @internal
+	*/
+	protected int $in_index = 0;
 
 	/**
 	* Converts the sql to a string
@@ -45,6 +55,15 @@ class Sql
 	public function __toString()
 	{
 		return $this->getSql();
+	}
+	
+	/**
+	* Runs the SQL code as a query
+	* @param return DbResult
+	*/
+	public function query() : DbResult
+	{
+		return $this->app->db->query($this);
 	}
 
 	/**
@@ -93,6 +112,17 @@ class Sql
 		
 		return ':' . $param;
 	}
+	
+	/**
+	* Generates a param name
+	*/
+	protected function generateParam() : string
+	{
+		$param = 'param_' . $this->param_index;
+		$this->param_index++;
+		
+		return $param;	
+	}
 
 	/**
 	*Returns true if this is a read statement
@@ -113,7 +143,9 @@ class Sql
 		$this->params = [];
 		$this->is_read = $is_read;
 		$this->where = false;
-		$this->has = [];
+		$this->having = false;
+		$this->param_index = 0;
+		$this->in_index = 0;
 
 		return $this;
 	}
@@ -285,7 +317,7 @@ class Sql
 	{
 		$this->start();
 		
-		$table = $this->escapeTable($table, $alias);
+		$table = $this->escapeTable($table);
 		
 		$this->sql = "INSERT INTO {$table}";
 		
@@ -456,7 +488,7 @@ class Sql
 	
 	/**
 	* Builds the SET part of an update query
-		* @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+	* @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
 	* @return $this
 	*/
 	public function set(array $values)
@@ -496,22 +528,25 @@ class Sql
 	protected function startWhere()
 	{
 		if (!$this->where) {
-			$this->sql.= ' WHERE ';
+			$this->sql.= ' WHERE';
 			$this->where = true;
 		}	
 	}
 	/**
 	* Builds a WHERE clause
 	* @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
-	* @param string $value The value, if $where is specified as string
 	* @param string $delimitator The delimitator to use between parts. By default AND is used.
 	* @return $this
 	*/
 	public function where(array $where, string $delimitator = 'AND')
 	{
+		if (!$where) {
+			return $this;
+		}
+		
 		$this->startWhere();
 		
- 		$this->sql.= '(' . $this->getConditions($where, $delimitator) . ')';
+ 		$this->sql.= ' (' . $this->getConditions($where, $delimitator) . ')';
 						
 		return $this;
 	}
@@ -525,6 +560,10 @@ class Sql
 	*/
 	public function whereIn(string $column, array $values, bool $is_int = true)
 	{
+		if (!$values) {
+			return $this;
+		}
+		
 		$this->startWhere();
 		
 		$this->sql.= ' ' . $this->escapeColumn($column) . $this->getIn($values, $is_int);
@@ -576,7 +615,6 @@ class Sql
 	*/
 	protected function getIn(array $values, bool $is_int = true) : string
 	{
-		static $index = 0;
 		if ($is_int) {
 			$values = $this->app->filter->int($values);			
 		} else {
@@ -584,29 +622,32 @@ class Sql
 			
 			foreach ($values as $value) {
 				//generate a param for each IN value
-				$col = 'in_' . $index . '_' . $key;
+				$col = 'in_' . $this->in_index . '_' . $key;
 				$values[$key] = $this->addParam($col, $value);
 				
 				$key++;
 			}
 			
-			$index++;
+			$this->in_index++;
 		}
 
-		return ' IN(' . implode(',', $values) . ')';
+		return ' IN(' . implode(', ', $values) . ')';
 	}
 		
 	/**
 	* Builds multiple conditions
 	* @param array $conditions The conditions 
 	* @param string $delimitator The delimitator to use
+	* @param bool If true, will escape the column
+	* @param bool If true, will generate param names
 	* @return string
 	*/
-	protected function getConditions(array $conditions, string $delimitator) : string
+	protected function getConditions(array $conditions, string $delimitator, bool $escape_col = true, bool $generate_param = false) : string
 	{		
 		$parts = [];
 		foreach ($conditions as $col => $value) {
-			$col_esc = $this->escapeColumn($col);
+			$col_esc = $escape_col ? $this->escapeColumn($col) : $col;
+			$col = $generate_param ? $this->generateParam() : $col;
 
 			if (is_array($value)) {
 				if ($this->isIn($value)) {
@@ -623,7 +664,37 @@ class Sql
 			}	
 		}	
 		
-		return ' ' . implode(' ' . $delimitator . ' ', $parts);
+		return implode(' ' . $delimitator . ' ', $parts);
+	}
+	
+	/**
+	* Starts a HAVING clause
+	*/
+	protected function startHaving()
+	{
+		if (!$this->having) {
+			$this->sql.= ' HAVING';
+			$this->having = true;
+		}	
+	}
+	
+	/**
+	* Builds a HAVING clause
+	* @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
+	* @param string $delimitator The delimitator to use between parts. By default AND is used.
+	* @return $this
+	*/
+	public function having(array $having, string $delimitator = 'AND')
+	{
+		if (!$having) {
+			return $this;
+		}
+		
+		$this->startHaving();
+		
+ 		$this->sql.= ' (' . $this->getConditions($having, $delimitator, false, true) . ')';
+						
+		return $this;
 	}
 	
 	/**
@@ -634,6 +705,10 @@ class Sql
 	*/
 	public function orderBy(string $order_by, string $order = '')
 	{
+		if (!$order_by) {
+			return $this;
+		}
+		
 		$order_by = $this->escapeColumn($order_by);
 		$order = strtoupper(trim($order));
 
@@ -709,107 +784,4 @@ class Sql
 
 		return $this;
 	}
-
-
-
-
-
-
-
-
-	
-	
-	
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-	/**
-	* Returns the delimitator, between where/having parts
-	* @param string $type The delimitator's type
-	* @param string $delimitator The delimitator
-	* @return string
-	*/
-	protected function getDelimitator(string $type, string $delimitator) : string
-	{
-		$add = false;
-		if (empty($this->has[$type])) {
-			$this->has[$type] = true;
-			$delimitator = $type;
-		}
-
-		return ' ' . $delimitator;
-	}
-
-	/**
-	* Builds a condition
-	* @param string $col The name of the column
-	* @param string $value The value
-	* @param string $operator The operator
-	* @param string $alias If specified, will use the alias, instead of the column as a prepared statement key
-	* @param bool $escape_col If true, the column name will be escaped using ``
-	* @return string
-	*/
-	protected function getCondition(string $col, string $value, string $operator = '=', string $alias = '', bool $escape_col = true) : string
-	{
-		$col_esc = $col;
-		if ($escape_col) {
-			$col_esc = $this->escapeColumn($col);
-		}
-
-		$key = $col;
-		if ($alias) {
-			$key = $alias;
-		}
-
-		if (isset($this->params[$key])) {
-			$key = $this->getKey($key);
-		}
-
-		$this->params[$key] = $value;
-
-		return " {$col_esc} {$operator} :{$key}";
-	}
-
-
-
-	
-
-	/**
-	* Builds a HAVING statement
-	* @param string|array $where Either array or string. If array the format must be: column => value or column => [value,operator,alias]. If string, the name of the column
-	* @param string $value The value
-	* @param string $operator
-	* @param string alias
-	* @param string $delimitator The delimitator to use between parts. By default AND is used.
-	* @return $this
-	*/
-	public function having(string|array $where, string $value = '', string $operator = '=', string $alias = '', string $delimitator = 'AND')
-	{
-		if (!$where) {
-			return $this;
-		}
-
-		$this->sql.= $this->getDelimitator('HAVING', $delimitator);
-
-		if (is_array($where)) {
-			$this->sql.= $this->getConditions($where, $delimitator);
-		} else {
-			$this->sql.= $this->getCondition($where, $value, $operator, $alias, false);
-		}
-
-		return $this;
-	}
-
-	
 }

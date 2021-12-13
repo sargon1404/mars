@@ -125,7 +125,7 @@ class Db implements DriverInterface, \SessionHandlerInterface, \SessionUpdateTim
 	*/
 	public function validateId($id)
 	{
-		return $this->app->db->exists($this->table, ['id' => $id], 'id');
+		return $this->app->db->exists($this->table, ['id' => $id]);
 	}
 
 	/**

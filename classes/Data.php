@@ -85,7 +85,7 @@ abstract class Data
 
 		$data = $this->app->memcache->get($key);
 		if (!$data) {
-			$data = $this->app->db->select($this->getTable(), 'name, value, scope', ['scope' => $this->scope]);
+			$data = $this->app->db->select($this->getTable(), ['scope' => $this->scope])->all();
 
 			$data = $this->processData($data);
 

@@ -289,7 +289,7 @@ abstract class Item extends Row
 	*/
 	public function getRowByName(string $name) : ?object
 	{
-		return $this->db->selectRow($this->getTable(), '*', ['name' => $name]);
+		return $this->db->selectRow($this->getTable(), ['name' => $name])->fetch();
 	}
 
 	/**
@@ -681,7 +681,7 @@ abstract class Item extends Row
 			return;
 		}
 
-		$data = $this->db->selectById($this->getTable(), $id, '*', $this->getIdName(), true);
+		$data = $this->db->select($this->getTable(), [$this->getIdName() => $id])->fetchArray();
 
 		return $this->setStored($data);
 	}

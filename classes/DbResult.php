@@ -101,6 +101,15 @@ class DbResult
 	}
 	
 	/**
+	* Alias for fetchAll
+	* @see DbResult::fetchAll
+	*/
+	public function all(bool|string $class_name = '') : array
+	{
+		return $this->fetchAll($class_name);
+	}
+	
+	/**
 	* Returns all the results from a column
 	* @param int $column The column
 	* @return array The rows
@@ -162,21 +171,21 @@ class DbResult
 	}
 	
 	/**
+	* Returns the first column from the generated results
+	* @return array The results
+	*/
+	public function getCol() : array
+	{
+		return $this->fetchAllFromColumn();
+	}	
+	
+	/**
 	* Returns the value from the first column of the first row
 	* @return string The result or null, if there isn't any
 	*/
 	public function getResult() : ?string
 	{
 		return $this->fetchColumn();
-	}
-	
-	/**
-	* Returns the first column from the generated results
-	* @return array The results
-	*/
-	public function getFields() : array
-	{
-		return $this->fetchAllFromColumn();
 	}
 	
 	/**

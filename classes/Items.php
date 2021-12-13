@@ -193,7 +193,7 @@ abstract class Items extends Rows implements \ArrayAccess
 			return new $class_name($id);
 		}
 
-		return $this->db->selectById($this->getTable(), $id, $this->fields, $this->getIdName());
+		return $this->db->selectById($this->getTable(), $id, $this->getIdName(), $this->fields);
 	}
 
 	/**
