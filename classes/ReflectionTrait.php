@@ -104,6 +104,6 @@ trait ReflectionTrait
 	*/
 	protected function getClassPath() : string
 	{
-		return App::sl(dirname($this->getClassFilename()));
+		return dirname($this->getClassFilename()) . '/';
 	}
 }

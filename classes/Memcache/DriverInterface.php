@@ -15,6 +15,7 @@ interface DriverInterface
 	* Connects to the memcache server
 	* @param string $host The host
 	* @param string $port The port
+	* @throws Exception if the connection can't be established
 	*/
 	public function connect(string $host, string $port);
 

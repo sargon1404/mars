@@ -23,7 +23,7 @@ class Timer
 	protected array $timers = [];
 
 	/**
-	* Builds the timer object
+	* Builds the Timer object
 	*/
 	public function __construct()
 	{
@@ -31,33 +31,22 @@ class Timer
 	}
 
 	/**
-	* Gets the microtime
-	* @return float The microtime
-	*/
-	public function getMicrotime() : float
-	{
-		[$usec, $sec] = explode(' ', microtime());
-
-		return ((float)$usec + (float)$sec);
-	}
-
-	/**
-	* Gets the execution time: the microtime elapsed from the script's start until the function was called
+	* Gets the microtime elapsed from the script's start until the function was called
 	* @return float The execution time
 	*/
 	public function getExecutionTime() : float
 	{
-		return round($this->getMicrotime() - $this->start, 4);
+		return round(microtime(true) - $this->start, 4);
 	}
 
 	/**
 	* Starts a timer
 	* @param string $name The name of the timer to start
-	* @return $this
+	* @return static
 	*/
-	public function start(string $name = 'timer')
+	public function start(string $name = 'timer') : static
 	{
-		$this->timers[$name] = $this->getMicrotime();
+		$this->timers[$name] = microtime(true);
 
 		return $this;
 	}
@@ -74,7 +63,7 @@ class Timer
 			return 0;
 		}
 
-		$diff = round($this->getMicrotime() - $this->timers[$name], 4);
+		$diff = round(microtime(true) - $this->timers[$name], 4);
 
 		if ($erase) {
 			unset($this->timers[$name]);

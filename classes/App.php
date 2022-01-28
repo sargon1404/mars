@@ -12,22 +12,10 @@ namespace Mars;
 */
 class App
 {
-	use AppFunctionsTrait;
-
 	/**
 	* @var float $version The version
 	*/
 	public string $version = '1.00';
-
-	/**
-	* @var string $ip The ip used to make the request
-	*/
-	public string $ip = '';
-
-	/**
-	* @var string $useragent The useragent
-	*/
-	public string $useragent = '';
 
 	/**
 	* @var bool $is_bin True if the app is run as a bin script
@@ -38,6 +26,51 @@ class App
 	* @var bool $is_https True if the page is loaded with https, false otherwise
 	*/
 	public bool $is_https = false;
+
+	/**
+	* @var string $scheme The page's scheme: http:// or https://
+	*/
+	public string $scheme = '';
+
+	/**
+	* @var string $method The request method. get/post.
+	*/
+	public string $method = '';
+
+	/**
+	* @var string $protocol The server protocol
+	*/
+	public string $protocol = '';
+
+	/**
+	* @var bool $is_https2 True if the page is loaded using HTTP/2
+	*/
+	public bool $is_http2 = false;
+
+	/**
+	* @var string $url The url. Eg: http://mydomain.com/mars
+	*/
+	public string $url = '';
+
+	/**
+	* @var string $url_static The url from where static content is served
+	*/
+	public string $url_static = '';
+
+	/**
+	* @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
+	*/
+	public string $full_url = '';
+
+	/**
+	* @var string $ip The ip used to make the request
+	*/
+	public string $ip = '';
+
+	/**
+	* @var string $useragent The useragent
+	*/
+	public string $useragent = '';
 
 	/**
 	* @var bool $accepts_gzip If true, the user's browser accepts gzipped output
@@ -58,56 +91,6 @@ class App
 	* @var string $path The location on the disk where the site is installed Eg: /var/www/mysite
 	*/
 	public string $path = '';
-
-	/**
-	* @var string $scheme The page's scheme: http:// or https://
-	*/
-	public string $scheme = '';
-
-	/**
-	* @var string $url The url. Eg: http://mydomain.com/mars
-	*/
-	public string $url = '';
-
-	/**
-	* @var string $url_static The url from where static content is served
-	*/
-	public string $url_static = '';
-
-	/**
-	* @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
-	*/
-	public string $full_url = '';
-
-	/**
-	* @var string current_url The url of the current page determined from $_SERVER. Does't include the QUERY_STRING
-	*/
-	public string $current_url = '';
-
-	/**
-	* @var string $content The system's generated content
-	*/
-	public string $content = '';
-
-	/**
-	* @var Config $config The config object
-	*/
-	public Config $config;
-
-	/**
-	* @var Cache $cache The cache object
-	*/
-	public Cache $cache;
-
-	/**
-	* @var string $namespace The root namespace
-	*/
-	public string $namespace = "App\\";
-
-	/**
-	* @var string $extensions_namespace The root namespace for extensions
-	*/
-	public string $extensions_namespace = "App\\Extensions\\";
 
 	/**
 	* @var string $log_path The folder where the log files are stored
@@ -135,6 +118,87 @@ class App
 	public string $extensions_url = '';
 
 	/**
+	* @var string $content The system's generated content
+	*/
+	public string $content = '';
+
+
+
+
+
+
+
+	/**
+	* @var Config $config The config object
+	*/
+	public Config $config;
+
+	/**
+	* @var Cache $cache The cache object
+	*/
+	public Cache $cache;
+
+	/**
+	* @var Caching $caching The caching object
+	*/
+	public Caching $caching;
+
+	/**
+	* @var Db $db The Db object
+	*/
+	public Db $db;
+
+	/**
+	* @var Encoder $encoder The encoder object
+	*/
+	public Encoder $encoder;
+
+	/**
+	* @var Memcache $memcache The memcache object
+	*/
+	public Memcache $memcache;
+
+	/**
+	* @var Random $random The encoder object
+	*/
+	public Random $random;
+
+	/**
+	* @var Serializer $serializer The serializer object
+	*/
+	public Serializer $serializer;
+
+	/**
+	* @var Time $time The time object
+	*/
+	public Time $time;
+
+	/**
+	* @var Timer $timer The timer object
+	*/
+	public Timer $timer;
+
+	/**
+	* @var Sql $sql The SQL object
+	*/
+	public Sql $sql;
+
+	/**
+	* @var Uri $uri The uri object
+	*/
+	public Uri $uri;
+
+	/**
+	* @var string $namespace The root namespace
+	*/
+	public string $namespace = "App\\";
+
+	/**
+	* @var string $extensions_namespace The root namespace for extensions
+	*/
+	public string $extensions_namespace = "App\\Extensions\\";
+
+	/**
 	* @var App $instance The app instance
 	*/
 	protected static App $instance;
@@ -148,10 +212,10 @@ class App
 	* @const array DIRS The locations of the used dirs
 	*/
 	public const DIRS = [
-		'log' => 'log',
-		'cache' => 'cache',
-		'libraries' => 'libraries',
-		'extensions' => 'extensions'
+		'log_path' => 'log',
+		'cache_path' => 'cache',
+		'libraries_path' => 'libraries',
+		'extensions_path' => 'extensions'
 	];
 
 	/**
@@ -201,12 +265,18 @@ class App
 	protected function __construct()
 	{
 		$this->path = $this->getPath();
+		$this->is_bin = $this->getIsBin();
 
 		if (!$this->is_bin) {
+			$this->is_https = $this->getIsHttps();
 			$this->scheme = $this->getScheme();
-			$this->current_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
-			$this->full_url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			$this->method = $this->getMethod();
+			$this->protocol = $this->getProtocol();
+			$this->is_http2 = $this->getIsHttp2();
+			$this->full_url = $this->getFullUrl();
 		}
+
+		$this->setDirs();
 	}
 
 	/**
@@ -238,37 +308,146 @@ class App
 		$this->loadBooter();
 
 		$this->boot->minimum();
+
+		$this->setPropertiesAfterMinimum();
+		$this->config->normalize();
+
+		$this->boot->caching();
 		$this->boot->libraries();
 		$this->boot->db();
+
+		$this->setPropertiesAfterDb();
+
 		$this->boot->base();
-		$this->boot->env();
+		/*$this->boot->env();
 		$this->boot->document();
 		$this->boot->system();
 
-		$this->plugins->run('app_boot', $this);
+		$this->plugins->run('app_boot', $this);*/
 	}
 
 	/**
-	* Prepares the data
+	* Loads the dependencies class and initializes the required dependencies
 	*/
-	public function setData()
+	protected function loadBooter()
+	{
+		$this->boot = new AppBooter($this);
+	}
+
+	/**
+	* Includes the autoload file for libraries
+	*/
+	protected function loadLibraries()
+	{
+		require_once($this->libraries_path . 'php/vendor/autoload.php');
+	}
+
+	/**
+	* Prepares the properties, after the minimum boot has finished
+	*/
+	public function setPropertiesAfterMinimum()
 	{
 		if (!$this->is_bin) {
 			$this->ip = $this->getIp();
 			$this->useragent = $this->getUseragent();
+			$this->accepts_gzip = $this->getAcceptsGzip();
+			$this->can_gzip = $this->canGzip();
 		}
-
-		$this->setGzip();
-		$this->setDirs();
 	}
 
 	/**
-	* Prepares the data, after the database is available
+	* Prepares the properties, after the database is available
 	*/
-	public function setDataAfterDb()
+	public function setPropertiesAfterDb()
 	{
 		$this->setUrls();
 		$this->setDevelopment();
+	}
+
+	/**
+	* Returns the location on the disk where the site is installed
+	* @return string
+	*/
+	protected function getPath() : string
+	{
+		return dirname(__DIR__, 3) . '/';
+	}
+
+	/**
+	* Returns true if this is a bin script
+	* @return bool
+	*/
+	protected function getIsBin() : bool
+	{
+		if (php_sapi_name() == 'cli') {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	* Returns true if this is a https request
+	* @return bool
+	*/
+	protected function getIsHttps() : bool
+	{
+		if (empty($_SERVER['HTTPS'])) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	* Returns the scheme: http/https
+	* @return string
+	*/
+	protected function getScheme() : string
+	{
+		if ($this->is_https) {
+			return 'https://';
+		}
+
+		return 'http://';
+	}
+
+	/**
+	* Returns the request method: get/post/put
+	* @return string
+	*/
+	protected function getMethod() : string
+	{
+		return strtolower($_SERVER['REQUEST_METHOD']);
+	}
+
+	/**
+	* Returns the server protocol
+	*/
+	protected function getProtocol() : string
+	{
+		return $_SERVER['SERVER_PROTOCOL'];
+	}
+
+	/**
+	* Returns true if the protocol is HTTP/2
+	*/
+	protected function getIsHttp2() : bool
+	{
+		$version = (int)str_replace('HTTP/', '', $this->protocol);
+
+		return $version == 2;
+	}
+
+	/**
+	* Returns the full url of the current page
+	* @return string
+	*/
+	protected function getFullUrl() : string
+	{
+		$url = $this->scheme . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+		return filter_var($url, FILTER_SANITIZE_URL);
 	}
 
 	/**
@@ -294,6 +473,21 @@ class App
 		$this->assignUrls(static::URLS);
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	* Returns the static url of a dir
 	* @param string $url The url key as defined in App::URLS
@@ -304,23 +498,7 @@ class App
 		return $this->url_static . static::URLS[$url] . '/';
 	}
 
-	/**
-	* Sets the gzip properties
-	*/
-	protected function setGzip()
-	{
-		$this->accepts_gzip = false;
 
-		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
-				$this->accepts_gzip = true;
-			}
-		}
-
-		if ($this->accepts_gzip && $this->config->gzip) {
-			$this->can_gzip = true;
-		}
-	}
 
 	/**
 	* Sets the development property
@@ -332,28 +510,7 @@ class App
 		}
 	}
 
-	/**
-	* Returns the location on the disk where the site is installed
-	* @return string
-	*/
-	protected function getPath() : string
-	{
-		return dirname(__DIR__, 3) . '/';
-	}
 
-	/**
-	* Returns the scheme: http/https
-	* @return string
-	*/
-	protected function getScheme() : string
-	{
-		if (isset($_SERVER['HTTPS'])) {
-			$this->is_https = true;
-			return 'https://';
-		}
-
-		return 'http://';
-	}
 
 	/**
 	* Returns the user's IP
@@ -399,25 +556,46 @@ class App
 	}
 
 	/**
+	* Returns true if the browser accepts gzipped content
+	* @return bool
+	*/
+	protected function getAcceptsGzip() : bool
+	{
+		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
+			if (str_contains(strtolower($_SERVER['HTTP_ACCEPT_ENCODING']), 'gzip')) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Returns true if the content can be gzipped
+	* @return bool
+	*/
+	protected function canGzip() : bool
+	{
+		if ($this->accepts_gzip && $this->config->gzip) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+
+
+
+
+	/**
 	* Assigns the dirs as app properties
 	* @param array $dirs The dirs to assign
 	*/
-	protected function assignDirs(array $dirs, string $base_path = '', string $prefix = '', string $suffix = 'path')
+	protected function assignDirs(array $dirs)
 	{
-		if (!$base_path) {
-			$base_path = $this->path;
-		}
-		if ($prefix) {
-			$prefix.= '_';
-		}
-		if ($suffix) {
-			$suffix = '_' . $suffix;
-		}
-
 		foreach ($dirs as $name => $dir) {
-			$name = $prefix . $name . $suffix;
-
-			$this->$name = $base_path . $dir . '/';
+			$this->$name = $this->path . $dir . '/';
 		}
 	}
 
@@ -447,21 +625,7 @@ class App
 		}
 	}
 
-	/**
-	* Loads the dependencies class and initializes the required dependencies
-	*/
-	protected function loadBooter()
-	{
-		$this->boot = new AppBooter($this);
-	}
 
-	/**
-	* Includes the autoload file for libraries
-	*/
-	protected function loadLibraries()
-	{
-		require_once($this->libraries_path . 'php/vendor/autoload.php');
-	}
 
 	/**
 	* Outputs the app's content
@@ -690,6 +854,271 @@ class App
 		}
 
 		header('Location: ' . $url);
+		die;
+	}
+
+	/********************** UTILITY FUNCTIONS ***************************************/
+
+	/**
+	* Converts special chars. to html entitites
+	* @param string $value The value to escape
+	* @return string The escaped value
+	*/
+	public static function e(string $value) : string
+	{
+		return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+	}
+
+	/**
+	* Double escapes a value
+	* @param string $value The value to escape
+	* @param bool $nl2br If true, will apply nl2br to value
+	* @return string The double escaped value
+	*/
+	public static function ex2(string $value, bool $nl2br = true) : string
+	{
+		$value = static::e(static::e($value));
+
+		if ($nl2br) {
+			return nl2br($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	* Decodes the html special entities
+	* @param string $value The value to decode
+	* @return string The decoded value
+	*/
+	public static function de(string $value) : string
+	{
+		return htmlspecialchars_decode($value);
+	}
+
+	/**
+	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
+	* @param string $value The value to escape
+	* @param bool $escape_html If true will call html escape the value
+	* @return string The escaped value
+	*/
+	public static function ejs(string $value, bool $escape_html = true) : string
+	{
+		$value = str_replace(['\\', "'", '"', "\n", "\r"], ['\\\\', "\\'", '\\"', '', ''], $value);
+
+		if ($escape_html) {
+			$value = static::e($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	* Escapes text which will be used inside javascript <script> tags
+	* @param string $value The value to escape
+	* @param bool $nl2br If true, will apply nl2br to value
+	* @return string The escaped value
+	*/
+	public static function ejsc(string $value, bool $nl2br = true) : string
+	{
+		if ($nl2br) {
+			$value = nl2br($value);
+		}
+
+		return static::ejs($value, false);
+	}
+
+	/**
+	* Returns a language string
+	* @param string $str The string index as defined in the languages file
+	* @param array $replace Array with key & values to be used for to search & replace, if any
+	* @return string The language string
+	*/
+	public static function __(string $str, array $replace = []) : string
+	{
+		$str = static::$instance->lang->strings[$str] ?? $str;
+
+		if ($replace) {
+			$str = str_replace(array_keys($replace), $replace, $str);
+		}
+
+		return $str;
+	}
+
+	/**
+	* Returns a string based on the count of $items.
+	* @param string $str_single If count($items) == 1 will return $this->app->lang->strings[$str_single]
+	* @param string $str_multi If count($items) == 1 will return $this->app->lang->strings[$str_multi]. Will also replace {COUNT} with the actual count number
+	* @param Countable $items The items to count
+	* @param string $count_str The part which will be replaced with the count number. Default: {COUNT}
+	* @return string
+	*/
+	public static function __c(string $str_single, string $str_multi, \Countable $items, string $count_str = '{COUNT}') : string
+	{
+		$count = count($items);
+		if ($count == 1) {
+			return static::__($str_single, []);
+		} else {
+			return static::__($str_multi, [$count_str => $count]);
+		}
+	}
+
+	/**
+	* Escapes a language string. Shorthand for e(__($str))
+	* @param string $str The string index as defined in the languages file
+	* @param array $replace Array with key & values to be used for to search & replace, if any
+	* @return string
+	*/
+	public static function __e(string $str, array $replace = []) : string
+	{
+		return static::e(static::__($str, $replace));
+	}
+
+	/**
+	* Javascript escapes a language string. Shorthand for ejs(__($str))
+	* @param string $str The string index as defined in the languages file
+	* @param array $replace Array with key & values to be used for to search & replace, if any
+	* @return string
+	*/
+	public function __ejs(string $str, array $replace = []) : string
+	{
+		return static::ejs(static::__($str, $replace));
+	}
+
+	/**
+	* Adds a slash at the end of a path, if it's not already there
+	* @param string $path The path
+	* @return string The path
+	*/
+	public static function fixPath(string $path) : string
+	{
+		if (!$path) {
+			return '';
+		}
+
+		return rtrim($path, '/') . '/';
+	}
+
+	/**
+	* Converts a string to a class name. Eg: some-action => SomeAction
+	* @param string $str The string to convert
+	* @return string The class name
+	*/
+	public static function getClass(string $str) : string
+	{
+		$str = preg_replace('/[^a-z0-9\- ]/i', '', $str);
+		$str = str_replace(' ', '-', $str);
+
+		$str = ucwords($str, '-');
+		$str = str_replace('-', '', $str);
+
+		return $str;
+	}
+
+	/**
+	* Returns a property of an object or an array value
+	* @param string $name The name of the property/index
+	* @param array|object $data The data to return the property from
+	* @return mixed The property
+	*/
+	public static function getProperty(string $name, array|object $data)
+	{
+		if (is_array($data)) {
+			return $data[$name] ?? null;
+		} else {
+			return $data->$name ?? null;
+		}
+	}
+
+	/**
+	* Returns an array from an array/object/iterator
+	* @param mixed $array The array
+	* @return array
+	*/
+	public static function array($array) : array
+	{
+		if (!$array) {
+			return [];
+		}
+
+		if (is_array($array)) {
+			return $array;
+		} elseif (is_iterable($array)) {
+			return iterator_to_array($array);
+		} elseif (is_object($array)) {
+			return get_object_vars($array);
+		} else {
+			return (array)$array;
+		}
+	}
+
+	/**
+	* Unsets from $array the specified keys
+	* @param array $array The array
+	* @param string|array The keys to unset
+	* @return array The array
+	*/
+	public static function unset(array &$array, string|array $keys) : array
+	{
+		$keys = (array)$keys;
+
+		foreach ($keys as $key) {
+			if (isset($array[$key])) {
+				unset($array[$key]);
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	* Pads a number with a leading 0 if it's below 10. Eg: if $number = 6 returns 06
+	* @param int $number The number
+	* @return string The number with a leading 0
+	*/
+	public static function padInt(int $number) : string
+	{
+		if ($number < 10) {
+			return '0' . $number;
+		}
+
+		return $number;
+	}
+
+	/**
+	* Does a print_r on $var and outputs <pre> tags
+	* @param mixed $var The variable
+	* @param bool $die If true, will call die after
+	*/
+	public static function pp($var, bool $die = true)
+	{
+		echo '<pre>';
+		\print_r($var);
+		echo '</pre>';
+
+		if ($die) {
+			die;
+		}
+	}
+
+	/**
+	* Alias for dd
+	* @see App::pp()
+	*/
+	public static function dd($var, bool $die = true)
+	{
+		static::pp($var, $die);
+	}
+
+	/**
+	* Prints the debug backtrace
+	*/
+	public static function backtrace()
+	{
+		echo '<pre>';
+		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		echo '</pre>';
+
 		die;
 	}
 }

@@ -35,13 +35,13 @@ class Caching extends Cacheable
 		if (!$this->app->config->content_cache_enable || defined('CONTENT_CACHE_DISABLE')) {
 			return;
 		}
-		if (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
+		if ($this->app->method == 'post') {
 			return;
 		}
 
 		$this->path = $this->app->cache_path . 'content/';
 		$this->driver = $this->app->config->content_cache_driver;
-		$this->expires_interval = $this->app->config->content_cache_expires_interval;
+		$this->expires_hours = $this->app->config->content_cache_expire_hours;
 		$this->minify = $this->app->config->content_cache_minify;
 		$this->can_cache = true;
 
@@ -61,7 +61,6 @@ class Caching extends Cacheable
 	protected function getFile() : string
 	{
 		$file = hash('sha256', $this->app->full_url) . '.' . $this->extension;
-
 		if ($this->gzip) {
 			$file.= '.gz';
 		}
@@ -73,7 +72,7 @@ class Caching extends Cacheable
 	* @see \Mars\Cachable::store()
 	* {@inheritdoc}
 	*/
-	public function store(string $content)
+	public function store(string $content) : static
 	{
 		if ($this->minify) {
 			$content = $this->minify($content);
@@ -91,9 +90,9 @@ class Caching extends Cacheable
 	* Deletes an item from the cache
 	* @param int $item_id The item's id
 	* @param string $item_type The item's type
-	* @return $this
+	* @return static
 	*/
-	public function deleteItem(int $item_id, string $item_type)
+	public function deleteItem(int $item_id, string $item_type) : static
 	{
 		$file = $item_type . '_' . $item_id . '.' . $this->extension;
 

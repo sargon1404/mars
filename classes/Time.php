@@ -6,6 +6,10 @@
 
 namespace Mars;
 
+use DateTime;
+use DateTimeZone;
+use DateInterval;
+
 /**
 * The Time Class
 * Time related functions
@@ -15,247 +19,188 @@ class Time
 	use AppTrait;
 
 	/**
-	* Returns the current time as a timestamp
-	* @return int
+	* @var SQL_DATETIME The SQL datetime format
 	*/
-	public function get() : int
+	public const SQL_DATETIME = 'Y-m-d H:i:s';
+
+	/**
+	* @var SQL_DATE The SQL date format
+	*/
+	public const SQL_DATE = 'Y-m-d';
+
+	/**
+	* @var SQL_TIME The SQL time format
+	*/
+	public const SQL_TIME = 'H:i:s';
+
+	/**
+	* @var string $timezone_id The
+	*/
+	public string $timezone_id = 'UTC';
+
+	/**
+	* @var \DateTimeZone $timezone The timezone applied to the datetime computations
+	*/
+	public DateTimeZone $timezone;
+
+	/**
+	* Builds the time object
+	* Sets the default timezone to UTC
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
 	{
-		return time();
+		date_default_timezone_set('UTC');
+
+		$this->app = $app;
+
+		$this->timezone = new DateTimeZone($this->timezone_id);
 	}
 
 	/**
-	* Returns the timestamp from a date/string|timestamp
-	* @param int|string $date Either a timestamp (int) or a date/datetime, if string
+	* Returns a DateTime object from a datetime
+	* @param int|string|DateTime $datetime The datetime
+	* @param bool $is_utc If true, will return the date in the UTC timezone
+	* @return \DateTime
+	*/
+	public function get(int|string|DateTime $datetime = 0, bool $is_utc = true) : DateTime
+	{
+		if (!$datetime instanceof DateTime) {
+			if (!$datetime) {
+				$datetime = 'now';
+			}
+
+			if (is_numeric($datetime)) {
+				$datetime = '@' . $datetime;
+			}
+
+			$datetime = new DateTime($datetime);
+		}
+
+		if (!$is_utc) {
+			$datetime->setTimezone($this->timezone);
+		}
+
+		return $datetime;
+	}
+
+	/**
+	* Returns the timestamp from a date/string|timestamp in the UTC timezone
+	* @param int|string|DateTime $datetime The datetime
 	* @return int The timestamp
 	*/
-	public function getTimestamp(int|string $date) : int
+	public function getTimestamp(int|string|DateTime $datetime) : int
 	{
-		if (!$date) {
+		if (!$datetime) {
 			return 0;
 		}
 
-		if (is_numeric($date) && (int)$date == $date) {
-			return $date;
-		} elseif (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/', $date, $m)) {
-			return mktime($m[4], $m[5], $m[6], $m[2], $m[3], $m[1]);
-		} elseif (preg_match('/([0-9]{4})-([0-9]{2})-([0-9]{2})/', $date, $m)) {
-			return mktime(0, 0, 0, $m[2], $m[3], $m[1]);
-		} else {
-			return strtotime($date);
-		}
+		return $this->get($datetime)->getTimestamp();
 	}
 
 	/**
-	* Converts a timestamp to a sql datetime representation
-	* @param int|string $timestamp The timestamp
-	* @param bool $date If true, will return the date part
-	* @param bool $time If true, will return the time part
-	* @return string The sql datetime
+	* Returns a SQL datetime in the UTC timezone
+	* @param int|string|DateTime $datetime The datetime
+	* @return string
 	*/
-	public function getSql(int|string $timestamp, bool $date = true, bool $time = true) : string
+	public function getDatetime(int|string|DateTime $datetime) : string
 	{
-		$timestamp = $this->getTimestamp($timestamp);
-
-		$date_part = '';
-		$time_part = '';
-
-		if ($timestamp) {
-			$ct = getdate($timestamp);
-
-			$date_part = $ct['year'] . '-' . App::padInt($ct['mon']) . '-' . App::padInt($ct['mday']);
-			$time_part = App::padInt($ct['hours']) . ':' . App::padInt($ct['minutes']) . ':' . App::padInt($ct['seconds']);
+		if (!$datetime) {
+			return '0000-00-00 00:00:00';
 		}
 
-		if ($date_part && $time_part) {
-			if ($date && $time) {
-				return $date_part . ' ' . $time_part;
-			} elseif ($date) {
-				return $date_part;
-			} elseif ($time) {
-				return $time_part;
-			}
+		return $this->get($datetime)->format(self::SQL_DATETIME);
+	}
+
+	/**
+	* Returns a SQL date in the UTC timezone
+	* @param int|string|DateTime $datetime The datetime
+	* @return string
+	*/
+	public function getDate(int|string|DateTime $datetime) : string
+	{
+		if (!$datetime) {
+			return '0000-00-00';
 		}
 
-		return '0000-00-00 00:00:00';
-	}
-	
-	/**
-	* Converts a timestamp to an ISO 8601 datetime representation
-	* @param int|string $timestamp The timestamp
-	* @param bool $date If true, will return the date part
-	* @param bool $time If true, will return the time part
-	* @return string The datetime
-	*/
-	public function getISO(int|string $timestamp, bool $date = true, bool $time = true) : string
-	{
-		return $this->getSql($timestamp, $date, $time);
+		return $this->get($datetime)->format(self::SQL_DATE);
 	}
 
 	/**
-	* Adjusts $timestamp from UTC to user's timezone
-	* @param int $timestamp The timestamp
-	* @param int $timezone_offset The timezone offset - in hours - between user's timezone and UTC
-	* @return int The adjusted timestamp,from UTC to user's timezone
+	* Returns a SQL time in the UTC timezone
+	* @param int|string|DateTime $datetime The datetime
+	* @return string
 	*/
-	public function adjust(int $timestamp, int $timezone_offset = 0) : int
+	public function getTime(int|string|DateTime $datetime) : string
 	{
-		if (!$timestamp || !$timezone_offset) {
-			return $timestamp;
+		if (!$datetime) {
+			return '00:00:00';
 		}
 
-		return $timestamp + ($timezone_offset * 3600);
+		return $this->get($datetime)->format(self::SQL_TIME);
 	}
 
 	/**
-	* Adjusts $timestamp from the user's timezone to UTC
-	* @param int $timestamp The timestamp
-	* @param int $timezone_offset The timezone offset - in hours - between user's timezone and UTC
-	* @return int The adjusted timestamp,from user's timezone to UTC
+	* Adds to $datetime a certain number of days/months/weeks/years
+	* @param int $units The number of time units to add
+	* @param string $type The interval type: days/months/weeks/years
+	* @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
+	* @return DateTime The new date as a timestamp in the UTC timezone
 	*/
-	public function adjustUtc(int $timestamp, int $timezone_offset = 0) : int
+	public function add(int $units, string $type, int|string|DateTime $datetime = 0) : DateTime
 	{
-		if (!$timestamp || !$timezone_offset) {
-			return $timestamp;
+		$interval = $this->getDateInterval($units, $type);
+
+		return $this->get($datetime)->add($interval);
+	}
+
+	/**
+	* Subtracts from $datetime a certain number of days/months/weeks/years
+	* @param int $units The number of time units to  subtract
+	* @param string $type The interval type: days/months/weeks/years
+	* @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
+	* @return DateTime The new date as a timestamp in the UTC timezone
+	*/
+	public function sub(int $units, string $type, int|string|DateTime $datetime = 0) : DateTime
+	{
+		$interval = $this->getDateInterval($units, $type);
+
+		return $this->get($datetime)->sub($interval);
+	}
+
+	/**
+	* Creates a DateInterval object
+	* @param int $units The number of time units
+	* @param string $type The interval type: days/months/weeks/years
+	* @return DateInterval
+	*/
+	protected function getDateInterval(int $units, string $type) : DateInterval
+	{
+		$duration = '';
+		$type = strtolower(trim($type));
+
+		switch($type) {
+			case 'day':
+			case 'days':
+				$duration = "P{$units}D";
+				break;
+			case 'week':
+			case 'weeks':
+				$duration = "P{$units}W";
+				break;
+			case 'month':
+			case 'months':
+				$duration = "P{$units}M";
+				break;
+			case 'year':
+			case 'years':
+				$duration = "P{$units}Y";
+				break;
+			default:
+				$duration = 'P0D';
 		}
 
-		return $timestamp - ($timezone_offset * 3600);
-	}
-
-	/**
-	* Returns the timezone offset -in hours- between $timezone and utc
-	* @param string $timezone The timezone
-	* @return int The offset
-	*/
-	public function getTimezoneOffset(string $timezone) : int
-	{
-		$dtz = new \DateTimeZone($timezone);
-		$dt = new \DateTime('now', $dtz);
-
-		return $dt->getOffset() / 3600;
-	}
-
-	/**
-	* Adds 1 day to $timestamp.
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp + 1 day
-	*/
-	public function addDay(int $timestamp = 0) : int
-	{
-		return $this->addDays(1, $timestamp);
-	}
-
-	/**
-	* Adds to $timestamp a certain number of days.
-	* @param int $days The number of days to add
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp + $days days
-	*/
-	public function addDays(int $days, int $timestamp = 0) : int
-	{
-		if (!$timestamp) {
-			$timestamp = time();
-		}
-
-		$do = new \DateTime();
-		$do->setTimestamp($timestamp);
-		$di = new \DateInterval("P{$days}D");
-
-		$res = $do->add($di);
-
-		return $res->getTimestamp();
-	}
-
-	/**
-	* Adds 1 month to $timestamp
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp + 1 month
-	*/
-	public function addMonth(int $timestamp = 0) : int
-	{
-		return $this->addMonths(1, $timestamp);
-	}
-
-	/**
-	* Adds to $timestamp a certain number of months
-	* @param int $months The number of months to add
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp + $months months
-	*/
-	public function addMonths(int $months, int $timestamp = 0) : int
-	{
-		if (!$timestamp) {
-			$timestamp = time();
-		}
-
-		$do = new \DateTime();
-		$do->setTimestamp($timestamp);
-		$di = new \DateInterval("P{$months}M");
-
-		$res = $do->add($di);
-
-		return $res->getTimestamp();
-	}
-
-	/**
-	* Subtracts 1 day from $timestamp.
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp - 1 day
-	*/
-	public function subDay(int $timestamp = 0) : int
-	{
-		return $this->subDays(1, $timestamp);
-	}
-
-	/**
-	* Subtracts from $timestamp a certain number of days.
-	* @param int $days The number of days to subtract
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp - $days days
-	*/
-	public function subDays(int $days, int $timestamp = 0) : int
-	{
-		if (!$timestamp) {
-			$timestamp = time();
-		}
-
-		$do = new \DateTime();
-		$do->setTimestamp($timestamp);
-		$di = new \DateInterval("P{$days}D");
-
-		$res = $do->sub($di);
-
-		return $res->getTimestamp();
-	}
-
-	/**
-	* Subtracts 1 month to $timestamp
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp - 1 month
-	*/
-	public function subMonth(int $timestamp = 0) : int
-	{
-		return $this->subMonths(1, $timestamp);
-	}
-
-	/**
-	* Subtracts from $timestamp a certain number of months
-	* @param int $months The number of months to sub
-	* @param int $timestamp The timestamp. If $timestamp is 0, the current timestamp will be used
-	* @return int timestamp - $months months
-	*/
-	public function subMonths(int $months, int $timestamp = 0) : int
-	{
-		if (!$timestamp) {
-			$timestamp = time();
-		}
-
-		$do = new \DateTime();
-		$do->setTimestamp($timestamp);
-		$di = new \DateInterval("P{$months}M");
-
-		$res = $do->sub($di);
-
-		return $res->getTimestamp();
+		return new DateInterval($duration);
 	}
 
 	/**
@@ -265,9 +210,7 @@ class Time
 	*/
 	public function getMinutes(int $seconds) : array
 	{
-		$time = [];
-		$time['minutes'] = 0;
-		$time['seconds'] = 0;
+		$time = ['minutes' => 0, 'seconds' => 0];
 		if (!$seconds) {
 			return $time;
 		}

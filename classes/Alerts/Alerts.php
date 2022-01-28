@@ -64,7 +64,7 @@ class Alerts
 	*/
 	public function add(string|array $alert, bool $escape_html = true)
 	{
-		$alerts = App::getArray($alert);
+		$alerts = (array)$alert;
 
 		foreach ($alerts as $str) {
 			$this->alerts[] = new Alert($str, '', $escape_html, true);

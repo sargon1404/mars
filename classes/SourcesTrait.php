@@ -12,7 +12,7 @@ namespace Mars;
 */
 trait SourcesTrait
 {
-		
+
 	/**
 	* @var array $sources Array listing the source objects
 	*/
@@ -36,9 +36,9 @@ trait SourcesTrait
 	* Adds a source to the list of supported sources
 	* @param string $name The name of the driver
 	* @param string $class The class handling the driver
-	* @return $this
+	* @return static
 	*/
-	public function addSource(string $name, string $class)
+	public function addSource(string $name, string $class) : static
 	{
 		$this->supported_sources[$name] = $class;
 
@@ -48,9 +48,9 @@ trait SourcesTrait
 	/**
 	* Adds multiple sources to the list of supported sources
 	* @param array $sources The sources to add
-	* @return $this
+	* @return static
 	*/
-	public function addSupportedSources(array $sources)
+	public function addSupportedSources(array $sources) : static
 	{
 		$this->supported_sources = array_merge($this->supported_sources, $sources);
 

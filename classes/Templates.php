@@ -74,8 +74,8 @@ class Templates
 
 		//url modifiers
 		'url' => ['$this->app->escape->url', 10],
-		'http' => ['$this->app->uri->addHttp', 10],
-		'https' => ['$this->app->uri->addHttps', 10],
+		'http' => ['$this->app->uri->toHttp', 10],
+		'https' => ['$this->app->uri->toHttps', 10],
 		'ajax' => ['$this->app->uri->addAjax', 10],
 
 		//misc

@@ -71,6 +71,20 @@ class Serializer
 	}
 
 	/**
+	* Returns the handle used to serialize/unserialize
+	* @param bool $use_php_driver If true, will always serialize using the php driver
+	* @return DriverInterface The handle
+	*/
+	protected function getCurrentHandle(bool $use_php_driver) : DriverInterface
+	{
+		if ($use_php_driver) {
+			return $this->php_handle;
+		}
+
+		return $this->handle;
+	}
+
+	/**
 	* Serializes data
 	* @param mixed $data The data to serialize
 	* @param bool $encode If true, will base64 encode the serialize data
@@ -79,11 +93,7 @@ class Serializer
 	*/
 	public function serialize($data, bool $encode = true, bool $use_php_driver = true) : string
 	{
-		if ($use_php_driver) {
-			$data = $this->php_handle->serialize($data);
-		} else {
-			$data = $this->handle->serialize($data);
-		}
+		$data = $this->getCurrentHandle($use_php_driver)->serialize($data);
 
 		if ($encode) {
 			$data = base64_encode($data);
@@ -110,10 +120,6 @@ class Serializer
 			$data = base64_decode($data);
 		}
 
-		if ($use_php_driver) {
-			return $this->php_handle->unserialize($data);
-		}
-
-		return $this->handle->unserialize($data);
+		return $this->getCurrentHandle($use_php_driver)->unserialize($data);
 	}
 }

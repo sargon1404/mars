@@ -83,11 +83,6 @@ class Request
 		$this->cookie_expires = time() + 3600 * 24 * $this->app->config->cookie_expires_days;
 		$this->cookie_path = $this->app->config->cookie_path;
 		$this->cookie_domain = $this->app->config->cookie_domain;
-
-		$this->method = 'get';
-		if ($this->server('REQUEST_METHOD', true) == 'post') {
-			$this->method = 'post';
-		}
 	}
 
 	/**
@@ -675,7 +670,7 @@ class Request
 	{
 		$ok = true;
 		$is_array = true;
-		$upload_dir = App::sl($upload_dir);
+		$upload_dir = App::fixPath($upload_dir);
 		$uploaded_files = [];
 
 		$this->app->plugins->run('request_upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);

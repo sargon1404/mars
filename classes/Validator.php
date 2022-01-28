@@ -13,6 +13,7 @@ namespace Mars;
 class Validator
 {
 	use AppTrait;
+	use SupportedRulesTrait;
 
 	/**
 	* @var array $errors The list of validation errors, if any
@@ -38,30 +39,7 @@ class Validator
 		'datetime' => '\Mars\Validators\Datetime',
 	];
 
-	/**
-	* Adds a supported validation rule
-	* @param string $name The name of the rule
-	* @param string $class The class which will handle it
-	* @return $this
-	*/
-	public function addSupportedRule(string $name, string $class)
-	{
-		$this->supported_rules[$name] = $class;
-
-		return $this;
-	}
-
-	/**
-	* Removes a supported validation rule
-	* @param string $name The name of the rule
-	* @return $this
-	*/
-	public function removeSupportedRule(string $name)
-	{
-		unset($this->supported_rules[$name]);
-
-		return $this;
-	}
+	
 
 	/**
 	* Returns the validation errors, if any

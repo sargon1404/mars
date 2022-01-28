@@ -16,23 +16,22 @@ class AppBooter
 
 	/**
 	* Initializes the minimum number of objects needed to server content from the cache
-	* @return $this
 	*/
 	public function minimum()
 	{
 		$this->app->timer = new Timer($this->app);
 		$this->app->uri = new Uri($this->app);
-
 		$this->app->config = new Config($this->app);
-		$this->app->config->read();
-
-		$this->app->setData();
-
 		$this->app->serializer = new Serializer($this->app);
 		$this->app->memcache = new Memcache($this->app);
-		$this->app->caching = new Caching($this->app);
+	}
 
-		return $this;
+	/**
+	* Initializes the Caching object
+	*/
+	public function caching()
+	{
+		$this->app->caching = new Caching($this->app);
 	}
 
 	/**
@@ -45,30 +44,24 @@ class AppBooter
 
 	/**
 	* Initializes the db & sql objects
-	* @return $this
 	*/
 	public function db()
 	{
 		$this->app->db = new Db($this->app);
 		$this->app->sql = new Sql($this->app);
-
-		$this->app->setDataAfterDb();
-
-		return $this;
 	}
 
 	/**
 	* Initializes the base objects
-	* @return $this
 	*/
 	public function base()
 	{
-		$this->app->log = new Log($this->app);
+		/*$this->app->log = new Log($this->app);*/
 		$this->app->time = new Time($this->app);
 		$this->app->encoder = new Encoder($this->app);
 		$this->app->random = new Random($this->app);
 		$this->app->filter = new Filter($this->app);
-		$this->app->escape = new Escape($this->app);
+		/*$this->app->escape = new Escape($this->app);
 		$this->app->validator = new Validator($this->app);
 		$this->app->format = new Format($this->app);
 		$this->app->file = new File($this->app);
@@ -76,14 +69,12 @@ class AppBooter
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);
-		$this->app->mail = new Mail($this->app);
-
-		return $this;
+		$this->app->mail = new Mail($this->app);*/
 	}
 
 	/**
 	* Initializes the environment objects
-	* @return $this
+	* @return static
 	*/
 	public function env()
 	{
@@ -97,8 +88,6 @@ class AppBooter
 		$this->app->response = new Response($this->app);
 		$this->app->cache = new Cache($this->app);
 		$this->app->registry = new Registry($this->app);
-
-		return $this;
 	}
 
 	/**
@@ -121,7 +110,6 @@ class AppBooter
 
 	/**
 	* Initializes the system objects
-	* @return $this
 	*/
 	public function system()
 	{
@@ -132,7 +120,5 @@ class AppBooter
 		$this->app->theme = new System\Theme($this->app);
 
 		$this->app->router = new Router;
-
-		return $this;
 	}
 }

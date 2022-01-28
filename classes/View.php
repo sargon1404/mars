@@ -267,7 +267,7 @@ abstract class View
 
 		$class_name = $rc->getName();
 		$class_parent = $rc->getParentClass();
-		$this->dirname = App::sl($this->app->file->dirname($rc->getFileName()));
+		$this->dirname = $this->app->file->dirname($rc->getFileName());
 
 		if ($class_parent) {
 			$this->current_method = $this->controller->current_method;

@@ -80,8 +80,7 @@ class Memcached implements DriverInterface
 	*/
 	public function exists(string $key) : bool
 	{
-		$ret = $this->handle->append($key, null);
-		if ($ret === false) {
+		if ($this->handle->get($key) === false) {
 			return false;
 		}
 

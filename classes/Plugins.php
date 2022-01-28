@@ -78,7 +78,7 @@ trait Plugins
 		}
 
 		foreach ($plugins as $name) {
-			$class = static::$namespace . App::strToClass($name) . "\\" . App::strToClass($name);
+			$class = static::$namespace . App::getClass($name) . "\\" . App::getClass($name);
 
 			$plugin = new $class($this->app, $name);
 

@@ -37,14 +37,14 @@ class File
 	/**
 	* Checks a filename for invalid characters. Throws a fatal error if it founds invalid chars.
 	* @param string $filename The filename
-	* @return $this
+	* @return static
 	* @throws Exception if the filename contains invalid chars
 	*/
-	public function checkForInvalidChars(string $filename)
+	public function checkForInvalidChars(string $filename) : static
 	{
 		if (str_contains($filename, '../') || str_contains($filename, './')
 		    || str_contains($filename, '..\\') || str_contains($filename, '.\\')
-		    || str_starts_with($filename, 'php:')) {
+		    || str_starts_with($filename, strtolower('php:'))) {
 			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
 		}
 
@@ -54,10 +54,10 @@ class File
 	/**
 	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
 	* @param string $filename The filename
-	* @return $this
+	* @return static
 	* @throws Exception if the filename is not valid
 	*/
-	public function checkFilename(string $filename)
+	public function checkFilename(string $filename) : static
 	{
 		if (!$filename) {
 			return $this;
@@ -119,7 +119,7 @@ class File
 			return '';
 		}
 
-		return $dir;
+		return $dir . '/';
 	}
 
 	/**
@@ -176,10 +176,12 @@ class File
 	*/
 	public function getExtension(string $filename, bool $include_dot = false) : string
 	{
-		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		if (!$ext) {
 			return '';
 		}
+
+		$ext = strtolower($ext);
 
 		if ($include_dot) {
 			return '.' . $ext;
@@ -206,9 +208,10 @@ class File
 	/**
 	* Builds a path from an array.
 	* @param array $elements The elements from which the path will be built. Eg: $elements=array('/var','www'); it will return /var/www
+	* @param bool $fix_path If true, will fix the path by adding a slash
 	* @return string The built path
 	*/
-	public function buildPath(array $elements) : string
+	public function buildPath(array $elements, bool $fix_path = false) : string
 	{
 		if (!$elements) {
 			return '';
@@ -216,7 +219,12 @@ class File
 
 		$elements = array_filter($elements);
 
-		return '/' . implode('/', $elements);
+		$path = '/' . implode('/', $elements);
+		if ($fix_path) {
+			$path = App::fixPath($path);
+		}
+
+		return $path;
 	}
 
 	/**
@@ -308,10 +316,10 @@ class File
 	/**
 	* Deletes a file
 	* @param string filename The filename to delete
-	* @return $this
+	* @return static
 	* @throws Exception if the file can't be deleted
 	*/
-	public function delete(string $filename)
+	public function delete(string $filename) : static
 	{
 		$this->app->plugins->run('file_delete', $filename, $this);
 
@@ -328,10 +336,10 @@ class File
 	* Copies a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @return $this
+	* @return static
 	* @throws Exception if the file can't be copied
 	*/
-	public function copy(string $source, string $destination)
+	public function copy(string $source, string $destination) : static
 	{
 		$this->app->plugins->run('file_copy', $source, $destination, $this);
 
@@ -349,10 +357,10 @@ class File
 	* Moves a file
 	* @param string $source The source file
 	* @param string $destination The destination file
-	* @return $this
+	* @return static
 	* @throws Exception if the file can't be moved
 	*/
-	public function move(string $source, string $destination)
+	public function move(string $source, string $destination) : static
 	{
 		$this->app->plugins->run('file_move', $source, $destination, $this);
 

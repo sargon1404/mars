@@ -31,9 +31,9 @@ abstract class Cacheable
 	protected string $filename = '';
 
 	/**
-	* @var int $expires_interval The interval - in hours - after which the content should be refreshed by the browser
+	* @var int $expires_hours The interval - in hours - after which the content should be refreshed by the browser
 	*/
-	protected int $expires_interval = 24;
+	protected int $expires_hours = 24;
 
 	/**
 	* @var string $extension The extension of the cache file
@@ -103,7 +103,7 @@ abstract class Cacheable
 	{
 		if ($this->driver == 'memcache') {
 			if (!$this->app->config->memcache_enable) {
-				throw new \Exception("'memcache_enable' must be set to true, if content_cache_driver = 'memcache'. Either enable memcache or choose another content cache driver.");
+				throw new \Exception("Memcache must be enabled in order to use the memcache driver when caching content. Either set content_cache_driver to 'file' else or set memcache_enable to true");
 			}
 		}
 
@@ -115,6 +115,10 @@ abstract class Cacheable
 	*/
 	public function output()
 	{
+		if ($this->app->is_bin) {
+			return;
+		}
+
 		$last_modified = $this->getLastModified();
 
 		if ($last_modified) {
@@ -166,8 +170,8 @@ abstract class Cacheable
 		header('Etag: ' . $etag);
 		header('Vary: Accept-Encoding');
 
-		if ($this->expires_interval) {
-			$seconds = $this->expires_interval * 3600;
+		if ($this->expires_hours) {
+			$seconds = $this->expires_hours * 3600;
 			$expires = gmdate('D, d M Y H:i:s', time() + $seconds);
 
 			header('Expires: ' . $expires . ' GMT');
@@ -198,9 +202,9 @@ abstract class Cacheable
 
 	/**
 	* Outputs the content type. Must be implemented by the classes extending Cachable
-	* @return $this
+	* @return static
 	*/
-	public function outputContentType()
+	public function outputContentType() : static
 	{
 		return $this;
 	}
@@ -219,9 +223,9 @@ abstract class Cacheable
 
 	/**
 	* Deletes the cache file
-	* @return $this
+	* @return static
 	*/
-	public function delete()
+	public function delete() : static
 	{
 		$this->handle->delete($this->filename);
 
@@ -231,9 +235,9 @@ abstract class Cacheable
 	/**
 	* Deletes a file from the cache
 	* @param string $file The file name to delete
-	* @return $this
+	* @return static
 	*/
-	public function deleteFile(string $file)
+	public function deleteFile(string $file) : static
 	{
 		$filename = $this->path . basename($file);
 

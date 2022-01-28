@@ -83,8 +83,8 @@ class Memcache
 
 		if (!$driver) {
 			$driver = $this->app->config->memcache_driver;
-			$host = $this->app->config->memcache_memcache_host;
-			$port = $this->app->config->memcache_memcache_port;
+			$host = $this->app->config->memcache_host;
+			$port = $this->app->config->memcache_port;
 			$key = $this->app->config->key;
 		}
 
@@ -137,8 +137,6 @@ class Memcache
 		}
 
 		$this->handle->disconnect();
-
-		$this->handle = null;
 	}
 
 	/**
@@ -147,12 +145,12 @@ class Memcache
 	* @param string $value The value
 	* @param bool $serialize If true, will serialize the value
 	* @param int $expires The number of seconds after which the data will expire
-	* @return $this
+	* @return bool
 	*/
 	public function add(string $key, $value, bool $serialize = false, int $expires = 0)
 	{
 		if (!$this->enabled) {
-			return $this;
+			return false;
 		}
 		if (!$this->connected) {
 			$this->connect();
@@ -162,9 +160,7 @@ class Memcache
 			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		$this->handle->add($key . '-' . $this->key, $value, $expires);
-
-		return $this;
+		return $this->handle->add($key . '-' . $this->key, $value, $expires);
 	}
 
 	/**
@@ -173,9 +169,9 @@ class Memcache
 	* @param string $value The value
 	* @param bool $serialize If true, will serialize the value
 	* @param int $expires The number of seconds after which the data will expire
-	* @return $this
+	* @return bool
 	*/
-	public function set(string $key, $value, bool $serialize = false, int $expires = 0)
+	public function set(string $key, $value, bool $serialize = false, int $expires = 0) : bool
 	{
 		if (!$this->enabled) {
 			return $this;
@@ -188,9 +184,7 @@ class Memcache
 			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		$this->handle->set($key . '-' . $this->key, $value, $expires);
-
-		return $this;
+		return $this->handle->set($key . '-' . $this->key, $value, $expires);
 	}
 
 	/**
@@ -238,9 +232,9 @@ class Memcache
 	* Delets $key from the memcache
 	* @param string $key The key
 	* @return mixed The value for $key
-	* @return $this
+	* @return bool
 	*/
-	public function delete(string $key)
+	public function delete(string $key) : bool
 	{
 		if (!$this->enabled) {
 			return $this;
@@ -249,9 +243,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$this->handle->delete($key . '-' . $this->key);
-
-		return $this;
+		return $this->handle->delete($key . '-' . $this->key);
 	}
 
 	/**

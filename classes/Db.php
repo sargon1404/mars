@@ -31,32 +31,32 @@ class Db
 	* @var bool $debug If true, the db will be run in debug mode
 	*/
 	public bool $debug = false;
-	
+
 	/**
 	* @var string $charset The charset
 	*/
 	protected string $charset = '';
-	
+
 	/**
 	* @var bool $persistent If true, the db connection will be persistent
 	*/
 	protected bool $persistent = false;
-	
+
 	/**
 	* @var bool $connected Set to true, if the connection to the db server has been made
 	*/
 	protected bool $connected = false;
-	
+
 	/**
 	* @var bool $use_same_handle True if the same handle is used for both read & write queries
 	*/
 	protected bool $use_same_handle = true;
-	
+
 	/**
 	* @var bool $use_multi If true, will use multiple databases for read & write queries
 	*/
 	protected bool $use_multi = false;
-	
+
 	/**
 	* @var string $read_hostname The hostname to connect to for read queries
 	*/
@@ -81,9 +81,9 @@ class Db
 	* @var string $read_database The database to connect to the read server
 	*/
 	protected string $read_database = '';
-	
+
 	/**
-	* @var bool $read_pesistent If true, the read db connection will be persistent 
+	* @var bool $read_pesistent If true, the read db connection will be persistent
 	*/
 	protected bool $read_persistent = false;
 
@@ -111,9 +111,9 @@ class Db
 	* @var string $write_database The database to connect to the write server
 	*/
 	protected string $write_database = '';
-	
+
 	/**
-	* @var bool $write_pesistent If true, the write db connection will be persistent 
+	* @var bool $write_pesistent If true, the write db connection will be persistent
 	*/
 	protected bool $write_persistent = false;
 
@@ -126,7 +126,7 @@ class Db
 	* @var DriverInterface $write_handle The handle for the write queries
 	*/
 	protected DriverInterface $write_handle;
-	
+
 	/**
 	* @var string $driver The used driver
 	*/
@@ -195,7 +195,7 @@ class Db
 	{
 		$this->disconnect();
 	}
-	
+
 	/**
 	* Returns the key of the server used for read queries
 	* @param string|array $hostname The db hostname
@@ -205,8 +205,8 @@ class Db
 		if ($this->use_multi) {
 			return mt_rand(0, count($hostname) - 1);
 		}
-		
-		return 0; 
+
+		return 0;
 	}
 
 	/**
@@ -220,7 +220,7 @@ class Db
 	protected function setReadHost(string|array $hostname, string|array $port, string|array $username, string|array $password, string|array $database, bool|array $persistent)
 	{
 		$key = $this->getReadKey($hostname);
-		
+
 		$this->read_hostname = $this->use_multi ? $hostname[$key] : $hostname;
 		$this->read_port = $this->use_multi ? $port[$key] : $port;
 		$this->read_username = $this->use_multi ? $username[$key] : $username;
@@ -294,7 +294,32 @@ class Db
 	{
 		return new Sql($this->app);
 	}
-	
+
+
+	/**
+	* Begins a transaction
+	*/
+	public function begin()
+	{
+		$this->write_handle->begin();
+	}
+
+	/**
+	* Commits a transaction
+	*/
+	public function commit()
+	{
+		$this->write_handle->commit();
+	}
+
+	/**
+	* Rollback a transaction
+	*/
+	public function rollback()
+	{
+		$this->write_handle->rollback();
+	}
+
 	/**
 	* Executes a read query
 	* @param string|Sql $sql The query to execute
@@ -379,7 +404,7 @@ class Db
 			return $this->write_handle;
 		}
 	}
-	
+
 	/**
 	* Determines if the query is a read query
 	* @param string $sql The sql query
@@ -407,10 +432,10 @@ class Db
 		if ($params) {
 			$error.= "\n\n" . print_r($params, true);
 		}
-		
+
 		return $error;
 	}
-	
+
 	/**
 	* Selects data from a table and returns the result
 	* @param string $table The table name
@@ -422,13 +447,13 @@ class Db
 	* @param string|array $cols The columns to select
 	* @return DbResult The result
 	*/
-	public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : DbResult
+	public function select(string $table, array $where = [], string $order_by = '', string $order = '', int $limit = 0, int $limit_offset = 0, string|array $cols = '*') : array
 	{
 		$sql = $this->getSql()->select($cols)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
-		return $this->query($sql);
+		return $this->query($sql)->fetchAll();
 	}
-	
+
 	/**
 	* Selects a single row from the database, by id
 	* @param string $table The table name
@@ -443,7 +468,7 @@ class Db
 
 		return $this->query($sql)->fetchObject();
 	}
-	
+
 	/**
 	* Selects multiple rows from the database, by id
 	* @param string $table The table name
@@ -459,12 +484,12 @@ class Db
 		if (!$ids) {
 			return [];
 		}
-		
+
 		$sql = $this->getSql()->select($cols)->from($table)->whereIn($id_col, $ids)->orderBy($order_by, $order);
 
 		return $this->query($sql)->get($id_col);
 	}
-	
+
 	/**
 	* Selects a single column and returns the result
 	* @param string $col The column to select
@@ -488,7 +513,7 @@ class Db
 	{
 		return $this->selectCol($table, $col, $where, $order_by, $order, $limit, $limit_offset);
 	}
-	
+
 	/**
 	* Returns a key=>value pair with values from two columns
 	* @param string $key_col The name of the column used as the key
@@ -527,7 +552,7 @@ class Db
 	public function exists(string $table, array $where, string $col = 'id') : bool
 	{
 		$sql = $this->getSql()->select([$col])->from($table)->where($where)->limit(1);
-		
+
 		return (bool)$this->query($sql)->numRows();
 	}
 
@@ -540,7 +565,7 @@ class Db
 	public function count(string $table, array $where = []) : int
 	{
 		$sql = $this->getSql()->select('COUNT(*)')->from($table)->where($where);
-		
+
 		return $this->query($sql)->getCount();
 	}
 
@@ -551,14 +576,14 @@ class Db
 	* @param string $id_col The name of the id column
 	* @return int The number of rows
 	*/
-	public function countIds(string $table, array $ids, string $id_col = 'id') : int
+	public function countById(string $table, array $ids, string $id_col = 'id') : int
 	{
 		if (!$ids) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->select('COUNT(*)')->from($table)->whereIn($id_col, $ids);
-		
+
 		return $this->query($sql)->getCount();
 	}
 
@@ -569,11 +594,11 @@ class Db
 	* @return int Returns the id of the newly inserted row
 	*/
 	public function insert(string $table, array $values) : int
-	{		
+	{
 		if (!$values) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->insert($table)->values($values);
 
 		return $this->query($sql)->lastId();
@@ -590,7 +615,7 @@ class Db
 		if (!$values_list) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->insert($table)->valuesMulti($values_list);
 
 		return $this->query($sql)->affectedRows();
@@ -609,7 +634,7 @@ class Db
 		if (!$values) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->update($table)->set($values)->where($where)->limit($limit);
 
 		return $this->query($sql)->affectedRows();
@@ -641,7 +666,7 @@ class Db
 		if (!$values || !$ids) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->update($table)->set($values)->whereIn($id_col, $ids);
 
 		return $this->query($sql)->affectedRows();
@@ -658,7 +683,7 @@ class Db
 		if (!$values) {
 			return 0;
 		}
-		
+
 		$sql = $this->getSql()->replace($table)->set($values);
 
 		return $this->query($sql)->lastId();
@@ -707,7 +732,7 @@ class Db
 
 		return $this->query($sql)->affectedRows();
 	}
-	
+
 	/**
 	* Returns the NOW function
 	* @return array
@@ -716,7 +741,7 @@ class Db
 	{
 		return ['function' => 'NOW'];
 	}
-	
+
 	/**
 	* Returns the UNIX_TIMESTAMP function
 	* @return array
@@ -736,218 +761,107 @@ class Db
 		return ['function' => 'CRC32', 'value' => $value];
 	}
 
-
-
-
-
-	/**
-	* Returns the columns of table $table
-	* @param string $table The name of the table for which the columns will be returned
-	* @return array Returns the table columns
-	*/
-	public function getColumns(string $table) : array
-	{
-		$cols = [];
-
-		$result = $this->readQuery("SHOW COLUMNS FROM {$table}");
-		while (($arr = $this->fetchArray($result)) !== null) {
-			$cols[] = $arr['Field'];
-		}
-
-		$this->free($result);
-
-		return $cols;
-	}
-
 	/**
 	* Returns the columns of table $table and the type
-	* @param string $table The name of the table for which the columns will be returned
-	* @return array Returns the table columns & types in the format col_name=>col_type
+	* @param string $table The name of the table
+	* @param bool $primary_key If false, will not return the primary key
+	* @return array Returns the table columns in the format name => type
 	*/
-	public function getColumnsTypes(string $table) : array
+	public function getColumns(string $table, bool $primary_key = true) : array
 	{
 		$cols = [];
+		$columns = $this->readQuery("SHOW COLUMNS FROM {$table}")->fetchAll();
+		foreach ($columns as $col) {
+			$name = $col->Field;
+			$type = $col->Type;
+			$key = $col->Key;
 
-		$result = $this->readQuery("SHOW COLUMNS FROM {$table}");
-		while (($arr = $this->fetchArray($result)) !== null) {
-			$name = $arr['Field'];
-			$type = $arr['Type'];
-
-			$col_type = 'c';
-			if (str_contains($type, 'int')) {
-				$col_type = 'i';
-			} elseif (str_contains($type, 'float')) {
-				$col_type = 'f';
+			if (!$primary_key && $key == 'PRI') {
+				continue;
 			}
 
-			$cols[$name] = $col_type;
-		}
+			if (str_contains($type, 'int')) {
+				$type = 'int';
+			} elseif (str_contains($type, 'float')) {
+				$type = 'float';
+			} else {
+				$type = 'string';
+			}
 
-		$this->free($result);
+			$cols[$name] = $type;
+		}
 
 		return $cols;
 	}
 
 	/**
-	* Returns a copy of $row based on the column types from $table
-	* @param string $table The name of the table for which the copy is to be returned
-	* @param array $row Array with the data to be copied in the format col_name => col_value
-	* @param array $override_array Array with the data which will override the one from $row. Format col_name => col_value
-	* @param array $reset_array Array containing the column names to be reset. If the column is int/float it will be set to 0. It will be set to '' otherwise
-	* @param array $unset_array Array with the keys from $rows which should be unser,thus not returned
-	* @param bool $primary_key If true will also return the primary array. By default set to false
-	* @return array The copy
-	*/
-	public function copy(string $table, array $row, array $override_array = [], array $reset_array = [], array $unset_array = [], bool $primary_key = false) : array
-	{
-		$copy = [];
-
-		$result = $this->readQuery("SHOW COLUMNS FROM {$table}");
-		while (($arr = $this->fetchArray($result)) !== null) {
-			$name = $arr['Field'];
-			$type = $arr['Type'];
-
-			if (!isset($row[$name])) {
-				continue;
-			}
-
-			if (!$primary_key && $arr['Key'] == 'PRI') {
-				continue;
-			}
-
-			$col_type = 'c';
-			if (str_contains($type, 'int')) {
-				$col_type = 'i';
-			} elseif (str_contains($type, 'float')) {
-				$col_type = 'f';
-			}
-
-			if ($override_array) {
-				if (isset($override_array[$name])) {
-					if (!is_array($override_array[$name])) {
-						$copy[$name] = $thid->filter($override_array[$name], $col_type);
-					} else {
-						$copy[$name] = $override_array[$name];
-					}
-
-					continue;
-				}
-			}
-
-			if ($unset_array) {
-				if (in_array($name, $unset_array)) {
-					continue;
-				}
-			}
-
-			if ($reset_array) {
-				if (in_array($name, $reset_array)) {
-					if ($col_type == 'i' || $col_type == 'f') {
-						$copy[$name] = 0;
-					} else {
-						$copy[$name] = '';
-					}
-
-					continue;
-				}
-			}
-
-			$copy[$name] = $thid->filter($row[$name], $col_type);
-		}
-
-		$this->free($result);
-
-		return $copy;
-	}
-
-	/**
-	* Builds a set from table $table with the values from $data. The values are filtered based on the column's type
-	* The difference between bind and bind_list is bind is blacklisting the columns which shouldn't be included; bind_list is whitelisting the desired columns.
+	* Builds a set from table $table with values from $values. The values are filtered based on the column's type
+	* The difference between bind and bindList is bind is blacklisting the columns which shouldn't be included; bindList is whitelisting the desired columns.
 	* @param string $table The name of the table
-	* @param array $data If the column from $columns_array is null will read the value from $data
-	* @param array $ignore_columns_array Array listing the columns from $table which shouldn't be included in the returned result
-	* @param string $ignore_value If $ignore_value is not null,any values which equals $ignore_value won't be included in the returned result
-	* @param string $data_prefix Prefix to be used on $data, if any
-	* @return array
-	*/
-	public function bind(string $table, array $data = [], array $ignore_columns_array = [], ?string $ignore_value = null, string $data_prefix = '') : array
-	{
-		$ret = [];
-		$table_columns_array = $this->getColumnsTypes($table);
-
-		foreach ($table_columns_array as $name => $type) {
-			if (in_array($name, $ignore_columns_array)) {
-				continue;
-			}
-
-			$value = '';
-			if (isset($data[$data_prefix . $name])) {
-				$value = $data[$data_prefix . $name];
-			} else {
-				continue;
-			}
-
-			if ($value === $ignore_value) {
-				continue;
-			}
-
-			$value = $this->filter($value, $type);
-
-			if ($value === $ignore_value) {
-				continue;
-			}
-
-			$ret[$name] = $value;
-		}
-
-		return $ret;
-	}
-
-	/**
-	* Builds a set from table $table with the values from $data. The values are filtered based on the column's type
-	* The difference between bind and bind_list is bind is blacklisting the columns which shouldn't be included; bind_list is whitelisting the desired columns.
-	* @param string $table The name of the table
-	* @param array $data If the column from $columns_array is null will read the value from $data
-	* @param array $columns_array Array specifieing the columns of table $table for which the request values should be bind
+	* @param array $values The values in the col => value format
+	* @param array $ignore_columns Array listing the columns from $table which shouldn't be included in the returned result
 	* @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
-	* @param string $data_prefix Prefix to be used on $data, if any
-	* @return array
+	* @param string $values_prefix Prefix to be used on $values, if any
+	* @return array The data
 	*/
-	public function bindList(string $table, array $data = [], array $columns_array = [], ?string $ignore_value = null, string $data_prefix = '') : array
+	public function bind(string $table, array $values = [], array $ignore_columns = [], ?string $ignore_value = null, string $values_prefix = '') : array
 	{
-		$ret = [];
-		$table_columns_array = $this->getColumnsTypes($table);
+		$data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
 
-		foreach ($table_columns_array as $name => $type) {
-			if (!in_array($name, $columns_array)) {
-				continue;
-			}
-
-			$value = '';
-			if (isset($data[$data_prefix . $name])) {
-				$value = $data[$data_prefix . $name];
-			} else {
-				continue;
-			}
-
-			if ($value === $ignore_value) {
-				continue;
-			}
-
-			$value = $this->filter($value, $type);
-
-			if ($value === $ignore_value) {
-				continue;
-			}
-
-			$ret[$name] = $value;
-		}
-
-		return $ret;
+		return array_filter($data, function($col) use ($ignore_columns){
+			return !in_array($col, $ignore_columns);
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
-	* Returns an array from $table with the columns filled based on their type [int,float,char]
+	* Builds a set from table $table with values from $data. The values are filtered based on the column's type
+	* The difference between bind and bindList is bind is blacklisting the columns which shouldn't be included; bindList is whitelisting the desired columns.
+	* @param string $table The name of the table
+	* @param array $values The values in the col => value format
+	* @param array $allowed_columns Array listing the columns of table $table for which the request values should be bind
+	* @param string $ignore_value If $ignore_value is not null, any values which equals $ignore_value won't be included in the returned result
+	* @param string $values_prefix Prefix to be used on $values, if any
+	* @return array
+	*/
+	public function bindList(string $table, array $values = [], array $allowed_columns = [], ?string $ignore_value = null, string $values_prefix = '') : array
+	{
+		$data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
+
+		return array_filter($data, function($col) use ($allowed_columns){
+			return in_array($col, $allowed_columns);
+		}, ARRAY_FILTER_USE_KEY);
+	}
+
+	/**
+	* Returns the data used by the bind/bindList operations
+	* @see Db::bind()
+	*/
+	protected function getBindData(string $table, array $values, ?string $ignore_value, string $values_prefix ) : array
+	{
+		$data = [];
+		$columns = $this->getColumns($table);
+
+		foreach ($columns as $name => $type) {
+			$key = $values_prefix . $name;
+
+			if (!isset($values[$key])) {
+				continue;
+			}
+
+			$value = $this->app->filter->value($values[$key], $type);
+
+			if ($ignore_value !==null && $value == $ignore_value) {
+				continue;
+			}
+
+			$data[$name] = $value;
+		}
+
+		return $data;
+	}
+
+	/**
+	* Returns an array from $table with the columns filled based on their type [int,float,string]
 	* @param string $table The name of the table
 	* @param array $override_array If specified will override the default filling
 	* @param int $int_val The value used to fill int/float columns
@@ -957,46 +871,27 @@ class Db
 	*/
 	public function fill(string $table, array $override_array = [], int $int_val = 0, string $string_val = '', bool $primary_key = false) : array
 	{
-		$ret = [];
-		$result = $this->readQuery("SHOW COLUMNS FROM {$table}");
-		while (($arr = $this->fetchArray($result)) !== null) {
-			$name = $arr['Field'];
-			$type = $arr['Type'];
+		$data = [];
+		$columns = $this->getColumns($table, $primary_key);
 
-			if (!$primary_key && $arr['Key'] == 'PRI') {
-				continue;
+		foreach ($columns as $name => $type) {
+			$value = '';
+			switch ($type) {
+				case 'int':
+				case 'float':
+					$value = $int_val;
+					break;
+				default:
+					$value = $string_val;
 			}
 
-			if (str_contains($type, 'int')) {
-				$ret[$name] = $int_val;
-			} elseif (str_contains($type, 'float')) {
-				$ret[$name] = $int_val;
-			} else {
-				$ret[$name] = $string_val;
-			}
+			$data[$name] = $value;
 		}
-
-		$this->free($result);
 
 		if ($override_array) {
-			$ret = array_merge($ret, $override_array);
+			$data = array_merge($data, $override_array);
 		}
 
-		return $ret;
-	}
-
-	/**
-	* @internal
-	*/
-	protected function filter(string $value, string $type)
-	{
-		switch ($type) {
-			case 'i':
-				return (int)$value;
-			case 'f':
-				return (float)$value;
-			default:
-				return (string)$value;
-		}
+		return $data;
 	}
 }

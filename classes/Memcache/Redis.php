@@ -107,7 +107,7 @@ class Redis implements DriverInterface
 	*/
 	public function delete(string $key) : bool
 	{
-		return $this->handle->delete($key);
+		return $this->handle->del($key);
 	}
 
 	/**

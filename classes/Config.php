@@ -12,75 +12,211 @@ namespace Mars;
 */
 class Config extends Data
 {
+   /**
+   * @var int $error_types The error types to show
+   */
+	public int $error_types =  E_ALL & ~E_NOTICE;
+
 	/**
-	* @var array $defaults Array listing the default values of some config values
+   * @var int $log_error_types The error types to log
+   */
+	public int $log_error_types =  E_ALL;
+
+	/**
+   * @var bool $display_errors If false, errors won't be shown
+   */
+	public bool $display_errors = false;
+
+	/**
+	* @var string $url The url of the site
 	*/
-	protected array $defaults = [
-		'log_error_types' => E_ALL & ~E_NOTICE,
+	public string $url = '';
 
-		'url_static' => '',
+	/**
+	* @var string $url_static The base url from where the static resources will be served
+	*/
+	public string $url_static = '';
 
-		'debug' => false, //set to true to enable debug mode
-		'debug_ips' => '', //if specified, will enable debug only for the listed IPs. debug must be set to false
+	/**
+	* @var string $key The secret key of the site
+	*/
+	public string $key = '';
 
-		'development' => false, //set to true to enable development mode
-		'development_device' => '', //will use this value as device, if specified
+	/**
+	* @var string $open_basedir If specified, will limit the files which are accessible to the specified folder. If the value is true the installation dir is used
+	*/
+	public bool|string $open_basedir = true;
 
-		'device_start' => false,
+	/**
+	* @var bool $gzip If true, will gzip the output
+	*/
+	public bool $gzip = false;
 
-		'session_start' => true,
-		'session_cookie_name' => '',
-		'session_cookie_path' => '',
-		'session_cookie_domain' => '',
-		'session_save_path' => '',
-		'session_prefix' => '',
-		'session_table' => 'sessions',
-		'session_driver' => 'php',
+	/**
+	* @var array $trusted_proxies The trusted proxies from which we'll accept the HTTP_X_FORWARDED_FOR header
+	*/
+	public array $trusted_proxies = [];
 
-		'cookie_path' => '/',
-		'cookie_domain' => '',
-		'cookie_expires_days' => 30,
+	/**
+	* @var bool $debug Set to true to enable debug mode
+	*/
+	public bool $debug = false;
 
-		'gzip' => false,
+	/**
+	* @var string|array $debug_ips If specified, will enable debug only for the listed IPs. Works only if debug is false
+	*/
+	public string|array $debug_ips = [];
 
-		'content_cache_enable' => false,
-		'content_cache_driver' => 'file',
-		'content_cache_expires_interval' => 24,
-		'content_cache_gzip' => false,
-		'content_cache_minify' => false,
+	/**
+	* @var bool $development Set to true to enable development mode
+	*/
+	public bool $development = false;
 
-		'mail_from' => '',
-		'mail_from_name' => '',
-		'mail_reply_to' => '',
-		'mail_reply_to_name' => '',
-		'mail_smtp' => false,
-		'mail_smtp_host' => '',
-		'mail_smtp_port' => '',
-		'mail_smtp_username' => '',
-		'mail_smtp_password' => '',
-		'mail_smtp_secure' => '',
+	/**
+	* @var string $development_device Will use this value as device, if specified. Valid values: 'desktop', 'tablet', 'smartphone'
+	*/
+	public string $development_device = '';
 
-		'lang' => 'english',
-		'theme' => 'default',
+	/**
+	* Change the driver only if you know what you're doing! Preferably at installation time.
+	* You might try to unserialize data which has been serialized with a different driver, otherwise
+	* @var string $serializer_driver The serializer driver. Supported options: php, igbinary
+	*/
+	public string $serializer_driver = 'php';
 
-		'css_version' => '1',
-		'css_output' => true,
+	/**
+	* @var bool $device_start If false, will not start the device detection functionality
+	*/
+	public bool $device_start = true;
 
-		'javascript_version' => '1',
-		'javascript_output' => false,
-	];
+	/**
+	* @var bool $session_start If false, will not start the session functionality
+	*/
+	public bool $session_start = true;
+
+	/**
+	* @var string $session_save_path The path where the sessions will be saved
+	*/
+	public string $session_save_path = '';
+
+	/**
+	* @var string $session_name The session name
+	*/
+	public string $session_name = '';
+
+	/**
+	* @var int $session_cookie_lifetime The lifetime of the session cookie
+	*/
+	public ?int $session_cookie_lifetime = null;
+
+	/**
+	* @var string $session_cookie_path The path of the session cookie
+	*/
+	public ?string $session_cookie_path = null;
+
+	/**
+	* @var string $session_cookie_domain The domain of the session cookie
+	*/
+	public ?string $session_cookie_domain = null;
+
+	/**
+	* @var bool $session_cookie_secure If true the session cookie will only be sent over secure connections.
+	*/
+	public ?bool $session_cookie_secure = null;
+
+	/**
+	* @var bool $session_cookie_httponly If true then httponly flag will be set for the session cookie
+	*/
+	public ?bool $session_cookie_httponly = true;
+
+	/**
+	* @var string $session_cookie_samesite The samesite value of the session_cookie
+	*/
+	public ?string $session_cookie_samesite = null;
+
+	/**
+	* @var string $session_driver The session driver. Supported options: php, db, memcache
+	*/
+	public string $session_driver = 'php';
+
+	/**
+	* @var string $session_driver The table where sessions are stored if the session_driver=db
+	*/
+	public string $session_table = 'php';
+
+	/**
+	* @var string $session_prefix Prefix to apply to all session keys
+	*/
+	public string $session_prefix = '';
+
+	/**
+	* @var int $cookie_expire_days The interval, in days, for which the cookies will be valid
+	*/
+	public int $cookie_expire_days = 30;
+
+	/**
+	* @var string $cookie_path The path of the cookies
+	*/
+	public string $cookie_path = '/';
+
+	/**
+	* @var string $cookie_domain The domain of the cookies
+	*/
+	public string $cookie_domain = '';
+
+	/**
+	* @var bool $cookie_secure If true the cookies will only be sent over secure connections.
+	*/
+	public bool $cookie_secure = false;
+
+	/**
+	* @var bool $cookie_httponly If true then httponly flag will be set for the cookies
+	*/
+	public bool $cookie_httponly = true;
+
+	/**
+	* @var string $cookie_samesite The samesite value of the cookies
+	*/
+	public string $cookie_samesite = '';
+
+	/**
+	* @var string $lang The default language
+	*/
+	public string $lang = 'english';
+
+	/**
+	* @var string $lang The default theme
+	*/
+	public string $theme = 'theme';
+
+	/**
+	* @var string $css_version Version param to apply to all css stylesheets
+	*/
+	public string $css_version = '1';
+
+	/**
+	* @var string $javascript_version Version param to apply to all JS scripts
+	*/
+	public string $javascript_version = '1';
+
+	/**
+	* Builds the Config object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+
+		$this->read();
+	}
 
 	/**
 	* Reads the config settings from the config.php file
-	* @return $this
+	* @return static
 	*/
-	public function read()
+	public function read() : static
 	{
 		$this->readFile('config.php');
-
-		$this->setDefault();
-
-		$this->normalize();
 
 		return $this;
 	}
@@ -88,11 +224,11 @@ class Config extends Data
 	/**
 	* Reads the config settings from the specified $filename
 	* @param string $filename The filename
-	* @return $this
+	* @return static
 	*/
-	public function readFile(string $filename)
+	public function readFile(string $filename) : static
 	{
-		$config = require($filename);
+		$config = require($this->app->path . $filename);
 
 		$this->assign($config);
 
@@ -100,21 +236,9 @@ class Config extends Data
 	}
 
 	/**
-	* Sets default config values, if missing in the config file
-	*/
-	protected function setDefault()
-	{
-		foreach ($this->defaults as $name => $value) {
-			if (!isset($this->$name)) {
-				$this->$name = $value;
-			}
-		}
-	}
-
-	/**
 	* Normalizes the config options
 	*/
-	protected function normalize()
+	public function normalize()
 	{
 		if ($this->device_start) {
 			$this->session_start = true;
@@ -127,7 +251,7 @@ class Config extends Data
 		}
 
 		if ($this->debug_ips) {
-			if (in_array($_SERVER['REMOTE_ADDR'], $this->debug_ips)) {
+			if (in_array($this->app->ip, $this->debug_ips)) {
 				$this->debug = true;
 			}
 		}

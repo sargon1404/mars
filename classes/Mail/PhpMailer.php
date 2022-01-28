@@ -53,7 +53,7 @@ class PhpMailer implements DriverInterface
 	*/
 	public function setRecipient(string|array $to)
 	{
-		$to = App::getArray($to);
+		$to = (array)$to;
 
 		foreach ($to as $address) {
 			$this->handle->addAddress($address);
@@ -66,7 +66,7 @@ class PhpMailer implements DriverInterface
 	*/
 	public function setRecipientBcc(string|array $to)
 	{
-		$to = App::getArray($to);
+		$to = (array)$to;
 
 		foreach ($to as $address) {
 			$this->handle->addBCC($address);

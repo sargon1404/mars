@@ -300,7 +300,7 @@ abstract class Item extends Row
 	*/
 	public function setData(array|object $data, bool $store = true)
 	{
-		$data = App::toArray($data);
+		$data = App::array($data);
 
 		foreach ($data as $name => $val) {
 			if ($store && static::$store) {

@@ -106,7 +106,7 @@ class Bin
 
 		$options = [];
 		foreach ($list as $option) {
-			$names = App::getArray($option);
+			$names = (array)$option;
 
 			foreach ($names as $name) {
 				if (isset($this->options[$name])) {
@@ -168,12 +168,12 @@ class Bin
 
 	/**
 	* Returns the value of a command line option
-	* @param array|string $name The name of the option. String or array
+	* @param string|array $name The name of the option. String or array
 	* @return string The option
 	*/
-	public function getOption($name) : ?string
+	public function getOption(string|array $name) : ?string
 	{
-		$names = App::getArray($name);
+		$names = (array)$name;
 
 		foreach ($names as $name) {
 			if (isset($this->options[$name])) {
@@ -186,12 +186,12 @@ class Bin
 
 	/**
 	* Returns true if a command line option has been defined
-	* @param array|string $name The name of the option. String or array
+	* @param string|array $name The name of the option. String or array
 	* @return bool
 	*/
-	public function isOption($name) : bool
+	public function isOption(string|array $name) : bool
 	{
-		$names = App::getArray($name);
+		$names = (array)$name;
 
 		foreach ($names as $name) {
 			if (isset($this->options[$name])) {
@@ -213,7 +213,7 @@ class Bin
 		$found = true;
 
 		foreach ($options as $field => $option) {
-			$params = App::toArray($option);
+			$params = App::array($option);
 			$param_found = false;
 
 			foreach ($params as $name) {

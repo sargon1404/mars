@@ -413,7 +413,7 @@ abstract class Items extends Rows implements \ArrayAccess
 			$data = $data->getUpdatableData();
 		}
 
-		$data = App::toArray($data);
+		$data = App::array($data);
 		if (!$data) {
 			return 0;
 		}

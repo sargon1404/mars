@@ -147,7 +147,7 @@ trait Body
 			$name = $this->name;
 		}
 
-		return $this->getRootPath() . static::$base_dir . '/' . App::sl($name);
+		return $this->getRootPath() . static::$base_dir . '/' . $name . '/';
 	}
 
 	/**
@@ -165,7 +165,7 @@ trait Body
 			$name = $this->name;
 		}
 
-		return $this->getRootUrl() . static::$base_dir . '/' . App::sl(rawurldecode($name));
+		return $this->getRootUrl() . static::$base_dir . '/' . rawurldecode($name) . '/';
 	}
 
 	/**
@@ -183,7 +183,7 @@ trait Body
 			$name = $this->name;
 		}
 
-		return $this->getRootUrlStatic() . static::$base_dir . '/' . App::sl(rawurldecode($name));
+		return $this->getRootUrlStatic() . static::$base_dir . '/' . rawurldecode($name) . '/';
 	}
 
 	/**

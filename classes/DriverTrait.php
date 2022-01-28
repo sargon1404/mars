@@ -50,9 +50,9 @@ trait DriverTrait
 	* Adds a driver to the list of supported drivers
 	* @param string $name The name of the driver
 	* @param string $class The class handling the driver
-	* @return $this
+	* @return static
 	*/
-	public function addSupportedDriver(string $name, string $class)
+	public function addSupportedDriver(string $name, string $class) : static
 	{
 		$this->supported_drivers[$name] = $class;
 
@@ -62,9 +62,9 @@ trait DriverTrait
 	/**
 	* Adds multiple drivers to the list of supported drivers
 	* @param array $drivers The drivers to add
-	* @return $this
+	* @return static
 	*/
-	public function addSupportedDrivers(array $drivers)
+	public function addSupportedDrivers(array $drivers) : static
 	{
 		$this->supported_drivers = array_merge($this->supported_drivers, $drivers);
 
@@ -97,7 +97,7 @@ trait DriverTrait
 		$handle = new $class($this->app);
 
 		if ($this->driver_interface) {
-			if (!is_a($handle, $this->driver_interface)) {
+			if (!$handle instanceof $this->driver_interface) {
 				throw new \Exception("Driver {$class} must implement interface {$this->driver_interface}");
 			}
 		}

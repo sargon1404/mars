@@ -81,7 +81,7 @@ trait ValidationTrait
 	*/
 	public function skipValidationRules($skip_rules)
 	{
-		$skip_rules = App::getArray($skip_rules);
+		$skip_rules = (array)$skip_rules;
 		foreach ($skip_rules as $rule) {
 			if (!in_array($rule, $this->skip_validation_rules)) {
 				$this->skip_validation_rules[] = $rule;

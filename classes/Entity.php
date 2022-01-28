@@ -28,7 +28,7 @@ class Entity
 	*/
 	public function setData(array|object $data)
 	{
-		$data = App::toArray($data);
+		$data = App::array($data);
 
 		foreach ($data as $name => $val) {
 			$this->$name = $val;
@@ -51,7 +51,7 @@ class Entity
 				$data[$name] = $this->$name;
 			}
 		} else {
-			$data = App::getObjectVars($this);
+			$data = get_object_vars($this);
 		}
 
 		return $data;
@@ -76,7 +76,7 @@ class Entity
 	*/
 	public function addData(array|object $data, $value = '')
 	{
-		$data = App::toArray($data);
+		$data = App::array($data);
 
 		foreach ($data as $name) {
 			if (!isset($this->$name)) {

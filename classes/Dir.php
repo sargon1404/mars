@@ -29,7 +29,7 @@ class Dir
 	*/
 	public function buildPath(array $elements) : string
 	{
-		return $this->app->file->buildPath($elements);
+		return $this->app->file->buildPath($elements, true);
 	}
 
 	/**
@@ -187,8 +187,7 @@ class Dir
 
 		$this->create($destination_dir);
 
-		$source_dir = App::sl($source_dir);
-		$destination_dir = App::sl($destination_dir);
+		$destination_dir = App::fixPath($destination_dir);
 
 		$iterator = $this->getIterator($source_dir);
 		foreach ($iterator as $file) {

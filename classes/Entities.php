@@ -96,7 +96,7 @@ class Entities implements \Iterator, \Countable
 	*/
 	public function assign($data)
 	{
-		$data = App::toArray($data);
+		$data = App::array($data);
 
 		foreach ($data as $name => $value) {
 			$this->$name = $value;
@@ -208,11 +208,11 @@ class Entities implements \Iterator, \Countable
 
 		return $this;
 	}
-	
+
 	public function load() : array
 	{
 		$this->loaded = true;
-		
+
 		return [];
 	}
 
@@ -258,7 +258,7 @@ class Entities implements \Iterator, \Countable
 		if (!$this->loaded) {
 			$this->load();
 		}
-		
+
 		return $this->data[$this->current];
 	}
 
@@ -289,7 +289,7 @@ class Entities implements \Iterator, \Countable
 		if (!$this->loaded) {
 			$this->load();
 		}
-		
+
 		$this->current = 0;
 	}
 
