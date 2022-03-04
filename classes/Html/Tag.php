@@ -6,8 +6,6 @@
 
 namespace Mars\Html;
 
-use Mars\App;
-
 /**
 * The Tag Class
 * Renders a generic tag
@@ -118,7 +116,7 @@ abstract class Tag implements TagInterface
 	protected function escape(string $value) : string
 	{
 		if ($this->escape) {
-			return App::e($value);
+			return $this->app->escape->html($value);
 		}
 
 		return $value;
@@ -139,7 +137,7 @@ abstract class Tag implements TagInterface
 				$value = reset($value);
 			} else {
 				if (!is_bool($value)) {
-					$value = App::e($value);
+					$value = $this->app->escape->html($value);
 				}
 			}
 

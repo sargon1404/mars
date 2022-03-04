@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
 * The Document's Meta Tag Class
 * Stores the meta tags used by a document
@@ -22,7 +20,7 @@ class Meta extends Tags
 	*/
 	public function outputTag(string $name, string $content)
 	{
-		echo '<meta name="' . App::e($name) . '" content="' . App::e($content) . '" />' . "\n";
+		echo '<meta name="' . $this->app->escape->html($name) . '" content="' . $this->app->escape->html($content) . '" />' . "\n";
 
 		return $this;
 	}

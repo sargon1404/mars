@@ -1,20 +1,20 @@
 <?php
 /**
-* The Base Filter Class
+* The Base Format Class
 * @package Mars
 */
 
-namespace Mars\Filters;
+namespace Mars\Formats;
 
 /**
-* The Base Filter Class
+* The Base Format Class
 */
-abstract class Filter
+abstract class Format
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @param string $value The value to filter
+	* @param string $value The value to format
 	* @param mixed $params Extra params, if any
 	*/
 	abstract public function get(string $value, ...$params);

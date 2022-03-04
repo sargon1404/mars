@@ -180,7 +180,7 @@ class Request
 	public function setCookie(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, bool $encode = true, bool $secure = false, bool $httponly = true)
 	{
 		if ($encode) {
-			$data = $this->app->encoder->encode($data);
+			$data = $this->app->json->encode($data);
 		}
 
 		if ($expires === null) {
@@ -348,7 +348,7 @@ class Request
 			return [];
 		}
 
-		return $this->app->encoder->decode($this->cookie[$name]);
+		return $this->app->json->decode($this->cookie[$name]);
 	}
 
 	/**

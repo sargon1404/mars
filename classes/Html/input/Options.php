@@ -6,8 +6,6 @@
 
 namespace Mars\Html\Input;
 
-use Mars\App;
-
 /**
 * The Options Class
 * Renders the select options
@@ -42,7 +40,7 @@ class Options extends \Mars\Html\Tag
 		$html = '';
 
 		foreach ($this->options as $text => $value) {
-			$text = App::e($text);
+			$text = $this->app->escape->html($text);
 
 			$attributes = $value;
 			if (!is_array($value)) {

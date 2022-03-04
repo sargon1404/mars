@@ -4,7 +4,7 @@ use Mars\Serializer;
 
 include_once(__DIR__ . '/Base.php');
 
-final class EncoderTest extends Base
+final class JsonTest extends Base
 {
 	protected $data = ['test', '123'];
 
@@ -12,23 +12,23 @@ final class EncoderTest extends Base
 
 	public function testEncode()
 	{
-		$encoder = $this->app->encoder;
+		$json = $this->app->json;
 
-		$str = $encoder->encode(null);
+		$str = $json->encode(null);
 		$this->assertSame($str, '');
 
-		$str = $encoder->encode($this->data);
+		$str = $json->encode($this->data);
 		$this->assertSame($str, $this->expected);
 	}
 
 	public function testDecode()
 	{
-		$encoder = $this->app->encoder;
+		$json = $this->app->json;
 
-		$data = $encoder->decode('');
+		$data = $json->decode('');
 		$this->assertSame($data, '');
 
-		$data = $encoder->decode($this->expected);
+		$data = $json->decode($this->expected);
 		$this->assertSame($data, $this->data);
 	}
 }

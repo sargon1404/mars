@@ -629,7 +629,7 @@ trait Theme
 	*/
 	public function outputLangCode()
 	{
-		echo App::e($this->app->lang->code);
+		echo $this->app->escape->html($this->app->lang->code);
 	}
 
 	/**
@@ -637,7 +637,7 @@ trait Theme
 	*/
 	public function outputEncoding()
 	{
-		echo '<meta charset="' . App::e($this->app->lang->encoding) . '" />' . "\n";
+		echo '<meta charset="' . $this->app->escape->html($this->app->lang->encoding) . '" />' . "\n";
 	}
 
 	/**
@@ -649,7 +649,7 @@ trait Theme
 
 		$title = $this->app->plugins->filter('theme_output_title', $title);
 
-		echo '<title>' . App::e($title) . '</title>' . "\n";
+		echo '<title>' . $this->app->escape->html($title) . '</title>' . "\n";
 	}
 
 	/**
@@ -799,7 +799,7 @@ trait Theme
 			$icon_url = $this->app->url_static . 'favicon.png';
 		}
 
-		echo '<link rel="shortcut icon" type="image/png" href="' . App::e($icon_url) . '" />' . "\n";
+		echo '<link rel="shortcut icon" type="image/png" href="' . $this->app->escape->html($icon_url) . '" />' . "\n";
 	}
 
 	/**

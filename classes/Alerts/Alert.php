@@ -6,8 +6,6 @@
 
 namespace Mars\Alerts;
 
-use Mars\App;
-
 /**
 * The Alert Class
 * Encapsulates the properties of an alert [title, text]
@@ -81,7 +79,7 @@ class Alert
 	{
 		$title = $this->title;
 		if ($this->escape_html) {
-			$title = App::e($title);
+			$title = $this->app->escape->html($title);
 		}
 
 		return $title;
@@ -95,7 +93,7 @@ class Alert
 	{
 		$text = $this->text;
 		if ($this->escape_html) {
-			$text = App::e($text);
+			$text = $this->app->escape->html($text);
 		}
 
 		$text = nl2br($text);

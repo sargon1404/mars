@@ -12,20 +12,25 @@ namespace Mars;
 */
 class Config extends Data
 {
-   /**
-   * @var int $error_types The error types to show
+	/**
+   * @var bool $log_errors If true, will log all errors to the log files
    */
-	public int $error_types =  E_ALL & ~E_NOTICE;
+	public bool $log_errors =  true;
 
 	/**
-   * @var int $log_error_types The error types to log
+   * @var int $log_error_reporting The log error reporting level
    */
-	public int $log_error_types =  E_ALL;
+	public int $log_error_reporting =  E_ALL;
 
 	/**
-   * @var bool $display_errors If false, errors won't be shown
-   */
-	public bool $display_errors = false;
+	* @var string $log_suffix The suffix format of the log files
+	*/
+	public string $log_suffix = 'd-F-Y';
+
+	/**
+	* @var string $log_date_format The format of the log dates
+	*/
+	public string $log_date_format = 'm-d-Y H:i:s';
 
 	/**
 	* @var string $url The url of the site
@@ -198,6 +203,16 @@ class Config extends Data
 	* @var string $javascript_version Version param to apply to all JS scripts
 	*/
 	public string $javascript_version = '1';
+
+	/**
+	* @var string $html_allowed_elements The allowed html elements; used when filtering html. If null, all elements are allowed
+	*/
+	public ?string $html_allowed_elements = null;
+
+	/**
+	* @var string $html_allowed_attributes The allowed html attributes; used when filtering html
+	*/
+	public ?string $html_allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
 
 	/**
 	* Builds the Config object

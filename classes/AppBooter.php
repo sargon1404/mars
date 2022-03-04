@@ -56,16 +56,17 @@ class AppBooter
 	*/
 	public function base()
 	{
-		/*$this->app->log = new Log($this->app);*/
+		$this->app->log = new Log($this->app);
 		$this->app->time = new Time($this->app);
-		$this->app->encoder = new Encoder($this->app);
+		$this->app->json = new Json($this->app);
 		$this->app->random = new Random($this->app);
 		$this->app->filter = new Filter($this->app);
-		/*$this->app->escape = new Escape($this->app);
-		$this->app->validator = new Validator($this->app);
+		$this->app->escape = new Escape($this->app);
+		$this->app->unescape = new Unescape($this->app);
 		$this->app->format = new Format($this->app);
+		$this->app->validator = new Validator($this->app);
 		$this->app->file = new File($this->app);
-		$this->app->dir = new Dir($this->app);
+		/*$this->app->dir = new Dir($this->app);
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);

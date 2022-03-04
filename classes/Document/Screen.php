@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
 * The Screen Class
 * Contains 'Screen' functionality. Eg: error, message screens etc..
@@ -24,9 +22,9 @@ class Screen
 	public function fatalError(string $text, bool $escape_html = true)
 	{
 		if ($escape_html) {
-			$text = App::e($text);
+			$text = $this->app->escape->html($text);
 		}
-		
+
 		if (!$this->app->is_bin) {
 			$text = nl2br($text);
 		}
@@ -44,7 +42,7 @@ class Screen
 	public function error(string $text, string $title = '', bool $escape_html = true)
 	{
 		if ($escape_html) {
-			$text = App::e($text);
+			$text = $this->app->escape->html($text);
 		}
 
 		echo 'Error: ' . $text . "\n";
@@ -60,7 +58,7 @@ class Screen
 	public function message(string $text, string $title = '', bool $escape_html = true)
 	{
 		if ($escape_html) {
-			$text = App::e($text);
+			$text = $this->app->escape->html($text);
 		}
 
 		echo 'Message: ' . $text . "\n";

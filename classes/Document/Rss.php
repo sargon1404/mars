@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
 * The Document's Rss tag Class
 * Stores the <link rel="alternate" type="application/rss+xml"> tags of the document
@@ -22,7 +20,7 @@ class Rss extends Tags
 	*/
 	public function outputTag(string $url, string $title)
 	{
-		echo '<link rel="alternate" type="application/rss+xml" title="' . App::e($title) . '" href="' . App::e($url) . '" />' . "\n";
+		echo '<link rel="alternate" type="application/rss+xml" title="' . $this->app->escape->html($title) . '" href="' . $this->app->escape->html($url) . '" />' . "\n";
 
 		return $this;
 	}

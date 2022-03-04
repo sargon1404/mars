@@ -30,28 +30,24 @@ class Log
 	protected array $handles = [];
 
 	/**
-	* @var bool $is_bin If true, will use the bin log file
-	*/
-	protected bool $is_bin = false;
-
-	/**
 	* Builds the log objects
 	* @param App $app The app object
 	*/
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->is_bin = $this->app->is_bin;
 
-		$ext = '.php';
-		if ($this->is_bin) {
-			$ext = '.bin.php';
+		$ext = '.log';
+		if ($this->app->is_bin) {
+			$ext = '.bin.log';
 		}
 
-		$this->suffix = date('d-F-Y') . '.php';
-		$this->date = date('d-m-Y H:i:s');
+		$this->suffix = date($this->app->config->log_suffix) . $ext;
+		$this->date = date($this->app->config->log_date_format);
 
-		set_error_handler([$this, 'handleError'], $this->app->config->log_error_types);
+		if ($this->app->config->log_errors) {
+			set_error_handler([$this, 'handleError'], $this->app->config->log_error_reporting);
+		}
 	}
 
 	/**
@@ -59,11 +55,24 @@ class Log
 	*/
 	public function __destruct()
 	{
-		if ($this->handles) {
-			foreach ($this->handles as $handle) {
-				fclose($handle);
-			}
+		foreach ($this->handles as $handle) {
+			fclose($handle);
 		}
+	}
+
+	/**
+	* Callback for set_error_handler
+	* @internal
+	*/
+	public function handleError(int $no, string $str, string $file, int $line) : bool
+	{
+		ob_start();
+		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$trace = ob_get_clean();
+
+		$this->log('errors', $str, $file, $line, true, trim($trace));
+
+		return false;
 	}
 
 	/**
@@ -72,89 +81,55 @@ class Log
 	* @param string $str The string to log
 	* @param string $file The file in which the logging occured Shold be __FILE__
 	* @param string $line The line where the logging occured. Should be __LINE__
+	* @param bool $extended If true, will log extended data
+	* @param string $trace log trace, if any
 	*/
-	public function log(string $type, string $str, string $file = '', string $line = '')
+	public function log(string $type, string $str, string $file = '', string $line = '', bool $extended = false, string $trace = '')
 	{
 		if (!isset($this->handles[$type])) {
-			$this->start($type);
+			$this->open($type);
 		}
 
-		$text = "{$str} ({$this->date})";
-		if ($file || $line) {
-			$text.= "[{$file}:{$line}]";
+		$text = "[{$this->date}] {$str}\n";
+
+		if ($extended) {
+			if ($trace) {
+				$text.= $trace . "\n";
+			}
+
+			if (!$this->app->is_bin) {
+				$text.= "Url: {$this->app->full_url}\n";
+			}
+			if ($file) {
+				$text.= "Filename: {$file}:{$line}\n";
+			}
 		}
-		$text.= "\n";
+
+		$text.= "--------------------------------------------------------------------\n\n";
 
 		fwrite($this->handles[$type], $text);
 	}
 
 	/**
-	* Logs a string by using an extended format
-	* @param string $type The log type. Eg: error,warning,info. Any string can be used as type
-	* @param string $str The string to log
-	* @param string $file The file in which the logging occured Shold be __FILE__
-	* @param string $line The line where the logging occured. Should be __LINE__
-	*/
-	public function logExtended(string $type, string $str, string $file = '', string $line = '')
-	{
-		if (!isset($this->handles[$type])) {
-			$this->start($type);
-		}
-
-		$text = '[DATE: ' . $this->date . ']' . "\n";
-		if (!$this->is_bin) {
-			$text.= '[URL: ' . $this->app->full_url . ']' . "\n";
-		}
-
-		if ($file) {
-			$text.= '[FILE: ' . $file . ']';
-		}
-		if ($line) {
-			$text.= '[LINE: ' . $line . ']';
-		}
-		if ($file || $line) {
-			$text.= "\n";
-		}
-
-		$text.= "\n" . $str . "\n\n";
-		$text.= "------------------------\n\n";
-
-		fwrite($this->handles[$type], $text);
-	}
-
-	/**
-	* Starts/Creates the log file, if it doesn't exist
+	* Opens the log file
 	* @param string $type The log type
 	*/
-	protected function start(string $type)
+	protected function open(string $type)
 	{
-		$filename = $this->app->log_path . basename($type) . '-' . $this->suffix;
-
-		$exists = false;
-		if (is_file($filename)) {
-			$exists = true;
-		}
-
-		$this->handles[$type] = fopen($filename, 'a');
+		$this->handles[$type] = fopen($this->getFilename($type), 'a');
 		if (!$this->handles[$type]) {
 			throw new \Exception('Error writing the log file. Please make sure the log folder is writeable');
 		}
-
-		if (!$exists) {
-			fwrite($this->handles[$type], '<?php die; ?>' . "\n");
-		}
 	}
 
 	/**
-	* Callback for set_error_handler
-	* @internal
+	* Returns the file where a log string will be stored
+	* @param string $type The log type
+	* @return string The filename
 	*/
-	public function handleError(int $err_no, string $err_str, string $err_file, int $err_line) : bool
+	public function getFilename(string $type) : string
 	{
-		$str = $err_str . "\n";
-		$this->error($str, $err_file, $err_line);
-
-		return false;
+		return $this->app->log_path . basename($type) . '-' . $this->suffix;
 	}
 
 	/**
@@ -166,7 +141,16 @@ class Log
 	*/
 	public function error(string $str, string $file = '', string $line = '')
 	{
-		$this->logExtended('errors', $str, $file, $line);
+		$this->log('errors', $str, $file, $line, true);
+	}
+
+	/**
+	* Logs an exception
+	* @param \Exceptin $e The exception to log
+	*/
+	public function exception(\Exception $e)
+	{
+		$this->log('errors', $e->getMessage(), $e->getFile(), $e->getLine(), true, $e->getTraceAsString());
 	}
 
 	/**
@@ -178,7 +162,7 @@ class Log
 	*/
 	public function message(string $str, string $file = '', string $line = '')
 	{
-		$this->log('message', $str, $file, $line);
+		$this->log('messages', $str, $file, $line);
 	}
 
 	/**

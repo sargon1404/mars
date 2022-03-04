@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
 * The Document's Css Urls Class
 * Class containing the css urls/stylesheets used by a document
@@ -33,7 +31,7 @@ class Css extends Urls
 	{
 		$url = $this->getUrl($url, $version);
 
-		echo '<link rel="stylesheet" type="text/css" href="' . App::e($url) . '" />' . "\n";
+		echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url) . '" />' . "\n";
 
 		return $this;
 	}

@@ -98,6 +98,11 @@ class App
 	public string $log_path = '';
 
 	/**
+	* @var string $tmp_path The folder where the temporary files are stored
+	*/
+	public string $tmp_path = '';
+
+	/**
 	* @var string $cache_path The folder where the cache files are stored
 	*/
 	public string $cache_path = '';
@@ -149,9 +154,24 @@ class App
 	public Db $db;
 
 	/**
-	* @var Encoder $encoder The encoder object
+	* @var Escape $escape The escape object
 	*/
-	public Encoder $encoder;
+	public Escape $escape;
+
+	/**
+	* @var Filter $filter The filter object
+	*/
+	public Filter $filter;
+
+	/**
+	* @var Format $format The format object
+	*/
+	public Format $format;
+
+	/**
+	* @var Json $json The json object
+	*/
+	public Json $json;
 
 	/**
 	* @var Memcache $memcache The memcache object
@@ -159,7 +179,7 @@ class App
 	public Memcache $memcache;
 
 	/**
-	* @var Random $random The encoder object
+	* @var Random $random The random object
 	*/
 	public Random $random;
 
@@ -184,9 +204,19 @@ class App
 	public Sql $sql;
 
 	/**
+	* @var Unescape $unescape The unescape object
+	*/
+	public Unescape $unescape;
+
+	/**
 	* @var Uri $uri The uri object
 	*/
 	public Uri $uri;
+
+	/**
+	* @var Validator $validator The validator object
+	*/
+	public Validator $validator;
 
 	/**
 	* @var string $namespace The root namespace
@@ -213,6 +243,7 @@ class App
 	*/
 	public const DIRS = [
 		'log_path' => 'log',
+		'tmp_path' => 'tmp',
 		'cache_path' => 'cache',
 		'libraries_path' => 'libraries',
 		'extensions_path' => 'extensions'
@@ -308,16 +339,11 @@ class App
 		$this->loadBooter();
 
 		$this->boot->minimum();
-
-		$this->setPropertiesAfterMinimum();
-		$this->config->normalize();
-
+		$this->boot1();
 		$this->boot->caching();
 		$this->boot->libraries();
 		$this->boot->db();
-
-		$this->setPropertiesAfterDb();
-
+		$this->boot2();
 		$this->boot->base();
 		/*$this->boot->env();
 		$this->boot->document();
@@ -345,7 +371,7 @@ class App
 	/**
 	* Prepares the properties, after the minimum boot has finished
 	*/
-	public function setPropertiesAfterMinimum()
+	public function boot1()
 	{
 		if (!$this->is_bin) {
 			$this->ip = $this->getIp();
@@ -353,12 +379,14 @@ class App
 			$this->accepts_gzip = $this->getAcceptsGzip();
 			$this->can_gzip = $this->canGzip();
 		}
+
+		$this->config->normalize();
 	}
 
 	/**
 	* Prepares the properties, after the database is available
 	*/
-	public function setPropertiesAfterDb()
+	public function boot2()
 	{
 		$this->setUrls();
 		$this->setDevelopment();
@@ -859,74 +887,6 @@ class App
 
 	/********************** UTILITY FUNCTIONS ***************************************/
 
-	/**
-	* Converts special chars. to html entitites
-	* @param string $value The value to escape
-	* @return string The escaped value
-	*/
-	public static function e(string $value) : string
-	{
-		return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
-	}
-
-	/**
-	* Double escapes a value
-	* @param string $value The value to escape
-	* @param bool $nl2br If true, will apply nl2br to value
-	* @return string The double escaped value
-	*/
-	public static function ex2(string $value, bool $nl2br = true) : string
-	{
-		$value = static::e(static::e($value));
-
-		if ($nl2br) {
-			return nl2br($value);
-		}
-
-		return $value;
-	}
-
-	/**
-	* Decodes the html special entities
-	* @param string $value The value to decode
-	* @return string The decoded value
-	*/
-	public static function de(string $value) : string
-	{
-		return htmlspecialchars_decode($value);
-	}
-
-	/**
-	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
-	* @param string $value The value to escape
-	* @param bool $escape_html If true will call html escape the value
-	* @return string The escaped value
-	*/
-	public static function ejs(string $value, bool $escape_html = true) : string
-	{
-		$value = str_replace(['\\', "'", '"', "\n", "\r"], ['\\\\', "\\'", '\\"', '', ''], $value);
-
-		if ($escape_html) {
-			$value = static::e($value);
-		}
-
-		return $value;
-	}
-
-	/**
-	* Escapes text which will be used inside javascript <script> tags
-	* @param string $value The value to escape
-	* @param bool $nl2br If true, will apply nl2br to value
-	* @return string The escaped value
-	*/
-	public static function ejsc(string $value, bool $nl2br = true) : string
-	{
-		if ($nl2br) {
-			$value = nl2br($value);
-		}
-
-		return static::ejs($value, false);
-	}
 
 	/**
 	* Returns a language string

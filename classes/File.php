@@ -20,6 +20,11 @@ class File
 	protected string $open_basedir = '';
 
 	/**
+	* @var int $max_chars The maximum number of chars allowed in $filename
+	*/
+	protected int $max_chars = 300;
+
+	/**
 	* Constructs the file object
 	* @param App $app The app object
 	*/
@@ -63,9 +68,7 @@ class File
 			return $this;
 		}
 
-		$max_chars = 500;
-
-		if (strlen(basename($filename)) > $max_chars) {
+		if (strlen(basename($filename)) > $this->max_chars) {
 			throw new \Exception("Invalid filename! Filename {$filename} contains too many characters!");
 		}
 

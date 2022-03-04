@@ -103,7 +103,7 @@ class Debug
 
 		$i = 1;
 		foreach ($this->app->db->queries as $query) {
-			echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . App::e($query[0]) . '</div><div class="debug-query-params">' . $this->getDbQueryParams($query[1]) . "</div></td><td>{$query[2]}s</td><td>" . $this->app->format->percentage($query[2], $db_time) . '%</td></tr>';
+			echo "<tr><td>{$i}</td><td><div class=\"debug-query\">" . $this->app->escape->html($query[0]) . '</div><div class="debug-query-params">' . $this->getDbQueryParams($query[1]) . "</div></td><td>{$query[2]}s</td><td>" . $this->app->format->percentage($query[2], $db_time) . '%</td></tr>';
 			$i++;
 		}
 
@@ -145,7 +145,7 @@ class Debug
 
 			$exec_time = $this->app->plugins->exec_time[$plugin->name];
 
-			echo "<tr><td>" . App::e($plugin->title) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
+			echo "<tr><td>" . $this->app->escape->html($plugin->title) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
 		}
 
 		echo '</table><br><br>';
@@ -154,7 +154,7 @@ class Debug
 		echo '<tr><th colspan="3">Hooks Execution Time</th></tr>';
 
 		foreach ($this->app->plugins->hooks_exec_time as $hook => $exec_time) {
-			echo "<tr><td>" . App::e($hook) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
+			echo "<tr><td>" . $this->app->escape->html($hook) . "</td><td>" . floatval($exec_time) . "</td><td>" . $this->app->format->percentage($exec_time, $execution_time) . '%</td></tr>';
 		}
 
 		echo '</table><br><br>';
@@ -165,7 +165,7 @@ class Debug
 			echo '<tr><th colspan="3">Hooks</th></tr>';
 
 			foreach ($hooks as $hook) {
-				echo "<tr><td>" . App::e($hook) . '</td></tr>';
+				echo "<tr><td>" . $this->app->escape->html($hook) . '</td></tr>';
 			}
 
 			echo '</table><br><br>';
@@ -243,7 +243,7 @@ class Debug
 			echo '<table class="grid debug-grid debug-db-grid" style="width:100%;text-align:left">';
 			echo '<tr><th>Files Read From Disk</th></tr>';
 			foreach ($uncached_files as $file) {
-				echo '<tr><td>' . App::e($file) . '</td></tr>';
+				echo '<tr><td>' . $this->app->escape->html($file) . '</td></tr>';
 			}
 			echo '</table><br><br>';
 		}

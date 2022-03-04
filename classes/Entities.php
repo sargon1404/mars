@@ -224,7 +224,7 @@ class Entities implements \Iterator, \Countable
 	public function outputVar(string $name, bool $escape_html = true)
 	{
 		if ($escape_html) {
-			echo App::e($this->$name);
+			echo $this->app->escape->html($this->$name);
 		} else {
 			echo $this->$name;
 		}

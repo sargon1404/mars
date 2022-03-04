@@ -6,8 +6,6 @@
 
 namespace Mars\Filters;
 
-use Mars\App;
-
 /**
 * The Slug Filter Class
 */

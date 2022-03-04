@@ -35,16 +35,11 @@ class Templates
 	*/
 	protected array $supported_modifiers = [
 		//escape modifiers
-		'e' => ['\Mars\App::e', 40],
-		'escape' => ['\Mars\App::e', 40],
-		'html' => ['\Mars\App::e', 40],
-		'de' => ['\Mars\App::de', 50],
-		'ex2' => ['\Mars\App::ex2', 60],
-		'js' => ['\Mars\App::ejs', 20, false],
-		'ejs' => ['\Mars\App::ejs', 20, false],
-		'jsc' => ['\Mars\App::ejsc', 20, false],
-		'ejsc' => ['\Mars\App::ejsc', 20, false],
-		'jscode' => ['\Mars\App::ejsc', 20, false],
+		'html' => ['$this->app->escape->html', 40],
+		'htmlx2' => ['$this->app->escape->htmlx2', 60],
+		'js' => ['$this->app->escape->js', 20, false],
+		'jsstring' => ['$this->app->escape->jsString', 20, false],
+		'path' => ['$this->app->escape->path', 10, false],
 
 		//base modifiers
 		'nl2br' => ['nl2br', 100],
@@ -57,29 +52,21 @@ class Templates
 		'strip_tags' => ['strip_tags', 10],
 
 		//format modifiers
-		'timestamp' => ['$this->app->format->timestamp', 10],
-		'datetime' => ['$this->app->format->timestamp', 10],
+		'datetime' => ['$this->app->format->datetime', 10],
 		'date' => ['$this->app->format->date', 10],
 		'time' => ['$this->app->format->time', 10],
-		'empty' => ['$this->app->format->empty', 10],
 		'round' => ['$this->app->format->round', 10],
 		'number' => ['$this->app->format->number', 10],
 		'size' => ['$this->app->format->size', 10],
-		'ip' => ['$this->app->format->ip', 10],
-		'to_url' => ['$this->app->format->toUrl', 10],
 
 		//text modifiers
 		'cut' => ['$this->app->text->cut', 10],
 		'cut_middle' => ['$this->app->text->cutMiddle', 10],
 
 		//url modifiers
-		'url' => ['$this->app->escape->url', 10],
 		'http' => ['$this->app->uri->toHttp', 10],
 		'https' => ['$this->app->uri->toHttps', 10],
 		'ajax' => ['$this->app->uri->addAjax', 10],
-
-		//misc
-		'path' => ['$this->app->escape->path', 10],
 	];
 
 	/**

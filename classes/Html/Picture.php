@@ -6,8 +6,6 @@
 
 namespace Mars\Html;
 
-use Mars\App;
-
 /**
 * The Picture Class
 * Renders a picture
@@ -58,7 +56,7 @@ class Picture extends \Mars\Html\Tag
 
 			$media = implode(' and ', $media_array);
 
-			$html.= '<source media="' . $media . '" srcset="' . App::e($image['url']) . '">' . "\n";
+			$html.= '<source media="' . $media . '" srcset="' . $this->app->escape->html($image['url']) . '">' . "\n";
 		}
 
 		return $html;

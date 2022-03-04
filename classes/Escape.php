@@ -16,111 +16,49 @@ class Escape
 
 	/**
 	* Converts special chars. to html entitites
-	* @see \Mars\App::e()
+	* @param string $value The value to escape
+	* @return string The escaped value
 	*/
 	public function html(?string $value) : string
 	{
-		return App::e($value);
+		return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
 	}
 
 	/**
-	* Decodes the html special entities
-	* @see \Mars\App::de()
+	* Double escapes a value
+	* @param string $value The value to escape
+	* @param bool $nl2br If true, will apply nl2br to value
+	* @return string The double escaped value
 	*/
-	public function htmlDecode(?string $value) : string
+	public function htmlx2(?string $value, bool $nl2br = true) : string
 	{
-		return App::de($value);
+		$value = $this->html($this->html($value));
+
+		if ($nl2br) {
+			return nl2br($value);
+		}
+
+		return $value;
 	}
 
 	/**
-	* Escapes text meant to be written as javascript code. Replaces ' with \' and \n with empty space
-	* @see \Mars\App::ejs()
+	* Escapes text meant to be written as javascript code, when embeding it with html. Eg: <a href="" onclick="<code>">
+	* @param string $value The value to escape
+	* @return string The escaped value
 	*/
-	public function js(string $value, bool $escape_html = true) : string
+	public function js(string $value) : string
 	{
-		return App::ejs($value, $escape_html);
+		return $this->html($value);
 	}
 
 	/**
 	* Escapes text which will be used inside javascript <script> tags
-	* @see \Mars\App::ejsc()
+	* @param string $value The value to escape
+	* @return string The escaped value
 	*/
-	public function jsCode(string $value, bool $nl2br = true) : string
+	public function jsString(string $value) : string
 	{
-		return App::ejsc($value, $nl2br);
-	}
-
-	/**
-	* Escapes an url. It breaks into parts and calls rawurlencode/urlencode on the different segments
-	* @param string $url The url to escape
-	* @return string The clean url
-	*/
-	public function url(string $url) : string
-	{
-		$url_parts = parse_url($url);
-		if (!$url_parts) {
-			return '';
-		}
-
-		if ($url_parts['scheme'] == 'javascript') {
-			return '';
-		}
-
-		$parts = [];
-		$parts[] = $url_parts['scheme'] . ':/';
-		if (isset($url_parts['host'])) {
-			$parts[] = $url_parts['host'];
-		}
-
-		if (isset($url_parts['path'])) {
-			$path_parts = explode('/', trim($url_parts['path'], '/'));
-
-			foreach ($path_parts as $part) {
-				$parts[] = rawurlencode($part);
-			}
-		}
-
-		$clean_url = implode('/', $parts);
-
-		if (!empty($url_parts['query'])) {
-			$clean_url.= '?';
-
-			$parts = [];
-			$params_parts = explode('&', $url_parts['query']);
-
-			foreach ($params_parts as $part) {
-				$pair = explode('=', $part);
-
-				$p1 = urlencode($pair[0]);
-				$p2 = '';
-				if ($pair[1]) {
-					$p2 = '=' . urlencode($pair[1]);
-				}
-
-				$parts[] = $p1 . $p2;
-			}
-
-			$clean_url.= implode('&', $parts);
-		}
-
-		return $clean_url;
-	}
-
-	/**
-	* Breaks a filename into parts and calls rawurlencode on each part
-	* @param string The filename to escape
-	* @return string The escaped filename
-	*/
-	public function urlFilename(string $filename) : string
-	{
-		$parts = [];
-		$filename_parts = explode('/', $filename);
-
-		foreach ($filename_parts as $part) {
-			$parts[] = rawurlencode($part);
-		}
-
-		return implode('/', $parts);
+		return str_replace(['\\', "'", '"', "\n", "\r"], ['\\\\', "\\'", '\\"', '', ''], $value);
 	}
 
 	/**

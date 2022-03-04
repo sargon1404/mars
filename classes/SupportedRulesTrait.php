@@ -27,6 +27,32 @@ trait SupportedRulesTrait
 	*/
 	protected string $rule_method = 'get';
 
+	/**
+	* Maps a value [scalar|array] to a callback
+	*/
+	public function map($value, callable $callback)
+	{
+		if (is_array($value)) {
+			return array_map($callback, $value);
+		}
+
+		return $callback($value);
+	}
+
+	/**
+	* Returns a value
+	* @param mixed $value The value
+	* @param mixed $rule The name of the rule
+	* @param mixed $args The arguments to pass to the rule, if any
+	*/
+	public function value($value, string $rule, ...$args) : mixed
+	{
+		return $this->map($value, function($value) use ($rule, $args) {
+			$args = array_merge([$value], $args);
+
+			return $this->getValue($rule, ...$args);
+		});
+	}
 
 	/**
 	* Adds a supported validation rule

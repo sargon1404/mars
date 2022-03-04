@@ -6,8 +6,6 @@
 
 namespace Mars\Html\Input;
 
-use Mars\App;
-
 /**
 * The Select Options Class
 * Renders the select options
@@ -34,7 +32,7 @@ class SelectOptions extends Options
 		}
 
 		foreach ($this->options as $name => $value) {
-			$name = App::e($name);
+			$name = $this->app->escape->html($name);
 
 			$is_optgroup = false;
 			if ($use_optgroup) {
@@ -42,9 +40,9 @@ class SelectOptions extends Options
 					$is_optgroup = true;
 				}
 
-				$value = App::e($value[0]);
+				$value = $this->app->escape->html($value[0]);
 			} else {
-				$value = App::e($value);
+				$value = $this->app->escape->html($value);
 			}
 
 			$selected = '';

@@ -217,7 +217,7 @@ class Pagination
 
 			$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
 
-			$pages[] = ['url' => App::e($url), 'page' => $i, 'class' => $class];
+			$pages[] = ['url' => $this->app->escape->html($url), 'page' => $i, 'class' => $class];
 		}
 
 		return $pages;

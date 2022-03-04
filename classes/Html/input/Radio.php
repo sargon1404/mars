@@ -6,8 +6,6 @@
 
 namespace Mars\Html\Input;
 
-use Mars\App;
-
 /**
 * The Radio Class
 * Renders a radio
@@ -31,7 +29,7 @@ class Radio extends \Mars\Html\Tag
 
 		$html = "<input type=\"radio\"{$attributes}>";
 		if ($this->label) {
-			$html.= "<label for=\"{$this->attributes['id']}\">" . App::e($this->label) . '</label>';
+			$html.= "<label for=\"{$this->attributes['id']}\">" . $this->app->escape->html($this->label) . '</label>';
 		}
 		$html.= "\n";
 

@@ -1,16 +1,16 @@
 <?php
 /**
-* The Encoder Class
+* The Json Class
 * @package Mars
 */
 
 namespace Mars;
 
 /**
-* The Encoder Class
-* Encodes/Decods data using json
+* The Json Class
+* Encodes/Decodes data using json
 */
-class Encoder
+class Json
 {
 	use AppTrait;
 

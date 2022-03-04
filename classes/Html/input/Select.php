@@ -6,8 +6,6 @@
 
 namespace Mars\Html\Input;
 
-use Mars\App;
-
 /**
 * The Select Class
 * Renders a select field

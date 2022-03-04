@@ -6,8 +6,6 @@
 
 namespace Mars\Document;
 
-use Mars\App;
-
 /**
 * The Document's Javascript Urls Class
 * Class containing the javascript urls/stylesheets used by a document
@@ -42,7 +40,7 @@ class Javascript extends Urls
 			$defer_str = ' defer';
 		}
 
-		echo '<script type="text/javascript" src="' . App::e($url) . '"' . $async_str . $defer_str . '></script>' . "\n";
+		echo '<script type="text/javascript" src="' . $this->app->escape->html($url) . '"' . $async_str . $defer_str . '></script>' . "\n";
 
 		return $this;
 	}
@@ -115,7 +113,7 @@ class Javascript extends Urls
 			if (is_array($val)) {
 				$val = $this->toArray($val, $quote);
 			} else {
-				$val = App::ejsc($val);
+				$val = $this->escape->js($val);
 
 				if ($quote) {
 					if (!$dont_quote_array || !in_array($key, $dont_quote_array)) {
@@ -165,7 +163,7 @@ class Javascript extends Urls
 
 		$elements = [];
 		foreach ($data as $key => $val) {
-			$val = App::ejsc($val);
+			$val = $this->escape->js($val);
 
 			if ($quote) {
 				if (!$dont_quote_array || !in_array($key, $dont_quote_array)) {
