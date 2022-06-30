@@ -21,10 +21,10 @@ class Textarea extends \Mars\Html\Tag
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$this->attributes['id'] = $this->attributes['id'] ?? $this->escapeId($this->attributes['name']);
+		$attributes = $this->generateIdAttribute($attributes);
 
-		return parent::get();
+		return parent::get($text, $attributes, $properties);
 	}
 }

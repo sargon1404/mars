@@ -14,24 +14,40 @@ use Mars\App;
 class Datetime extends Rule
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $params) : bool
+	protected string $error_string = 'validate_datetime_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if (!is_array($value)) {
-			throw new \Exception('The Time validator accepts an array with [$year, $month, $day] as the value parameter');
-		}
+		$format = $params[0] ?? $this->app->lang->datetime_picker_format;
 
-		[$year, $month, $day, $hour, $minute, $second] = $value;
+		return $this->isValidDateTime($value, $format);
+	}
 
-		$date = new Date($this->app);
-		if (!$date->validate([$year, $month, $day], $params)) {
-			return false;
-		}
+	/**
+	* Determines if $value is a valid DateTime
+	* @param string $value The value
+	* @param string $format The format
+	* @return bool
+	*/
+	protected function isValidDateTime(string $value, string $format) : bool
+	{
+		try {
+			$dt = \DateTime::createFromFormat($format, $value);
+			if (!$dt) {
+				return false;
+			}
 
-		$time = new Time($this->app);
-		if (!$time->validate([$hour, $minute, $second], $params)) {
+			$errors = $dt->getLastErrors();
+			if ($errors['warning_count'] || $errors['error_count']) {
+				return false;
+			}
+		} catch (\Exception $e) {
 			return false;
 		}
 

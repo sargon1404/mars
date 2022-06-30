@@ -6,20 +6,29 @@
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
 * The MaxChars Validator Class
 */
 class MaxChars extends Rule
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $length) : bool
+	protected string $error_string = 'validate_maxchars_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if (strlen($value) <= $length) {
+		if (!isset($params[0])) {
+			throw new \Exception("The  MaxChars Validator rule must have the max number of chars. specified. Eg: max_chars:5");
+		}
+
+		$length = (int)$params[0];
+
+		if (mb_strlen($value) <= $length) {
 			return true;
 		}
 

@@ -6,19 +6,24 @@
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
 * The Ip Validator Class
 */
 class Ip extends Rule
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $wildcards) : bool
+	protected string $error_string = 'validate_ip_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
+		$wildcards = $params[0] ?? '';
+
 		if (!$wildcards) {
 			return filter_var($value, FILTER_VALIDATE_IP);
 		}

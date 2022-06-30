@@ -6,20 +6,23 @@
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
 * The Required Validator Class
 */
 class Required extends Rule
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $params) : bool
+	protected string $error_string = 'validate_required_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if ($value) {
+		if (trim($value)) {
 			return true;
 		}
 

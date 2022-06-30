@@ -6,23 +6,29 @@
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
 * The Unique Validator Class
 */
 class Unique extends Rule
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $params) : bool
+	protected string $error_string = 'validate_unique_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if ($this->app->db->exists($this->table, [$this->field => $value])) {
-			return false;
+		if (empty($params[0])) {
+			throw new \Exception("The Validator Unique rule must have the name of the table and (optionally) column specified. Eg: unique:users or unique:users:id");
 		}
 
-		return true;
+		$table = $params[0];
+		$col = $params[1] ?? 'id';
+
+		return $this->app->db->exists($table, [$col => $value], $col);
 	}
 }

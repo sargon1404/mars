@@ -6,21 +6,20 @@
 
 namespace Mars\Html;
 
+use Mars\App;
+
 /**
 * The Tag Class
 * Renders a generic tag
 */
-abstract class Tag implements TagInterface
+class Tag implements TagInterface
 {
+	use \Mars\AppTrait;
+
 	/**
 	* @var string $type The tag's attributes, if any
 	*/
 	public array $attributes = [];
-
-	/**
-	* @var string $text The tag's text
-	*/
-	public string $text = '';
 
 	/**
 	* @var bool $escape If true, will escape the content
@@ -38,71 +37,36 @@ abstract class Tag implements TagInterface
 	protected string $newline = "\n";
 
 	/**
-	* @var App $app The app object
-	*/
-	protected App $app;
-
-	/**
-	* Builds the tag
-	* @param string $type The tag's type
-	* @param array $attributes The attributes of the tag, if any
-	* @param string $text The tag's text, if any
-	* @param bool $escape  If true, will escape the content
-	* @param App $app The app object
-	*/
-	public function __construct(array $attributes = [], array $properties = [], bool $escape = true, App $app = null)
-	{
-		if (!$app) {
-			$app = App::get();
-		}
-
-		$this->attributes = $attributes;
-		$this->escape = $escape;
-		$this->app = $app;
-
-		foreach ($properties as $name => $val) {
-			$this->$name = $val;
-		}
-	}
-
-	/**
-	* Creates an object using a static call
-	* @see Tag::__construct()
-	* @return Tag
-	*/
-	public static function create(array $attributes = [], array $properties =[], bool $escape = true) : Tag
-	{
-		return new static($attributes, $properties, $escape);
-	}
-
-	/**
 	* Opens the tag
+	* @param array $attributes The tag's attributes
+	* @return string The html code
 	*/
-	public function open() : string
+	public function open(array $attributes = []) : string
 	{
-		$attributes = $this->getAttributes($this->attributes);
+		$attributes = $this->getAttributes($attributes);
 
 		return "<{$this->tag}{$attributes}>" . $this->newline;
 	}
 
 	/**
 	* Closes the tag
+	* @return string The html code
 	*/
 	public function close() : string
 	{
-		return "</{$this->tag}>\n";
+		return "</{$this->tag}>";
 	}
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$attributes = $this->getAttributes($this->attributes);
+		$attributes = $this->getAttributes($attributes);
 
-		if ($this->text) {
-			return "<{$this->tag}{$attributes}>" . $this->escape($this->text) . "</{$this->tag}>" . $this->newline;
+		if ($text) {
+			return "<{$this->tag}{$attributes}>" . $this->escape($text) . "</{$this->tag}>" . $this->newline;
 		} else {
 			return "<{$this->tag}{$attributes}>" . $this->newline;
 		}
@@ -158,23 +122,38 @@ abstract class Tag implements TagInterface
 	}
 
 	/**
+	* Generates an id attribute, if one doesn't already exists
+	* @param array $attributes The attributes in the format name => value
+	* @return array The attributes, including the id field
+	*/
+	public function generateIdAttribute(array $attributes) : array
+	{
+		if (!isset($attributes['no-id']) && !isset($attributes['id']) && isset($attributes['name'])) {
+			$attributes['id'] ??= $this->getIdName($attributes['name']);
+		}
+
+		return $attributes;
+	}
+
+	/**
 	* Returns an id name for an input field
 	* @param string $name The name of the field
 	*/
 	public function getIdName(string $name) : string
 	{
 		static $id_index = [];
-		$index = 1;
 
 		$name = $this->escapeId($name);
 
 		if (!isset($id_index[$name])) {
-			$id_index[$name] = 1;
+			$id_index[$name] = 0;
+
+			return $name;
 		} else {
 			$id_index[$name]++;
-		}
 
-		return $name . '-' . $id_index[$name];
+			return $name . '-' . $id_index[$name];
+		}
 	}
 
 	/**

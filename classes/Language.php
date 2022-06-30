@@ -38,6 +38,21 @@ trait Language
 	public string $time_format = 'g:i a';
 
 	/**
+	* @var string datetime_picker_format The format of the datetime picker
+	*/
+	public string $datetime_picker_format = 'Y-m-d H:i';
+
+	/**
+	* @var string date_picker_format The format of the date picker
+	*/
+	public string $date_picker_format = 'Y-m-d';
+
+	/**
+	* @var string time_picker_format The format of the time picker
+	*/
+	public string $time_picker_format = 'H:i';
+
+	/**
 	* @var string $decimal_separator The language's decimal_separator
 	*/
 	public string $decimal_separator = '.';

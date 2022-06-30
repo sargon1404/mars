@@ -13,21 +13,14 @@ namespace Mars\Html\Lists;
 abstract class Listing extends \Mars\Html\Tag
 {
 	/**
-	* @var array $items the List's items
-	*/
-	public array $items = [];
-
-	/**
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $items = []) : string
 	{
-		$attributes = $this->getAttributes($this->attributes);
-
-		$html = "<{$this->tag}{$attributes}>" . "\n";
-		$html.= $this->getItems($this->items);
-		$html.= "</{$this->tag}>" . "\n";
+		$html = $this->open($attributes);
+		$html.= $this->getItems($items);
+		$html.= $this->close();
 
 		return $html;
 	}
@@ -42,7 +35,7 @@ abstract class Listing extends \Mars\Html\Tag
 		$html = '';
 
 		foreach ($items as $item) {
-			$html.= "<li>" . $this->escape($item) . "</li>\n";
+			$html.= "<li>" . $item . "</li>\n";
 		}
 
 		return $html;

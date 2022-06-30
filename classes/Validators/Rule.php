@@ -16,40 +16,60 @@ abstract class Rule
 	use \Mars\AppTrait;
 
 	/**
-	* @var string $field The name of the field we're validating
+	* @var string $error_string The error string
 	*/
-	protected string $field = '';
+	protected string $error_string = '';
 
 	/**
-	* @var string $table The db table we're validating against
+	* @var string $error The generated error, if any
 	*/
-	protected string $table = '';
-
-	/**
-	* @var string $id_field The id field of the db table we're validating against
-	*/
-	protected string $id_field = '';
+	protected string $error = '';
 
 	/**
 	* Validates the value
-	* @param string|array $value The value to validate
-	* @param string|array $params Extra params
+	* @param string $value The value to validate
+	* @param mixed $params Extra params
 	* @return bool
 	*/
-	abstract public function validate(string|array $value, string|array $params) : bool;
+	abstract public function isValid(string $value, ...$params) : bool;
+
+   /**
+   * Validates a value
+   * @param string $value The value to validate
+   * @param string $field The name of the field
+   * @param mixed $params Params to be passed to the validator, if any
+   * @return bool True if the validation passed
+   */
+	public function validate(string $value, string $field, ...$params) : bool
+	{
+		$this->error = '';
+
+		if ($this->isValid($value, ...$params)) {
+			return true;
+		}
+
+		$this->error = $this->getErrorString($field, $params);
+
+		return false;
+	}
 
 	/**
-	* Builds the object
-	* @param App $app The app object
-	* @param string $field The name of the field we're validating
-	* @param string $table The db table we're validating agains, if any
-	* @param string $id_field The id field of the db table we're validating against, if any
+	* Returns the validation error string
+	* @param string $field The name of the field
+   * @param mixed $params Params to be passed to the validator, if any
+	* @return string
 	*/
-	public function __construct(App $app, string $field = '', string $table = '', string $id_field = '')
+	protected function getErrorString(string $field, ...$params) : string
 	{
-		$this->app = $app;
-		$this->field = $field;
-		$this->table = $table;
-		$this->id_field = $id_field;
+		return App::__($this->error_string, ['{FIELD}' => App::__($field)]);
+	}
+
+	/**
+	* Returns the generated error, if any
+	* @return string
+	*/
+	public function getError() : string
+	{
+		return $this->error;
 	}
 }

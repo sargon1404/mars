@@ -21,15 +21,16 @@ class Radio extends \Mars\Html\Tag
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$this->attributes['id'] = $this->attributes['id'] ?? $this->getIdName($this->attributes['name']);
+		$attributes_list = $this->generateIdAttribute($attributes);
+		$attributes = $this->getAttributes($attributes_list);
 
-		$attributes = $this->getAttributes($this->attributes);
+		$label = $properties['label'] ?? '';
 
 		$html = "<input type=\"radio\"{$attributes}>";
-		if ($this->label) {
-			$html.= "<label for=\"{$this->attributes['id']}\">" . $this->app->escape->html($this->label) . '</label>';
+		if ($label) {
+			$html.= "<label for=\"{$attributes_list['id']}\">" . $this->app->escape->html($label) . '</label>';
 		}
 		$html.= "\n";
 

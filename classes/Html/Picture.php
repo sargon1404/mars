@@ -13,11 +13,6 @@ namespace Mars\Html;
 class Picture extends \Mars\Html\Tag
 {
 	/**
-	* @var array $images Array listing the images to display in the picture
-	*/
-	public array $images = [];
-
-	/**
 	* {@inheritdoc}
 	*/
 	protected string $tag = 'picture';
@@ -26,14 +21,14 @@ class Picture extends \Mars\Html\Tag
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$img = new Img($this->attributes);
+		$img = new Img($this->app);
 
-		$html = "<{$this->tag}>\n";
-		$html.= $this->getImages();
-		$html.= $img->get();
-		$html.= "</{$this->tag}>\n";
+		$html = $this->open();
+		$html.= $this->getImages($properties);
+		$html.= $img->get('', $attributes) . "\n";
+		$html.= $this->close();
 
 		return $html;
 	}
@@ -42,10 +37,10 @@ class Picture extends \Mars\Html\Tag
 	* Returns the html code of the source images
 	* @return string
 	*/
-	protected function getImages() : string
+	protected function getImages($images) : string
 	{
 		$html = '';
-		foreach ($this->images as $image) {
+		foreach ($images as $image) {
 			$media_array = [];
 			if (isset($image['min'])) {
 				$media_array[] = "(min-width:{$image['min']}px)";

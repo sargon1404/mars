@@ -24,12 +24,15 @@ class Validator
 	* @var array $supported_rules The list of suported rules
 	*/
 	protected array $supported_rules = [
+		'req' => '\Mars\Validators\Required',
 		'required' => '\Mars\Validators\Required',
 		'unique' => '\Mars\Validators\Unique',
 		'min' => '\Mars\Validators\Min',
 		'max' => '\Mars\Validators\Max',
+		'interval' => '\Mars\Validators\Interval',
 		'min_chars' => '\Mars\Validators\MinChars',
 		'max_chars' => '\Mars\Validators\MaxChars',
+		'chars' => '\Mars\Validators\Chars',
 		'pattern' => '\Mars\Validators\Pattern',
 		'email' => '\Mars\Validators\Email',
 		'url' => '\Mars\Validators\Url',
@@ -39,7 +42,16 @@ class Validator
 		'datetime' => '\Mars\Validators\Datetime',
 	];
 
-	
+	/**
+	* Builds the object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+
+		$this->rule_method = 'validate';
+	}
 
 	/**
 	* Returns the validation errors, if any
@@ -52,126 +64,114 @@ class Validator
 
 	/**
 	* Checks a value agains a validator
-	* @param string|array $value The value to validate
+	* @param mixed $value The value to validate
 	* @param string $rule The rule to validate the value against
-	* @param string|array $params Extra params to pass to the validator
+	* @param string $field The name of the field
+	* @param mixed $params Extra params to pass to the validator
 	* @return bool Returns true if the value is valid
 	*/
-	public function check(string|array $value, string $rule, string|array $params = '') : bool
+	public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
 	{
-		if (!isset($this->supported_rules[$rule])) {
-			throw new \Exception("Unknown validator: {$rule}");
-		}
-
-		$class = $this->supported_rules[$rule];
-		$validator = new $class($this->app);
-
-		return $validator->validate($value, $params);
+		return $this->getValue($rule, $value, $field, ...$params);
 	}
 
 	/**
 	* Validates the rules
 	* @param array|object $data The data to validate
-	* @param array $rules The rules to validate, in the format ['field' => [error => validation_type]]
-   * @param string $table The database table where we'll be looking for 'unique' rules
-   * @param string $id_field The id field, which must be 0 in order to process unique' rules
-	* @param array $ignore_array Array with the fields for which we'll skip validation, if any
+	* @param array $rules The rules to validate, in the format ['field' => validation_type]. Eg: 'my_id' => 'required|min:3|unique:my_table:my_id'
+	* @param array $error_strings Custom error strings, if any
+	* @param array $skip_array Array with the fields for which we'll skip validation, if any
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	public function validate(array|object $data, array $rules, string $table = '', string $id_field = '', array $ignore_array = []) : bool
+	public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
 	{
 		$ok = true;
 		$this->errors = [];
 
-		foreach ($rules as $field => $rules_array) {
-			foreach ($rules_array as $error => $rule) {
-				if (in_array($field, $ignore_array)) {
-					continue;
-				}
+		foreach ($rules as $field => $field_rules) {
+			if (in_array($field, $skip_array)) {
+				continue;
+			}
 
-				$value = (string)App::getProperty($field, $data);
+			$value = App::getProperty($field, $data);
 
-				if (is_callable($rule)) {
-					//the rule is a custom callable function rather than a supported rule
-					$function = $rule;
-					if (!$function($value)) {
-						$ok = false;
-						$this->errors[] = $error;
-						break;
-					}
-				} else {
-					$name = $rule;
-					$params  = '';
-					if (is_array($rule)) {
-						[$name, $params] = $rule;
-					}
+			$error_field = $field_rules['field'] ?? $field;
+			$rules_list = $field_rules['rules'] ?? $field_rules;
 
-					if (isset($this->supported_rules[$name])) {
-						$class = $this->supported_rules[$name];
-						$validator = new $class($this->app, $field, $table, $id_field);
+			$rules_array = explode('|', $rules_list);
+			foreach ($rules_array as $rule) {
+				$parts = explode(':', trim($rule));
+				$rule = reset($parts);
+				$params = array_slice($parts, 1);
 
-						if (!$validator->validate($value, $params)) {
-							$ok = false;
-							$this->errors[] = $error;
-							break;
-						}
-					} else {
-						throw new \Exception("Unknown validator: {$name}");
-					}
+				if (!$this->isValid($value, $rule, $error_field, ...$params)) {
+					$this->addError($rule, $field, $error_strings);
+					$ok = false;
 				}
 			}
 		}
 
-		return $ok;
+ 		return $ok;
+	}
+
+	/**
+	* Adds an error for a field & rule
+	* @param string $rule The validation rule name
+	*/
+	protected function addError(string $rule, string $field, array $error_strings)
+	{
+		//do we have in the $error_strings array a custom error for this rule & $field?
+		if ($error_strings && isset($error_strings[$field][$rule])) {
+			$this->errors[] = $error_strings[$field][$rule];
+
+			return;
+		}
+
+		//use the handler's error
+		$this->errors[] = $this->rules[$rule]->getError();
 	}
 
 	/**
 	* Validates a datetime
-	* @param int $year The year
-	* @param int $month The month
-	* @param int $day The day
-	* @param int $hour The hour
-	* @param int $minute The minute
-	* @param int $second The second
-	* @return bool Returns true if the params are valid
+	* @param string $value The value to validate
+	* @param string $format The date's format
+	* @return bool Returns true if the datetime is valid
 	*/
-	public function isDatetime(int $year, int $month, int $day, int $hour, int $minute, int $second) : bool
+	public function isDatetime(string $value, string $format = '') : bool
 	{
-		return $this->check([$year, $month, $day, $hour, $minute, $second], 'datetime');
+		return $this->isValid($value, 'datetime', '', $format);
 	}
 
 	/**
 	* Validates a date
-	* @param int $year The year
-	* @param int $month The month
-	* @param int $day The day
-	* @return bool Returns true if the params are valid
+	* @param string $value The value to validate
+	* @param string $format The date's format
+	* @return bool Returns true if the date is valid
 	*/
-	public function isDate(int $year, int $month, int $day) : bool
+	public function isDate(string $value, string $format = '') : bool
 	{
-		return $this->check([$year, $month, $day], 'date');
+		return $this->isValid($value, 'date', '', $format);
 	}
 
 	/**
-	* Validates a time
-	* @param int $hour The hour
-	* @param int $minute The minute
-	* @param int $second The second
-	* @return bool Returns true if the params are valid
+	* Validates a time value
+	* @param string $value The value to validate
+	* @param string $format The date's format
+	* @return bool Returns true if the time value is valid
 	*/
-	public function isTime(int $hour, int $minute, int $second) : bool
+	public function isTime(string $value, string $format = '') : bool
 	{
-		return $this->check([$hour, $minute, $second], 'time');
+		return $this->isValid($value, 'time', '', $format);
 	}
 
 	/**
 	* Checks if $url is a valid url
-	* @param string $url The url to validate
+	* @param string $value The value to validate
 	* @return bool Returns true if the url is valid
 	*/
-	public function isUrl(string $url) : bool
+	public function isUrl(string $value) : bool
 	{
-		return $this->check($url, 'url');
+		return $this->isValid($value, 'url');
 	}
 
 	/**
@@ -181,7 +181,7 @@ class Validator
 	*/
 	public function isEmail(string $email) : bool
 	{
-		return $this->check($email, 'email');
+		return $this->isValid($email, 'email');
 	}
 
 	/**
@@ -192,6 +192,6 @@ class Validator
 	*/
 	public function isIp(string $ip, bool $wildcards = false) : bool
 	{
-		return $this->check($ip, 'ip', $wildcards);
+		return $this->isValid($ip, 'ip', '', $wildcards);
 	}
 }

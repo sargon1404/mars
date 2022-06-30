@@ -6,25 +6,24 @@
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
 * The Date Validator Class
 */
-class Date extends Rule
+class Date extends DateTime
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $params) : bool
+	protected string $error_string = 'validate_date_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if (!is_array($value)) {
-			throw new \Exception('The Time validator accepts an array with [$year, $month, $day] as the value parameter');
-		}
+		$format = $params[0] ?? $this->app->lang->date_picker_format;
 
-		[$year, $month, $day] = $value;
-
-		return checkdate($month, $day, $year);
+		return $this->isValidDateTime($value, $format);
 	}
 }

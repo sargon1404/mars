@@ -66,11 +66,11 @@ class AppBooter
 		$this->app->format = new Format($this->app);
 		$this->app->validator = new Validator($this->app);
 		$this->app->file = new File($this->app);
-		/*$this->app->dir = new Dir($this->app);
+		$this->app->dir = new Dir($this->app);
 		$this->app->html = new Html($this->app);
-		$this->app->ui = new Ui($this->app);
-		$this->app->text = new Text($this->app);
-		$this->app->mail = new Mail($this->app);*/
+		/*$this->app->ui = new Ui($this->app);
+		$this->app->text = new Text($this->app);*/
+		//$this->app->mail = new Mail($this->app);
 	}
 
 	/**

@@ -8,6 +8,7 @@ namespace Mars;
 
 use Mars\Html\TagInterface;
 use Mars\Html\Tag;
+use Mars\Html\Form;
 
 /**
 * The HTML Class
@@ -16,8 +17,9 @@ use Mars\Html\Tag;
 class Html
 {
 	use AppTrait;
+	use SupportedRulesTrait;
 
-	protected array $supported_tags = [
+	protected array $supported_rules = [
 		'img' => '\Mars\Html\Img',
 		'picture' => '\Mars\Html\Picture',
 		'a' => '\Mars\Html\A',
@@ -44,46 +46,26 @@ class Html
 	];
 
 	/**
-	* Adds a supported tag to the list
-	* @param string $name The name of the tag
-	* @param string $class The name of the class handling the tag
-	* @return $this
-	*/
-	public function addSupportedTag(string $name, string $class)
-	{
-		$this->supported_tags[$name] = $class;
-
-		return $this;
-	}
-
-	/**
-	* Removes a supported tag
-	* @param string $name The name of the tag
-	* @return $this
-	*/
-	public function removeSupportedTag(string $name)
-	{
-		unset($this->supported_tag[$name]);
-
-		return $this;
-	}
-
-	/**
 	* Returns a tag
 	* @param string $type The tag's type
-	* @param array $attributes
+	* @param string $text The tag's text
+	* @param array $attributes The tag's attributes
 	* @param array $properties Extra properties to pass to the tag object
-	* @param string $escape If true, will escape text
-	* @return Tag The tag
+	* @return string The html code
 	*/
-	public function getTag(string $type, array $attributes = [], array $properties = [], bool $escape = true) : TagInterface
+	public function getTag(string $type, string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		if (!isset($this->supported_tags[$type])) {
-			throw new \Exception("Unknown tag: {$type}");
-		}
+		return $this->getValue($type, $text, $attributes, $properties);
+	}
 
-		$class = $this->supported_tags[$type];
-		return new $class($attributes, $properties, $escape, $this->app);
+	/**
+	* Returns the alt attribute of an image from the url
+	* @param string $url The image's url
+	* @return string The alt attribute
+	*/
+	protected function getImgAlt(string $url) : string
+	{
+		return basename($url);
 	}
 
 	/**
@@ -98,12 +80,12 @@ class Html
 	public function img(string $url, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
 	{
 		if (!$alt) {
-			$alt = basename($url);
+			$alt = $this->getImgAlt($url);
 		}
 
 		$attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
 
-		return $this->getTag('img', $attributes)->get();
+		return $this->getTag('img', '', $attributes);
 	}
 
 	/**
@@ -114,7 +96,7 @@ class Html
 	*/
 	public function imgWh(int $width = 0, int $height = 0) : string
 	{
-		return $this->getTag('img')->getAttributes(['width' => $width, 'height' => $height]);
+		return (new Tag)->getAttributes(['width' => $width, 'height' => $height]);
 	}
 
 	/**
@@ -130,12 +112,12 @@ class Html
 	public function picture(string $url, array $source_images, int $width = 0, int $height = 0, string $alt = '', array $attributes = []) : string
 	{
 		if (!$alt) {
-			$alt = basename($url);
+			$alt = $this->getImgAlt($url);
 		}
 
 		$attributes = $attributes + ['src' => $url, 'alt' => $alt, 'width' => $width, 'height' => $height];
 
-		return $this->getTag('picture', $attributes, ['images' => $source_images])->get();
+		return $this->getTag('picture', '', $attributes, $source_images);
 	}
 
 	/**
@@ -143,10 +125,9 @@ class Html
 	* @param string $url The link's url
 	* @param string $text The link text.If empty $url will be displayed insteed
 	* @param array $attributes The link's attributes
-	* @param bool $escape If true it will call escape on the text
 	* @return string The html code
 	*/
-	public function a(string $url, string $text = '', array $attributes = [], bool $escape = true) : string
+	public function a(string $url, string $text = '', array $attributes = []) : string
 	{
 		if (!$url) {
 			$url = 'javascript:void(0)';
@@ -157,40 +138,38 @@ class Html
 
 		$attributes = $attributes + ['href' => $url];
 
-		return $this->getTag('a', $attributes, ['text' => $text], $escape)->get();
+		return $this->getTag('a', $text, $attributes);
 	}
 
 	/**
 	* Alias for a()
 	* @see \Mars\Html::a()
 	*/
-	public function link(string $url, string $text = '', array $attributes = [], bool $escape = true) : string
+	public function link(string $url, string $text = '', array $attributes = []) : string
 	{
-		return $this->a($url, $text, $attributes, $escape);
+		return $this->a($url, $text, $attributes);
 	}
 
 	/**
 	* Builds an unordered list
 	* @param array $items The lists's items
 	* @param array $attributes The list's attributes
-	* @param bool $escape If true it will call escape on each item
 	* @return string The html code
 	*/
-	public function ul(array $items, array $attributes = [], bool $escape = true) : string
+	public function ul(array $items, array $attributes = []) : string
 	{
-		return $this->getTag('ul', $attributes, ['items' => $items], $escape)->get();
+		return $this->getTag('ul', '', $attributes, $items);
 	}
 
 	/**
 	* Builds an ordered list
 	* @param array $items The lists's items
 	* @param array $attributes The list's attributes
-	* @param bool $escape If true it will call escape on each item
 	* @return string The html code
 	*/
-	public function ol(array $items, array $attributes = [], bool $escape = true) : string
+	public function ol(array $items, array $attributes = []) : string
 	{
-		return $this->getTag('ol', $attributes, ['items' => $items], $escape)->get();
+		return $this->getTag('ol', '', $attributes, $items);
 	}
 
 	/**
@@ -269,9 +248,9 @@ class Html
 	*/
 	public function formOpen(string $url, array $attributes = [], string $method = 'post') : string
 	{
-		$attributes = $attributes + ['action' => $url, 'method' => $method];
+		$attributes = ['action' => $url, 'method' => $method] + $attributes;
 
-		return $this->getTag('form', $attributes)->open();
+		return (new Form)->open($attributes);
 	}
 
 	/**
@@ -280,7 +259,7 @@ class Html
 	*/
 	public function formClose() : string
 	{
-		return $this->getTag('form')->close();
+		return (new Form)->close();
 	}
 
 	/**
@@ -290,14 +269,14 @@ class Html
 	* @param string $placeholder Placeholder text
 	* @param bool $required If true, this is a required field
 	* @param array $attributes Extra attributes in the format name => value
-	* @param string $tag The tag used to render the input
+	* @param string $type The type of the input field
 	* @return string The html code
 	*/
-	public function input(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = [], string $tag = 'input') : string
+	public function input(string $name, string $value = '', string $placeholder = '', bool $required = false, array $attributes = [], string $type = 'input') : string
 	{
-		$attributes = $attributes + ['name' => $name, 'value'=> $value, 'placeholder' => $placeholder, 'required' => $required];
+		$attributes = ['name' => $name, 'value'=> $value, 'placeholder' => $placeholder, 'required' => $required] + $attributes;
 
-		return $this->getTag($tag, $attributes)->get();
+		return $this->getTag($type, '', $attributes);
 	}
 
 	/**
@@ -316,11 +295,11 @@ class Html
 	* @param array $attributes Extra attributes in the format name => value
 	* @return string The html code
 	*/
-	public function inputHidden(string $name, string $value, array $attributes = [], bool $generate_id = false) : string
+	public function inputHidden(string $name, string $value, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'value'=> $value];
+		$attributes = ['name' => $name, 'value'=> $value] + $attributes;
 
-		return $this->getTag('input_hidden', $attributes, ['generate_id' => $generate_id])->get();
+		return $this->getTag('input_hidden', '', $attributes);
 	}
 
 	/**
@@ -373,9 +352,9 @@ class Html
 	*/
 	public function textarea(string $name, string $value = '', array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name];
+		$attributes = ['name' => $name] + $attributes;
 
-		return $this->getTag('textarea', $attributes, ['text' => $value])->get();
+		return $this->getTag('textarea', $value, $attributes);
 	}
 
 	/**
@@ -386,9 +365,9 @@ class Html
 	*/
 	public function button(string $value, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['value'=> $value];
+		$attributes = ['value'=> $value] + $attributes;
 
-		return $this->getTag('button', $attributes)->get();
+		return $this->getTag('button', '', $attributes);
 	}
 
 	/**
@@ -399,9 +378,9 @@ class Html
 	*/
 	public function submit(string $value = '', array $attributes = []) : string
 	{
-		$attributes = $attributes + ['type' => 'submit', 'value'=> $value];
+		$attributes = ['type' => 'submit', 'value'=> $value] + $attributes;
 
-		return $this->getTag('submit', $attributes)->get();
+		return $this->getTag('submit', '', $attributes);
 	}
 
 	/**
@@ -415,9 +394,9 @@ class Html
 	*/
 	public function checkbox(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'value' => $value, 'checked' => $checked];
+		$attributes = ['name' => $name, 'value' => $value, 'checked' => $checked] + $attributes;
 
-		return $this->getTag('checkbox', $attributes, ['label' => $label])->get();
+		return $this->getTag('checkbox', '', $attributes, ['label' => $label]);
 	}
 
 	/**
@@ -431,9 +410,9 @@ class Html
 	*/
 	public function radio(string $name, string $label = '', string $value = '1', bool $checked = true, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'value' => $value, 'checked' => $checked];
+		$attributes = ['name' => $name, 'value' => $value, 'checked' => $checked] + $attributes;
 
-		return $this->getTag('radio', $attributes, ['label' => $label])->get();
+		return $this->getTag('radio', '', $attributes, ['label' => $label]);
 	}
 
 	/**
@@ -446,9 +425,9 @@ class Html
 	*/
 	public function radioGroup(string $name, array $values, string $checked = '', array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name];
+		$attributes = ['name' => $name] + $attributes;
 
-		return $this->getTag('radio_group', $attributes, ['values' => $values, 'checked' => $checked])->get();
+		return $this->getTag('radio_group', '', $attributes, ['values' => $values, 'checked' => $checked]);
 	}
 
 	/**

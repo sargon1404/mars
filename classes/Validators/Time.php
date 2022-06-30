@@ -1,40 +1,29 @@
 <?php
 /**
-* The Time Validator Class
+* The Date Validator Class
 * @package Mars
 */
 
 namespace Mars\Validators;
 
-use Mars\App;
-
 /**
-* The Time Validator Class
+* The Date Validator Class
 */
-class Time extends Rule
+class Time extends DateTime
 {
 	/**
-	* @see \Mars\Validator\Rule::validate()
 	* {@inheritdoc}
 	*/
-	public function validate(string|array $value, string|array $params) : bool
+	protected string $error_string = 'validate_time_error';
+
+	/**
+	* @see \Mars\Validator\Rule::isValid()
+	* {@inheritdoc}
+	*/
+	public function isValid(string $value, ...$params) : bool
 	{
-		if (!is_array($value)) {
-			throw new \Exception('The Time validator accepts an array with [$hour, $minute, $second] as the value parameter');
-		}
+		$format = $params[0] ?? $this->app->lang->time_picker_format;
 
-		[$hour, $minute, $second] = $value;
-
-		if ($hour < 0 || $hour > 23) {
-			return false;
-		}
-		if ($minute < 0 || $minute > 59) {
-			return false;
-		}
-		if ($second < 0 || $second > 59) {
-			return false;
-		}
-
-		return true;
+		return $this->isValidDateTime($value, $format);
 	}
 }
