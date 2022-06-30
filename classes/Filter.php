@@ -45,7 +45,7 @@ class Filter
 	*/
 	public function string($value) : string|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return (string)$value;
 		});
 	}
@@ -57,7 +57,7 @@ class Filter
 	*/
 	public function int($value) : int|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return (int)$value;
 		});
 	}
@@ -69,7 +69,7 @@ class Filter
 	*/
 	public function float($value) : float|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return (float)$value;
 		});
 	}
@@ -81,7 +81,7 @@ class Filter
 	*/
 	public function abs($value) : int|float|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return abs($value);
 		});
 	}
@@ -93,7 +93,7 @@ class Filter
 	*/
 	public function trim($value) : string|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return trim($value);
 		});
 	}
@@ -106,7 +106,7 @@ class Filter
 	*/
 	public function tags($value, array|string|null $allowed_tags = null) : string|array
 	{
-		return $this->map($value, function($value) use ($allowed_tags) {
+		return $this->map($value, function ($value) use ($allowed_tags) {
 			return strip_tags($value, $allowed_tags);
 		});
 	}
@@ -131,7 +131,7 @@ class Filter
 	*/
 	public function id(int|array $value) : int|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return abs((int)$value);
 		});
 	}

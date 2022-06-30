@@ -53,7 +53,7 @@ class Format
 	*/
 	public function lower(string|array $value) : string|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return strtolower($value);
 		});
 	}
@@ -65,7 +65,7 @@ class Format
 	*/
 	public function upper(string|array $value) : string|array
 	{
-		return $this->map($value, function($value) {
+		return $this->map($value, function ($value) {
 			return strtoupper($value);
 		});
 	}
@@ -78,7 +78,7 @@ class Format
 	*/
 	public function round(float|array $value, int $decimals = 2) : float|array
 	{
-		return $this->map($value, function($value) use($decimals) {
+		return $this->map($value, function ($value) use ($decimals) {
 			return round($value, $decimals);
 		});
 	}
@@ -93,7 +93,7 @@ class Format
 	*/
 	public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
 	{
-		return $this->map($number, function($number) use($decimals, $decimal_separator, $thousands_separator) {
+		return $this->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
 			return number_format($number, $decimals, $decimal_separator, $thousands_separator);
 		});
 	}
@@ -131,7 +131,7 @@ class Format
 	{
 		$format = $format ?: $this->datetime_format;
 
-		return $this->map($datetime, function($datetime) use($format) {
+		return $this->map($datetime, function ($datetime) use ($format) {
 			return $this->app->time->get($datetime)->format($format);
 		});
 	}

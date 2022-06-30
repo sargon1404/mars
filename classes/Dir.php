@@ -167,7 +167,7 @@ class Dir
 			return;
 		}
 
-		if(!mkdir($dir)) {
+		if (!mkdir($dir)) {
 			throw new \Exception("Unable to create dir: {$dir}");
 		}
 	}

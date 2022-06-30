@@ -22,7 +22,7 @@ trait AppTrait
 	* @param App $app The app object
 	*/
 	public function __construct(App $app = null)
-	{		
+	{
 		if (!$app) {
 			$app = App::get();
 		}

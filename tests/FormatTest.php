@@ -61,5 +61,4 @@ final class FormatTest extends Base
 		$this->assertEquals($format->timeInterval(181), '3 minutes, 1 second');
 		$this->assertEquals($format->timeInterval(56790), '15 hours, 46 minutes, 30 seconds');
 	}
-
 }

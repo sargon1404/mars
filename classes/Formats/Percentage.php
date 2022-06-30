@@ -21,7 +21,7 @@ class Percentage extends Format
 		$decimals = $params[1] ?? 4;
 
 		if (!$value || !$total) {
-				return 0;
+			return 0;
 		}
 
 		$result = ($value * 100) / $total;

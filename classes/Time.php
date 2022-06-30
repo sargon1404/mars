@@ -179,7 +179,7 @@ class Time
 		$duration = '';
 		$type = strtolower(trim($type));
 
-		switch($type) {
+		switch ($type) {
 			case 'day':
 			case 'days':
 				$duration = "P{$units}D";

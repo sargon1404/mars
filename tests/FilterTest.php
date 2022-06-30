@@ -137,5 +137,4 @@ final class FilterTest extends Base
 		$this->assertEquals($filter->allowed('b', 'b'), 'b');
 		$this->assertEquals($filter->allowed('b', ['a'], 'c'), 'c');
 	}
-
 }

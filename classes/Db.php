@@ -808,7 +808,7 @@ class Db
 	{
 		$data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
 
-		return array_filter($data, function($col) use ($ignore_columns){
+		return array_filter($data, function ($col) use ($ignore_columns) {
 			return !in_array($col, $ignore_columns);
 		}, ARRAY_FILTER_USE_KEY);
 	}
@@ -827,7 +827,7 @@ class Db
 	{
 		$data = $this->getBindData($table, $values, $ignore_value, $values_prefix);
 
-		return array_filter($data, function($col) use ($allowed_columns){
+		return array_filter($data, function ($col) use ($allowed_columns) {
 			return in_array($col, $allowed_columns);
 		}, ARRAY_FILTER_USE_KEY);
 	}
@@ -836,7 +836,7 @@ class Db
 	* Returns the data used by the bind/bindList operations
 	* @see Db::bind()
 	*/
-	protected function getBindData(string $table, array $values, ?string $ignore_value, string $values_prefix ) : array
+	protected function getBindData(string $table, array $values, ?string $ignore_value, string $values_prefix) : array
 	{
 		$data = [];
 		$columns = $this->getColumns($table);

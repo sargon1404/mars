@@ -100,11 +100,11 @@ class Pdo implements DriverInterface
 	/**
 	* Returns the prepared params
 	* @param array $params The params
-	* @return array The prepared params 
-	*/	
+	* @return array The prepared params
+	*/
 	protected function getParams(array $params) : array
 	{
-		$keys = array_map(function($key){
+		$keys = array_map(function ($key) {
 			return ':' . $key;
 		}, array_keys($params));
 		

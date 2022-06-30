@@ -88,6 +88,4 @@ class Text
 	{
 		return new Text\Parser;
 	}
-
-
 }

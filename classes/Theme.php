@@ -446,7 +446,7 @@ trait Theme
 	*/
 	public function buildTemplateFilename(string $dir, string $template)
 	{
-		return $dir . '/' .$template . '.' . App::FILE_EXTENSIONS['templates'];
+		return $dir . '/' . $template . '.' . App::FILE_EXTENSIONS['templates'];
 	}
 
 	/**

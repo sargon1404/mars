@@ -17,12 +17,12 @@ final class UriTest extends Base
 	{
 		$uri = $this->app->uri;
 
-	   $this->assertTrue($uri->isUrl('http://www.google.com/'));
-      $this->assertTrue($uri->isUrl('http://www.google.com/?v=1&q=test'));
+		$this->assertTrue($uri->isUrl('http://www.google.com/'));
+		$this->assertTrue($uri->isUrl('http://www.google.com/?v=1&q=test'));
 		$this->assertTrue($uri->isUrl('https://www.google.com/'));
-      $this->assertTrue($uri->isUrl('https://www.google.com/?v=1&q=test'));
-      $this->assertFalse($uri->isUrl('://www.google.com/?v=1&q=test'));
-      $this->assertFalse($uri->isUrl('www.google.com/?v=1&q=test'));
+		$this->assertTrue($uri->isUrl('https://www.google.com/?v=1&q=test'));
+		$this->assertFalse($uri->isUrl('://www.google.com/?v=1&q=test'));
+		$this->assertFalse($uri->isUrl('www.google.com/?v=1&q=test'));
 	}
 
 	public function testIsLocal()
@@ -33,7 +33,7 @@ final class UriTest extends Base
 		$this->assertTrue($uri->isLocal('https://localhost/mars/page.php'));
 		$this->assertTrue($uri->isLocal('https://localhost/mars/page.php?qqq=test'));
 		$this->assertFalse($uri->isLocal('https://localhost/ma'));
-	   $this->assertFalse($uri->isLocal('http://www.google.com/'));
+		$this->assertFalse($uri->isLocal('http://www.google.com/'));
 	}
 
 	/*public function testGetFromLocalUrl()
@@ -49,7 +49,7 @@ final class UriTest extends Base
 	{
 		$uri = $this->app->uri;
 
-	   $this->assertEquals($uri->build('https://www.google.com/', []), 'https://www.google.com/');
+		$this->assertEquals($uri->build('https://www.google.com/', []), 'https://www.google.com/');
 		$this->assertEquals($uri->build('https://www.google.com/', ['v' => 1, 'q' => 'test']), 'https://www.google.com/?v=1&q=test');
 		$this->assertEquals($uri->build('https://www.google.com/', ['v' => 1, 'q' => 'test', 'y' => '']), 'https://www.google.com/?v=1&q=test');
 		$this->assertEquals($uri->build('https://www.google.com/', ['v' => 1, 'q' => 'test', 'y' => ''], false), 'https://www.google.com/?v=1&q=test&y=');
@@ -60,9 +60,9 @@ final class UriTest extends Base
 	{
 		$uri = $this->app->uri;
 
-	   $this->assertEquals($uri->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
-	   $this->assertEquals($uri->buildPath('https://localhost/mars/', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
-	   $this->assertEquals($uri->buildPath('https://localhost/mars/', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2/');
+		$this->assertEquals($uri->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
+		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
+		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2/');
 	}
 
 	public function testInQuery()
@@ -116,5 +116,4 @@ final class UriTest extends Base
 		$this->assertEquals($uri->stripScheme('http://localhost/mars'), 'localhost/mars');
 		$this->assertEquals($uri->stripScheme('https://localhost/mars'), 'localhost/mars');
 	}
-
 }

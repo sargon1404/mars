@@ -6,7 +6,6 @@ include_once(__DIR__ . '/Base.php');
 
 final class HtmlTest extends Base
 {
-
 	public function testImg()
 	{
 		$html = $this->app->html;
@@ -27,19 +26,23 @@ final class HtmlTest extends Base
 	{
 		$html = $this->app->html;
 
-		$this->assertSame($html->picture('https://mydomain/mypic.jpg', [['url' => 'https://mydomain/mypic-small.jpg', 'min' => 500], ['url' => 'https://mydomain/mypic-big.jpg', 'min' => 1000]]),
-		'<picture>
+		$this->assertSame(
+			$html->picture('https://mydomain/mypic.jpg', [['url' => 'https://mydomain/mypic-small.jpg', 'min' => 500], ['url' => 'https://mydomain/mypic-big.jpg', 'min' => 1000]]),
+			'<picture>
 <source media="(min-width:500px)" srcset="https://mydomain/mypic-small.jpg">
 <source media="(min-width:1000px)" srcset="https://mydomain/mypic-big.jpg">
 <img src="https://mydomain/mypic.jpg" alt="mypic.jpg">
-</picture>');
+</picture>'
+		);
 
-$this->assertSame($html->picture('https://mydomain/mypic.jpg', [['url' => 'https://mydomain/mypic-small.jpg', 'min' => 500, 'max' => 1000], ['url' => 'https://mydomain/mypic-big.jpg', 'min' => 1000]]),
-		'<picture>
+		$this->assertSame(
+			$html->picture('https://mydomain/mypic.jpg', [['url' => 'https://mydomain/mypic-small.jpg', 'min' => 500, 'max' => 1000], ['url' => 'https://mydomain/mypic-big.jpg', 'min' => 1000]]),
+			'<picture>
 <source media="(min-width:500px) and (max-width:1000px)" srcset="https://mydomain/mypic-small.jpg">
 <source media="(min-width:1000px)" srcset="https://mydomain/mypic-big.jpg">
 <img src="https://mydomain/mypic.jpg" alt="mypic.jpg">
-</picture>');
+</picture>'
+		);
 	}
 
 	public function testA()

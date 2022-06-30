@@ -177,7 +177,7 @@ class DbResult
 	public function getCol() : array
 	{
 		return $this->fetchAllFromColumn();
-	}	
+	}
 	
 	/**
 	* Returns the value from the first column of the first row

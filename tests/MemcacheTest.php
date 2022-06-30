@@ -16,7 +16,7 @@ final class MemcacheTest extends Base
 
 	protected function getKey() : string
 	{
-		return 'test-key-' . time() . mt_rand(0,99999);
+		return 'test-key-' . time() . mt_rand(0, 99999);
 	}
 
 	protected function runAssertions($memcache)

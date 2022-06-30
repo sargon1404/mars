@@ -33,13 +33,13 @@ abstract class Rule
 	*/
 	abstract public function isValid(string $value, ...$params) : bool;
 
-   /**
-   * Validates a value
-   * @param string $value The value to validate
-   * @param string $field The name of the field
-   * @param mixed $params Params to be passed to the validator, if any
-   * @return bool True if the validation passed
-   */
+	/**
+	* Validates a value
+	* @param string $value The value to validate
+	* @param string $field The name of the field
+	* @param mixed $params Params to be passed to the validator, if any
+	* @return bool True if the validation passed
+	*/
 	public function validate(string $value, string $field, ...$params) : bool
 	{
 		$this->error = '';

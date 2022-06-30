@@ -47,7 +47,7 @@ trait SupportedRulesTrait
 	*/
 	public function value($value, string $rule, ...$args) : mixed
 	{
-		return $this->map($value, function($value) use ($rule, $args) {
+		return $this->map($value, function ($value) use ($rule, $args) {
 			$args = array_merge([$value], $args);
 
 			return $this->getValue($rule, ...$args);
@@ -111,7 +111,6 @@ trait SupportedRulesTrait
 			$this->rules[$rule] = new $class($this->app);
 
 			return [$this->rules[$rule], $this->rule_method];
-
 		} elseif (is_array($this->supported_rules[$rule])) {
 			return [$this, reset($this->supported_rules[$rule])];
 		} else {

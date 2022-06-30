@@ -192,7 +192,7 @@ class Sql
 	*/
 	protected function getColumnsList(array $cols): string
 	{
-		array_walk($cols, function (&$col){
+		array_walk($cols, function (&$col) {
 			$col = $this->escapeColumn($col);
 		});
 
@@ -300,7 +300,7 @@ class Sql
 	protected function getJoinSql(string $using, string $on) : string
 	{
 		if ($using) {
-			return ' USING ('. $this->escapeColumn($using) .')';
+			return ' USING (' . $this->escapeColumn($using) . ')';
 		} elseif ($on) {
 			return " ON {$on}";
 		}
@@ -324,7 +324,7 @@ class Sql
 		return $this;
 	}
 
-		/**
+	/**
 	* Builds an UPDATE query
 	* @param string $table The table
 	* @return static
@@ -340,7 +340,7 @@ class Sql
 		return $this;
 	}
 
-		/**
+	/**
 	* Builds a REPLACE query
 	* @param string $table The table
 	* @return static
@@ -546,7 +546,7 @@ class Sql
 
 		$this->startWhere();
 
- 		$this->sql.= ' (' . $this->getConditions($where, $delimitator) . ')';
+		$this->sql.= ' (' . $this->getConditions($where, $delimitator) . ')';
 
 		return $this;
 	}
@@ -652,7 +652,6 @@ class Sql
 			if (is_array($value)) {
 				if ($this->isIn($value)) {
 					$parts[] = $col_esc . $this->getIn($value, false);
-
 				} else {
 					$operator = $value['operator'] ?? '=';
 					$value = $value['value'] ?? '';
@@ -692,7 +691,7 @@ class Sql
 
 		$this->startHaving();
 
- 		$this->sql.= ' (' . $this->getConditions($having, $delimitator, false, true) . ')';
+		$this->sql.= ' (' . $this->getConditions($having, $delimitator, false, true) . ')';
 
 		return $this;
 	}

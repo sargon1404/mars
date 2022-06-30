@@ -48,8 +48,8 @@ class File
 	public function checkForInvalidChars(string $filename) : static
 	{
 		if (str_contains($filename, '../') || str_contains($filename, './')
-		    || str_contains($filename, '..\\') || str_contains($filename, '.\\')
-		    || str_starts_with($filename, strtolower('php:'))) {
+			|| str_contains($filename, '..\\') || str_contains($filename, '.\\')
+			|| str_starts_with($filename, strtolower('php:'))) {
 			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
 		}
 
