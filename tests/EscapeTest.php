@@ -1,9 +1,10 @@
 <?php
 
-use Mars\Serializer;
-
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class EscapeTest extends Base
 {
 	public function testHtml()

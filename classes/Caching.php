@@ -32,7 +32,7 @@ class Caching extends Cacheable
 	{
 		$this->app = $app;
 
-		if (!$this->app->config->content_cache_enable || defined('CONTENT_CACHE_DISABLE')) {
+		if ($this->app->is_bin || !$this->app->config->content_cache_enable || defined('CONTENT_CACHE_DISABLE')) {
 			return;
 		}
 		if ($this->app->method == 'post') {

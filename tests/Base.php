@@ -4,6 +4,9 @@ use PHPUnit\Framework\TestCase;
 
 use Mars\App;
 
+/**
+* @ignore
+*/
 abstract class Base extends TestCase
 {
 	protected $app;

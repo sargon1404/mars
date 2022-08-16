@@ -5,6 +5,9 @@ use Mars\Db;
 
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class DbTest extends Base
 {
 	protected $expected = [
@@ -213,6 +216,14 @@ final class DbTest extends Base
 		$this->assertCount(1, $rows);
 		$this->assertRowAsObject($rows[0], 3);
 
+		//selectOne() - invalid
+		$row = $db->selectOne('select_test', ['id' => 30]);
+		$this->assertNull($row);
+
+		//selectOne()
+		$row = $db->selectOne('select_test', ['id' => 3]);
+		$this->assertRowAsObject($row, 3);
+
 		//selectById() - invalid
 		$row = $db->selectById('select_test', 20);
 		$this->assertNull($row);
@@ -382,13 +393,16 @@ final class DbTest extends Base
 		$this->assertEquals($data, ['col1' => 'zxc']);
 
 		//fill()
-		$data = $db->fill('select_test', [], 1, 'test');
+		$data = $db->fill('select_test', [], [], 1, 'test');
 		$this->assertEquals($data, ['col1' => 'test', 'col2' => 1]);
 
-		$data = $db->fill('select_test', [], 1, 'test', true);
+		$data = $db->fill('select_test', [], [], 1, 'test', true);
 		$this->assertEquals($data, ['id' => 1, 'col1' => 'test', 'col2' => 1]);
 
-		$data = $db->fill('select_test', ['col2' => 10], 1, 'test', true);
+		$data = $db->fill('select_test', ['col2' => 10], [], 1, 'test', true);
 		$this->assertEquals($data, ['id' => 1, 'col1' => 'test', 'col2' => 10]);
+
+		$data = $db->fill('select_test', ['col2' => 10], ['id', 'col1'], 1, 'test', true);
+		$this->assertEquals($data, ['col2' => 10]);
 	}
 }

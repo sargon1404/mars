@@ -13,16 +13,18 @@ namespace Mars;
 class Filter
 {
 	use AppTrait;
-	use SupportedRulesTrait;
+	use HandlersTrait;
 
 	/**
-	* @var array $supported_rules The list of suported rules
+	* @var array $supported_handlers The list of supported_handlers
 	*/
-	protected array $supported_rules = [
+	protected array $supported_handlers = [
 		'string' => ['string'],
 		'int' => ['int'],
 		'float' => ['float'],
 		'abs' => ['abs'],
+		'absint' => ['absint'],
+		'absfloat' => ['absfloat'],
 		'id' => ['id'],
 		'trim' => ['trim'],
 		'tags' => ['tags'],
@@ -37,6 +39,22 @@ class Filter
 		'interval' => '\Mars\Filters\Interval',
 		'exists' => '\Mars\Filters\Exists',
 	];
+
+	/**
+	* Filters a value
+	* @param mixed $value The value to filter
+	* @param string $filter The filter to apply
+	* @param mixed $args Args to pass to the filter
+	* @return mixed The filtered value
+	*/
+	public function value($value, string $filter, ...$args)
+	{
+		if (method_exists($this, $filter)) {
+			return $this->$filter($value, ...$args);
+		}
+
+		return $this->getMultiValue($value, $filter, ...$args);
+	}
 
 	/**
 	* Filters a string value
@@ -87,6 +105,30 @@ class Filter
 	}
 
 	/**
+	* Returns an absolue value from an int
+	* @param $value The value to filter
+	* @return int|array The filtered value
+	*/
+	public function absint($value) : int|array
+	{
+		return $this->map($value, function ($value) {
+			return abs((int)$value);
+		});
+	}
+
+	/**
+	* Returns an absolue value from a float
+	* @param $value The value to filter
+	* @return int|array The filtered value
+	*/
+	public function absfloat($value) : int|array
+	{
+		return $this->map($value, function ($value) {
+			return abs((float)$value);
+		});
+	}
+
+	/**
 	* Trims a value
 	* @param string|array $value The value
 	* @return string|array The filtered value
@@ -121,7 +163,7 @@ class Filter
 	*/
 	public function html(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
-		return $this->value($html, 'html', $allowed_elements, $allowed_attributes, $encoding);
+		return $this->getMultiValue($html, 'html', $allowed_elements, $allowed_attributes, $encoding);
 	}
 
 	/**
@@ -154,7 +196,7 @@ class Filter
 	*/
 	public function alpha(string|array $value, bool $space = false) : string|array
 	{
-		return $this->value($value, 'alpha', $space);
+		return $this->getMultiValue($value, 'alpha', $space);
 	}
 
 	/**
@@ -165,7 +207,7 @@ class Filter
 	*/
 	public function alnum(string|array $value, bool $space = false) : string|array
 	{
-		return $this->value($value, 'alnum', $space);
+		return $this->getMultiValue($value, 'alnum', $space);
 	}
 
 	/**
@@ -175,7 +217,7 @@ class Filter
 	*/
 	public function filename(string|array $value) : string|array
 	{
-		return $this->value($value, 'filename');
+		return $this->getMultiValue($value, 'filename');
 	}
 
 	/**
@@ -186,7 +228,7 @@ class Filter
 	*/
 	public function filepath(string|array $value) : string|array
 	{
-		return $this->value($value, 'filepath');
+		return $this->getMultiValue($value, 'filepath');
 	}
 
 	/**
@@ -196,7 +238,7 @@ class Filter
 	*/
 	public function url(string|array $url) : string|array
 	{
-		return $this->value($url, 'url');
+		return $this->getMultiValue($url, 'url');
 	}
 
 	/**
@@ -206,7 +248,7 @@ class Filter
 	*/
 	public function email(string|array $email) : string|array
 	{
-		return $this->value($email, 'email');
+		return $this->getMultiValue($email, 'email');
 	}
 
 	/**
@@ -217,7 +259,7 @@ class Filter
 	*/
 	public function slug(string|array $value, bool $allow_slash = false) : string|array
 	{
-		return $this->value($value, 'slug', $allow_slash);
+		return $this->getMultiValue($value, 'slug', $allow_slash);
 	}
 
 	/**
@@ -230,7 +272,7 @@ class Filter
 	*/
 	public function interval(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
 	{
-		return $this->value($value, 'interval', $min, $max, $default_value);
+		return $this->getMultiValue($value, 'interval', $min, $max, $default_value);
 	}
 
 	/**

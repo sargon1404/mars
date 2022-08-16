@@ -13,7 +13,7 @@ namespace Mars\Html\Input;
 class Hidden extends Input
 {
 	/**
-	* @var string $type The input's type
+	* {@inheritdoc}
 	*/
 	protected string $type = 'hidden';
 }

@@ -17,12 +17,12 @@ class Log
 	/**
 	* @var string $suffix The log file's suffix
 	*/
-	public string $suffix = '';
+	protected string $suffix = '';
 
 	/**
 	* @var string $date The log date
 	*/
-	public string $date = '';
+	protected string $date = '';
 
 	/**
 	* @var array $handles The log files's handles

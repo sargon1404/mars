@@ -1,10 +1,12 @@
 <?php
 /**
-* The Extension Basic Class
+* The Basic Extension Class
 * @package Mars
 */
 
 namespace Mars\Extensions;
+
+use Mars\App;
 
 /**
 * The Extension Class
@@ -13,15 +15,16 @@ namespace Mars\Extensions;
 abstract class Basic extends \Mars\Entity
 {
 	use \Mars\AppTrait;
-	use Body;
+	use ExtensionTrait;
 
 	/**
 	* Builds the extension
 	* @param string $name The name of the exension
+	* @param App $app The app object
 	*/
-	public function __construct(string $name)
+	public function __construct(string $name, App $app = null)
 	{
-		$this->app = $this->getApp();
+		$this->app = $app ?? $this->getApp();
 
 		$this->name = $name;
 

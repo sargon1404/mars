@@ -17,12 +17,11 @@ class Filepath extends Filename
 	*/
 	public function get(string $filepath, ...$params) : string
 	{
-		$path = $this->app->file->getDirname($filepath);
+		$path = $this->app->file->getPath($filepath);
 		$filename = basename($filepath);
 
 		$filepath = $path . parent::get($filename);
 
-		return $filepath;
-		//return $this->app->plugins->filter('filters_filepath_get', $filepath, $this);
+		return $this->app->plugins->filter('filters_filepath_get', $filepath);
 	}
 }

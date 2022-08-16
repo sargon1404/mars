@@ -9,9 +9,16 @@ namespace Mars;
 /**
 * The Sources Trait
 * Trait implementing the sources functionality
+* Classes using this trait must set these properties:
+* protected array $supported_sources = [];
 */
 trait SourcesTrait
 {
+
+	/**
+	* @var array $supported_sources The list of supported sources in the name => class format
+	*/
+	//protected array $supported_sources = [];
 
 	/**
 	* @var array $sources Array listing the source objects
@@ -34,25 +41,31 @@ trait SourcesTrait
 
 	/**
 	* Adds a source to the list of supported sources
-	* @param string $name The name of the driver
-	* @param string $class The class handling the driver
+	* @param string $name The name of the source
+	* @param string $class The class handling the source
 	* @return static
 	*/
-	public function addSource(string $name, string $class) : static
+	public function addSupportedSource(string $name, string $class) : static
 	{
 		$this->supported_sources[$name] = $class;
+
+		$this->sources = [];
 
 		return $this;
 	}
 
 	/**
-	* Adds multiple sources to the list of supported sources
-	* @param array $sources The sources to add
+	* Removes a source from the list of supported sources
+	* @param string $name The name of the source
 	* @return static
 	*/
-	public function addSupportedSources(array $sources) : static
+	public function removeSupportedSource(string $name) : static
 	{
-		$this->supported_sources = array_merge($this->supported_sources, $sources);
+		if ($this->supported_sources[$name]) {
+			unset($this->supported_sources[$name]);
+		}
+
+		$this->sources = [];
 
 		return $this;
 	}

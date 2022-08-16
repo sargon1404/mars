@@ -50,7 +50,7 @@ class File
 		if (str_contains($filename, '../') || str_contains($filename, './')
 			|| str_contains($filename, '..\\') || str_contains($filename, '.\\')
 			|| str_starts_with($filename, strtolower('php:'))) {
-			throw new \Exception("Invalid filename! Filename {$filename} contains invalid characters!");
+			throw new \Exception(App::__('file_error_invalid_chars', ['{FILE}' => $filename]));
 		}
 
 		return $this;
@@ -69,45 +69,24 @@ class File
 		}
 
 		if (strlen(basename($filename)) > $this->max_chars) {
-			throw new \Exception("Invalid filename! Filename {$filename} contains too many characters!");
+			throw new \Exception(App::__('file_error_invalid_maxchars', ['{FILE}' => $filename]));
 		}
 
 		$this->checkForInvalidChars($filename);
 
-		if (!$this->open_basedir) {
-			return $this;
-		}
+		if ($this->open_basedir) {
+			//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
+			$real_filename = realpath($filename);
+			if (!$real_filename) {
+				$real_filename = $filename;
+			}
 
-		$filename = realpath($filename);
-		if (!$filename) {
-			return $this;
-		}
-
-		//The filename must be inside the secure dir. If it's not it will be treated as an invalid file
-		if (!$this->app->dir->contains($this->open_basedir, $filename)) {
-			throw new \Exception("Invalid filename! Filename {$filename} is not inside the base dir: {$this->open_basedir}");
+			if (!$this->app->dir->contains($this->open_basedir, $real_filename)) {
+				throw new \Exception(App::__('file_error_invalid_basedir', ['{FILE}' => $filename, '{BASEDIR}' => $this->open_basedir]));
+			}
 		}
 
 		return $this;
-	}
-
-	/**
-	* Returns the basename from $filename
-	* @param string $filename The filename for which the basename will be returned
-	* @return string The basename of filename
-	*/
-	public function basename(string $filename) : string
-	{
-		return basename($filename);
-	}
-
-	/**
-	* Alias for getDirname
-	* @see File::getDirname()
-	*/
-	public function dirname(string $filename) : string
-	{
-		return $this->getDirname($filename);
 	}
 
 	/**
@@ -115,7 +94,7 @@ class File
 	* @param string $filename The filename for which the parent folder will be returned
 	* @return string The parent folder of filename or '' if there isn't one
 	*/
-	public function getDirname(string $filename) : string
+	public function getPath(string $filename) : string
 	{
 		$dir = dirname($filename);
 		if ($dir == '.') {
@@ -126,23 +105,34 @@ class File
 	}
 
 	/**
-	* Returns the relative path of a filename. Eg: /var/www/mars/dir/some_file.txt => dir/some_file.txt
-	* @param string $filename The filename
-	* @return string The relative path
+	* Returns the basename from $filename
+	* @param string $filename The filename for which the basename will be returned
+	* @return string The basename of filename
 	*/
-	public function getRel(string $filename) : string
+	public function getBasename(string $filename) : string
 	{
-		return str_replace($this->app->path, '', $filename);
+		return basename($filename);
+	}
+
+	/**
+	* Returns the file name(strips the extension) of a file
+	* @param string $filename The filename for which the filename will be returned
+	* @return string The filename, without the extension
+	*/
+	public function getFile(string $filename) : string
+	{
+		return pathinfo($filename, PATHINFO_FILENAME);
 	}
 
 	/**
 	* Returns the filename(strips the extension) of a file
 	* @param string $filename The filename for which the filename will be returned
+	* @param bool $add_extension If true, will also return the extension
 	* @return string The filename, without the extension
 	*/
 	public function getFilename(string $filename) : string
 	{
-		return pathinfo($filename, PATHINFO_FILENAME);
+		return pathinfo($filename, PATHINFO_BASENAME);
 	}
 
 	/**
@@ -168,29 +158,37 @@ class File
 	*/
 	public function appendToFilename(string $filename, string $append) : string
 	{
-		return $this->getFilename($filename) . $append . $this->getExtension($filename, true);
+		return $this->getPath($filename) . $this->getFile($filename) . $append . $this->getExtension($filename, true);
+	}
+
+	/**
+	* Returns the relative path of a filename. Eg: /var/www/mars/dir/some_file.txt => dir/some_file.txt
+	* @param string $filename The filename
+	* @return string The relative path
+	*/
+	public function getRel(string $filename) : string
+	{
+		return str_replace($this->app->path, '', $filename);
 	}
 
 	/**
 	* Returns the extension of a file in lowercase. Eg: jpg
 	* @param string $filename The filename
-	* @param bool $include_dot If true will include the dot in the returned value. Eg: .jpg
+	* @param bool $add_dot If true, will also return the dot of the extension
 	* @return string The extension
 	*/
-	public function getExtension(string $filename, bool $include_dot = false) : string
+	public function getExtension(string $filename, bool $add_dot = false) : string
 	{
 		$ext = pathinfo($filename, PATHINFO_EXTENSION);
 		if (!$ext) {
 			return '';
 		}
 
-		$ext = strtolower($ext);
-
-		if ($include_dot) {
-			return '.' . $ext;
+		if ($add_dot) {
+			return '.' . strtolower($ext);
 		}
 
-		return $ext;
+		return strtolower($ext);
 	}
 
 	/**
@@ -283,7 +281,7 @@ class File
 
 		$content = file_get_contents($filename);
 		if ($content === false) {
-			throw new \Exception("Unable to read file: {$filename}");
+			throw new \Exception(App::__('file_error_read', ['{FILE}' => $filename]));
 		}
 
 		return $content;
@@ -310,7 +308,7 @@ class File
 
 		$bytes = file_put_contents($filename, $content, $flags);
 		if ($bytes === false) {
-			throw new \Exception("Unable to write file: {$filename}");
+			throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
 		}
 
 		return $bytes;
@@ -329,7 +327,7 @@ class File
 		$this->checkFilename($filename);
 
 		if (unlink($filename) === false) {
-			throw new \Exception("Unable to delete file: {$filename}");
+			throw new \Exception(App::__('file_error_delete', ['{FILE}' => $filename]));
 		}
 
 		return $this;
@@ -350,7 +348,7 @@ class File
 		$this->checkFilename($destination);
 
 		if (copy($source, $destination) === false) {
-			throw new \Exception("Unable to copy file: {$source} to {$destination}");
+			throw new \Exception(App::__('file_error_copy', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
 		}
 
 		return $this;
@@ -371,7 +369,7 @@ class File
 		$this->checkFilename($destination);
 
 		if (rename($source, $destination) === false) {
-			throw new \Exception("Unable to move file: {$source} to {$destination}");
+			throw new \Exception(App::__('file_error_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
 		}
 
 		return $this;
@@ -397,7 +395,7 @@ class File
 	{
 		$f = fopen($filename, 'r');
 		if ($f === false) {
-			throw new \Exception("Unable to open file: {$filename}");
+			throw new \Exception(App::__('file_error_read', ['{FILE}' => $filename]));
 		}
 
 		$size = filesize($filename);

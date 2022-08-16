@@ -21,9 +21,7 @@ class Language extends \Mars\Extensions\Basic
 	*/
 	public function __construct(App $app)
 	{
-		$this->app = $app;
-
-		parent::__construct($this->app->config->lang);
+		parent::__construct($app->config->lang, $app);
 
 		$this->app->plugins->run('system_language_construct', $this);
 	}

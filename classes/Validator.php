@@ -13,17 +13,13 @@ namespace Mars;
 class Validator
 {
 	use AppTrait;
-	use SupportedRulesTrait;
+	use HandlersTrait;
+	use ErrorsTrait;
 
 	/**
-	* @var array $errors The list of validation errors, if any
+	* @var array $supported_handlers The list of supported_handlers
 	*/
-	protected array $errors = [];
-
-	/**
-	* @var array $supported_rules The list of suported rules
-	*/
-	protected array $supported_rules = [
+	protected array $supported_handlers = [
 		'req' => '\Mars\Validators\Required',
 		'required' => '\Mars\Validators\Required',
 		'unique' => '\Mars\Validators\Unique',
@@ -50,16 +46,7 @@ class Validator
 	{
 		$this->app = $app;
 
-		$this->rule_method = 'validate';
-	}
-
-	/**
-	* Returns the validation errors, if any
-	* @return array The errors
-	*/
-	public function getErrors() : array
-	{
-		return $this->errors;
+		$this->handler_method = 'validate';
 	}
 
 	/**
@@ -93,7 +80,7 @@ class Validator
 				continue;
 			}
 
-			$value = App::getProperty($field, $data);
+			$value = App::getProperty($data, $field);
 
 			$error_field = $field_rules['field'] ?? $field;
 			$rules_list = $field_rules['rules'] ?? $field_rules;
@@ -128,7 +115,7 @@ class Validator
 		}
 
 		//use the handler's error
-		$this->errors[] = $this->rules[$rule]->getError();
+		$this->errors[] = $this->handlers[$rule]->getError();
 	}
 
 	/**

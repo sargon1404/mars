@@ -3,16 +3,11 @@ use Mars\App;
 
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class UriTest extends Base
 {
-	public function setUp() : void
-	{
-		parent::setUp();
-
-		$this->app->url = 'https://localhost/mars/';
-		$this->app->path = '/var/www/mars/';
-	}
-
 	public function testIsUrl()
 	{
 		$uri = $this->app->uri;
@@ -29,21 +24,21 @@ final class UriTest extends Base
 	{
 		$uri = $this->app->uri;
 
-		$this->assertTrue($uri->isLocal('https://localhost/mars/'));
-		$this->assertTrue($uri->isLocal('https://localhost/mars/page.php'));
-		$this->assertTrue($uri->isLocal('https://localhost/mars/page.php?qqq=test'));
+		$this->assertTrue($uri->isLocal($this->app->url));
+		$this->assertTrue($uri->isLocal($this->app->url . 'page.php'));
+		$this->assertTrue($uri->isLocal($this->app->url . 'page.php?qqq=test'));
 		$this->assertFalse($uri->isLocal('https://localhost/ma'));
 		$this->assertFalse($uri->isLocal('http://www.google.com/'));
 	}
 
-	/*public function testGetFromLocalUrl()
+	public function testGetFromLocalUrl()
 	{
 		$uri = $this->app->uri;
 
-		$this->assertEquals($uri->getFromLocalUrl('https://google/mars/'),  '');
-		$this->assertEquals($uri->getFromLocalUrl('https://localhost/mars/page.php'), '/var/www/mars/page.php');
-		$this->assertEquals($uri->getFromLocalUrl('https://localhost/mars/dir1/dir2/page.php'), '/var/www/mars/dir1/dir2/page.php');
-	}*/
+		$this->assertEquals($uri->getFromLocalUrl('https://google/mars/'), '');
+		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'page.php'), $this->app->path . 'page.php');
+		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'dir1/dir2/page.php'), $this->app->path . 'dir1/dir2/page.php');
+	}
 
 	public function testBuild()
 	{

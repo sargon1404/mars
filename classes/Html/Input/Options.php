@@ -13,16 +13,6 @@ namespace Mars\Html\Input;
 class Options extends \Mars\Html\Tag
 {
 	/**
-	* @var array $options The options
-	*/
-	public array $options = [];
-
-	/**
-	* @var string|array $selected The selected option(s)
-	*/
-	public string|array $selected = '';
-
-	/**
 	* {@inheritdoc}
 	*/
 	protected string $tag = 'option';
@@ -31,32 +21,42 @@ class Options extends \Mars\Html\Tag
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		if (!$this->options) {
+		$options = $properties['options'] ?? [];
+		$selected = (array) ($properties['selected'] ?? []);
+
+		if (!$options) {
 			return '';
 		}
 
 		$html = '';
+		foreach ($options as $value => $text) {
+			if (is_array($text)) {
+				$optgroup = new Optgroup($this->app);
 
-		foreach ($this->options as $text => $value) {
-			$text = $this->app->escape->html($text);
-
-			$attributes = $value;
-			if (!is_array($value)) {
-				$attributes = ['value' => $value];
+				$html.= $optgroup->open(['label' => $value]);
+				$html.= $this->getOptions($text, $selected);
+				$html.= $optgroup->close();
 			} else {
-				$value = $value['value'];
+				$html.= parent::get($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
 			}
+		}
 
-			$selected = '';
-			if ($value == $this->selected) {
-				$attributes['selected'] = true;
-			}
+		return $html;
+	}
 
-			$attributes = $this->getAttributes($attributes);
-
-			$html.= "<option{$attributes}>{$text}</option>\n";
+	/**
+	* Returns the html code of the options
+	* @param array $options The options
+	* @param array $selected The selected options
+	* @return string The html code
+	*/
+	protected function getOptions(array $options, array $selected) : string
+	{
+		$html = '';
+		foreach ($options as $value => $text) {
+			$html.= parent::get($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
 		}
 
 		return $html;

@@ -96,12 +96,12 @@ class Mail
 			}
 
 			$this->handle->send();
-			
+
 			$this->app->plugins->run('mail_sent', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
 		} catch (\Exception $e) {
 			$this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
-			
-			throw new \Exception("Error sending mail: {$e->getMessage()}");
+
+			throw new \Exception(App::__('mail_error', ['{ERROR}' => $e->getMessage()]));
 		}
 	}
 }

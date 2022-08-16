@@ -1,8 +1,10 @@
 <?php
 
-
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class LogTest extends Base
 {
 	public function testMessage()

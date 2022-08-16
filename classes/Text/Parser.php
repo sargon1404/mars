@@ -12,48 +12,42 @@ namespace Mars\Text;
 */
 class Parser
 {
-	/**
-	* @internal
-	*/
-	protected bool $parse_links_nofollow = false;
+	use \Mars\AppTrait;
 
 	/**
-	* Converts all text links (http://domain.com) into the html equivalent (<a href="http://domain.com">http://domain.com</a>)
+	* Parses the text for links and rel="nofollow"
 	* @param string $text The $text to parse
-	* @param bool $parse_nofollow If true,will set rel="nofollow" for all parsed links
+	* @param bool $parse_links If true, will parse links
+	* @param bool $parse_nofollow If true, will apply the rel="nofollow" attribute to links
 	* @return string The parsed text
 	*/
-	public function parseLinks(string $text, bool $parse_nofollow = false) : string
+	public function parse(string $text, bool $parse_links = true, bool $parse_nofollow = false) : string
 	{
-		$this->parse_links_nofollow = $parse_nofollow;
-
-		$pattern = '/\b(?<!=")(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[A-Z0-9+&@#\/%=~_|](?!.*".*>)(?!.*<\/a>)/i';
-
-		return preg_replace_callback($pattern, [$this, 'parse_links_callback'], $text);
-	}
-
-	/**
-	* Callback for parse_links
-	* @internal
-	*/
-	protected function parseLinksCallback(array $match) : string
-	{
-		$rel = '';
-		$url = $this->parseLinksCallbackGetUrl($match[0]);
-
-		if ($this->parse_links_nofollow) {
-			$rel = ' rel="nofollow"';
+		if ($parse_links) {
+			$text = $this->parseLinks($text);
 		}
 
-		return '<a href="' . $url . '"' . $rel . '>' . $url . '</a>';
+		if ($parse_nofollow) {
+			$text = $this->parseNofollow($text);
+		}
+
+		return $text;
 	}
 
 	/**
-	* @internal
+	* Converts all text links (https://domain.com) into the html equivalent (<a href="https://domain.com">https://domain.com</a>)
+	* @param string $text The $text to parse
+	* @return string The parsed text
 	*/
-	protected function parseLinksCallbackGetUrl(string $url) : string
+	public function parseLinks(string $text)
 	{
-		return trim($url);
+		$pattern = '/\b(?<!=")(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[A-Z0-9+&@#\/%=~_|](?!.*".*>)(?!.*<\/a>)/i';
+
+		return preg_replace_callback($pattern, function(array $match) {
+			$url = trim($match[0]);
+
+			return $this->app->html->a($url);
+		}, $text);
 	}
 
 	/**
@@ -63,18 +57,13 @@ class Parser
 	*/
 	public function parseNofollow(string $text) : string
 	{
-		return preg_replace_callback('/<a(.*)href="(.*)"(.*)>/isU', [$this, 'parse_nofollow_callback'], $text);
-	}
+		return preg_replace_callback('/<a(.*)href="(.*)"(.*)>/isU', function(array $match) {
+			if (str_contains(strtolower($match[1]), 'rel="nofollow"') || str_contains(strtolower($match[3]), 'rel="nofollow"')) {
+				return $match[0];
+			}
 
-	/**
-	* @internal
-	*/
-	protected function parseNofollowCallback($match) : string
-	{
-		if (str_contains(strtolower($match[1]), 'rel="nofollow"') || str_contains(strtolower($match[3]), 'rel="nofollow"')) {
-			return $match[0];
-		}
+			return "<a{$match[1]}href=\"{$match[2]}\"{$match[3]} rel=\"nofollow\">";
 
-		return "<a{$match[1]}href=\"{$match[2]}\"{$match[3]} rel=\"nofollow\">";
+		}, $text);
 	}
 }

@@ -10,7 +10,7 @@ namespace Mars;
 * The Data Class.
 * Represent data stored in the format name => value
 */
-abstract class Data
+abstract class Data extends \stdClass
 {
 	use AppTrait;
 

@@ -15,7 +15,7 @@ class Timer
 	/**
 	* @var float $start The time when the script was started
 	*/
-	public float $start = 0;
+	public readonly float $start;
 
 	/**
 	* @var array $timers Array with the started timers

@@ -3,6 +3,9 @@ use Mars\App;
 
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class ValidatorTest extends Base
 {
 	public function testIsDatetime()

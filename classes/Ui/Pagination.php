@@ -6,6 +6,8 @@
 
 namespace Mars\Ui;
 
+use Mars\App;
+
 /**
 * The Pagination Class
 * Generates pagination links
@@ -15,96 +17,147 @@ class Pagination
 	use \Mars\AppTrait;
 
 	/**
+	* @var string $base_url The generic base_url where the number of the page will be appended
+	*/
+	protected string $base_url = '';
+
+	/**
+	* @var int $current_paget The current page
+	*/
+	protected int $current_page = 0;
+
+	/**
+	* @var int $total_pages The total number of pages
+	*/
+	protected int $total_pages = 0;
+
+	/**
+	* @var int $total_items The total number of items
+	*/
+	protected int $total_items = 0;
+
+	/**
+	* @var int $pagination_items_per_page The number of items that should be displayed on each page
+	*/
+	protected int $items_per_page = 0;
+
+	/**
 	* @var int $max_links The max number of pagination links to show
 	*/
-	public int $max_links = 10;
+	protected int $max_links = 0;
 
 	/**
-	* @var string $page_param The name of the query param where the page number will be appended
+	* @var bool $use_seo_param If true, will use the seo param in the base url rather than append the page as a query param
 	*/
-	public string $page_param = 'page';
+	protected bool $use_seo_param = false;
 
 	/**
-	* @var string $seo_page_param The string found in $base_url which will be replaced by the page number, if $is_seo_url is true
+	* @var string $seo_param The string found in $base_url which will be replaced by the page number
 	*/
-	public string $seo_page_param = '{PAGE_NO}';
+	protected string $seo_param = '{PAGE_NO}';
 
 	/**
-	* Builds the pagination template. The number of pages is computed as $total_items / $items_per_page.
+	* Builds the pagination object
 	* @param string $base_url The generic base_url where the number of the page will be appended
-	* @param int $current_page The current page
-	* @param int $total_items The total numbers of items
 	* @param int $items_per_page The number of items per page
-	* @param string $is_seo_url If true will try to replace $seo_page_param from $base_url with the page number rather than append the page number as a param
-	* @return string The html code
+	* @param int $total_items The total numbers of items
+	* @param int $max_links The max number of links to show
+	* @param App $app The app object
 	*/
-	public function get(string $base_url, int $current_page, int $total_items, int $items_per_page = 30, bool $is_seo_url = false) : string
+	public function __construct(string $base_url, int $items_per_page, int $total_items, int $max_links, App $app)
 	{
-		if (!$total_items) {
-			return '';
-		}
+		$this->app = $app;
 
-		$pages_count = $this->getPagesCount($total_items, $items_per_page);
-		if ($pages_count == 1) {
-			return '';
-		}
-
-		$url_extra = [];
-		$current_page = $this->getCurrentPage($current_page, $pages_count);
-		$replace_seo_page = $this->canReplaceSeoParam($base_url, $is_seo_url);
-		$data = $this->getLimits($current_page, $pages_count);
-
-		$start = $data['start'];
-		$end = $data['end'];
-
-		$pages = $this->getPages($base_url, $start, $end, $current_page, $replace_seo_page, $url_extra);
-		$previous = $this->getPreviousLink($base_url, $current_page, $pages_count, $replace_seo_page, $url_extra);
-		$next = $this->getNextLink($base_url, $current_page, $pages_count, $replace_seo_page, $url_extra);
-		$first = $this->getFirstLink($base_url, $current_page, $pages_count, $replace_seo_page, $url_extra);
-		$last = $this->getLastLink($base_url, $current_page, $pages_count, $replace_seo_page, $url_extra);
-		$jump = $this->getJumpToLink($base_url, $current_page, $pages_count, $is_seo_url, $url_extra);
-
-		$vars = [
-			'current_page' => $current_page,
-			'total_items' => $total_items,
-			'items_per_page' => $items_per_page,
-			'start' => $start,
-			'end' => $end,
-			'previous' => $previous,
-			'next' => $next,
-			'first' => $first,
-			'last' => $last,
-			'jump' => $jump,
-			'pages_count' => $pages_count,
-			'pages' => $pages
-		];
-
-		return $this->getTemplate($vars);
+		$this->base_url = $base_url;
+		$this->items_per_page = $items_per_page;
+		$this->total_items = $total_items;
+		$this->max_links = $max_links;
+		$this->total_pages = $this->getTotalPages();
+		$this->current_page = $this->getCurrentPage();
+		$this->use_seo_param = $this->canUseSeoParam();
 	}
 
 	/**
-	* Returns the number of pages
-	* @param int $total_items The total numbers of items
-	* @param int $items_per_page The number of items per page
-	* @return int The number of pages
+	* Builds the pagination template. The number of pages is computed as $total_items / $items_per_page.
+	* @return string The html code
 	*/
-	protected function getPagesCount(int $total_items, int $items_per_page) : int
+	public function get() : string
 	{
-		$pages_count = ceil($total_items / $items_per_page);
+		if (!$this->total_items || $this->items_per_page > $this->total_items) {
+			return '';
+		}
 
-		return $pages_count;
+		$links = $this->getLinks();
+
+		$links = $this->app->plugins->filter('ui_pagination_get', $links, $this);
+
+		return $this->getHtml($links);
+	}
+
+	/**
+	* Returns the pagination html code
+	* @return string
+	*/
+	protected function getHtml(array $links) : string
+	{
+		$html = '<div class="pagination">' . "\n";
+		foreach ($links as $link) {
+			if (!$link['show']) {
+				continue;
+			}
+
+			$html.= $this->app->html->a($link['url'], $link['title'], ['class' => $link['class']]) . "\n";
+		}
+
+		$html.= '</div' . "\n";
+
+		return $html;
+	}
+
+	/**
+	* Returns the pagination links
+	* @param int $start The start page
+	* @param int $end The end page
+	* @return array
+	*/
+	public function getLinks() : array
+	{
+		[$start, $end] = $this->getLimits();
+
+		$links = [];
+		$links['first'] = $this->getFirstLink();
+		$links['previous'] = $this->getPreviousLink();
+
+		for ($i = $start; $i <= $end; $i++) {
+			$class = ($i == $this->current_page) ? 'pagination-current' : '';
+
+			$links['page-' . $i] = $this->getLink($i, $i, true, $class);
+		}
+
+		$links['next'] = $this->getNextLink();
+		$links['last'] = $this->getLastLink();
+
+		return $links;
+	}
+
+	/**
+	* Returns the total number of pages
+	* @return int
+	*/
+	protected function getTotalPages() : int
+	{
+		return ceil($this->total_items / $this->items_per_page);
 	}
 
 	/**
 	* Returns the current page
-	* @param int $current_page The current page
-	* @param int $pages_count The no. of pages
 	* @return int
 	*/
-	protected function getCurrentPage(int $current_page, int $pages_count) : int
+	protected function getCurrentPage() : int
 	{
-		if ($current_page < 0 || $current_page > $pages_count) {
-			$current_page = 1;
+		$current_page = $this->app->request->getPage();
+		if ($current_page <= 0 || $current_page > $this->total_pages) {
+			return 1;
 		}
 
 		return $current_page;
@@ -112,191 +165,127 @@ class Pagination
 
 	/**
 	* Returns true if the base url contains the page seo param
-	* @param string $base_url The url
-	* @param bool $is_seo_url True if the page param must be replaced
 	* @return bool
 	*/
-	protected function canReplaceSeoParam(string $base_url, bool $is_seo_url) : bool
+	protected function canUseSeoParam() : bool
 	{
-		$replace_seo_page = false;
-
-		if ($is_seo_url) {
-			if (str_contains($base_url, $this->seo_page_param)) {
-				$replace_seo_page = true;
-			}
-		}
-
-		return $replace_seo_page;
-	}
-
-	/**
-	* Builds the url, by appending the page param
-	* @param string $base_url The url
-	* @param int $page The page number
-	* @param bool $replace_seo_page If true, will replace in the url the seo page param
-	* @param array url_extra Extra url params
-	* @return string The url
-	*/
-	protected function getUrl(string $base_url, int $page, bool $replace_seo_page = false, array $url_extra = []) : string
-	{
-		$url = '';
-		if (!$replace_seo_page) { //build the url, by appending the page as a query string
-			$url = $this->app->uri->build($base_url, [$this->page_param => $page]);
-		} else { //replace the seo page param with the page number
-			$url = str_replace($this->seo_page_param, $page, $base_url);
-		}
-
-		return $url;
-	}
-
-	/**
-	* Returns the contents of the pagination template
-	* @param array $vars Vars to be passed to the template
-	* @return string
-	*/
-	protected function getTemplate(array $vars) : string
-	{
-		return $this->app->theme->getTemplate('pagination', ['pagination' => $vars]);
+		return str_contains($this->base_url, $this->seo_param);
 	}
 
 	/**
 	* Determines the pages interval which should be displayed/are visible
-	* @param int $current_page The current page
-	* @param int $pages_count The no. of pages
 	* @return array The start & end pages
 	*/
-	protected function getLimits(int $current_page, int $pages_count) : array
+	protected function getLimits() : array
 	{
-		$max_links = $this->max_links;
-
 		$start = 1;
 		$end = 1;
 
-		if ($max_links && $max_links < $pages_count) {
-			$exlinks = floor($max_links / 2);
-			$start = $current_page - $exlinks;
-			$end = $current_page + $exlinks;
+		if ($this->max_links && $this->max_links < $this->total_pages) {
+			$exlinks = floor($this->max_links / 2);
+			$start = $this->current_page - $exlinks;
+			$end = $this->current_page + $exlinks;
 
-			if (!($max_links % 2)) {
+			if (!($this->max_links % 2)) {
 				$start++;
 			}
 			if ($start <= 0) {
 				$start = 1;
-				$end = $max_links;
-			} elseif ($end > $pages_count) {
-				$end = $pages_count;
-				$start = $end - $max_links + 1;
+				$end = $this->max_links;
+			} elseif ($end > $this->total_pages) {
+				$end = $this->total_pages;
+				$start = $end - $this->max_links + 1;
 			}
 		} else {
 			$start = 1;
-			$end = $pages_count;
+			$end = $this->total_pages;
 		}
 
-		return ['start' => $start, 'end' => $end];
+		return [$start, $end];
 	}
 
 	/**
-	* Returns the paginator's pages
-	* @param string $base_url The url
-	* @param int $start The start page
-	* @param int $end The end page
-	* @param int $current_page The current page
-	* @param bool $replace_seo_page If true, will replace in the url the seo page param
-	* @param array url_extra Extra url params
-	* @return array The pages
+	* Builds the url, by appending the page param
+	* @param int $page The page number
+	* @return string The url
 	*/
-	protected function getPages(string $base_url, int $start, int $end, int $current_page, bool $replace_seo_page = false, array $url_extra = []) : array
+	protected function getUrl(int $page) : string
 	{
-		$pages = [];
-
-		for ($i = $start; $i <= $end; $i++) {
-			$class = '';
-			if ($i == $current_page) {
-				$class = 'current';
-			}
-
-			$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
-
-			$pages[] = ['url' => $this->app->escape->html($url), 'page' => $i, 'class' => $class];
+		if ($this->use_seo_param) {
+			//replace the seo page param with the page number
+			return str_replace($this->seo_param, $page, $this->base_url);
+		} else {
+			//build the url, by appending the page as a query string
+			return $this->app->uri->build($this->base_url, [$this->app->config->request_page_param => $page]);
 		}
+	}
 
-		return $pages;
+	/**
+	* Returns the link array
+	* @param int $page The page number
+	* @param string $title The link's title
+	* @param bool $show If false, the link shouldn't be visible
+	* @param string $class The class of the link, if any
+	* @return array
+	*/
+	protected function getLink(int $page, string $title, bool $show = true, string $class = '') : array
+	{
+		return ['show' => $show, 'url' => $this->getUrl($page), 'title' => $title, 'page' => $page, 'class' => $class];
 	}
 
 	/**
 	* Returns the data for the first link
-	* @internal
+	* @return array
 	*/
-	protected function getFirstLink(string $base_url, int $current_page, int $pages_count, bool $replace_seo_page, array $url_extra = []) : array
+	protected function getFirstLink() : array
 	{
-		$max_links = $this->max_links;
-
-		if (!$max_links || $max_links >= $pages_count) {
-			return ['show' => false, 'url' => '', 'page' => ''];
+		$show = false;
+		if ($this->current_page > 1) {
+			$show = true;
 		}
 
-		$i = 1;
-		$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
-
-		return ['show' => true, 'url' => $url, 'page' => $i];
+		return $this->getLink(1, App::__('pagination_first'), $show, 'pagination-first');
 	}
 
 	/**
 	* Returns the data for the last link
-	* @internal
+	* @return array
 	*/
-	protected function getLastLink(string $base_url, int $current_page, int $pages_count, bool $replace_seo_page, array $url_extra = []) : array
+	protected function getLastLink() : array
 	{
-		$max_links = $this->max_links;
-
-		if (!$max_links || $current_page == $pages_count || $max_links >= $pages_count) {
-			return ['show' => false, 'url' => '', 'page' => ''];
+		$show = false;
+		if ($this->current_page != $this->total_pages && $this->total_pages > $this->max_links) {
+			$show = true;
 		}
 
-		$i = $pages_count;
-		$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
-
-		return ['show' => true, 'url' => $url, 'page' => $i];
+		return $this->getLink($this->total_pages, App::__('pagination_last'), $show, 'pagination-last');
 	}
 
 	/**
 	* Returns the data for the previous link
 	* @internal
 	*/
-	protected function getPreviousLink(string $base_url, int $current_page, int $pages_count, bool $replace_seo_page, array $url_extra = []) : array
+	protected function getPreviousLink() : array
 	{
-		if ($current_page <= 1) {
-			return ['show' => false, 'url' => '', 'page' => ''];
+		$show = false;
+		if ($this->current_page > 1) {
+			$show = true;
 		}
 
-		$i = $current_page - 1;
-		$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
-
-		return ['show' => true, 'url' => $url, 'page' => $i];
+		return $this->getLink($this->current_page - 1, App::__('pagination_previous'), $show, 'pagination-previous');
 	}
 
 	/**
 	* Returns the data for the next link
 	* @internal
 	*/
-	protected function getNextLink(string $base_url, int $current_page, int $pages_count, bool $replace_seo_page, array $url_extra = []) : array
+	protected function getNextLink() : array
 	{
-		if ($current_page >= $pages_count) {
-			return ['show' => false, 'url' => '', 'page' => ''];
+		$show = false;
+		if ($this->current_page != $this->total_pages) {
+			$show = true;
 		}
 
-		$i = $current_page + 1;
-		$url = $this->getUrl($base_url, $i, $replace_seo_page, $url_extra);
-
-		return ['show' => true, 'url' => $url, 'page' => $i];
-	}
-
-	/**
-	* Returns the data for jump to link
-	* @internal
-	*/
-	protected function getJumpToLink(string $base_url, int $current_page, int $pages_count, bool $replace_seo_page, array $url_extra = []) : array
-	{
-		return ['show' => false, 'form' => ''];
+		return $this->getLink($this->current_page + 1, App::__('pagination_next'), $show, 'pagination-next');
 	}
 }

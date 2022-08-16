@@ -54,7 +54,7 @@ class Tag implements TagInterface
 	*/
 	public function close() : string
 	{
-		return "</{$this->tag}>";
+		return "</{$this->tag}>" . $this->newline;
 	}
 
 	/**

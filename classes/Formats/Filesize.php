@@ -1,15 +1,15 @@
 <?php
 /**
-* The Size Format Class
+* The Filesize Format Class
 * @package Mars
 */
 
 namespace Mars\Formats;
 
 /**
-* The Size Format Class
+* The Filesize Format Class
 */
-class Size extends Format
+class Filesize extends Format
 {
 	/**
 	* @see \Mars\Formats\Format::get()

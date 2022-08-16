@@ -317,8 +317,6 @@ class Sql
 	{
 		$this->start();
 
-		$table = $this->escapeTable($table);
-
 		$this->sql = "INSERT INTO {$table}";
 
 		return $this;
@@ -333,8 +331,6 @@ class Sql
 	{
 		$this->start();
 
-		$table = $this->escapeTable($table);
-
 		$this->sql = "UPDATE {$table}";
 
 		return $this;
@@ -348,8 +344,6 @@ class Sql
 	public function replace(string $table) : static
 	{
 		$this->start();
-
-		$table = $this->escapeTable($table);
 
 		$this->sql = "REPLACE INTO {$table}";
 

@@ -8,7 +8,12 @@ namespace Mars;
 
 /**
 * The Driver Trait
-* Trait implementing driver functionality. Classes using this trait must set the $driver and $driver_namespace properties
+* Trait implementing driver functionality.
+* Classes using this trait must set these properties:
+* protected string $driver = '';
+* protected string $driver_key = '';
+* protected string $driver_interface = '';
+* protected array $supported_drivers = [];
 */
 trait DriverTrait
 {
@@ -60,13 +65,13 @@ trait DriverTrait
 	}
 
 	/**
-	* Adds multiple drivers to the list of supported drivers
-	* @param array $drivers The drivers to add
+	* Removes a driver from the list of supported drivers
+	* @param string $name The name of the drive
 	* @return static
 	*/
-	public function addSupportedDrivers(array $drivers) : static
+	public function removeSupportedDrive(string $name) : static
 	{
-		$this->supported_drivers = array_merge($this->supported_drivers, $drivers);
+		unset($this->supported_drivers[$name]);
 
 		return $this;
 	}

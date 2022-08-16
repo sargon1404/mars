@@ -13,7 +13,7 @@ namespace Mars\Html\Input;
 class Button extends Input
 {
 	/**
-	* @var string $type The input's type
+	* {@inheritdoc}
 	*/
 	protected string $type = 'button';
 }

@@ -30,8 +30,6 @@ class Input extends \Mars\Html\Tag
 	{
 		$attributes = $this->generateIdAttribute($attributes);
 
-		$attributes = ['type' => $this->type] + $attributes;
-
-		return parent::get($text, $attributes, $properties);
+		return parent::get($text, ['type' => $this->type] + $attributes, $properties);
 	}
 }

@@ -215,6 +215,46 @@ class Config extends Data
 	public ?string $html_allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
 
 	/**
+	* @var string $request_type_param The name of the response request param
+	*/
+	public string $request_type_param = 'type';
+
+	/**
+	* @var string $request_action_param The name of the action request param
+	*/
+	public string $request_action_param = 'action';
+
+	/**
+	* @var string $request_orderby_param The name of the orderby request param
+	*/
+	public string $request_orderby_param = 'order_by';
+
+	/**
+	* @var string $request_order_param The name of the order request param
+	*/
+	public string $request_order_param = 'order';
+
+	/**
+	* @var string $request_page_param The name of the page request param
+	*/
+	public string $request_page_param = 'page';
+
+	/**
+	* @var bool $plugins_enable True, if plugins are enabled
+	*/
+	public bool $plugins_enable = true;
+
+	/**
+	* @var int $pagination_max_links The max number of pagination links to show
+	*/
+	public int $pagination_max_links = 10;
+
+	/**
+	* @var int $pagination_items_per_page The number of items that should be displayed on each page
+	*/
+	public int $pagination_items_per_page = 30;
+
+	/**
 	* Builds the Config object
 	* @param App $app The app object
 	*/

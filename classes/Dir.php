@@ -74,7 +74,7 @@ class Dir
 			$dirs[] = $this->getName($file, $full_path);
 		}
 
-		return $dirs;
+		return $this->app->plugins->filter('dir_get_dirs', $dirs, $dir, $recursive, $full_path, $exclude_dirs, $this);
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Dir
 			$files[] = $this->getName($file, $full_path);
 		}
 
-		return $files;
+		return $this->app->plugins->filter('dir_get_files', $files, $dir, $recursive, $full_path, $exclude_dirs, $extensions, $this);
 	}
 
 	/**
@@ -137,7 +137,7 @@ class Dir
 			$iterator = new \IteratorIterator($iterator);
 		}
 
-		return $iterator;
+		return $this->app->plugins->filter('dir_get_iterator', $iterator, $dir, $recursive, $exclude_dirs, $flag, $this);
 	}
 
 	/**
@@ -168,58 +168,54 @@ class Dir
 		}
 
 		if (!mkdir($dir)) {
-			throw new \Exception("Unable to create dir: {$dir}");
+			throw new \Exception(App::__('dir_error_create', ['{DIR}' => $dir]));
 		}
 	}
 
 	/**
 	* Copies a dir
-	* @param string $source_dir The source folder
-	* @param string $destination_dir The destination folder
+	* @param string $source The source folder
+	* @param string $destination The destination folder
 	* @throws Exception If folders can't be created/files can't be copied
 	*/
-	public function copy(string $source_dir, string $destination_dir)
+	public function copy(string $source, string $destination)
 	{
-		$this->app->plugins->run('dir_copy', $source_dir, $destination_dir, $recursive, $this);
+		$this->app->plugins->run('dir_copy', $source, $destination, $this);
 
-		$this->checkFilename($source_dir);
-		$this->checkFilename($destination_dir);
+		$this->checkFilename($source);
+		$this->checkFilename($destination);
 
-		$this->create($destination_dir);
+		$this->create($destination);
 
-		$destination_dir = App::fixPath($destination_dir);
+		$destination = App::fixPath($destination);
 
-		$iterator = $this->getIterator($source_dir);
+		$iterator = $this->getIterator($source);
 		foreach ($iterator as $file) {
-			$target_file = $destination_dir . $this->getName($file);
+			$target_file = $destination . $this->getName($file);
 
 			if ($file->isDir()) {
-				if (!mkdir($target_file)) {
-					throw new \Exception("Unable to create dir: {$target_file}");
-				}
+				$this->create($target_file);
 			} else {
-				if (!copy($file->getPathname(), $target_file)) {
-					throw new \Exception("Unable to move file: {$file->getPathname()} to {$target_file}");
-				}
+				$this->app->file->copy($file->getPathname(), $target_file);
 			}
 		}
 	}
 
 	/**
 	* Moves a dir
-	* @param string $source_dir The source folder
-	* @param string $destination_dir The destination folder
+	* @param string $source The source folder
+	* @param string $destination The destination folder
 	* @throws Exception if the dir can't be moved
 	*/
-	public function move(string $source_dir, string $destination_dir)
+	public function move(string $source, string $destination)
 	{
-		$this->app->plugins->run('dir_move', $source_dir, $destination_dir, $this);
+		$this->app->plugins->run('dir_move', $source, $destination, $this);
 
-		$this->checkFilename($source_dir);
-		$this->checkFilename($destination_dir);
+		$this->checkFilename($source);
+		$this->checkFilename($destination);
 
-		if (!rename($source_dir, $destination_dir)) {
-			throw new \Exception("Unable to move dir: {$source_dir} to {$destination_dir}");
+		if (!rename($source, $destination)) {
+			throw new \Exception(App::__('dir_error_move', ['{SOURCE}' => $source, '{DESTINATION}' => $destination]));
 		}
 	}
 
@@ -239,18 +235,18 @@ class Dir
 		foreach ($iterator as $file) {
 			if ($file->isDir()) {
 				if (!rmdir($file->getPathname())) {
-					throw new \Exception("Unable to delete dir: {$file->getPathname()}");
+					throw new \Exception(App::__('dir_error_delete', ['{DIR}' => $file->getPathname()]));
 				}
 			} else {
 				if (!unlink($file->getPathname())) {
-					throw new \Exception("Unable to delete file: {$file->getPathname()}");
+					throw new \Exception(App::__('file_error_delete', ['{FILE}' => $file->getPathname()]));
 				}
 			}
 		}
 
 		if ($delete_dir) {
 			if (!rmdir($dir)) {
-				throw new \Exception("Unable to delete dir: {$dir}");
+				throw new \Exception(App::__('dir_error_delete', ['{DIR}' => $dir]));
 			}
 		}
 

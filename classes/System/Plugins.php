@@ -6,6 +6,8 @@
 
 namespace Mars\System;
 
+use Mars\App;
+
 /**
 * The Plugins Class
 * Class implementing the Plugins functionality
@@ -13,7 +15,7 @@ namespace Mars\System;
 class Plugins
 {
 	use \Mars\Plugins;
-		
+
 	/**
 	* @var string $namespace The namespace used to load plugins
 	*/

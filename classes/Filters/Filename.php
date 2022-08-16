@@ -43,8 +43,7 @@ class Filename extends Filter
 		//replace spaces with dashes
 		$filename = str_replace(' ', '-', $filename);
 
-		return $filename;
-		//return $this->app->plugins->filter('filters_filename_get', $filename, $this);
+		return $this->app->plugins->filter('filters_filename_get', $filename);
 	}
 
 	/*
@@ -54,7 +53,7 @@ class Filename extends Filter
 	*/
 	protected function cutFilename(string $filename) : string
 	{
-		$name = substr($this->app->file->getFilename($filename), 0, $this->max_chars);
+		$name = substr($this->app->file->getFile($filename), 0, $this->max_chars);
 		$ext = $this->app->file->getExtension($filename);
 
 		return $this->app->file->addExtension($name, $ext);

@@ -16,19 +16,19 @@ class Datetime extends \Mars\Html\Tag
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$name = $this->attributes['name'];
-		$value = $this->attributes['value'];
+		$name = $attributes['name'];
+		$value = $attributes['value'];
 
 		$parts = explode(' ', $value);
 
-		$date = new Date(['name' => $name . '-date', 'value' => $parts[0]] + $this->attributes);
-		$time = new Time(['name' => $name . '-time', 'value' => $parts[1]] + $this->attributes);
+		$date = new Date($this->app);
+		$time = new Time($this->app);
 
-		$html = $date->get();
+		$html = $date->get('', ['name' => $name . '-date', 'value' => $parts[0]]);
 		$html.= '&nbsp;';
-		$html.= $time->get();
+		$html.= $time->get('', ['name' => $name . '-time', 'value' => $parts[1]]);
 
 		return $html;
 	}

@@ -38,9 +38,9 @@ class Plugin extends \Mars\Extensions\Basic
 	* @param App $app The app object
 	* @param string $name The name of the plugin
 	*/
-	public function __construct(App $app, string $name)
+	public function __construct(string $name, App $app = null)
 	{
-		$this->app = $app;
+		$this->app = $app ?? $this->getApp();
 		$this->name = $name;
 		$this->title = $name;
 
@@ -54,6 +54,6 @@ class Plugin extends \Mars\Extensions\Basic
 	*/
 	protected function addHooks()
 	{
-		$this->app->plugins->addHooks($this->name, $this->hooks);
+		$this->app->plugins->addHooks($this, $this->hooks);
 	}
 }

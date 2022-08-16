@@ -5,6 +5,9 @@ use Mars\Memcache;
 
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class MemcacheTest extends Base
 {
 	public function setUp() : void

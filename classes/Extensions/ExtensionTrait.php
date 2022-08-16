@@ -1,6 +1,6 @@
 <?php
 /**
-* The Extension Body "Class"
+* The Extension Trait
 * @package Mars
 */
 
@@ -9,10 +9,13 @@ namespace Mars\Extensions;
 use Mars\App;
 
 /**
-* The Extension Body "Class"
-* Contains the functionality for classes Extension/Basic
+* The Extension Trait
+* Contains the functionality of extensions
+* The classes using this trait must set these properties:
+* protected static string $type = '';
+* protected static string $base_dir = '';
 */
-trait Body
+trait ExtensionTrait
 {
 	/**
 	* @var string $name The name of the extension
@@ -20,24 +23,19 @@ trait Body
 	public string $name = '';
 
 	/**
-	* @var string $path The path of the folder where the extension is installed
+	* @var string $path The path where the extension is located
 	*/
 	public string $path = '';
 
 	/**
-	* @var string $url Alias for path_url
+	* @var string $path_url The url pointing to the folder where the extension is located
 	*/
 	public string $url = '';
 
 	/**
-	* @var string $path_url The url pointing to the folder where the extension is installed
+	* @var string $url_static The static url pointing to the folder where the extension is located
 	*/
-	public string $path_url = '';
-
-	/**
-	* @var string $base_url The url pointing to the folder where the extension is installed. It uses the static base url
-	*/
-	public string $base_url = '';
+	public string $url_static = '';
 
 	/**
 	* @var bool $development If true, the extension is run in development mode
@@ -92,20 +90,8 @@ trait Body
 	protected function preparePaths()
 	{
 		$this->path = $this->getPath();
-		$this->path_url = $this->getPathUrl();
-		$this->base_url = $this->getBaseUrl();
-
-		$this->url =  $this->path_url;
-	}
-
-	/**
-	* Prepares the development property
-	*/
-	protected function prepareDevelopment()
-	{
-		if ($this->app->development) {
-			$this->development = true;
-		}
+		$this->url = $this->getUrl();
+		$this->url_static = $this->getUrlStatic();
 	}
 
 	/**
@@ -134,56 +120,37 @@ trait Body
 
 	/**
 	* Returns the path of the folder where the extension is installed
-	* @param string $name The name of the extension. If empty, the name of the current extension is used
 	* @return string The path
 	*/
-	public function getPath(string $name = '') : string
+	public function getPath() : string
 	{
-		if (!$name) {
-			if ($this->path) {
-				return $this->path;
-			}
-
-			$name = $this->name;
-		}
-
-		return $this->getRootPath() . static::$base_dir . '/' . $name . '/';
+		return $this->getRootPath() . static::$base_dir . '/' . $this->name . '/';
 	}
 
 	/**
 	* Returns the url pointing to the folder where the extension is installed
-	* @param string $name The name of the extension. If empty, the name of the current extension is used
-	* @return string The base url
+	* @return string The url
 	*/
-	public function getPathUrl(string $name = '') : string
+	public function getUrl() : string
 	{
-		if (!$name) {
-			if ($this->url) {
-				return $this->url;
-			}
-
-			$name = $this->name;
-		}
-
-		return $this->getRootUrl() . static::$base_dir . '/' . rawurldecode($name) . '/';
+		return $this->getRootUrl() . static::$base_dir . '/' . rawurldecode($this->name) . '/';
 	}
 
 	/**
 	* Returns the static url pointing to the folder where the extension is installed
-	* @param string $name The name of the extension. If empty, the name of the current extension is used
-	* @return string The base url
+	* @return string The static url
 	*/
-	public function getBaseUrl(string $name = '') : string
+	public function getUrlStatic() : string
 	{
-		if (!$name) {
-			if ($this->base_url) {
-				return $this->base_url;
-			}
+		return $this->getRootUrlStatic() . static::$base_dir . '/' . rawurldecode($this->name) . '/';
+	}
 
-			$name = $this->name;
-		}
-
-		return $this->getRootUrlStatic() . static::$base_dir . '/' . rawurldecode($name) . '/';
+	/**
+	* Prepares the development property
+	*/
+	protected function prepareDevelopment()
+	{
+		$this->development = $this->app->development;
 	}
 
 	/**
@@ -198,7 +165,7 @@ trait Body
 	* Executes the extension's code and returns the generated content
 	* @return string The generated content
 	*/
-	public function run()
+	public function run() : string
 	{
 		$this->startOutput();
 
@@ -221,7 +188,7 @@ trait Body
 	* Ends the output buffering
 	* @return string The output
 	*/
-	protected function endOutput()
+	protected function endOutput() : string
 	{
 		$output = ob_get_clean();
 

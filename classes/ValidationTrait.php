@@ -9,14 +9,14 @@ namespace Mars;
 /**
 * The Validation Trait
 * Provides validation functionality
+* Classes using this trait must set these properties:
+* protected array $validation_rules = [];
+* protected array $validation_rules_to_skip = [];
+* protected array $validation_error_strings = [];
 */
 trait ValidationTrait
 {
-
-	/**
-	* @var array $errors  Contains the generated error codes, if any
-	*/
-	/*protected array $errors = [];*/
+	use ErrorsTrait;
 
 	/**
 	* @var array $validation_rules Validation rules
@@ -29,36 +29,9 @@ trait ValidationTrait
 	//protected array $validation_rules_to_skip = [];
 
 	/**
-	* @var array $validation_error_strings Validation rules
+	* @var array $validation_error_strings Custom error strings
 	*/
 	/*protected array $validation_error_strings = [];*/
-
-	/**
-	* Returns the generated errors, if any
-	* @return array
-	*/
-	public function getErrors() : array
-	{
-		return $this->errors;
-	}
-
-	/**
-	* Returns the first generated error, if any
-	* @return mixed
-	*/
-	public function getFirstError()
-	{
-		return reset($this->errors);
-	}
-
-	/**
-	* Sets the generated errors
-	* @param array $errors The errors
-	*/
-	protected function setErrors(array $errors)
-	{
-		$this->errors = $errors;
-	}
 
 	/**
 	* Returns the validation rules

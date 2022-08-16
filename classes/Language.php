@@ -68,7 +68,7 @@ trait Language
 	public array $strings = [];
 
 	/**
-	* @internal
+	* @var array $loaded_files The list of loaded files
 	*/
 	protected array $loaded_files = [];
 
@@ -80,19 +80,15 @@ trait Language
 	/**
 	* Loads the specified $file from the languages folder
 	* @param string $file The name of the file to load
-	* @return $this
+	* @return static
 	*/
-	public function loadFile(string $file)
+	public function loadFile(string $file) : static
 	{
-		if (!$file) {
+		if (isset($this->loaded_files[$file])) {
 			return $this;
 		}
 
-		if (in_array($file, $this->loaded_files)) {
-			return $this;
-		}
-
-		$this->loaded_file[] = $file;
+		$this->loaded_file[$file] = true;
 
 		$this->loadFilename($this->path . $file . '.php');
 
@@ -102,9 +98,9 @@ trait Language
 	/**
 	* Loads the specified filename from anywhere on the disk as a language file
 	* @param string $filename The filename to load
-	* @return $this
+	* @return static
 	*/
-	public function loadFilename(string $filename)
+	public function loadFilename(string $filename) : static
 	{
 		$strings = include($filename);
 

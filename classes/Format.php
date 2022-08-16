@@ -13,7 +13,7 @@ namespace Mars;
 class Format
 {
 	use AppTrait;
-	use SupportedRulesTrait;
+	use HandlersTrait;
 
 	/**
 	* @var string $datetime_format The datetime format
@@ -31,9 +31,9 @@ class Format
 	protected string $time_format = 'h:i:s';
 
 	/**
-	* @var array $supported_rules The list of suported rules
+	* @var array $supported_handlers The list of supported_handlers
 	*/
-	protected array $supported_rules = [
+	protected array $supported_handlers = [
 		'lower' => ['lower'],
 		'upper' => ['upper'],
 		'round' => ['round'],
@@ -42,7 +42,7 @@ class Format
 		'date' => ['date'],
 		'time' => ['time'],
 		'percentage' => '\Mars\Formats\Percentage',
-		'size' => '\Mars\Formats\Size',
+		'filesize' => '\Mars\Formats\Filesize',
 		'time_interval' => '\Mars\Formats\TimeInterval',
 	];
 
@@ -107,7 +107,7 @@ class Format
 	*/
 	public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
 	{
-		return $this->value($number, 'percentage', $total, $decimals);
+		return $this->getMultiValue($number, 'percentage', $total, $decimals);
 	}
 
 	/**
@@ -116,9 +116,9 @@ class Format
 	* @param int $digits The number of digits to return to the result if it's MBs.
 	* @return string The formatted filesize
 	*/
-	public function size(int|array $bytes, int $digits = 2) : string|array
+	public function filesize(int|array $bytes, int $digits = 2) : string|array
 	{
-		return $this->value($bytes, 'size', $digits);
+		return $this->getMultiValue($bytes, 'filesize', $digits);
 	}
 
 	/**
@@ -171,6 +171,6 @@ class Format
 	*/
 	public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
-		return $this->value($seconds, 'time_interval', $separator1, $separator2);
+		return $this->getMultiValue($seconds, 'time_interval', $separator1, $separator2);
 	}
 }

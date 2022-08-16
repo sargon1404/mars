@@ -10,7 +10,7 @@ namespace Mars\Html\Input;
 * The Select Class
 * Renders a select field
 */
-class Select extends SelectOptions
+class Select extends \Mars\Html\Tag
 {
 	/**
 	* @var string $type The tag's type
@@ -18,24 +18,24 @@ class Select extends SelectOptions
 	public string $tag = 'select';
 
 	/**
-	* Opens the tag
+	* {@inheritdoc}
 	*/
-	public function open() : string
+	public function open(array $attributes = []) : string
 	{
-		$this->attributes['size'] = $this->attributes['size'] ?? 1;
-		$this->attributes['id'] = $this->attributes['id'] ?? $this->escapeId($this->attributes['name']);
+		$attributes['size'] = $attributes['size'] ?? 1;
+		$attributes = $this->generateIdAttribute($attributes);
 
-		return parent::open();
+		return parent::open($attributes);
 	}
 
 	/**
 	* @see \Mars\Html\TagInterface::get()
 	* {@inheritdoc}
 	*/
-	public function get() : string
+	public function get(string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		$html = $this->open();
-		$html.= parent::get();
+		$html = $this->open($attributes);
+		$html.= (new Options($this->app))->get('', [], $properties);
 		$html.= $this->close();
 
 		return $html;

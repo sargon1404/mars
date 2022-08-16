@@ -325,8 +325,9 @@ class Db
 	* @param string|Sql $sql The query to execute
 	* @param array $params Params to be used in prepared statements
 	* @return object The result
+	* @throws Exception If the query fails
 	*/
-	public function readQuery(string | Sql $sql, array $params = [])
+	public function readQuery(string | Sql $sql, array $params = []) : DbResult
 	{
 		return $this->query($sql, $params, true);
 	}
@@ -336,8 +337,9 @@ class Db
 	* @param string|Sql $sql The query to execute
 	* @param array $params Params to be used in prepared statements
 	* @return object The result
+	* @throws Exception If the query fails
 	*/
-	public function writeQuery(string|Sql $sql, array $params = [])
+	public function writeQuery(string|Sql $sql, array $params = []) : DbResult
 	{
 		return $this->query($sql, $params, false);
 	}
@@ -348,8 +350,9 @@ class Db
 	* @param array $params Params to be used in prepared statements
 	* @param bool $is_read If true, this is a read query
 	* @return object The result
+	* @throws Exception If the query fails
 	*/
-	public function query(string|Sql $sql, array $params = [], ?bool $is_read = null)
+	public function query(string|Sql $sql, array $params = [], ?bool $is_read = null) : DbResult
 	{
 		if (!$this->connected) {
 			$this->connect();
@@ -452,6 +455,20 @@ class Db
 		$sql = $this->getSql()->select($cols)->from($table)->where($where)->orderBy($order_by, $order)->limit($limit, $limit_offset);
 
 		return $this->query($sql)->fetchAll();
+	}
+
+	/**
+	* Selects a single row from the database
+	* @param string $table The table name
+	* @param array $where Where conditions in the format col => val
+	* @param string|array $cols The columns to select
+	* @return object The row
+	*/
+	public function selectOne(string $table, array $where = [], string|array $cols = '*') : ?object
+	{
+		$sql = $this->getSql()->select($cols)->from($table)->where($where)->limit(1);
+
+		return $this->query($sql)->fetchObject();
 	}
 
 	/**
@@ -864,12 +881,13 @@ class Db
 	* Returns an array from $table with the columns filled based on their type [int,float,string]
 	* @param string $table The name of the table
 	* @param array $override_array If specified will override the default filling
+	* @param array $ignore_array Columns to exclude from the list, if any
 	* @param int $int_val The value used to fill int/float columns
 	* @param string $string_val The value used to fill char/string columns
 	* @param bool $primary_key If true will also return the primary array
 	* @return array
 	*/
-	public function fill(string $table, array $override_array = [], int $int_val = 0, string $string_val = '', bool $primary_key = false) : array
+	public function fill(string $table, array $override_array = [], array $ignore_array = [], int $int_val = 0, string $string_val = '', bool $primary_key = false) : array
 	{
 		$data = [];
 		$columns = $this->getColumns($table, $primary_key);
@@ -890,6 +908,10 @@ class Db
 
 		if ($override_array) {
 			$data = array_merge($data, $override_array);
+		}
+
+		if ($ignore_array) {
+			$data = App::filterProperties($data, $ignore_array);
 		}
 
 		return $data;

@@ -3,6 +3,9 @@ use Mars\App;
 
 include_once(__DIR__ . '/Base.php');
 
+/**
+* @ignore
+*/
 final class FormatTest extends Base
 {
 	public function testLower()
@@ -45,12 +48,12 @@ final class FormatTest extends Base
 		$this->assertEquals($format->percentage([30, 80], 200), [15, 40]);
 	}
 
-	public function testSize()
+	public function testFilesize()
 	{
 		$format = $this->app->format;
 
-		$this->assertEquals($format->size('76656'), '74.86 KB');
-		$this->assertEquals($format->size([91761_234_506, 76656]), ['85.46 GB', '74.86 KB']);
+		$this->assertEquals($format->filesize('76656'), '74.86 KB');
+		$this->assertEquals($format->filesize([91761_234_506, 76656]), ['85.46 GB', '74.86 KB']);
 	}
 
 	public function testTimeInterval()

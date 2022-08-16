@@ -9,6 +9,7 @@ namespace Mars;
 use Mars\Html\TagInterface;
 use Mars\Html\Tag;
 use Mars\Html\Form;
+use Mars\Html\Input\Select;
 
 /**
 * The HTML Class
@@ -17,9 +18,12 @@ use Mars\Html\Form;
 class Html
 {
 	use AppTrait;
-	use SupportedRulesTrait;
+	use HandlersTrait;
 
-	protected array $supported_rules = [
+	/**
+	* @var array $supported_handlers The list of supported_handlers
+	*/
+	protected array $supported_handlers = [
 		'img' => '\Mars\Html\Img',
 		'picture' => '\Mars\Html\Picture',
 		'a' => '\Mars\Html\A',
@@ -38,7 +42,6 @@ class Html
 		'radio' => '\Mars\Html\Input\Radio',
 		'radio_group' => '\Mars\Html\Input\RadioGroup',
 		'options' => '\Mars\Html\Input\Options',
-		'select_options' => '\Mars\Html\Input\SelectOptions',
 		'select' => '\Mars\Html\Input\Select',
 		'datetime' => '\Mars\Html\Input\Datetime',
 		'date' => '\Mars\Html\Input\Date',
@@ -438,9 +441,9 @@ class Html
 	*/
 	public function selectOpen(string $name, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name];
+		$attributes = ['name' => $name] + $attributes;
 
-		return $this->getTag('select', $attributes)->open();
+		return (new Select)->open($attributes);
 	}
 
 	/**
@@ -449,7 +452,7 @@ class Html
 	*/
 	public function selectClose() : string
 	{
-		return $this->getTag('select')->close();
+		return (new Select)->close();
 	}
 
 	/**
@@ -464,31 +467,20 @@ class Html
 	*/
 	public function select(string $name, array $options, string|array $selected = '', bool $required = false, array $attributes = [], bool $multiple = false) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'required' => $required, 'multiple' => $multiple];
+		$attributes = ['name' => $name, 'required' => $required, 'multiple' => $multiple] + $attributes;
 
-		return $this->getTag('select', $attributes, ['options' => $options, 'selected' => $selected])->get();
+		return $this->getTag('select', '', $attributes, ['options' => $options, 'selected' => $selected]);
 	}
 
 	/**
-	* Builds multiple options tags-used in drop-down boxes.
-	* @param array $options Array containing the options [$name=>$value]. If $value is an array the first element will be the actual value. The second is a bool value determining if the field is an optgroup rather than a option
-	* @param string|array $selected The name of the option that should be selected [string or array if $multiple =  true]
-	* @return string The html code
-	*/
-	public function selectOptions(array $options, string|array $selected = '') : string
-	{
-		return $this->getTag('select_options', [], ['options' => $options, 'selected' => $selected])->get();
-	}
-
-	/**
-	* Builds multiple options tags-used in drop-down boxes.
-	* @param array $options Array containing the options [$text=>$value]. If $value is an array , it will be used as attributes
+	* Builds multiple options tags - used in drop-down boxes.
+	* @param array $options Array containing the options [$value => $name]. Eg: ['option1' => 'Option 1', 'option2' => 'Option 2']. If $name is an array, an opgroup will be created. Eg: ['Foo' => ['option1' => 'Option 1', 'option2' => 'Option 2'], 'Bar' => ['option3' => 'Option 3', 'option4' => 'Option 4']]
 	* @param string $selected The name of the option that should be selected
 	* @return string The html code
 	*/
-	public function options(array $options, string $selected = '') : string
+	public function options(array $options, string|array $selected = '') : string
 	{
-		return $this->getTag('options', [], ['options' => $options, 'selected' => $selected])->get();
+		return $this->getTag('options', '', [], ['options' => $options, 'selected' => $selected]);
 	}
 
 	/**
@@ -501,9 +493,13 @@ class Html
 	*/
 	public function datetime(string $name, string $date = '', bool $required = false, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date)];
+		if (!$date) {
+			$date = time();
+		}
 
-		return $this->getTag('datetime', $attributes)->get();
+		$attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getDatetime($date)] + $attributes;
+
+		return $this->getTag('datetime', '', $attributes);
 	}
 
 	/**
@@ -516,9 +512,13 @@ class Html
 	*/
 	public function date(string $name, string $date = '', bool $required = false, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date, true, false)];
+		if (!$date) {
+			$date = time();
+		}
 
-		return $this->getTag('date', $attributes)->get();
+		$attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getDate($date)] + $attributes;
+
+		return $this->getTag('date', '', $attributes);
 	}
 
 	/**
@@ -531,8 +531,12 @@ class Html
 	*/
 	public function time(string $name, string $date = '', bool $required = false, array $attributes = []) : string
 	{
-		$attributes = $attributes + ['name' => $name, 'required' => $required, 'value' => $this->app->time->getISO($date, false, true)];
+		if (!$date) {
+			$date = time();
+		}
 
-		return $this->getTag('time', $attributes)->get();
+		$attributes = ['name' => $name, 'required' => $required, 'value' => $this->app->time->getTime($date)] +  $attributes;
+
+		return $this->getTag('time', '', $attributes);
 	}
 }
