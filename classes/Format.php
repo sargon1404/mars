@@ -13,7 +13,6 @@ namespace Mars;
 class Format
 {
 	use AppTrait;
-	use HandlersTrait;
 
 	/**
 	* @var string $datetime_format The datetime format
@@ -29,6 +28,11 @@ class Format
 	* @var string $time_format The time format
 	*/
 	protected string $time_format = 'h:i:s';
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_handlers The list of supported_handlers
@@ -47,13 +51,23 @@ class Format
 	];
 
 	/**
+	* Builds the text object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers);
+	}
+
+	/**
 	* Converts a value to lowercase
 	* @param string|array $value The value
 	* @return string|array The formatted value
 	*/
 	public function lower(string|array $value) : string|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return strtolower($value);
 		});
 	}
@@ -65,7 +79,7 @@ class Format
 	*/
 	public function upper(string|array $value) : string|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return strtoupper($value);
 		});
 	}
@@ -78,7 +92,7 @@ class Format
 	*/
 	public function round(float|array $value, int $decimals = 2) : float|array
 	{
-		return $this->map($value, function ($value) use ($decimals) {
+		return $this->handlers->map($value, function ($value) use ($decimals) {
 			return round($value, $decimals);
 		});
 	}
@@ -93,7 +107,7 @@ class Format
 	*/
 	public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
 	{
-		return $this->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
+		return $this->handlers->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
 			return number_format($number, $decimals, $decimal_separator, $thousands_separator);
 		});
 	}
@@ -107,7 +121,7 @@ class Format
 	*/
 	public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
 	{
-		return $this->getMultiValue($number, 'percentage', $total, $decimals);
+		return $this->handlers->getMultiValue($number, 'percentage', $total, $decimals);
 	}
 
 	/**
@@ -118,7 +132,7 @@ class Format
 	*/
 	public function filesize(int|array $bytes, int $digits = 2) : string|array
 	{
-		return $this->getMultiValue($bytes, 'filesize', $digits);
+		return $this->handlers->getMultiValue($bytes, 'filesize', $digits);
 	}
 
 	/**
@@ -131,7 +145,7 @@ class Format
 	{
 		$format = $format ?: $this->datetime_format;
 
-		return $this->map($datetime, function ($datetime) use ($format) {
+		return $this->handlers->map($datetime, function ($datetime) use ($format) {
 			return $this->app->time->get($datetime)->format($format);
 		});
 	}
@@ -171,6 +185,6 @@ class Format
 	*/
 	public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
-		return $this->getMultiValue($seconds, 'time_interval', $separator1, $separator2);
+		return $this->handlers->getMultiValue($seconds, 'time_interval', $separator1, $separator2);
 	}
 }

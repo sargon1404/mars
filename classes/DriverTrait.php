@@ -79,9 +79,10 @@ trait DriverTrait
 	/**
 	* Returns the handle corresponding to the driver
 	* @param string $driver The driver's name
+	* @param mixed $args Arguments to pass to the handler's constructor
 	* @return object The handle
 	*/
-	public function getHandle(string $driver = '') : object
+	protected function getHandle(string $driver = '', ...$args) : object
 	{
 		if (!$driver) {
 			$driver = $this->driver;
@@ -99,7 +100,8 @@ trait DriverTrait
 
 		$class = $this->supported_drivers[$driver];
 
-		$handle = new $class($this->app);
+		$args[] = $this->app;
+		$handle = new $class(...$args);
 
 		if ($this->driver_interface) {
 			if (!$handle instanceof $this->driver_interface) {

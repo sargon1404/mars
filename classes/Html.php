@@ -18,7 +18,11 @@ use Mars\Html\Input\Select;
 class Html
 {
 	use AppTrait;
-	use HandlersTrait;
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_handlers The list of supported_handlers
@@ -49,6 +53,16 @@ class Html
 	];
 
 	/**
+	* Builds the text object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers);
+	}
+
+	/**
 	* Returns a tag
 	* @param string $type The tag's type
 	* @param string $text The tag's text
@@ -58,7 +72,7 @@ class Html
 	*/
 	public function getTag(string $type, string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		return $this->getValue($type, $text, $attributes, $properties);
+		return $this->handlers->getValue($type, $text, $attributes, $properties);
 	}
 
 	/**

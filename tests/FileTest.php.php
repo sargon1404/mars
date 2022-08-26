@@ -9,7 +9,7 @@ include_once(__DIR__ . '/Base.php');
 */
 final class FileTest extends Base
 {
-	protected $dir_write = __DIR__ . '/dir-test-write/';
+	protected $dir_write = __DIR__ . '/data/dir-test-write/';
 
 	public function testCheckForInvalidChars()
 	{

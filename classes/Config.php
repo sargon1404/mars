@@ -255,6 +255,46 @@ class Config extends Data
 	public int $pagination_items_per_page = 30;
 
 	/**
+	* @var bool $image_optimize If true, the images will be optimized when processed/uploaded
+	*/
+	public bool $image_optimize = true;
+
+	/**
+	* @var string $image_background The background to apply when resizing/cutting.. images...
+	*/
+	public string $image_background_color = 'ffffff';
+
+	/**
+	* @var int $image_jpg_quality The quality of jpg images
+	*/
+	public int $image_jpg_quality = 80;
+
+	/**
+	* @var string $image_jpg_optimize_command The command used to optimize the jpg images
+	*/
+	public string $image_jpg_optimize_command = 'jpegoptim --strip-all -m 80 {FILENAME}';
+
+	/**
+	* @var int $image_png_quality The quality of png images
+	*/
+	public int $image_png_quality = 6;
+
+	/**
+	* @var string $image_png_optimize_command The command used to optimize the png images
+	*/
+	public string $image_png_optimize_command = 'convert {FILENAME} -strip {FILENAME}';
+
+	/**
+	* @var string $image_gif_optimize_command The command used to optimize gif images
+	*/
+	public string $image_gif_optimize_command = 'gifsicle {FILENAME} -o {FILENAME}';
+
+	/**
+	* @var int $image_webp_quality The quality of webp images
+	*/
+	public int $image_webp_quality = 80;
+
+	/**
 	* Builds the Config object
 	* @param App $app The app object
 	*/

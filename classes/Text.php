@@ -13,7 +13,11 @@ namespace Mars;
 class Text
 {
 	use AppTrait;
-	use HandlersTrait;
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_rules The list of supported rules
@@ -21,6 +25,16 @@ class Text
 	protected array $supported_handlers = [
 		'parser' => '\Mars\Text\Parser'
 	];
+
+	/**
+	* Builds the text object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers);
+	}
 
 	/**
 	* Returns the first $max_length characters from text. If strlen($text) > $max_length will append $replace_with
@@ -78,7 +92,7 @@ class Text
 	*/
 	public function parse(string $text, bool $parse_links = true, bool $parse_nofollow = false) : string
 	{
-		$parser = $this->getHandler('parser');
+		$parser = $this->handlers->get('parser');
 
 		$text = $parser->parse($text, $parse_links, $parse_nofollow);
 

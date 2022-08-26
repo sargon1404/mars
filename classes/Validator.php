@@ -13,8 +13,12 @@ namespace Mars;
 class Validator
 {
 	use AppTrait;
-	use HandlersTrait;
 	use ErrorsTrait;
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_handlers The list of supported_handlers
@@ -45,8 +49,7 @@ class Validator
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-
-		$this->handler_method = 'validate';
+		$this->handlers = new Handlers($this->supported_handlers, 'validate');
 	}
 
 	/**
@@ -59,7 +62,7 @@ class Validator
 	*/
 	public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
 	{
-		return $this->getValue($rule, $value, $field, ...$params);
+		return $this->handlers->getValue($rule, $value, $field, ...$params);
 	}
 
 	/**
@@ -115,7 +118,7 @@ class Validator
 		}
 
 		//use the handler's error
-		$this->errors[] = $this->handlers[$rule]->getError();
+		$this->errors[] = $this->handlers->get($rule)->getError();
 	}
 
 	/**

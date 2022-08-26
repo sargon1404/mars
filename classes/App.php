@@ -624,10 +624,10 @@ class App
 	public function getUseragent() : string
 	{
 		if (!empty($this->useragent)) {
-			return $this->usergroups;
+			return $this->useragent;
 		}
 
-		return $_SERVER['HTTP_USER_AGENT'];
+		return $_SERVER['HTTP_USER_AGENT'] ?? '';
 	}
 
 	/**

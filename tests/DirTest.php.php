@@ -7,9 +7,9 @@ include_once(__DIR__ . '/Base.php');
 */
 final class DirTest extends Base
 {
-	protected $dir_cnt = __DIR__ . '/dir-test/';
-	protected $dir_read = __DIR__ . '/dir-test-read/';
-	protected $dir_write = __DIR__ . '/dir-test-write/';
+	protected $dir_cnt = __DIR__ . '/data/dir-test/';
+	protected $dir_read = __DIR__ . '/data/dir-test-read/';
+	protected $dir_write = __DIR__ . '/data/dir-test-write/';
 
 	public function testContains()
 	{

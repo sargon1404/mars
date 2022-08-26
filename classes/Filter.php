@@ -13,7 +13,11 @@ namespace Mars;
 class Filter
 {
 	use AppTrait;
-	use HandlersTrait;
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_handlers The list of supported_handlers
@@ -39,6 +43,15 @@ class Filter
 		'interval' => '\Mars\Filters\Interval',
 		'exists' => '\Mars\Filters\Exists',
 	];
+	/**
+	* Builds the text object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers);
+	}
 
 	/**
 	* Filters a value
@@ -53,7 +66,7 @@ class Filter
 			return $this->$filter($value, ...$args);
 		}
 
-		return $this->getMultiValue($value, $filter, ...$args);
+		return $this->handlers->getMultiValue($value, $filter, ...$args);
 	}
 
 	/**
@@ -63,7 +76,7 @@ class Filter
 	*/
 	public function string($value) : string|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return (string)$value;
 		});
 	}
@@ -75,7 +88,7 @@ class Filter
 	*/
 	public function int($value) : int|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return (int)$value;
 		});
 	}
@@ -87,7 +100,7 @@ class Filter
 	*/
 	public function float($value) : float|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return (float)$value;
 		});
 	}
@@ -99,7 +112,7 @@ class Filter
 	*/
 	public function abs($value) : int|float|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return abs($value);
 		});
 	}
@@ -111,7 +124,7 @@ class Filter
 	*/
 	public function absint($value) : int|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return abs((int)$value);
 		});
 	}
@@ -123,7 +136,7 @@ class Filter
 	*/
 	public function absfloat($value) : int|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return abs((float)$value);
 		});
 	}
@@ -135,7 +148,7 @@ class Filter
 	*/
 	public function trim($value) : string|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return trim($value);
 		});
 	}
@@ -148,7 +161,7 @@ class Filter
 	*/
 	public function tags($value, array|string|null $allowed_tags = null) : string|array
 	{
-		return $this->map($value, function ($value) use ($allowed_tags) {
+		return $this->handlers->map($value, function ($value) use ($allowed_tags) {
 			return strip_tags($value, $allowed_tags);
 		});
 	}
@@ -163,7 +176,7 @@ class Filter
 	*/
 	public function html(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
-		return $this->getMultiValue($html, 'html', $allowed_elements, $allowed_attributes, $encoding);
+		return $this->handlers->getMultiValue($html, 'html', $allowed_elements, $allowed_attributes, $encoding);
 	}
 
 	/**
@@ -173,7 +186,7 @@ class Filter
 	*/
 	public function id(int|array $value) : int|array
 	{
-		return $this->map($value, function ($value) {
+		return $this->handlers->map($value, function ($value) {
 			return abs((int)$value);
 		});
 	}
@@ -196,7 +209,7 @@ class Filter
 	*/
 	public function alpha(string|array $value, bool $space = false) : string|array
 	{
-		return $this->getMultiValue($value, 'alpha', $space);
+		return $this->handlers->getMultiValue($value, 'alpha', $space);
 	}
 
 	/**
@@ -207,7 +220,7 @@ class Filter
 	*/
 	public function alnum(string|array $value, bool $space = false) : string|array
 	{
-		return $this->getMultiValue($value, 'alnum', $space);
+		return $this->handlers->getMultiValue($value, 'alnum', $space);
 	}
 
 	/**
@@ -217,7 +230,7 @@ class Filter
 	*/
 	public function filename(string|array $value) : string|array
 	{
-		return $this->getMultiValue($value, 'filename');
+		return $this->handlers->getMultiValue($value, 'filename');
 	}
 
 	/**
@@ -228,7 +241,7 @@ class Filter
 	*/
 	public function filepath(string|array $value) : string|array
 	{
-		return $this->getMultiValue($value, 'filepath');
+		return $this->handlers->getMultiValue($value, 'filepath');
 	}
 
 	/**
@@ -238,7 +251,7 @@ class Filter
 	*/
 	public function url(string|array $url) : string|array
 	{
-		return $this->getMultiValue($url, 'url');
+		return $this->handlers->getMultiValue($url, 'url');
 	}
 
 	/**
@@ -248,7 +261,7 @@ class Filter
 	*/
 	public function email(string|array $email) : string|array
 	{
-		return $this->getMultiValue($email, 'email');
+		return $this->handlers->getMultiValue($email, 'email');
 	}
 
 	/**
@@ -259,7 +272,7 @@ class Filter
 	*/
 	public function slug(string|array $value, bool $allow_slash = false) : string|array
 	{
-		return $this->getMultiValue($value, 'slug', $allow_slash);
+		return $this->handlers->getMultiValue($value, 'slug', $allow_slash);
 	}
 
 	/**
@@ -272,7 +285,7 @@ class Filter
 	*/
 	public function interval(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
 	{
-		return $this->getMultiValue($value, 'interval', $min, $max, $default_value);
+		return $this->handlers->getMultiValue($value, 'interval', $min, $max, $default_value);
 	}
 
 	/**

@@ -12,7 +12,11 @@ namespace Mars;
 class Ui
 {
 	use AppTrait;
-	use HandlersTrait;
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public Handlers $handlers;
 
 	/**
 	* @var array $supported_rules The list of supported rules
@@ -20,6 +24,16 @@ class Ui
 	protected array $supported_handlers = [
 		'pagination' => '\Mars\Ui\Pagination'
 	];
+
+	/**
+	* Builds the text object
+	* @param App $app The app object
+	*/
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers);
+	}
 
 	/**
 	* Builds pagination. The number of pages is computed as $total_items / $items_per_page.
@@ -34,7 +48,7 @@ class Ui
 		$items_per_page = $items_per_page?? $this->app->config->pagination_items_per_page;
 		$max_links = $max_links ?? $this->app->config->pagination_max_links;
 
-		$pag = $this->getHandler('pagination', $base_url, $items_per_page, $total_items, $max_links);
+		$pag = $this->handlers->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
 
 		return $pag->get();
 	}
