@@ -10,7 +10,7 @@ namespace Mars;
 * The Handlers Class
 * Encapsulates a list of suported handlers
 */
-class Handlers
+class Handlers extends HandlersList
 {
 	use AppTrait;
 
@@ -23,11 +23,6 @@ class Handlers
 	* @var bool $store If true, the handlers will be stored in $this->handlers
 	*/
 	public bool $store = true;
-
-	/**
-	* @var array $list The list of supported handlers in the name => class format
-	*/
-	protected array $list = [];
 
 	/**
 	* @var array $handlers Array storing the handler objects, if $store is true
@@ -50,56 +45,29 @@ class Handlers
 	}
 
 	/**
-	* Returns the list of supported handlers
-	* @return array
-	*/
-	public function getList() : array
-	{
-		return $this->list;
-	}
-
-	/**
-	* Adds a supported handler
-	* @param string $name The name of the handler
-	* @param string $class The class which will handle it
-	* @return static
+	* @see \Mars\HandlersList::add()
+	* {@inheritdoc}
 	*/
 	public function add(string $name, string $class) : static
 	{
-		$this->list[$name] = $class;
-
 		if ($this->store && isset($this->handlers[$name])) {
 			unset($this->handlers[$name]);
 		}
 
-		return $this;
+		return parent::add($name, $class);
 	}
 
 	/**
-	* Alias for add()
-	* @see Handlers::add()
-	*/
-	public function set(string $name, string $class) : static
-	{
-		return $this->add($name, $class);
-	}
-
-	/**
-	* Removes a supported handler
-	* @param string $name The name of the handler
-	* @return static
+	* @see \Mars\HandlersList::remove()
+	* {@inheritdoc}
 	*/
 	public function remove(string $name) : static
 	{
-		if ($this->list[$name]) {
-			unset($this->list[$name]);
-		}
-
 		if ($this->store && isset($this->handlers[$name])) {
 			unset($this->handlers[$name]);
 		}
 
-		return $this;
+		return parent::remove($name);
 	}
 
 	/**

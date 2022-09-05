@@ -67,6 +67,8 @@ class Jpg extends Image implements DriverInterface
 	*/
 	public function save(GdImage $img)
 	{
-		imagejpeg($img, $this->filename, $this->quality);
+		if (!imagejpeg($img, $this->filename, $this->quality)) {
+			throw new \Exception("Unable to save image {$this->filename}");
+		}
 	}
 }

@@ -6,9 +6,9 @@
 
 namespace Mars\Images;
 
+use GdImage;
 use Mars\App;
 use Mars\Images\Image;
-use GdImage;
 
 /**
 * The Png Image Class
@@ -54,7 +54,7 @@ class Png extends Image implements DriverInterface
 	* @see \Mars\Images\DriverInterface::create()
 	* {@inheritdoc}
 	*/
-	public function create(int $width, int $height) : GdImage
+	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
 		$img = parent::create($width, $height);
 
@@ -70,6 +70,8 @@ class Png extends Image implements DriverInterface
 	*/
 	public function save(GdImage $img)
 	{
-		imagepng($img, $this->filename, $this->quality);
+		if (!imagepng($img, $this->filename, $this->quality)) {
+			throw new \Exception("Unable to save image {$this->filename}");
+		}
 	}
 }

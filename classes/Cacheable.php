@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Cacheable\DriverInterface;
+
 /**
 * The Cacheable Class
 * Caches content & serves it from cache
@@ -13,7 +15,16 @@ namespace Mars;
 abstract class Cacheable
 {
 	use AppTrait;
-	use DriverTrait;
+
+	/**
+	* @var Drivers $drivers The drivers object
+	*/
+	public readonly Drivers $drivers;
+
+	/**
+	* @var DriverInterface $driver The driver object
+	*/
+	protected DriverInterface $driver;
 
 	/**
 	* @var string $path The folder where the content will be cached
@@ -48,17 +59,7 @@ abstract class Cacheable
 	/**
 	* @var string $driver The used driver
 	*/
-	protected string $driver = 'file';
-
-	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	*/
-	protected string $driver_key = 'cachable';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Cacheable\DriverInterface';
+	protected string $driver_name = 'file';
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -80,19 +81,11 @@ abstract class Cacheable
 	public function __construct(App $app)
 	{
 		$this->app = $app;
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'cachable', $this->app);
 
 		$this->file = $this->getFile();
 		$this->filename = $this->path . $this->file;
-
-		$this->handle = $this->getHandle();
-	}
-
-	/**
-	* Initializes the driver & handle
-	*/
-	protected function init()
-	{
-		$this->handle = $this->getHandle();
+		$this->driver = $this->drivers->get($this->driver_name);
 	}
 
 	/**
@@ -188,7 +181,7 @@ abstract class Cacheable
 	{
 		$this->outputContentType();
 
-		$content = $this->handle->get($this->filename);
+		$content = $this->driver->get($this->filename);
 
 		if ($this->gzip) {
 			header('Content-encoding: gzip');
@@ -216,7 +209,7 @@ abstract class Cacheable
 	*/
 	public function store(string $content)
 	{
-		$this->handle->store($this->filename, $content);
+		$this->driver->store($this->filename, $content);
 
 		return $this;
 	}
@@ -227,7 +220,7 @@ abstract class Cacheable
 	*/
 	public function delete() : static
 	{
-		$this->handle->delete($this->filename);
+		$this->driver->delete($this->filename);
 
 		return $this;
 	}
@@ -241,7 +234,7 @@ abstract class Cacheable
 	{
 		$filename = $this->path . basename($file);
 
-		$this->handle->delete($filename);
+		$this->driver->delete($filename);
 
 		return $this;
 	}
@@ -252,7 +245,7 @@ abstract class Cacheable
 	*/
 	protected function getLastModified() : int
 	{
-		return $this->handle->getLastModified($this->filename);
+		return $this->driver->getLastModified($this->filename);
 	}
 
 	/**

@@ -7,7 +7,7 @@
 namespace Mars\Accelerators;
 
 use Mars\App;
-use Mars\Helpers\Curl;
+use Mars\Http\Request;
 
 /**
 * The Varnish Accelerator Class
@@ -22,10 +22,10 @@ class Varnish implements DriverInterface
 	*/
 	public function delete(string $url) : bool
 	{
-		$curl = new Curl;
-		$curl->request($url, 'PURGE');
+		$req = new Request($url);
+		$response = $req->custom('PURGE');
 
-		return true;
+		return $response->ok();
 	}
 
 	/**
@@ -34,11 +34,11 @@ class Varnish implements DriverInterface
 	*/
 	public function deleteByPattern(string $pattern) : bool
 	{
-		$curl = new Curl;
-		$curl->addHeader('X-Ban-Pattern: ' . $pattern);
-		$curl->request($this->app->url, 'BAN');
+		$req = new Request($this->app->url);
+		$req->addHeader('X-Ban-Pattern: ' . $pattern);
+		$response = $req->custom('BAN');
 
-		return true;
+		return $response->ok();
 	}
 
 	/**
@@ -47,9 +47,9 @@ class Varnish implements DriverInterface
 	*/
 	public function deleteAll() : bool
 	{
-		$curl = new Curl;
-		$curl->request($this->app->url, 'FULLBAN');
+		$req = new Request($this->app->url);
+		$response = $req->custom('FULLBAN');
 
-		return true;
+		return $response->ok();
 	}
 }

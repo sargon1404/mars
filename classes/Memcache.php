@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Memcache\DriverInterface;
+
 /**
 * The Memcache Class
 * Handles the interactions with the memory cache.
@@ -14,7 +16,16 @@ namespace Mars;
 class Memcache
 {
 	use AppTrait;
-	use DriverTrait;
+
+	/**
+	* @var Drivers $drivers The drivers object
+	*/
+	public readonly Drivers $drivers;
+
+	/**
+	* @var DriverInterface $driver The driver object
+	*/
+	protected DriverInterface $driver;
 
 	/**
 	* @var string $host The host to connect to
@@ -42,21 +53,6 @@ class Memcache
 	protected bool $connected = false;
 
 	/**
-	* @var string $driver The used driver
-	*/
-	protected string $driver = '';
-
-	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	*/
-	protected string $driver_key = 'memcache';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Memcache\DriverInterface';
-
-	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
@@ -68,12 +64,8 @@ class Memcache
 	/**
 	* Constructs the memcache object
 	* @param App $app The app object
-	* @param string $driver The driver to use. redis and memcache are supported
-	* @param string $host The host to connect to
-	* @param string $port The port to connect to
-	* @param string $key Secret key used to identify the site
 	*/
-	public function __construct(App $app, string $driver = '', string $host = '', string $port = '', string $key = '')
+	public function __construct(App $app)
 	{
 		$this->app = $app;
 
@@ -81,18 +73,11 @@ class Memcache
 			return;
 		}
 
-		if (!$driver) {
-			$driver = $this->app->config->memcache_driver;
-			$host = $this->app->config->memcache_host;
-			$port = $this->app->config->memcache_port;
-			$key = $this->app->config->key;
-		}
-
-		$this->driver = $driver;
-		$this->host = $host;
-		$this->port = $port;
-		$this->key = $key;
+		$this->host = $this->app->config->memcache_host;
+		$this->port = $this->app->config->memcache_port;
+		$this->key = $this->app->config->key;
 		$this->enabled = true;
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'memcache', $this->app);
 	}
 
 	/**
@@ -120,9 +105,9 @@ class Memcache
 			return;
 		}
 
-		$this->handle = $this->getHandle();
+		$this->driver = $this->drivers->get($this->app->config->memcache_driver);
 
-		$this->handle->connect($this->host, $this->port);
+		$this->driver->connect($this->host, $this->port);
 
 		$this->connected = true;
 	}
@@ -136,7 +121,7 @@ class Memcache
 			return;
 		}
 
-		$this->handle->disconnect();
+		$this->driver->disconnect();
 	}
 
 	/**
@@ -160,7 +145,7 @@ class Memcache
 			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		return $this->handle->add($key . '-' . $this->key, $value, $expires);
+		return $this->driver->add($key . '-' . $this->key, $value, $expires);
 	}
 
 	/**
@@ -184,7 +169,7 @@ class Memcache
 			$value = $this->app->serializer->serialize($value, false);
 		}
 
-		return $this->handle->set($key . '-' . $this->key, $value, $expires);
+		return $this->driver->set($key . '-' . $this->key, $value, $expires);
 	}
 
 	/**
@@ -202,7 +187,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$value = $this->handle->get($key . '-' . $this->key);
+		$value = $this->driver->get($key . '-' . $this->key);
 
 		if ($unserialize) {
 			return $this->app->serializer->unserialize(data: $value, decode: false);
@@ -225,7 +210,7 @@ class Memcache
 			$this->connect();
 		}
 
-		return $this->handle->exists($key . '-' . $this->key);
+		return $this->driver->exists($key . '-' . $this->key);
 	}
 
 	/**
@@ -243,7 +228,7 @@ class Memcache
 			$this->connect();
 		}
 
-		return $this->handle->delete($key . '-' . $this->key);
+		return $this->driver->delete($key . '-' . $this->key);
 	}
 
 	/**
@@ -258,7 +243,7 @@ class Memcache
 			$this->connect();
 		}
 
-		$this->handle->deleteAll();
+		$this->driver->deleteAll();
 
 		return $this;
 	}

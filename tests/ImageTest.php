@@ -92,18 +92,18 @@ final class ImageTest extends Base
 		$this->assertTrue($png_image->isValid());
 		unlink($png_image->getFilename());
 
-		/*$gif_image = $image->convert($this->images_dir . 'image-convert.gif');
+		$gif_image = $image->convert($this->images_dir . 'image-convert.gif');
 		$this->assertSame($gif_image->getFilename(), $this->images_dir . 'image-convert.gif');
 		$this->assertTrue(is_file($gif_image->getFilename()));
 		$this->assertTrue($gif_image->isValid());
-		unlink($png_image->getFilename());
-		*/
+		unlink($gif_image->getFilename());
+
 
 		$webp_image = $image->convert($this->images_dir . 'image-convert.webp');
 		$this->assertSame($webp_image->getFilename(), $this->images_dir . 'image-convert.webp');
 		$this->assertTrue(is_file($webp_image->getFilename()));
 		$this->assertTrue($webp_image->isValid());
-		//unlink($webp_image->getFilename());
+		unlink($webp_image->getFilename());
 	}
 
 	public function testJpeg()

@@ -17,7 +17,7 @@ class Filter
 	/**
 	* @var Handlers $handlers The handlers object
 	*/
-	public Handlers $handlers;
+	public readonly Handlers $handlers;
 
 	/**
 	* @var array $supported_handlers The list of supported_handlers

@@ -16,27 +16,21 @@ use Mars\Serializers\DriverInterface;
 class Serializer
 {
 	use AppTrait;
-	use DriverTrait;
 
 	/**
-	* @var string $driver The used driver
+	* @var Drivers $drivers The drivers object
 	*/
-	protected string $driver = '';
+	public readonly Drivers $drivers;
 
 	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	* @var DriverInterface $driver The driver object
 	*/
-	protected string $driver_key = 'serializer';
+	protected DriverInterface $driver;
 
 	/**
-	* @var string $driver_interface The interface the driver must implement
+	* protected DriverInterface $php_driver The php driver
 	*/
-	protected string $driver_interface = '\Mars\Serializers\DriverInterface';
-
-	/**
-	* protected DriverInterface $php_handle The php handle
-	*/
-	protected DriverInterface $php_handle;
+	protected DriverInterface $php_driver;
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -49,39 +43,32 @@ class Serializer
 	/**
 	* Constructs the db object
 	* @param App $app The app object
-	* @param string $driver The serializer driver. Currently supported: php and igbinary
-	* @param bool $debug If true, will run in debug mode
 	*/
-	public function __construct(App $app, string $driver = '')
+	public function __construct(App $app)
 	{
 		$this->app = $app;
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'serializer', $this->app);
+		$this->driver = $this->drivers->get($this->app->config->serializer_driver);
 
-		if (!$driver) {
-			$driver = $this->app->config->serializer_driver;
-		}
-
-		$this->driver = $driver;
-		$this->handle = $this->getHandle();
-
-		if ($this->driver == 'php') {
-			$this->php_handle = $this->handle;
+		if ($this->app->config->serializer_driver == 'php') {
+			$this->php_driver = $this->driver;
 		} else {
-			$this->php_handle = $this->getHandle('php');
+			$this->php_driver = $this->drivers->get('php');
 		}
 	}
 
 	/**
-	* Returns the handle used to serialize/unserialize
+	* Returns the driver used to serialize/unserialize
 	* @param bool $use_php_driver If true, will always serialize using the php driver
-	* @return DriverInterface The handle
+	* @return DriverInterface The driver
 	*/
-	protected function getCurrentHandle(bool $use_php_driver) : DriverInterface
+	protected function getDriver(bool $use_php_driver) : DriverInterface
 	{
 		if ($use_php_driver) {
-			return $this->php_handle;
+			return $this->php_driver;
 		}
 
-		return $this->handle;
+		return $this->driver;
 	}
 
 	/**
@@ -93,7 +80,7 @@ class Serializer
 	*/
 	public function serialize($data, bool $encode = true, bool $use_php_driver = true) : string
 	{
-		$data = $this->getCurrentHandle($use_php_driver)->serialize($data);
+		$data = $this->getDriver($use_php_driver)->serialize($data);
 
 		if ($encode) {
 			$data = base64_encode($data);
@@ -120,6 +107,6 @@ class Serializer
 			$data = base64_decode($data);
 		}
 
-		return $this->getCurrentHandle($use_php_driver)->unserialize($data);
+		return $this->getDriver($use_php_driver)->unserialize($data);
 	}
 }

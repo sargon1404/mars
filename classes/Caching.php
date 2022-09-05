@@ -39,8 +39,8 @@ class Caching extends Cacheable
 			return;
 		}
 
+		$this->driver_name = $this->app->config->content_cache_driver;
 		$this->path = $this->app->cache_path . 'content/';
-		$this->driver = $this->app->config->content_cache_driver;
 		$this->expires_hours = $this->app->config->content_cache_expire_hours;
 		$this->minify = $this->app->config->content_cache_minify;
 		$this->can_cache = true;

@@ -6,7 +6,8 @@
 
 namespace Mars;
 
-use \GdImage;
+use GdImage;
+use Mars\Images\DriverInterface;
 
 /**
 * The Image Class
@@ -14,7 +15,21 @@ use \GdImage;
 class Image
 {
 	use AppTrait;
-	use DriverTrait;
+
+	/**
+	* @var Drivers $drivers The drivers object
+	*/
+	public readonly Drivers $drivers;
+
+	/**
+	* @var Handlers $operations The operations handlers
+	*/
+	public readonly Handlers $operations;
+
+	/**
+	* @var DriverInterface $driver The driver object
+	*/
+	protected DriverInterface $driver;
 
 	/**
 	* @var string $filename The image's filename
@@ -25,21 +40,6 @@ class Image
 	* @var array $options The image's options
 	*/
 	protected array $options = [];
-
-	/**
-	* @internal
-	*/
-	protected string $driver_key = '';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Images\DriverInterface';
-
-	/**
-	* @var Handlers $operations The operations handlers
-	*/
-	public Handlers $operations;
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -82,7 +82,8 @@ class Image
 			throw new \Exception("Invalid image {$filename}");
 		}
 
-		$this->handle = $this->getHandle($ext, $this->filename);
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, '', $this->app);
+		$this->driver = $this->drivers->get($ext, $this->filename);
 		$this->operations = new Handlers($this->supported_hoperations, '', false);
 	}
 
@@ -110,7 +111,7 @@ class Image
 	*/
 	public function isValid() : bool
 	{
-		return $this->handle->isValid();
+		return $this->driver->isValid();
 	}
 
 	/**
@@ -119,7 +120,7 @@ class Image
 	*/
 	public function getSize() : array
 	{
-		return $this->handle->getSize();
+		return $this->driver->getSize();
 	}
 
 	/**
@@ -128,7 +129,7 @@ class Image
 	*/
 	public function getWidth(): int
 	{
-		return $this->handle->getWidth();
+		return $this->driver->getWidth();
 	}
 
 	/**
@@ -137,7 +138,7 @@ class Image
 	*/
 	public function getHeight(): int
 	{
-		return $this->handle->getHeight();
+		return $this->driver->getHeight();
 	}
 
 	/**
@@ -146,7 +147,7 @@ class Image
 	*/
 	public function getRatio() : float
 	{
-		return $this->handle->getRatio();
+		return $this->driver->getRatio();
 	}
 
 	/**
@@ -155,7 +156,7 @@ class Image
 	*/
 	public function open() : GdImage
 	{
-		return $this->handle->open();
+		return $this->driver->open();
 	}
 
 	/**
@@ -164,9 +165,9 @@ class Image
 	* @param int $height The image's height
 	* @return GdImage
 	*/
-	public function create(int $width, int $height) : GdImage
+	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
-		return $this->handle->create($width, $height);
+		return $this->driver->create($width, $height, $source);
 	}
 
 	/**
@@ -175,7 +176,7 @@ class Image
 	*/
 	public function save(GdImage $img)
 	{
-		return $this->handle->save($img);
+		return $this->driver->save($img);
 	}
 
 	/**
@@ -184,7 +185,7 @@ class Image
 	*/
 	public function optimize() : bool
 	{
-		return $this->handle->optimize();
+		return $this->driver->optimize();
 	}
 
 	/**
@@ -270,6 +271,41 @@ class Image
 
 		$operation = $this->operations->get('convert', $this, $destination, $this->app);
 		$operation->process();
+
+		return $destination;
+	}
+
+	/**
+	* Places a watermark text over an image
+	* @param string $destination The destination's filename
+	* @param string $text The text to place as watermark
+	* @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+	* @return Image The converted image
+	*/
+	public function watermarkText(string $destination, string $text, int $position = 3, array $options = []) : Image
+	{
+		$destination = new static($destination, $options);
+
+		$operation = $this->operations->get('watermark', $this, $destination, $this->app);
+		$operation->applyText($text, $position);
+
+		return $destination;
+	}
+
+	/**
+	* Places a watermark text over an image
+	* @param string $destination The destination's filename
+	* @param string $watermark_image The path of the image which will be used as a watermark
+	* @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+	* @return Image The converted image
+	*/
+	public function watermarkImage(string $destination, string $watermark_image, int $position = 3, array $options = []) : Image
+	{
+		$destination = new static($destination, $options);
+		$watermark = new static($watermark_image);
+
+		$operation = $this->operations->get('watermark', $this, $destination, $this->app);
+		$operation->applyImage($watermark, $position);
 
 		return $destination;
 	}

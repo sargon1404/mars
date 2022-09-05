@@ -79,7 +79,7 @@ class AppBooter
 	*/
 	public function env()
 	{
-		//$this->app->accelerator = new Accelerator($this->app);
+		$this->app->accelerator = new Accelerator($this->app);
 
 		//$this->app->session = new Session($this->app);
 		//$this->app->session->start();

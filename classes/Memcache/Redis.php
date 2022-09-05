@@ -68,13 +68,7 @@ class Redis implements DriverInterface
 	*/
 	public function set(string $key, $value, int $expires = 0) : bool
 	{
-		$ret = $this->handle->set($key, serialize($value));
-
-		if ($expires) {
-			$this->handle->expireAt($key, time() + $expires);
-		}
-
-		return $ret;
+		return $this->add($key, $value, $expires);
 	}
 
 	/**

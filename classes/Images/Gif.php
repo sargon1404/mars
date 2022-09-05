@@ -6,9 +6,9 @@
 
 namespace Mars\Images;
 
+use GdImage;
 use Mars\App;
 use Mars\Images\Image;
-use GdImage;
 
 /**
 * The Gif Image Class
@@ -36,7 +36,7 @@ class Gif extends Image implements DriverInterface
 	* @see \Mars\Images\DriverInterface::open()
 	* {@inheritdoc}
 	*/
-	public function open() : \GdImage
+	public function open() : GdImage
 	{
 		$img = imagecreatefromgif($this->filename);
 		if (!$img) {
@@ -50,10 +50,9 @@ class Gif extends Image implements DriverInterface
 	* @see \Mars\Images\DriverInterface::create()
 	* {@inheritdoc}
 	*/
-	public function create(int $width, int $height) : \GdImage
+	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
-		$source = $this->open();
-		$img = parent::create($width, $height);
+		$img = parent::create($width, $height, $source);
 
 		$originaltransparentcolor = imagecolortransparent($source);
 
@@ -74,6 +73,8 @@ class Gif extends Image implements DriverInterface
 	*/
 	public function save(GdImage $img)
 	{
-		imagegif($img, $this->filename);
+		if (!imagegif($img, $this->filename)) {
+			throw new \Exception("Unable to save image {$this->filename}");
+		}
 	}
 }

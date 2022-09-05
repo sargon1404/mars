@@ -17,7 +17,7 @@ class Text
 	/**
 	* @var Handlers $handlers The handlers object
 	*/
-	public Handlers $handlers;
+	public readonly Handlers $handlers;
 
 	/**
 	* @var array $supported_rules The list of supported rules

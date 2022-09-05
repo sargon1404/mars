@@ -52,6 +52,8 @@ class Webp extends Image implements DriverInterface
 	*/
 	public function save(GdImage $img)
 	{
-		imagewebp($img, $this->filename, $this->quality);
+		if (!imagewebp($img, $this->filename, $this->quality)) {
+			throw new \Exception("Unable to save image {$this->filename}");
+		}
 	}
 }

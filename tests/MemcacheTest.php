@@ -10,11 +10,27 @@ include_once(__DIR__ . '/Base.php');
 */
 final class MemcacheTest extends Base
 {
+	protected $driver = '';
+
+	protected $host = '';
+
+	protected $port = '';
+
 	public function setUp() : void
 	{
 		parent::setUp();
 
 		$this->app->config->memcache_enable = true;
+		$this->driver = $this->app->config->memcache_driver;
+		$this->host = $this->app->config->memcache_host;
+		$this->port = $this->app->config->memcache_port;
+	}
+
+	public function tearDown() : void
+	{
+		$this->app->config->memcache_driver = $this->driver;
+		$this->app->config->memcache_host = $this->host;
+		$this->app->config->memcache_port = $this->port;
 	}
 
 	protected function getKey() : string
@@ -40,59 +56,74 @@ final class MemcacheTest extends Base
 
 	public function testMemcacheConnection()
 	{
-		$memcache = new Memcache($this->app, 'memcache', '127.0.0.1', '11211');
+		$this->app->config->memcache_driver = 'memcache';
 
+		$memcache = new Memcache($this->app);
 		$this->assertTrue($memcache->add($this->getKey(), '12345'));
 	}
 
 	public function testMemcache()
 	{
-		$memcache = new Memcache($this->app, 'memcache', '127.0.0.1', '11211');
+		$this->app->config->memcache_driver = 'memcache';
 
+		$memcache = new Memcache($this->app);
 		$this->runAssertions($memcache);
 	}
 
 	public function testMemcachedConnection()
 	{
-		$memcache = new Memcache($this->app, 'memcached', '127.0.0.1', '11211');
+		$this->app->config->memcache_driver = 'memcached';
 
+		$memcache = new Memcache($this->app);
 		$this->assertTrue($memcache->add($this->getKey(), '12345'));
 	}
 
 	public function testMemcached()
 	{
-		$memcache = new Memcache($this->app, 'memcached', '127.0.0.1', '11211');
+		$this->app->config->memcache_driver = 'memcached';
 
+		$memcache = new Memcache($this->app);
 		$this->runAssertions($memcache);
 	}
 
 	public function testRedisConnection()
 	{
-		$memcache = new Memcache($this->app, 'redis', '127.0.0.1', '6379');
+		$this->app->config->memcache_driver = 'redis';
+		$this->app->config->memcache_port = '6379';
 
+		$memcache = new Memcache($this->app);
 		$this->assertTrue($memcache->add($this->getKey(), '12345'));
 	}
 
 	public function testRedis()
 	{
-		$memcache = new Memcache($this->app, 'redis', '127.0.0.1', '6379');
+		$this->app->config->memcache_driver = 'redis';
+		$this->app->config->memcache_port = '6379';
+
+		$memcache = new Memcache($this->app);
 
 		$this->runAssertions($memcache);
 	}
 
 	/*public function testInvalidMemcacheConnection()
 	{
+		$this->app->config->memcache_driver = 'memcache';
+		$this->app->config->memcache_port = '11312';
+
 		$this->expectNotice();
 		$this->expectWarning();
 		$this->expectException(\Exception::class);
 
-		$invalid_memcache = new Memcache($this->app, 'memcache', '127.0.0.1', '11212');
+		$invalid_memcache = new Memcache($this->app);
 
 		$invalid_memcache->add('test_key', '12345');
 	}*/
 
 	/*public function testInvalidMemcachedConnection()
 	{
+		$this->app->config->memcache_driver = 'memcached'
+		$this->app->config->memcache_port = '11312';
+
 		$this->expectNotice();
 		$this->expectWarning();
 		$this->expectException(\Exception::class);
@@ -104,11 +135,14 @@ final class MemcacheTest extends Base
 
 	public function testInvalidRedisConnection()
 	{
+		$this->app->config->memcache_driver = 'redis';
+		$this->app->config->memcache_port = '11312';
+
 		$this->expectNotice();
 		$this->expectWarning();
 		$this->expectException(\Exception::class);
 
-		$invalid_memcache = new Memcache($this->app, 'redis', '127.0.0.1', '11312');
+		$invalid_memcache = new Memcache($this->app);
 
 		$invalid_memcache->add('test_key', '12345');
 	}

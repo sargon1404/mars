@@ -83,14 +83,6 @@ final class DbTest extends Base
 		$this->assertObjectHasAttributeAndValue('col2', $data['col2'], $row);
 	}
 
-	public function testInvalidConnection()
-	{
-		$this->expectException(\Exception::class);
-
-		$db = new Db($this->app, 'pdo', 'localhost', 3306, 'user', '1234');
-		$db->count('select_test');
-	}
-
 	public function testConnection()
 	{
 		$db = new Db($this->app);

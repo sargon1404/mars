@@ -137,7 +137,10 @@ class App
 
 
 
-
+	/**
+	* @var Accelerator $accelerator The accelerator object
+	*/
+	public Accelerator $accelerator;
 
 	/**
 	* @var Config $config The config object

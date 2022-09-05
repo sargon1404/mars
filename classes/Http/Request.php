@@ -68,6 +68,18 @@ class Request
 	}
 
 	/**
+	* Adds a request header
+	* @param string $header The header to add
+	* @return static
+	*/
+	public function addHeader(string $header) : static
+	{
+		$this->headers[] = $header;
+
+		return $this;
+	}
+
+	/**
 	* Sets the basic curl options [header/useragent/followlocation]
 	* @param array $options Curl options, if any
 	* @return resource The curl handle
@@ -114,7 +126,7 @@ class Request
 	* @param string $request The custom request
 	* @return Response The response
 	*/
-	public function request(string $request) : ?string
+	public function custom(string $request) : Response
 	{
 		$ch = $this->init([CURLOPT_CUSTOMREQUEST => $request]);
 

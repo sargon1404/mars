@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Mail\DriverInterface;
+
 /**
 * The Mail Class
 * The system's mailer object
@@ -13,22 +15,16 @@ namespace Mars;
 class Mail
 {
 	use AppTrait;
-	use DriverTrait;
 
 	/**
-	* @var string $driver The used driver
+	* @var Drivers $drivers The drivers object
 	*/
-	protected string $driver = '';
+	public readonly Drivers $drivers;
 
 	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	* @var DriverInterface $driver The driver object
 	*/
-	protected string $driver_key = 'mail';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Mail\DriverInterface';
+	protected DriverInterface $driver;
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -40,21 +36,12 @@ class Mail
 	/**
 	* Constructs the mail object
 	* @param App $app The app object
-	* @param string $driver The driver to use. phpmailer is currently supported
-	* @param string $host The host to connect to
-	* @param string $port The port to connect to
-	* @param string $key Secret key used to identify the site
 	*/
-	public function __construct(App $app, string $driver = '')
+	public function __construct(App $app)
 	{
 		$this->app = $app;
-
-		if (!$driver) {
-			$driver = $this->app->config->mail_driver;
-		}
-
-		$this->driver = $driver;
-		$this->handle = $this->getHandle();
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
+		$this->driver = $this->drivers->get($this->app->config->mail_driver);
 	}
 
 	/**
@@ -82,20 +69,20 @@ class Mail
 				$from_name = $this->app->config->mail_from_name;
 			}
 
-			$this->handle->setRecipient($to);
-			$this->handle->setSubject($subject);
-			$this->handle->setBody($message, $is_html);
-			$this->handle->setFrom($from, $from_name);
-			$this->handle->setSender($reply_to, $reply_to_name);
+			$this->driver->setRecipient($to);
+			$this->driver->setSubject($subject);
+			$this->driver->setBody($message, $is_html);
+			$this->driver->setFrom($from, $from_name);
+			$this->driver->setSender($reply_to, $reply_to_name);
 
 			if ($attachments) {
-				$this->handle->setAttachments($attachments);
+				$this->driver->setAttachments($attachments);
 			}
 			if ($bcc) {
-				$this->handle->setRecipientBcc($bcc);
+				$this->driver->setRecipientBcc($bcc);
 			}
 
-			$this->handle->send();
+			$this->driver->send();
 
 			$this->app->plugins->run('mail_sent', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
 		} catch (\Exception $e) {

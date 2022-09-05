@@ -295,6 +295,61 @@ class Config extends Data
 	public int $image_webp_quality = 80;
 
 	/**
+	* @var string $image_watermark_background The color of the watermark's background
+	*/
+	public string $image_watermark_background = '000000';
+
+	/**
+	* @var string $image_watermark_opacity The opacity of the watermark
+	*/
+	public string $image_watermark_opacity = '80';
+
+	/**
+	* @var bool $image_watermark_text_ttf If true, will render the watermark text using a ttf font
+	*/
+	public bool $image_watermark_text_ttf = false;
+
+	/**
+	* @var string $image_watermark_text_font The font used to draw the watermark text
+	*/
+	public string $image_watermark_text_font = '5';
+
+	/**
+	* @var string $image_watermark_text_color The color of the watermark text
+	*/
+	public string $image_watermark_text_color = 'ffffff';
+
+	/**
+	* @var int $image_watermark_text_size The size of the watermark text
+	*/
+	public string $image_watermark_text_size = '20';
+
+	/**
+	* @var string $image_watermark_text_angle The angle of the watermark text
+	*/
+	public string $image_watermark_text_angle = '0';
+
+	/**
+	* @var string $image_watermark_padding_top The top/bottom padding of the watermark text
+	*/
+	public string $image_watermark_padding_top = '10';
+
+	/**
+	* @var string $image_watermark_padding_left The left/right padding of the watermark text
+	*/
+	public string $image_watermark_padding_left = '15';
+
+	/**
+	* @var string $image_watermark_margin_top The top/bottom margin of the watermark text
+	*/
+	public string $image_watermark_margin_top = '20';
+
+	/**
+	* @var string $image_watermark_margin_left The left/right margin of the watermark text
+	*/
+	public string $image_watermark_margin_left = '30';
+
+	/**
 	* Builds the Config object
 	* @param App $app The app object
 	*/

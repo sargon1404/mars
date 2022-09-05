@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Accelerators\DriverInterface;
+
 /**
 * The Accelerator Class
 * Handles the interactions with http accelerator - like varnish for example
@@ -13,7 +15,6 @@ namespace Mars;
 class Accelerator
 {
 	use AppTrait;
-	use DriverTrait;
 
 	/**
 	* @var bool $enabled Will be set to true, if enabled
@@ -21,19 +22,14 @@ class Accelerator
 	protected bool $enabled = false;
 
 	/**
-	* @var string $driver The used driver
+	* @var Drivers $drivers The drivers object
 	*/
-	protected string $driver = '';
+	public readonly Drivers $drivers;
 
 	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	* @var DriverInterface $driver The driver object
 	*/
-	protected string $driver_key = 'accelerators';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Accelerators\DriverInterface';
+	protected DriverInterface $driver;
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -55,10 +51,8 @@ class Accelerator
 		}
 
 		$this->enabled = true;
-
-		$this->driver = $this->app->config->accelerator_driver;
-
-		$this->handle = $this->getHandle();
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'accelerators', $this->app);
+		$this->driver = $this->drivers->get($this->app->config->accelerator_driver);
 	}
 
 	/**
@@ -80,7 +74,7 @@ class Accelerator
 			return $this;
 		}
 
-		return $this->handle->delete($url);
+		return $this->driver->delete($url);
 	}
 
 	/**
@@ -94,7 +88,7 @@ class Accelerator
 			return $this;
 		}
 
-		return $this->handle->deleteByPattern($pattern);
+		return $this->driver->deleteByPattern($pattern);
 	}
 
 	/**
@@ -107,6 +101,6 @@ class Accelerator
 			return $this;
 		}
 
-		return $this->handle->deleteAll();
+		return $this->driver->deleteAll();
 	}
 }

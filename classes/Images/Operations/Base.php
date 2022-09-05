@@ -6,9 +6,9 @@
 
 namespace Mars\Images\Operations;
 
+use GdImage;
 use Mars\App;
 use Mars\Image;
-use GdImage;
 
 /**
 * The Base Image Operations Class
@@ -38,8 +38,6 @@ abstract class Base
 		$this->app = $app;
 		$this->source = $source;
 		$this->destination = $destination;
-
-		$this->background_color = $this->app->config->image_background_color;
 	}
 
 	/**
@@ -77,12 +75,12 @@ abstract class Base
 	protected function copyResampled(int $width, int $height, int $source_width, int $source_height, int $source_x, int $source_y, int $destination_width, int $destination_height, int $destination_x, int $destination_y, bool $fill = true)
 	{
 		$source = $this->source->open();
-		$destination = $this->source->create($width, $height);
+		$destination = $this->source->create($width, $height, $source);
 		$options = $this->destination->getOptions();
 
 		//fill the image with the chosen background
 		if ($fill) {
-			$bc = $this->htmlToRgb($options['background_color'] ?? $this->background_color);
+			$bc = $this->htmlToRgb($options['background_color'] ?? $this->app->config->image_background_color);
 
 			imagefill($destination, 0, 0, imagecolorallocate($destination, $bc[0], $bc[1], $bc[2]));
 		}

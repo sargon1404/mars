@@ -6,6 +6,7 @@
 
 namespace Mars\Images;
 
+use GdImage;
 use Mars\App;
 use Mars\Images\Operations\Resize;
 
@@ -72,6 +73,9 @@ abstract class Image
 	public function getSize() : array
 	{
 		$info = getimagesize($this->filename);
+		if (!$info) {
+			throw new \Exception("Unable to get the size of image: {$this->filename}");
+		}
 
 		return [$info[0], $info[1]];
 	}
@@ -83,6 +87,9 @@ abstract class Image
 	public function getWidth(): int
 	{
 		$info = getimagesize($this->filename);
+		if (!$info) {
+			throw new \Exception("Unable to get the size of image: {$this->filename}");
+		}
 
 		return $info[0];
 	}
@@ -94,6 +101,9 @@ abstract class Image
 	public function getHeight(): int
 	{
 		$info = getimagesize($this->filename);
+		if (!$info) {
+			throw new \Exception("Unable to get the size of image: {$this->filename}");
+		}
 
 		return $info[1];
 	}
@@ -113,7 +123,7 @@ abstract class Image
 	* @see \Mars\Images\DriverInterface::create()
 	* {@inheritdoc}
 	*/
-	public function create(int $width, int $height) : \GdImage
+	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
 		return imagecreatetruecolor($width, $height);
 	}
