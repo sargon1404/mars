@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Session\DriverInterface;
+
 /**
 * The Session Class
 * The system's session object
@@ -13,42 +15,21 @@ namespace Mars;
 class Session
 {
 	use AppTrait;
-	use DriverTrait;
 
 	/**
-	* @var string $cookie_name The session cookie's name
+	* @var Drivers $drivers The drivers object
 	*/
-	protected string $cookie_name = '';
+	public readonly Drivers $drivers;
 
 	/**
-	* @var string $cookie_path The session cookie's path
+	* @var DriverInterface $driver The driver object
 	*/
-	protected string $cookie_path = '';
-
-	/**
-	* @var string $cookie_domain The session cookie's domain
-	*/
-	protected string $cookie_domain = '';
-
-	/**
-	* @var string $cookie_domain The session's save path
-	*/
-	protected string $save_path = '';
+	protected DriverInterface $driver;
 
 	/**
 	* @var string $prefix Prefix to apply to all session keys
 	*/
 	protected string $prefix = '';
-
-	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	*/
-	protected string $driver_key = 'session';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Session\DriverInterface';
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -66,61 +47,49 @@ class Session
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->driver = $this->app->config->session_driver;
-		$this->cookie_name = $this->app->config->session_cookie_name;
-		$this->cookie_path = $this->app->config->session_cookie_path;
-		$this->cookie_domain = $this->app->config->session_cookie_domain;
-		$this->save_path = $this->app->config->session_save_path;
-		$this->prefix = $this->app->config->session_prefix;
-		if ($this->prefix) {
-			$this->prefix = $this->prefix . '_';
-		}
 
-		$this->handle = $this->getHandle();
-	}
-
-	/**
-	* Starts the session
-	* @return $this
-	*/
-	public function start()
-	{
-		if ($this->app->is_bin) {
-			return;
-		}
-		if (!$this->app->config->session_start) {
+		if ($this->app->is_bin || !$this->app->config->session_start) {
 			return;
 		}
 		//don't start the session if the http accelerator is enabled
 		if ($this->app->config->accelerator_enable) {
-			//return;
+			return;
 		}
 
-		if ($this->save_path) {
-			session_save_path($this->save_path);
-		}
-
-		if ($this->cookie_path || $this->cookie_domain) {
-			session_set_cookie_params(0, $this->cookie_path, $this->cookie_domain);
-		}
-
-		if ($this->cookie_name) {
-			session_name($this->cookie_name);
-		}
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'session', $this->app);
+		$this->driver = $this->drivers->get($this->app->config->session_driver);
+		$this->prefix = $this->getPrefix();
 
 		session_start();
+	}
 
-		return $this;
+	/**
+	* Returns the session prefix
+	* @return string
+	*/
+	protected function getPrefix() : string
+	{
+		$prefix = $this->app->config->session_prefix;
+
+		if ($prefix) {
+			$prefix = $prefix . '-';
+		}
+
+		return $prefix;
 	}
 
 	/**
 	* Deletes the session cookie
+	* @return static
 	*/
-	public function delete()
+	public function delete() : static
 	{
 		session_unset();
 		session_destroy();
+
+		return $this;
 	}
+
 
 	/**
 	* Returns the session id
@@ -132,22 +101,11 @@ class Session
 	}
 
 	/**
-	* Returns the session prefix
-	* @return string
-	*/
-	public function getPrefix() : string
-	{
-		return $this->prefix;
-	}
-
-	/**
 	* Regenerates the session id
 	* @return string The new session id
 	*/
 	public function regenerateId() : string
 	{
-		$old_id = $this->getId();
-
 		session_regenerate_id();
 
 		return $this->getId();
@@ -183,7 +141,7 @@ class Session
 		$value = $_SESSION[$key];
 
 		if ($unserialize) {
-			return $this->app->serializer->unserialize(data: $value, decode: false);
+			return $this->app->serializer->unserialize($value, [], false);
 		}
 
 		return $value;
@@ -194,9 +152,9 @@ class Session
 	* @param string $name The name of the var
 	* @param mixed $value The value
 	* @param bool $serialize If true, will serialize the value
-	* @return $this
+	* @return static
 	*/
-	public function set(string $name, $value, bool $serialize = false)
+	public function set(string $name, $value, bool $serialize = false) : static
 	{
 		$key = $this->prefix . $name;
 
@@ -212,9 +170,9 @@ class Session
 	/**
 	* Unsets a session value
 	* @param string $name The name of the var
-	* @return $this
+	* @return static
 	*/
-	public function unset(string $name)
+	public function unset(string $name) : static
 	{
 		$key = $this->prefix . $name;
 

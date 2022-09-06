@@ -11,7 +11,7 @@ namespace Mars\Images\Operations;
 */
 class Resize extends Base
 {
-   /**
+	/**
 	* Resizes the image
 	* @param int $width The width of the resized image
 	* @param int $height The height of the resized image

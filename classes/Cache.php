@@ -16,22 +16,12 @@ use Mars\System\Theme;
 class Cache extends Data
 {
 	/**
-	* @internal
-	*/
-	protected bool $serialize = true;
-
-	/**
-	* @internal
-	*/
-	protected bool $serialize_php_driver = false;
-
-	/**
 	* Clears the templates cache
-	* @return $this
+	* @return static
 	*/
-	public function clearTemplates()
+	public function clearTemplates() : static
 	{
-		$this->clearDir($this->app->cache_path . Theme::$DIRS['cache']);
+		$this->clearDir($this->app->cache_path . 'templates');
 
 		return $this;
 	}
@@ -42,6 +32,8 @@ class Cache extends Data
 	*/
 	protected function clearDir($dir)
 	{
+		$dir = App::fixPath($dir);
+
 		$this->app->dir->clean($dir);
 
 		$this->app->file->copy($this->app->path . 'src/index.htm', $dir . 'index.htm');

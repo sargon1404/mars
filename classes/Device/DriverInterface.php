@@ -12,14 +12,9 @@ namespace Mars\Device;
 interface DriverInterface
 {
 	/**
-	* Returns true if the device is a tablet
-	* @return bool
+	* Returns the device's type: desktop,tablet,smartphone
+	* @param string $useragent The useragent. If null, the user's useragent is used
+	* @return string
 	*/
-	public function isTablet() : bool;
-	
-	/**
-	* Returns true if the device is a smartphone
-	* @return bool
-	*/
-	public function isSmartphone() : bool;
+	public function get(string $useragent = null) : string;
 }

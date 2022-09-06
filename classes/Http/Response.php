@@ -105,5 +105,4 @@ class Response
 
 		return $this->info['request_header'];
 	}
-
 }

@@ -11,7 +11,7 @@ namespace Mars\Images\Operations;
 */
 class Cut extends Base
 {
-   /**
+	/**
 	* Cuts a section from an image
 	* @param int $cut_width The width of the cut section
 	* @param int $cut_height The height of the cut section

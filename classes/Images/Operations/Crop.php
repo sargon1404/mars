@@ -11,7 +11,7 @@ namespace Mars\Images\Operations;
 */
 class Crop extends Base
 {
-   /**
+	/**
 	* Crops the image
 	* @param int $width The width of the cropped image
 	* @param int $height The height of the cropped image
@@ -38,7 +38,6 @@ class Crop extends Base
 				$source_x = 0;
 				$source_y = ($source_height - $crop_height) / 2;
 			}
-
 		} else {
 			$crop_width = $source_width;
 			$crop_height = $source_width / $ratio;

@@ -43,7 +43,7 @@ class Parser
 	{
 		$pattern = '/\b(?<!=")(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[A-Z0-9+&@#\/%=~_|](?!.*".*>)(?!.*<\/a>)/i';
 
-		return preg_replace_callback($pattern, function(array $match) {
+		return preg_replace_callback($pattern, function (array $match) {
 			$url = trim($match[0]);
 
 			return $this->app->html->a($url);
@@ -57,13 +57,12 @@ class Parser
 	*/
 	public function parseNofollow(string $text) : string
 	{
-		return preg_replace_callback('/<a(.*)href="(.*)"(.*)>/isU', function(array $match) {
+		return preg_replace_callback('/<a(.*)href="(.*)"(.*)>/isU', function (array $match) {
 			if (str_contains(strtolower($match[1]), 'rel="nofollow"') || str_contains(strtolower($match[3]), 'rel="nofollow"')) {
 				return $match[0];
 			}
 
 			return "<a{$match[1]}href=\"{$match[2]}\"{$match[3]} rel=\"nofollow\">";
-
 		}, $text);
 	}
 }

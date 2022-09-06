@@ -38,6 +38,5 @@ final class TextTest extends Base
 		$this->assertSame($text->parse('some text without links', true, true), 'some text without links');
 		$this->assertSame($text->parse('some text with a link: https://www.mydomain.com', true, true), 'some text with a link: <a href="https://www.mydomain.com" rel="nofollow">https://www.mydomain.com</a>');
 		$this->assertSame($text->parse('some text with a link: https://www.mydomain.com and another link: https://somedomain.com', true, true), 'some text with a link: <a href="https://www.mydomain.com" rel="nofollow">https://www.mydomain.com</a> and another link: <a href="https://somedomain.com" rel="nofollow">https://somedomain.com</a>');
-
 	}
 }

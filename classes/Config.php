@@ -90,14 +90,24 @@ class Config extends Data
 	public string $serializer_driver = 'php';
 
 	/**
-	* @var bool $device_start If false, will not start the device detection functionality
+	* @var string $session_driver The session driver. Supported options: php, memcache, db
 	*/
-	public bool $device_start = true;
+	public string $session_driver = 'php';
 
 	/**
 	* @var bool $session_start If false, will not start the session functionality
 	*/
 	public bool $session_start = true;
+
+	/**
+	* @var string $session_table The table where sessions are stored if the session_driver=db
+	*/
+	public string $session_table = 'sessions';
+
+	/**
+	* @var string $session_prefix Prefix to apply to all session keys
+	*/
+	public string $session_prefix = '';
 
 	/**
 	* @var string $session_save_path The path where the sessions will be saved
@@ -140,19 +150,24 @@ class Config extends Data
 	public ?string $session_cookie_samesite = null;
 
 	/**
-	* @var string $session_driver The session driver. Supported options: php, db, memcache
+	* @var string $device_driver The device detector driver. Supported options: mobile_detect
 	*/
-	public string $session_driver = 'php';
+	public string $device_driver = 'mobile_detect';
 
 	/**
-	* @var string $session_driver The table where sessions are stored if the session_driver=db
+	* @var bool $accelerator_enable If false, will not start the device detection functionality
 	*/
-	public string $session_table = 'php';
+	public bool $accelerator_enable = false;
 
 	/**
-	* @var string $session_prefix Prefix to apply to all session keys
+	* @var string $accelerator_driver The accelerator driver. Supported options: varnish
 	*/
-	public string $session_prefix = '';
+	public string $accelerator_driver = 'varnish';
+
+	/**
+	* @var bool $device_start If false, will not start the device detection functionality
+	*/
+	public bool $device_start = true;
 
 	/**
 	* @var int $cookie_expire_days The interval, in days, for which the cookies will be valid

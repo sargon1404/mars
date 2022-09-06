@@ -309,5 +309,4 @@ class Image
 
 		return $destination;
 	}
-
 }

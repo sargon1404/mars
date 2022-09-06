@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Device\DriverInterface;
+
 /**
 * The Device Class
 * Encapsulates the user's device
@@ -13,33 +15,21 @@ namespace Mars;
 class Device
 {
 	use AppTrait;
-	use DriverTrait;
+
+	/**
+	* @var Drivers $drivers The drivers object
+	*/
+	public readonly Drivers $drivers;
 
 	/**
 	* @var string $type The device type. Eg: desktop/tablet/smartphone
 	*/
-	public string $type = 'desktop';
+	public readonly string $type;
 
 	/**
 	* @var string $devices Array listing the supported devices
 	*/
-	public array $devices = ['desktop', 'tablet', 'smartphone'];
-
-	/**
-	* @var string $driver The name of the driver
-	*/
-	protected string $driver = 'mobile_detect';
-
-	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	*/
-	protected string $driver_key = 'device';
-
-	/**
-	* @var string $driver_interface The interface the driver must implement
-	*/
-	protected string $driver_interface = '\Mars\Device\DriverInterface';
-
+	public readonly array $devices;
 
 	/**
 	* @var array $supported_drivers The supported drivers
@@ -56,9 +46,12 @@ class Device
 	{
 		$this->app = $app;
 
-		if (!$this->app->config->device_start) {
+		if (!$this->app->config->device_start || $this->app->is_bin) {
 			return;
 		}
+
+		$this->devices = ['desktop', 'tablet', 'smartphone'];
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'device', $this->app);
 
 		$this->type = $this->getDevice();
 	}
@@ -70,6 +63,38 @@ class Device
 	public function get() : string
 	{
 		return $this->type;
+	}
+
+	/**
+	* Detects the user's device
+	* @return string The user's device
+	*/
+	protected function getDevice() : string
+	{
+		if ($this->app->config->development_device) {
+			return $this->app->config->development_device;
+		}
+
+		$device = $this->app->session->get('device');
+		if ($device !== null) {
+			return $device;
+		}
+
+		//do we get the device name from varnish?
+		if (isset($_SERVER['X-Device'])) {
+			if (in_array($_SERVER['X-Device'], $this->devices)) {
+				$device = $_SERVER['X-Device'];
+			}
+		}
+
+		if (!$device) {
+			$driver = $this->drivers->get($this->app->config->device_driver);
+			$device = $driver->get();
+		}
+
+		$this->app->session->set('device', $device);
+
+		return $device;
 	}
 
 	/**
@@ -122,104 +147,5 @@ class Device
 		}
 
 		return false;
-	}
-
-	/**
-	* Detects the user's device
-	* @return string The user's device
-	*/
-	public function getDevice() : string
-	{
-		if ($this->app->config->development_device) {
-			return $this->app->config->development_device;
-		}
-
-		$device = $this->app->session->get('device');
-		if ($device !== null) {
-			return $device;
-		}
-
-		//do we get the device name from varnish?
-		if (isset($_SERVER['X-Device'])) {
-			if (in_array($_SERVER['X-Device'], $this->devices)) {
-				$device = $_SERVER['X-Device'];
-			}
-		}
-
-		if (!$device) {
-			$detector = $this->getHandle();
-
-			$device = 'desktop';
-			if ($detector->isTablet()) {
-				$device = 'tablet';
-			} elseif ($detector->isSmartphone()) {
-				$device = 'smartphone';
-			}
-		}
-
-		$this->app->session->set('device', $device);
-
-		return $device;
-	}
-
-	/**
-	* Returns the device dir [desktop|tablets|smartphones], based on the current device
-	* @param string $device If specified, will use $device instead of the current device
-	* @return string
-	*/
-	public function getDir(?string $device = null) : string
-	{
-		if ($device === null) {
-			$device = $this->type;
-		}
-
-		switch ($device) {
-			case 'tablet':
-				return App::MOBILE_DIRS['tablets'];
-			case 'smartphone':
-				return App::MOBILE_DIRS['smartphones'];
-			default:
-				return App::MOBILE_DIRS['desktop'];
-		}
-	}
-
-	/**
-	* Returns the device subdir [mobile|mobile/tablets|mobile/smartphones], based on the current device
-	* @param string $device If specified, will use $device instead of the current device
-	* @return string
-	*/
-	public function getSubdir(?string $device = null) : string
-	{
-		if ($device === null) {
-			$device = $this->type;
-		}
-
-		switch ($device) {
-			case 'mobile':
-				return App::MOBILE_DIRS['mobile'];
-			case 'tablet':
-				return App::MOBILE_DIRS['mobile'] . App::MOBILE_DIRS['tablets'];
-			case 'smartphone':
-				return App::MOBILE_DIRS['mobile'] . App::MOBILE_DIRS['smartphones'];
-			default:
-				return '';
-		}
-	}
-
-	/**
-	* Returns the list of supported devices
-	* @param bool $add_mobile If true, will add 'mobile' as a device list
-	* @return array The list of devices
-	*/
-	public function getDevices(bool $add_mobile = false) : array
-	{
-		if ($add_mobile) {
-			$devices = $this->devices;
-			$devices[] = 'mobile';
-
-			return $devices;
-		}
-
-		return $this->devices;
 	}
 }

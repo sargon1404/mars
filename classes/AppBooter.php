@@ -80,15 +80,12 @@ class AppBooter
 	public function env()
 	{
 		$this->app->accelerator = new Accelerator($this->app);
-
-		//$this->app->session = new Session($this->app);
-		//$this->app->session->start();
-
-		//$this->app->device = new Device($this->app);
+		$this->app->session = new Session($this->app);
+		$this->app->device = new Device($this->app);
 		$this->app->request = new Request($this->app);
-		//$this->app->response = new Response($this->app);
-		//$this->app->cache = new Cache($this->app);
-		//$this->app->registry = new Registry($this->app);
+		$this->app->response = new Response($this->app);
+		$this->app->cache = new Cache($this->app);
+		$this->app->registry = new Registry($this->app);
 	}
 
 	/**

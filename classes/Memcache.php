@@ -159,7 +159,7 @@ class Memcache
 	public function set(string $key, $value, bool $serialize = false, int $expires = 0) : bool
 	{
 		if (!$this->enabled) {
-			return $this;
+			return false;
 		}
 		if (!$this->connected) {
 			$this->connect();
@@ -222,7 +222,7 @@ class Memcache
 	public function delete(string $key) : bool
 	{
 		if (!$this->enabled) {
-			return $this;
+			return false;
 		}
 		if (!$this->connected) {
 			$this->connect();
@@ -233,8 +233,9 @@ class Memcache
 
 	/**
 	* Deletes all keys from the memcache server
+	* @return static
 	*/
-	public function deleteAll()
+	public function deleteAll() : static
 	{
 		if (!$this->enabled) {
 			return $this;

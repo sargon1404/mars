@@ -38,6 +38,6 @@ class Registry
 	*/
 	public function get($key)
 	{
-		return $this->data[$key];
+		return $this->data[$key] ?? null;
 	}
 }

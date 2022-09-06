@@ -56,7 +56,7 @@ class Png extends Image implements DriverInterface
 	*/
 	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
-		$img = parent::create($width, $height);
+		$img = parent::create($width, $height, $source);
 
 		imagealphablending($img, false);
 		imagesavealpha($img, true);

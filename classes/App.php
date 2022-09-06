@@ -163,6 +163,11 @@ class App
 	public Db $db;
 
 	/**
+	* @var Device $device The device object
+	*/
+	public Device $device;
+
+	/**
 	* @var Dir $dir The dir object
 	*/
 	public Dir $dir;
@@ -226,6 +231,16 @@ class App
 	* @var Random $random The random object
 	*/
 	public Random $random;
+
+	/**
+	* @var Registry $registry The registry object
+	*/
+	public Registry $registry;
+
+	/**
+	* @var Response $response The response object
+	*/
+	public Response $response;
 
 	/**
 	* @var Request $request The request object

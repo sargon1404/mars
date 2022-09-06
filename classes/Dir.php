@@ -249,8 +249,6 @@ class Dir
 				throw new \Exception(App::__('dir_error_delete', ['{DIR}' => $dir]));
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -263,5 +261,29 @@ class Dir
 		$this->app->plugins->run('dir_clean', $dir, $this);
 
 		$this->delete($dir, false);
+	}
+
+	/**
+	* Deletes expired files from a dir
+	* @param string $dir The name of the folder
+	* @param int $expires The threshold timestamp
+	* @throws Exception if the dir can't be deleted
+	*/
+	public function cleanExpired(string $dir, int $expires)
+	{
+		$this->app->plugins->run('dir_clean_old_files', $dir, $this);
+
+		$this->checkFilename($dir);
+
+		$iterator = $this->getIterator($dir, flag: \RecursiveIteratorIterator::CHILD_FIRST);
+		foreach ($iterator as $file) {
+			if ($file->isFile()) {
+				if ($file->getCTime() <= $expires) {
+					if (!unlink($file->getPathname())) {
+						throw new \Exception(App::__('file_error_delete', ['{FILE}' => $file->getPathname()]));
+					}
+				}
+			}
+		}
 	}
 }

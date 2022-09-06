@@ -14,51 +14,32 @@ use Mars\App;
 */
 class MobileDetect implements DriverInterface
 {
-	/**
-	* @var string $useragent The useragent to use
-	*/
-	public string $useragent = '';
+	use \Mars\AppTrait;
 
 	/**
 	* Builds the Device object
 	* @param App $app The app object
 	*/
-	public function __construct(App $app)
+	public function __construct(App $app = null)
 	{
-		$this->useragent = $app->useragent;
+		$this->app = $app ?? $this->getApp();
 	}
 
 	/**
-	* Inits the handle
+	* @see \Mars\Device\DriverInterface::get()
+	* {@inheritdoc}
 	*/
-	protected function init()
+	public function get(string $useragent = null) : string
 	{
-		if ($this->handle) {
-			return;
+		$useragent = $useragent ?? $this->app->useragent;
+		$handle = new \Mobile_Detect(null, $useragent);
+
+		if ($handle->isTablet()) {
+			return 'tablet';
+		} elseif ($handle->isMobile()) {
+			return 'smartphone';
 		}
 
-		$this->handle = new \Mobile_Detect(null, $this->useragent);
-	}
-
-	/**
-	* Returns true if the device is a tablet
-	* @return bool
-	*/
-	public function isTablet() : bool
-	{
-		$this->init();
-
-		return $this->handle->isTablet();
-	}
-
-	/**
-	* Returns true if the device is a smartphone
-	* @return bool
-	*/
-	public function isSmartphone() : bool
-	{
-		$this->init();
-
-		return $this->handle->isMobile();
+		return 'desktop';
 	}
 }

@@ -43,8 +43,9 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	* @see \SessionHandler::open()
 	* @param string $save_path The save path
 	* @param string $session_name The session name
+	 @return bool
 	*/
-	public function open($save_path, $session_name)
+	public function open(string $save_path, string $session_name) : bool
 	{
 		return true;
 	}
@@ -52,8 +53,9 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	/**
 	* Closes the session
 	* @see \SessionHandler::close()
+	* @return bool
 	*/
-	public function close()
+	public function close() : bool
 	{
 		return true;
 	}
@@ -62,8 +64,9 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	* Reads the session data
 	* @see \SessionHandler::read()
 	* @param string $id The session id
+	* @return string|false
 	*/
-	public function read($id)
+	public function read($id) : string|false
 	{
 		$data = $this->app->memcache->get("session-{$id}");
 		if (!$data) {
@@ -78,32 +81,31 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	* @see \SessionHandler::write()
 	* @param string $id The session id
 	* @param string $data The data
+	* @return bool
 	*/
-	public function write($id, $data)
+	public function write($id, $data) :  bool
 	{
-		$this->app->memcache->set("session-{$id}", $data, false, $this->lifetime);
-
-		return true;
+		return $this->app->memcache->set("session-{$id}", $data, false, $this->lifetime);
 	}
 
 	/**
 	* Destroy the session data
 	* @see \SessionHandler::destroy()
 	* @param string $id The session id
+	* @return bool
 	*/
-	public function destroy($id)
+	public function destroy($id) : bool
 	{
-		$this->app->memcache->delete("session-{$id}");
-
-		return true;
+		return $this->app->memcache->delete("session-{$id}");
 	}
 
 	/**
 	* Deletes expired sessions
 	* @see \SessionHandler::gc()
 	* @param int $maxlifetime The max lifetime
+	* @return int|false
 	*/
-	public function gc($maxlifetime)
+	public function gc($maxlifetime) : int|false
 	{
 		return true;
 	}
@@ -112,8 +114,9 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	* Checks if a session identifier already exists or not
 	* @see \SessionUpdateTimestampHandlerInterface::valideId()
 	* @param string $id The session id
+	* @return bool
 	*/
-	public function validateId($id)
+	public function validateId($id) : bool
 	{
 		return $this->app->memcache->exists("session-{$id}");
 	}
@@ -123,8 +126,9 @@ class Memcache implements DriverInterface, \SessionHandlerInterface, \SessionUpd
 	* @see \SessionUpdateTimestampHandlerInterface::updateTimestamp()
 	* @param string $id The session id
 	* @param string $data The data
+	* @return bool
 	*/
-	public function updateTimestamp($id, $data)
+	public function updateTimestamp(string $id, string $data) : bool
 	{
 		$this->write($id, $data);
 

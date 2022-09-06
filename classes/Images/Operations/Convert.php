@@ -11,7 +11,7 @@ namespace Mars\Images\Operations;
 */
 class Convert extends Base
 {
-   /**
+	/**
 	* Converts the image
 	*/
 	public function process()

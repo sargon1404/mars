@@ -75,5 +75,4 @@ class Drivers extends HandlersList
 
 		return $handle;
 	}
-
 }

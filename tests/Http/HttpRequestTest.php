@@ -63,5 +63,4 @@ final class HttpRequestTest extends Base
 
 		unlink($filename);
 	}
-
 }

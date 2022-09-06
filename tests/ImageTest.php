@@ -49,7 +49,7 @@ final class ImageTest extends Base
 		$this->assertSame($resized_image->getFilename(), $this->images_dir . 'image-resized.jpg');
 		$this->assertTrue(is_file($resized_image->getFilename()));
 		$this->assertTrue($resized_image->isValid());
-		$this->assertSame($resized_image->getSize(), [(int) (400 * $image->getRatio()), 400] );
+		$this->assertSame($resized_image->getSize(), [(int) (400 * $image->getRatio()), 400]);
 		unlink($resized_image->getFilename());
 
 
@@ -58,14 +58,14 @@ final class ImageTest extends Base
 		$this->assertSame($cropped_image->getFilename(), $this->images_dir . 'image-cropped.jpg');
 		$this->assertTrue(is_file($cropped_image->getFilename()));
 		$this->assertTrue($cropped_image->isValid());
-		$this->assertSame($cropped_image->getSize(), [400, 200] );
+		$this->assertSame($cropped_image->getSize(), [400, 200]);
 		unlink($cropped_image->getFilename());
 
 		$cropped_image = $image->crop($this->images_dir . 'image-cropped.jpg', 200, 400);
 		$this->assertSame($cropped_image->getFilename(), $this->images_dir . 'image-cropped.jpg');
 		$this->assertTrue(is_file($cropped_image->getFilename()));
 		$this->assertTrue($cropped_image->isValid());
-		$this->assertSame($cropped_image->getSize(), [200, 400] );
+		$this->assertSame($cropped_image->getSize(), [200, 400]);
 		unlink($cropped_image->getFilename());
 
 
@@ -74,14 +74,14 @@ final class ImageTest extends Base
 		$this->assertSame($cropped_image->getFilename(), $this->images_dir . 'image-cut.jpg');
 		$this->assertTrue(is_file($cropped_image->getFilename()));
 		$this->assertTrue($cropped_image->isValid());
-		$this->assertSame($cropped_image->getSize(), [400, 200] );
+		$this->assertSame($cropped_image->getSize(), [400, 200]);
 		unlink($cropped_image->getFilename());
 
 		$cropped_image = $image->cut($this->images_dir . 'image-cut.jpg', 200, 400);
 		$this->assertSame($cropped_image->getFilename(), $this->images_dir . 'image-cut.jpg');
 		$this->assertTrue(is_file($cropped_image->getFilename()));
 		$this->assertTrue($cropped_image->isValid());
-		$this->assertSame($cropped_image->getSize(), [200, 400] );
+		$this->assertSame($cropped_image->getSize(), [200, 400]);
 		unlink($cropped_image->getFilename());
 
 
