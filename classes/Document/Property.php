@@ -20,9 +20,9 @@ abstract class Property
 	/**
 	* Sets the value of the property
 	* @param string $value The new value
-	* @return $this
+	* @return static
 	*/
-	public function set(string $value)
+	public function set(string $value) : static
 	{
 		$this->value = $value;
 

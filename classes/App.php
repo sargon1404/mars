@@ -129,23 +129,9 @@ class App
 	public readonly string $extensions_url;
 
 	/**
-	* @var string $content The system's generated content
-	*/
-	public string $content = '';
-
-
-
-
-
-	/**
 	* @var Accelerator $accelerator The accelerator object
 	*/
 	public Accelerator $accelerator;
-
-	/**
-	* @var Config $config The config object
-	*/
-	public Config $config;
 
 	/**
 	* @var Cache $cache The cache object
@@ -156,6 +142,11 @@ class App
 	* @var Caching $caching The caching object
 	*/
 	public Caching $caching;
+
+	/**
+	* @var Config $config The config object
+	*/
+	public Config $config;
 
 	/**
 	* @var Db $db The Db object
@@ -171,6 +162,11 @@ class App
 	* @var Dir $dir The dir object
 	*/
 	public Dir $dir;
+
+	/**
+	* @var Document $document The document object
+	*/
+	public Document $document;
 
 	/**
 	* @var Escape $escape The escape object
@@ -446,6 +442,7 @@ class App
 		}
 
 		$this->config->normalize();
+		$this->development = $this->config->development;
 	}
 
 	/**
@@ -454,7 +451,6 @@ class App
 	public function boot2()
 	{
 		$this->setUrls();
-		$this->setDevelopment();
 	}
 
 	/**
@@ -566,21 +562,6 @@ class App
 		$this->assignUrls(static::URLS);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	* Returns the static url of a dir
 	* @param string $url The url key as defined in App::URLS
@@ -590,20 +571,6 @@ class App
 	{
 		return $this->url_static . static::URLS[$url] . '/';
 	}
-
-
-
-	/**
-	* Sets the development property
-	*/
-	protected function setDevelopment()
-	{
-		if ($this->config->development) {
-			$this->development = true;
-		}
-	}
-
-
 
 	/**
 	* Returns the user's IP
@@ -676,11 +643,6 @@ class App
 		return false;
 	}
 
-
-
-
-
-
 	/**
 	* Assigns the dirs as app properties
 	* @param array $dirs The dirs to assign
@@ -719,23 +681,65 @@ class App
 	}
 
 
+	/**
+	* Calls gzencode on $content
+	* @param string $content The content to gzip
+	* return string The gzipped content
+	*/
+	public function gzip(string $content) : string
+	{
+		return gzencode($content);
+	}
+
+	/**
+	* Starts the output buffering.
+	*/
+	public function start()
+	{
+		$this->plugins->run('app_start', $this);
+
+		ob_start();
+	}
+
+	/**
+	* End the output and sets $this->app->content
+	*/
+	public function end()
+	{
+		$content = ob_get_clean();
+
+		$this->plugins->run('app_end1', $this);
+
+		if ($this->config->debug) {
+			$this->timer->start('app_output_content');
+		}
+
+		//grab the content template first
+		ob_start();
+		$this->theme->renderContent();
+		$content = ob_get_clean();
+	}
+
+	/**
+	* Returns true if no errors have been generated
+	* @return bool
+	*/
+	public function ok() : bool
+	{
+		if ($this->errors->count()) {
+			return false;
+		}
+
+		return true;
+	}
+
+
 
 	/**
 	* Outputs the app's content
 	*/
 	public function output()
 	{
-		if ($this->config->debug) {
-			$this->timer->start('app_output_content');
-		}
-
-		$this->plugins->run('app_output_start', $this);
-
-		//grab the content template first
-		ob_start();
-		$this->theme->renderContent();
-		$content = ob_get_clean();
-
 		$content = $this->plugins->filter('app_output_filter_content', $content, $this);
 
 		ob_start();
@@ -837,46 +841,6 @@ class App
 		return $this;
 	}
 
-	/*********************************************************************************/
-
-	/**
-	* Calls gzencode on $content
-	* @param string $content The content to gzip
-	* return string The gzipped content
-	*/
-	public function gzip(string $content) : string
-	{
-		return gzencode($content);
-	}
-
-	/**
-	* Starts the output buffering.
-	*/
-	public function start()
-	{
-		ob_start();
-	}
-
-	/**
-	* End the output and sets $this->app->content
-	*/
-	public function end()
-	{
-		$this->content = ob_get_clean();
-	}
-
-	/**
-	* Returns true if no errors have been generated
-	* @return bool
-	*/
-	public function ok() : bool
-	{
-		if ($this->errors->count()) {
-			return false;
-		}
-
-		return true;
-	}
 
 	/**********************MESSAGING FUNCTIONS***************************************/
 
@@ -947,45 +911,6 @@ class App
 		}
 
 		header('Location: ' . $url);
-		die;
-	}
-
-	/********************** DEBUG FUNCTIONS ***************************************/
-
-	/**
-	* Does a print_r on $var and outputs <pre> tags
-	* @param mixed $var The variable
-	* @param bool $die If true, will call die after
-	*/
-	public static function pp($var, bool $die = true)
-	{
-		echo '<pre>';
-		\print_r($var);
-		echo '</pre>';
-
-		if ($die) {
-			die;
-		}
-	}
-
-	/**
-	* Alias for dd
-	* @see App::pp()
-	*/
-	public static function dd($var, bool $die = true)
-	{
-		static::pp($var, $die);
-	}
-
-	/**
-	* Prints the debug backtrace
-	*/
-	public static function backtrace()
-	{
-		echo '<pre>';
-		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		echo '</pre>';
-
 		die;
 	}
 }

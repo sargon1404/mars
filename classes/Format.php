@@ -48,6 +48,8 @@ class Format
 		'percentage' => '\Mars\Formats\Percentage',
 		'filesize' => '\Mars\Formats\Filesize',
 		'time_interval' => '\Mars\Formats\TimeInterval',
+		'js_array' => '\Mars\Formats\JsArray',
+		'js_object' => '\Mars\Formats\JsObject',
 	];
 
 	/**
@@ -186,5 +188,29 @@ class Format
 	public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
 		return $this->handlers->getMultiValue($seconds, 'time_interval', $separator1, $separator2);
+	}
+
+	/**
+	* Returns a javascript array from $data
+	* @param array $data The data to convert to a javascript array
+	* @param bool $quote If true will put quotes around the array's elements
+	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
+	* @return string The javascript array
+	*/
+	public function jsArray(array $data, bool $quote = true, array $dont_quote_array = []) : string
+	{
+		return $this->handlers->getValue('js_array', $data, $quote, $dont_quote_array);
+	}
+
+	/**
+	* Returns a javascript object from $data
+	* @param array|object $data The data to convert to a javascript object
+	* @param bool $quote If true will put quotes around the array's elements
+	* @param array $dont_quote_array If $quote is true, will NOT quote the elements with the keys found in this array
+	* @return string The javascript object
+	*/
+	public function jsObject(array|object$data, bool $quote = true, array $dont_quote_array = [])
+	{
+		return $this->handlers->getValue('js_object', $data, $quote, $dont_quote_array);
 	}
 }

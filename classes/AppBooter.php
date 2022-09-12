@@ -93,14 +93,10 @@ class AppBooter
 	*/
 	public function document()
 	{
-		/*$this->app->title = new Document\Title;
-		$this->app->meta = new Document\Meta;
+		$this->document = new Document($this->app);
 
-		$this->app->css = new Document\Css($this->app);
-		$this->app->javascript = new Document\Javascript($this->app);
-		$this->app->rss = new Document\Rss;
 
-		$this->app->errors = new Alerts\Errors;
+		/*$this->app->errors = new Alerts\Errors;
 		$this->app->messages = new Alerts\Messages;
 		$this->app->warnings = new Alerts\Warnings;
 		$this->app->notifications = new Alerts\Notifications;*/

@@ -64,4 +64,22 @@ final class FormatTest extends Base
 		$this->assertEquals($format->timeInterval(181), '3 minutes, 1 second');
 		$this->assertEquals($format->timeInterval(56790), '15 hours, 46 minutes, 30 seconds');
 	}
+
+	public function testJsArray()
+	{
+		$format = $this->app->format;
+
+		$this->assertSame($format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123]), "['b\'ar','baz','123']");
+		$this->assertSame($format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], false), "[b\\'ar,baz,123]");
+		$this->assertSame($format->jsArray(['foo' => "b'ar", 'faz' => 'baz', 'zzz' => 123], true, ['zzz']), "['b\'ar','baz',123]");
+	}
+
+	public function testJsObject()
+	{
+		$format = $this->app->format;
+
+		$this->assertSame($format->jsObject(['foo' => "bar", 'faz' => 'baz', 'zzz' => 123, 'arr' => ['p1' => 'v1', 'p2' => 'v2']]), "{foo: 'bar', faz: 'baz', zzz: '123', arr: ['v1','v2']}");
+		$this->assertSame($format->jsObject(['foo' => "bar", 'faz' => 'baz', 'zzz' => 123, 'arr' => ['p1' => 'v1', 'p2' => 'v2']], false), "{foo: bar, faz: baz, zzz: 123, arr: [v1,v2]}");
+		$this->assertSame($format->jsObject(['foo' => "bar", 'faz' => 'baz', 'zzz' => 123, 'arr' => ['p1' => 'v1', 'p2' => 'v2']], true, ['zzz', 'p2']), "{foo: 'bar', faz: 'baz', zzz: 123, arr: ['v1',v2]}");
+	}
 }

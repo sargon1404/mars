@@ -6,7 +6,7 @@
 
 namespace Mars;
 
-use Mars\Response\DriverInterface;
+use Mars\Response\Types\DriverInterface;
 
 /**
 * The Response Class
@@ -15,24 +15,28 @@ use Mars\Response\DriverInterface;
 class Response
 {
 	use AppTrait;
-	use DriverTrait;
 
 	/**
-	* @var string $driver_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	* @var Drivers $drivers The drivers object
 	*/
-	protected string $driver_key = 'response';
+	public readonly Drivers $drivers;
 
 	/**
-	* @var string $driver_interface The interface the driver must implement
+	* @var string $type The response's type
 	*/
-	protected string $driver_interface = '\Mars\Response\DriverInterface';
+	public readonly string $type;
+
+	/**
+	* @var DriverInterface $driver The driver object
+	*/
+	protected DriverInterface $driver;
 
 	/**
 	* @var array $supported_drivers The supported drivers
 	*/
 	protected array $supported_drivers = [
-		'ajax' => '\Mars\Response\Ajax',
-		'html' => '\Mars\Response\Html'
+		'ajax' => '\Mars\Response\Types\Ajax',
+		'html' => '\Mars\Response\Types\Html'
 	];
 
 	/**
@@ -42,18 +46,20 @@ class Response
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->driver = $this->getDriver();
-
-		$this->handle = $this->getHandle();
+		$this->type = $this->getType();
+		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'response', $this->app);
+		$this->driver = $this->drivers->get($this->type);
+		$this->headers = new \Mars\Response\Headers($this->app);
+		$this->cookies = new \Mars\Response\Cookies($this->app);
 	}
 
 	/**
-	* Returns the name of the driver to use
+	* Returns the type of the respponse to send
 	* @return string
 	*/
-	protected function getDriver() : string
+	protected function getType() : string
 	{
-		$driver = $this->app->request->getResponse();
+		$driver = $this->app->request->getType();
 
 		switch ($driver) {
 			case 'ajax':
@@ -69,7 +75,7 @@ class Response
 	*/
 	public function isAjax() : bool
 	{
-		if ($this->driver == 'ajax') {
+		if ($this->type == 'ajax') {
 			return true;
 		}
 
@@ -81,7 +87,7 @@ class Response
 	*/
 	public function isHtml() : bool
 	{
-		if ($this->driver == 'html') {
+		if ($this->type == 'html') {
 			return true;
 		}
 
@@ -95,6 +101,6 @@ class Response
 	*/
 	public function output(string $content = '', array $data = [])
 	{
-		$this->handle->output($content, $data);
+		$this->driver->output($content, $data);
 	}
 }

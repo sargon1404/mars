@@ -212,4 +212,43 @@ trait AppUtilsTrait
 	{
 		return str_pad($number, 2, '0', STR_PAD_LEFT);
 	}
+
+	/********************** DEBUG FUNCTIONS ***************************************/
+
+	/**
+	* Does a print_r on $var and outputs <pre> tags
+	* @param mixed $var The variable
+	* @param bool $die If true, will call die after
+	*/
+	public static function pp($var, bool $die = true)
+	{
+		echo '<pre>';
+		\print_r($var);
+		echo '</pre>';
+
+		if ($die) {
+			die;
+		}
+	}
+
+	/**
+	* Alias for dd
+	* @see App::pp()
+	*/
+	public static function dd($var, bool $die = true)
+	{
+		static::pp($var, $die);
+	}
+
+	/**
+	* Prints the debug backtrace
+	*/
+	public static function backtrace()
+	{
+		echo '<pre>';
+		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		echo '</pre>';
+
+		die;
+	}
 }

@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Response;
+namespace Mars\Response\Types;
 
 /**
 * The Html Response Class

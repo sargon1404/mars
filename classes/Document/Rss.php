@@ -16,25 +16,33 @@ class Rss extends Tags
 	* Outputs a rss tag
 	* @param string $url The url of the rss file.
 	* @param string $title The title of the feed
-	* @return $this
+	* @return static
 	*/
-	public function outputTag(string $url, string $title)
+	public function outputTag(string $url, string $title) : static
 	{
-		echo '<link rel="alternate" type="application/rss+xml" title="' . $this->app->escape->html($title) . '" href="' . $this->app->escape->html($url) . '" />' . "\n";
+		echo '<link rel="alternate" type="application/rss+xml" title="' . $this->app->escape->html($title) . '" href="' . $this->app->escape->html($url) . '">' . "\n";
 
 		return $this;
 	}
 
 	/**
-	* Loads $rss_url as a rss
+	* Loads a rss url
 	* @param string $url The url of the rss file.
 	* @param string $title The title of the feed
-	* @return $this
+	* @return static
 	*/
-	public function add(string $url, string $title)
+	public function load(string $url, string $title) : static
 	{
-		parent::add($url, $title);
+		return $this->add($url, $title);
+	}
 
-		return $this;
+	/**
+	* Unloads a rss url
+	* @param string $url The url of the rss file.
+	* @return static
+	*/
+	public function unload(string $url) : static
+	{
+		return $this->remove($url);
 	}
 }

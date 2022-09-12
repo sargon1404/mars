@@ -1,18 +1,18 @@
 <?php
 /**
-* The COOKIE Request Class
+* The Cookie Response Class
 * @package Mars
 */
 
-namespace Mars\Request;
+namespace Mars\Response;
 
 use Mars\App;
 
 /**
-* The COOKIE Request Class
-* Handles the $_COOKIE interactions
+* The Cookie Response Class
+* Handles the setting/removing cookies
 */
-class Cookie extends Base
+class Cookies
 {
 	use \Mars\AppTrait;
 
@@ -42,14 +42,12 @@ class Cookie extends Base
 	public bool $httponly = true;
 
 	/**
-	* Builds the Cookie Request object
+	* Builds the Cookie object
 	* @param App $app The app object
 	*/
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-
-		$this->data = $_COOKIE;
 
 		$this->expires = time() + 3600 * 24 * $this->app->config->cookie_expire_days;
 		$this->path = $this->app->config->cookie_path;
@@ -68,7 +66,7 @@ class Cookie extends Base
 	* @param bool $secure If true, the cookie will only be set over a https connection
 	* @param bool $httponly If true the cookie is accesible only over http and not with javascript
 	* @param bool $encode If true will encode the data
-	* @return $this
+	* @return static
 	*/
 	public function set(string $name, $data, ?int $expires = null, ?string $path = null, ?string $domain = null, bool $secure = null, bool $httponly = null, bool $encode = true) : static
 	{
@@ -82,8 +80,6 @@ class Cookie extends Base
 		$secure = $secure ?? $this->secure;
 		$httponly = $httponly ?? $this->httponly;
 
-		$this->data[$name] = $data;
-
 		setcookie($name, $data, $expires, $path, $domain, $secure, $httponly);
 
 		return $this;
@@ -94,7 +90,7 @@ class Cookie extends Base
 	* @param string $name The name of the cookie
 	* @param string $path The path in which the cookie is valid. If null, $this->cookie_path is used
 	* @param string $domain The domain in which the cookie is valid. If null, $this->cookie_domain is used
-	* @return $this
+	* @return static
 	*/
 	public function unset(string $name, ?string $path = null, ?string $domain = null) : static
 	{

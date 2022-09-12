@@ -6,6 +6,8 @@
 
 namespace Mars\Document;
 
+use Mars\App;
+
 /**
 * The Document's Css Urls Class
 * Class containing the css urls/stylesheets used by a document
@@ -20,14 +22,14 @@ class Css extends Urls
 	{
 		$this->app = $app;
 
-		$this->version = $this->app->config->javascript_version;
+		$this->version = $this->app->config->css_version;
 	}
 
 	/**
 	* @see \Mars\Document\Urls::outputUrl()
 	* {@inheritdoc}
 	*/
-	public function outputUrl(string $url, $version = true, bool $async = false, bool $defer = false)
+	public function outputUrl(string $url, bool|string $version = true, bool $async = false, bool $defer = false)
 	{
 		$url = $this->getUrl($url, $version);
 

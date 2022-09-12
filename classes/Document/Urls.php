@@ -17,7 +17,7 @@ abstract class Urls
 	/**
 	* @var array $urls Array with all the urls to be outputed
 	*/
-	protected array $urls = ['first' => [], 'head' => [], 'footer' => []];
+	protected array $urls = [];
 
 	/**
 	* @var string $version The version to be applied to the urls
@@ -31,53 +31,67 @@ abstract class Urls
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
 	*/
-	abstract public function outputUrl(string $url, $version = true, bool $async = false, bool $defer = false);
+	abstract public function outputUrl(string $url, bool|string $version = true, bool $async = false, bool $defer = false);
 
 	/**
-	* Returns the list of urls
-	* @return array
-	*/
-	public function get() : array
-	{
-		return array_map([$this, 'sort'], $this->urls);
-	}
-
-	/**
-	* Returns an url with the version appended, if required
-	* @param string $url The url to append the version to
+	* Loads an url
+	* @param string $url The url to load. Will only load it once, no matter how many times the function is called with the same url
+	* @param string $location The location of the url [first|head|footer]
+	* @param int $priority The url's output priority. The higher, the better
 	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
-	* @return string The url
+	* @param bool $async If true, will apply the async attr
+	* @param bool $defer If true, will apply the defer attr
+	* @return static
 	*/
-	protected function getUrl(string $url, $version) : string
+	public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
 	{
-		if (!$version) {
-			return $url;
+		$this->urls[$url] = [
+			'location' => $location, 'priority' => $priority, 'version' => $version,
+			'async' => $async, 'defer' => $defer, 'is_local' => $this->app->uri->isLocal($url)
+		];
+
+		return $this;
+	}
+
+	/**
+	* Unloads an url
+	* @param string $url The url to unload
+	* @return static
+	*/
+	public function unload(string $url) : static
+	{
+		if (!isset($this->urls[$url])) {
+			return $this;
 		}
 
-		$ver = $version;
-		if ($ver === true) {
-			$ver = $this->version;
-		}
+		unset($this->urls[$url]);
 
-		return $this->app->uri->build($url, ['ver' => $ver]);
+		return $this;
 	}
 
 	/**
 	* Returns the list of urls
-	* @param string $location The location of the urls [head|footer]
 	* @return array
 	*/
-	public function getUrls(string $location = 'head') : array
+	public function get(string $location = '') : array
 	{
-		if (!isset($this->urls[$location])) {
-			return [];
+		if (!$location) {
+			return $this->sort($this->urls);
 		}
 
-		return $this->sort($this->urls[$location]);
+		$urls = array_filter($this->urls, function ($url) use ($location) {
+			if ($url['location'] == $location) {
+				return true;
+			}
+
+			return false;
+		});
+
+		return $this->sort($urls);
 	}
 
 	/**
-	* Sorts the urls
+	* Sorts the urls by priority
 	* @param array $urls
 	* @return array The sorted urls
 	*/
@@ -92,153 +106,37 @@ abstract class Urls
 	}
 
 	/**
-	* Loads an url
-	* @param string $url The url to load. Will only load it once, no matter how many times the function is called with the same url
-	* @param string $location The location of the url [head|footer]
-	* @param int $priority The url's output priority. The higher, the better
-	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
-	* @param bool $async If true, will apply the async attr
-	* @param bool $defer If true, will apply the defer attr
-	* @return $this
-	*/
-	public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false)
-	{
-		if (!$url || $this->isLoaded($url)) {
-			return $this;
-		}
-
-		$this->urls[$location][$url] = ['priority' => $priority, 'version' => $version, 'async' => $async, 'defer' => $defer, 'is_local' => $this->app->uri->isLocal($url)];
-
-		return $this;
-	}
-
-	/**
-	* Checks if the url is loaded
-	* @param string $url The url to check
-	* @return bool
-	*/
-	protected function isLoaded(string $url) : bool
-	{
-		$is_loaded = false;
-		foreach ($this->urls as $location => $urls) {
-			if (isset($urls[$url])) {
-				$is_loaded = true;
-				break;
-			}
-		}
-
-		return $is_loaded;
-	}
-
-	/**
-	* Changes the properties of an url
-	* @param string $url The url to change the properties for. If it's not found, it will be added
-	* @param string $location The location of the url [head|footer]. If null, the value isn't changed
-	* @param int $priority The url's output priority. The higher, the better. If null, the value isn't changed
-	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
-	* @param bool $async If true, will apply the async attr. If null, the value isn't changed
-	* @param bool Returns true if the url was found, false otherwise. If null, the value isn't changed
-	* @return $this
-	*/
-	public function change(string $url, string $location = null, int $priority = null, $version = null, bool $async = null, bool $defer = null) : bool
-	{
-		$url_location = $this->getLocation($url);
-
-		if (!$url_location) {
-			$this->load($url, $location ?? 'head', $priority ?? 100, $async ?? false, $defer ?? false);
-
-			return false;
-		} else {
-			$data = $this->urls[$url_location][$url];
-
-			if ($priority !== null) {
-				$data['priority'] = $priority;
-			}
-			if ($version !== null) {
-				$data['version'] = $version;
-			}
-			if ($async !== null) {
-				$data['async'] = $async;
-			}
-			if ($defer !== null) {
-				$data['defer'] = $defer;
-			}
-
-			if ($location && $location != $url_location) {
-				$this->unload($url);
-				$this->load($url, $location, $data['priority'], $data['async'], $data['defer']);
-			} else {
-				$this->urls[$url_location][$url] = $data;
-			}
-
-			return true;
-		}
-	}
-
-	/**
-	* Unloads an url
-	* @param string $url The url to unload
-	* @return $this
-	*/
-	public function unload(string $url)
-	{
-		if (!$url) {
-			return $this;
-		}
-
-		foreach ($this->urls as $location => $urls) {
-			if (isset($urls[$url])) {
-				unset($this->urls[$location][$url]);
-				break;
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	* Returns the location where an url is loaded
-	* @param string The url
-	* @return string The location. Returns an empty string if the url is not found
-	*/
-	public function getLocation(string $url) : string
-	{
-		$url_location = '';
-		foreach ($this->urls as $location => $urls) {
-			if (isset($urls[$url])) {
-				$url_location = $location;
-				break;
-			}
-		}
-
-		return $url_location;
-	}
-
-	/**
 	* Outputs the urls
-	* @param string $location The location of the url [head|footer]
-	* @return $this
+	* @param string $location The location of the url [first_head|footer]
+	* @return static
 	*/
-	public function output(string $location = 'head')
+	public function output(string $location = 'head') : static
 	{
-		if (!isset($this->urls[$location])) {
-			return $this;
-		}
+		$urls = $this->get($location);
 
-		$this->outputUrls($this->getUrls($location));
-
-		return $this;
-	}
-
-	/**
-	* Outputs the urls
-	* @param array $urls The urls to output
-	* @return $this
-	*/
-	public function outputUrls(array $urls)
-	{
 		foreach ($urls as $url => $data) {
 			$this->outputUrl($url, $data['version'], $data['async'], $data['defer']);
 		}
+
+		return $this;
+	}
+
+	/**
+	* Returns an url with the version appended, if required
+	* @param string $url The url to append the version to
+	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
+	* @return string The url
+	*/
+	protected function getUrl(string $url, bool|string $version = true) : string
+	{
+		if (!$version) {
+			return $url;
+		}
+
+		if (is_bool($version)) {
+			$version = $this->version;
+		}
+
+		return $this->app->uri->build($url, ['ver' => $version]);
 	}
 }
