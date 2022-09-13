@@ -32,7 +32,7 @@ class Drivers extends HandlersList
 	/**
 	* Builds the driver object
 	* @param array $list The list of supported drivers
-	* @param string $interface The interface the driver must implement
+	* @param string $interface_name The interface the driver must implement
 	* @param string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
 	* @param App $app The app object
 	*/

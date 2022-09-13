@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+
 /**
 * The Validator Class
 * Validates values
@@ -13,7 +15,11 @@ namespace Mars;
 class Validator
 {
 	use AppTrait;
-	use ErrorsTrait;
+
+	/**
+	* @var Errors $errors The generated errors, if any
+	*/
+	public readonly Errors $errors;
 
 	/**
 	* @var Handlers $handlers The handlers object
@@ -49,7 +55,9 @@ class Validator
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, 'validate');
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->handlers->setMethod('validate');
+		$this->errors = new Errors($this->app);
 	}
 
 	/**
@@ -76,7 +84,7 @@ class Validator
 	public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
 	{
 		$ok = true;
-		$this->errors = [];
+		$this->errors->reset();
 
 		foreach ($rules as $field => $field_rules) {
 			if (in_array($field, $skip_array)) {
@@ -112,13 +120,13 @@ class Validator
 	{
 		//do we have in the $error_strings array a custom error for this rule & $field?
 		if ($error_strings && isset($error_strings[$field][$rule])) {
-			$this->errors[] = $error_strings[$field][$rule];
+			$this->errors->add($error_strings[$field][$rule]);
 
 			return;
 		}
 
 		//use the handler's error
-		$this->errors[] = $this->handlers->get($rule)->getError();
+		$this->errors->add($this->handlers->get($rule)->getError());
 	}
 
 	/**

@@ -9,18 +9,13 @@ namespace Mars\Filters;
 /**
 * The Interval Filter Class
 */
-class Interval extends Filter
+class Interval
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::interval()
 	*/
-	public function get(string $value, ...$params) : int|float
+	public function filter(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
 	{
-		$min = $params[0] ?? 0;
-		$max = $params[1] ?? 0;
-		$default_value = $params[2] ?? 0;
-
 		if ($value >= $min && $value <= $max) {
 			return $value;
 		} else {

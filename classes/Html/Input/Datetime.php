@@ -13,10 +13,10 @@ namespace Mars\Html\Input;
 class Datetime extends \Mars\Html\Tag
 {
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$name = $attributes['name'];
 		$value = $attributes['value'];
@@ -26,9 +26,9 @@ class Datetime extends \Mars\Html\Tag
 		$date = new Date($this->app);
 		$time = new Time($this->app);
 
-		$html = $date->get('', ['name' => $name . '-date', 'value' => $parts[0]]);
+		$html = $date->html('', ['name' => $name . '-date', 'value' => $parts[0]]);
 		$html.= '&nbsp;';
-		$html.= $time->get('', ['name' => $name . '-time', 'value' => $parts[1]]);
+		$html.= $time->html('', ['name' => $name . '-time', 'value' => $parts[1]]);
 
 		return $html;
 	}

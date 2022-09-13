@@ -50,23 +50,24 @@ class Filter
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers);
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
 	}
 
 	/**
 	* Filters a value
 	* @param mixed $value The value to filter
 	* @param string $filter The filter to apply
-	* @param mixed $args Args to pass to the filter
 	* @return mixed The filtered value
 	*/
-	public function value($value, string $filter, ...$args)
+	public function value($value, string $filter)
 	{
 		if (method_exists($this, $filter)) {
-			return $this->$filter($value, ...$args);
+			return $this->$filter($value);
 		}
 
-		return $this->handlers->getMultiValue($value, $filter, ...$args);
+		return $this->handlers->map($value, function ($value) use ($filter) {
+			return $this->handlers->get($filter)->filter($value);
+		});
 	}
 
 	/**
@@ -174,9 +175,11 @@ class Filter
 	* @param string $encoding The encoding of the text
 	* @return string The filtered html
 	*/
-	public function html(string $html, ?string $allowed_elements = null, ?string $allowed_attributes = null, string $encoding = 'UTF-8') : string
+	public function html(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
-		return $this->handlers->getMultiValue($html, 'html', $allowed_elements, $allowed_attributes, $encoding);
+		return $this->handlers->map($html, function ($html) use ($allowed_elements, $allowed_attributes, $encoding) {
+			return $this->handlers->get('html')->filter($html, $allowed_elements, $allowed_attributes, $encoding);
+		});
 	}
 
 	/**
@@ -209,7 +212,9 @@ class Filter
 	*/
 	public function alpha(string|array $value, bool $space = false) : string|array
 	{
-		return $this->handlers->getMultiValue($value, 'alpha', $space);
+		return $this->handlers->map($value, function ($value) use ($space) {
+			return $this->handlers->get('alpha')->filter($value, $space);
+		});
 	}
 
 	/**
@@ -220,7 +225,9 @@ class Filter
 	*/
 	public function alnum(string|array $value, bool $space = false) : string|array
 	{
-		return $this->handlers->getMultiValue($value, 'alnum', $space);
+		return $this->handlers->map($value, function ($value) use ($space) {
+			return $this->handlers->get('alnum')->filter($value, $space);
+		});
 	}
 
 	/**
@@ -230,7 +237,9 @@ class Filter
 	*/
 	public function filename(string|array $value) : string|array
 	{
-		return $this->handlers->getMultiValue($value, 'filename');
+		return $this->handlers->map($value, function ($value) {
+			return $this->handlers->get('filename')->filter($value);
+		});
 	}
 
 	/**
@@ -241,7 +250,9 @@ class Filter
 	*/
 	public function filepath(string|array $value) : string|array
 	{
-		return $this->handlers->getMultiValue($value, 'filepath');
+		return $this->handlers->map($value, function ($value) {
+			return $this->handlers->get('filepath')->filter($value);
+		});
 	}
 
 	/**
@@ -251,7 +262,9 @@ class Filter
 	*/
 	public function url(string|array $url) : string|array
 	{
-		return $this->handlers->getMultiValue($url, 'url');
+		return $this->handlers->map($url, function ($url) {
+			return $this->handlers->get('url')->filter($url);
+		});
 	}
 
 	/**
@@ -261,7 +274,9 @@ class Filter
 	*/
 	public function email(string|array $email) : string|array
 	{
-		return $this->handlers->getMultiValue($email, 'email');
+		return $this->handlers->map($email, function ($email) {
+			return $this->handlers->get('email')->filter($email);
+		});
 	}
 
 	/**
@@ -272,7 +287,9 @@ class Filter
 	*/
 	public function slug(string|array $value, bool $allow_slash = false) : string|array
 	{
-		return $this->handlers->getMultiValue($value, 'slug', $allow_slash);
+		return $this->handlers->map($value, function ($value) use ($allow_slash) {
+			return $this->handlers->get('slug')->filter($value, $allow_slash);
+		});
 	}
 
 	/**
@@ -285,7 +302,9 @@ class Filter
 	*/
 	public function interval(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
 	{
-		return $this->handlers->getMultiValue($value, 'interval', $min, $max, $default_value);
+		return $this->handlers->map($value, function ($value) use ($min, $max, $default_value) {
+			return $this->handlers->get('interval')->filter($value, $min, $max, $default_value);
+		});
 	}
 
 	/**
@@ -308,7 +327,7 @@ class Filter
 	*/
 	public function allowed(string|array $value, string|array $allowed, mixed $not_allowed_value = null) : mixed
 	{
-		$allowed = App::array($allowed);
+		$allowed = (array)$allowed;
 
 		if (is_array($value)) {
 			return array_intersect($value, $allowed);

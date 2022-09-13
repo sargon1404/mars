@@ -25,6 +25,11 @@ class Handlers extends HandlersList
 	public bool $store = true;
 
 	/**
+	* @var string $interface_name The interface the driver must implement
+	*/
+	protected string $interface_name = '';
+
+	/**
 	* @var array $handlers Array storing the handler objects, if $store is true
 	*/
 	protected array $handlers = [];
@@ -32,16 +37,48 @@ class Handlers extends HandlersList
 	/**
 	* Builds the handler object
 	* @param array $list The list of supported handlers
-	* @param string $method The method called on a handler object when getValue is called
-	* @param bool $store If true, the handlers will be stored in $this->handlers
 	* @param App $app The app object
 	*/
-	public function __construct(array $list, string $method = 'get', bool $store = true, App $app = null)
+	public function __construct(array $list, App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
 		$this->list = $list;
-		$this->method = $method;
+	}
+
+	/**
+	* Sets the interface the handler must implement
+	* @param string $interface_name The name of the interface
+	* @return static
+	*/
+	public function setInterface(string $interface_name) : static
+	{
+		$this->interface_name = $interface_name;
+
+		return $this;
+	}
+
+	/**
+	* Determines if the handlers will be stored for future uses
+	* @param bool $store If true, the handlers will be stored in $this->handlers
+	* @return static
+	*/
+	public function setStore(bool $store) : static
+	{
 		$this->store = $store;
+
+		return $this;
+	}
+
+	/**
+	* Sets the method called on a handler object when getValue is called
+	* @param string $method The method
+	* @return static
+	*/
+	public function setMethod(string $method) : static
+	{
+		$this->method = $method;
+
+		return $this;
 	}
 
 	/**
@@ -91,6 +128,12 @@ class Handlers extends HandlersList
 
 			$args[] = $this->app;
 			$handler = new $class(...$args);
+
+			if ($this->interface_name) {
+				if (!$handler instanceof $this->interface_name) {
+					throw new \Exception("Handler {$class} must implement interface {$this->interface_name}");
+				}
+			}
 		} elseif (is_array($this->list[$name])) {
 			$handler = [$this, reset($this->list[$name])];
 		} else {

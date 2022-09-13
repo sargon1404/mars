@@ -10,7 +10,7 @@ namespace Mars\Html;
 * The Img Class
 * Renders an image
 */
-class Img extends \Mars\Html\Tag
+class Img extends Tag
 {
 	/**
 	* {@inheritdoc}

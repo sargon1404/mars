@@ -41,7 +41,7 @@ class Serializer
 	];
 
 	/**
-	* Constructs the db object
+	* Constructs the serializer object
 	* @param App $app The app object
 	*/
 	public function __construct(App $app)

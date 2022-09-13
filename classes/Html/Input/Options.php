@@ -18,10 +18,10 @@ class Options extends \Mars\Html\Tag
 	protected string $tag = 'option';
 
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$options = $properties['options'] ?? [];
 		$selected = (array) ($properties['selected'] ?? []);
@@ -39,7 +39,7 @@ class Options extends \Mars\Html\Tag
 				$html.= $this->getOptions($text, $selected);
 				$html.= $optgroup->close();
 			} else {
-				$html.= parent::get($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
+				$html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
 			}
 		}
 
@@ -56,7 +56,7 @@ class Options extends \Mars\Html\Tag
 	{
 		$html = '';
 		foreach ($options as $value => $text) {
-			$html.= parent::get($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
+			$html.= parent::html($text, ['value' => $value, 'selected' => in_array($value, $selected)]);
 		}
 
 		return $html;

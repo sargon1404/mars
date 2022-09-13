@@ -9,13 +9,12 @@ namespace Mars\Filters;
 /**
 * The Url Filter Class
 */
-class Url extends Filter
+class Url
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::url()
 	*/
-	public function get(string $url, ...$params) : string
+	public function filter(string $url) : string
 	{
 		return filter_var($url, FILTER_SANITIZE_URL);
 	}

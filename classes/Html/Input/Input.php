@@ -23,13 +23,13 @@ class Input extends \Mars\Html\Tag
 	protected string $tag = 'input';
 
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$attributes = $this->generateIdAttribute($attributes);
 
-		return parent::get($text, ['type' => $this->type] + $attributes, $properties);
+		return parent::html($text, ['type' => $this->type] + $attributes, $properties);
 	}
 }

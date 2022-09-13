@@ -1,15 +1,15 @@
 <?php
 /**
-* The Notifications Class
+* The Info Class
 * @package Mars
 */
 
 namespace Mars\Alerts;
 
 /**
-* The Notifications Class
+* The Info Class
 * Notifications container
 */
-class Notifications extends Alerts
+class Info extends Alerts
 {
 }

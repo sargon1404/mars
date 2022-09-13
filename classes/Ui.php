@@ -32,7 +32,7 @@ class Ui
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers);
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
 	}
 
 	/**

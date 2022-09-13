@@ -6,6 +6,10 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+use Mars\Alerts\Info;
+use Mars\Alerts\Messages;
+use Mars\Alerts\Warnings;
 use Mars\System\Language;
 use Mars\System\Plugins;
 use Mars\System\Theme;
@@ -134,6 +138,11 @@ class App
 	public Accelerator $accelerator;
 
 	/**
+	* @var Alerts $alerts The alerts object
+	*/
+	public Alerts $alerts;
+
+	/**
 	* @var Cache $cache The cache object
 	*/
 	public Cache $cache;
@@ -169,6 +178,11 @@ class App
 	public Document $document;
 
 	/**
+	* @var Errors $errors The errors object
+	*/
+	public Errors $errors;
+
+	/**
 	* @var Escape $escape The escape object
 	*/
 	public Escape $escape;
@@ -194,6 +208,11 @@ class App
 	public Html $html;
 
 	/**
+	* @var Info $info The info object
+	*/
+	public Info $info;
+
+	/**
 	* @var Json $json The json object
 	*/
 	public Json $json;
@@ -217,6 +236,11 @@ class App
 	* @var Memcache $memcache The memcache object
 	*/
 	public Memcache $memcache;
+
+	/**
+	* @var Messages $messages The messages object
+	*/
+	public Messages $messages;
 
 	/**
 	* @var Plugins $plugins The plugins object
@@ -277,6 +301,11 @@ class App
 	* @var Validator $validator The validator object
 	*/
 	public Validator $validator;
+
+	/**
+	* @var Warnings $warnings The warnings object
+	*/
+	public Warnings $warnings;
 
 	/**
 	* @var string $namespace The root namespace
@@ -726,7 +755,7 @@ class App
 	*/
 	public function ok() : bool
 	{
-		if ($this->errors->count()) {
+		if ($this->alerts->errors->count()) {
 			return false;
 		}
 

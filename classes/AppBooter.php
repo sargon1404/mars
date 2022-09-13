@@ -6,6 +6,11 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+use Mars\Alerts\Info;
+use Mars\Alerts\Messages;
+use Mars\Alerts\Warnings;
+
 /**
 * The Booter Class
 * Initializes the system's required classes
@@ -93,13 +98,12 @@ class AppBooter
 	*/
 	public function document()
 	{
-		$this->document = new Document($this->app);
+		$this->app->document = new Document($this->app);
 
-
-		/*$this->app->errors = new Alerts\Errors;
-		$this->app->messages = new Alerts\Messages;
-		$this->app->warnings = new Alerts\Warnings;
-		$this->app->notifications = new Alerts\Notifications;*/
+		$this->app->errors = new Errors;
+		$this->app->info = new Info;
+		$this->app->messages = new Messages;
+		$this->app->warnings = new Warnings;
 	}
 
 	/**

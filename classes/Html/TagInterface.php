@@ -18,5 +18,5 @@ interface TagInterface
 	* @param array $properties Extra properties to pass to the tag object
 	* @return string The html code
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string;
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string;
 }

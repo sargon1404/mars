@@ -55,7 +55,7 @@ class Image
 	/**
 	* @var array $supported_operations The list of supported operations
 	*/
-	protected array $supported_hoperations = [
+	protected array $supported_operations = [
 		'resize' => '\Mars\Images\Operations\Resize',
 		'crop' => '\Mars\Images\Operations\Crop',
 		'cut' => '\Mars\Images\Operations\Cut',
@@ -84,7 +84,8 @@ class Image
 
 		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, '', $this->app);
 		$this->driver = $this->drivers->get($ext, $this->filename);
-		$this->operations = new Handlers($this->supported_hoperations, '', false);
+		$this->operations = new Handlers($this->supported_operations, $this->app);
+		$this->operations->setStore(false);
 	}
 
 	/**

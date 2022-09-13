@@ -11,7 +11,7 @@ use Mars\App;
 /**
 * The Html Filter Class
 */
-class Html extends Filter
+class Html
 {
 	/**
 	* Builds the Html filter object
@@ -25,15 +25,10 @@ class Html extends Filter
 	}
 
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::html()
 	*/
-	public function get($html, ...$params) : string
+	public function filter(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
-		$allowed_elements = $params[0] ?? null;
-		$allowed_attributes = $params[1] ?? null;
-		$encoding = $params[2] ?? 'UTF-8';
-
 		if ($allowed_elements === null) {
 			$allowed_elements = $allowed_elements = $this->app->config->html_allowed_elements;
 		}
@@ -57,12 +52,12 @@ class Html extends Filter
 			$config->set('HTML.AllowedAttributes', $allowed_attributes);
 		}
 
-		//$this->app->plugins->run('filters_html_get_config', $config, $allowed_attributes, $allowed_elements, $this);
+		$this->app->plugins->run('filters_html_filter_config', $config, $allowed_attributes, $allowed_elements, $this);
 
 		$purifier = new \HTMLPurifier($config);
 		$html = $purifier->purify($html);
 
-		//return $this->app->plugins->filter('filters_html_get', $html, $this);
+		return $this->app->plugins->filter('filters_html_filter', $html, $this);
 
 		return $html;
 	}

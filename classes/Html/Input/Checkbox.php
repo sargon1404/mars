@@ -18,18 +18,18 @@ class Checkbox extends Input
 	protected string $type = 'checkbox';
 
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$label = $properties['label'] ?? '';
 
 		$attributes = $this->generateIdAttribute($attributes);
 
-		$html = parent::get($text, $attributes, $properties);
+		$html = parent::html($text, $attributes, $properties);
 		if ($label) {
-			$html.= (new Label($this->app))->get($label, ['for' => $attributes['id']]);
+			$html.= (new Label($this->app))->html($label, ['for' => $attributes['id']]);
 		}
 
 		return $html;

@@ -13,7 +13,7 @@ use Mars\App;
 * Container for alerts
 *
 */
-class Alerts
+abstract class Alerts
 {
 	/**
 	* @var array $alerts Array with all the generated alerts
@@ -40,44 +40,48 @@ class Alerts
 
 	/**
 	* Returns the first generated alert
-	* @param bool $only_text If true, will return only the text rather than the object
 	* @return string The alert
 	*/
-	public function getFirst(bool $only_text = false)
+	public function getFirst()
 	{
 		if (!$this->alerts) {
 			return '';
 		}
 
-		if ($only_text) {
-			return reset($this->alerts)->getText();
-		} else {
-			return reset($this->alerts);
-		}
+		return reset($this->alerts);
 	}
 
 	/**
-	* Adds an alert to the alerts list.
-	* @param string|array $alert The alert text. String or array
-	* @param bool $escape_html If true will html escape $alert
-	* @return $this
+	* Adds an alert or multiple alerts to the alerts list.
+	* @param string|array $alert The alert text
+	* @return static
 	*/
-	public function add(string|array $alert, bool $escape_html = true)
+	public function add(string|array $alert) : static
 	{
 		$alerts = (array)$alert;
 
-		foreach ($alerts as $str) {
-			$this->alerts[] = new Alert($str, '', $escape_html, true);
+		foreach ($alerts as $text) {
+			$this->alerts[] = $text;
 		}
 
 		return $this;
 	}
 
 	/**
-	* Deletes the currently generated errors
-	* @return $this
+	* Resets the current alerts then adds the new alerts
+	* @param string|array $alert The alert text
+	* @return static
 	*/
-	public function delete()
+	public function set(string|array $alert) : static
+	{
+		return $this->reset()->add($alert);
+	}
+
+	/**
+	* Deletes the currently generated errors
+	* @return static
+	*/
+	public function reset() : static
 	{
 		$this->alerts = [];
 

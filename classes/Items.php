@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+
 /**
 * The Items Class
 * Container of multiple items
@@ -16,7 +18,11 @@ namespace Mars;
 abstract class Items extends Entities
 {
 	use AppTrait;
-	use ErrorsTrait;
+
+	/**
+	* @var Errors $errors The generated errors, if any
+	*/
+	public readonly Errors $errors;
 
 	/**
 	* @var string $table The table from which the objects will be loaded
@@ -46,6 +52,7 @@ abstract class Items extends Entities
 	{
 		$this->app = $app ?? $this->getApp();
 		$this->db = $this->app->db;
+		$this->errors = new Errors($this->app);
 	}
 
 	/**

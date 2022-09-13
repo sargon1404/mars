@@ -10,7 +10,7 @@ namespace Mars\Html;
 * The Picture Class
 * Renders a picture
 */
-class Picture extends \Mars\Html\Tag
+class Picture extends Tag
 {
 	/**
 	* {@inheritdoc}
@@ -18,16 +18,16 @@ class Picture extends \Mars\Html\Tag
 	protected string $tag = 'picture';
 
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$img = new Img($this->app);
 
 		$html = $this->open();
 		$html.= $this->getImages($properties);
-		$html.= $img->get('', $attributes) . "\n";
+		$html.= $img->html('', $attributes) . "\n";
 		$html.= $this->close();
 
 		return $html;

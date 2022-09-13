@@ -12,4 +12,16 @@ namespace Mars\Alerts;
 */
 class Errors extends \Mars\Alerts\Alerts
 {
+	/**
+	* Returns true if no errors have been generated
+	* @return bool
+	*/
+	public function ok() : bool
+	{
+		if ($this->alerts) {
+			return false;
+		}
+
+		return true;
+	}
 }

@@ -9,13 +9,12 @@ namespace Mars\Filters;
 /**
 * The Email Filter Class
 */
-class Email extends Filter
+class Email
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::email()
 	*/
-	public function get($email, ...$params) : string
+	public function filter(string $email) : string
 	{
 		return filter_var($email, FILTER_SANITIZE_EMAIL);
 	}

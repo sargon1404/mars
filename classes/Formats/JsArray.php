@@ -9,17 +9,16 @@ namespace Mars\Formats;
 /**
 * The JsArray Format Class
 */
-class JsArray extends Format
+class JsArray
 {
+	use \Mars\AppTrait;
+
 	/**
-	* @see \Mars\Formats\Format::jsArray()
+	* @see \Mars\Format::jsArray()
 	* {@inheritdoc}
 	*/
-	public function get($data, ...$params) : string
+	public function format(array $data, bool $quote = true, array $dont_quote_array = []) : string
 	{
-		$quote = $params[0] ?? true;
-		$dont_quote_array = $params[1] ?? [];
-
 		if (!$data) {
 			return '[]';
 		}

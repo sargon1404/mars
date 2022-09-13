@@ -59,7 +59,8 @@ class Html
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers);
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->handlers->setInterface(TagInterface::class);
 	}
 
 	/**
@@ -72,7 +73,7 @@ class Html
 	*/
 	public function getTag(string $type, string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		return $this->handlers->getValue($type, $text, $attributes, $properties);
+		return $this->handlers->get($type)->html($text, $attributes, $properties);
 	}
 
 	/**

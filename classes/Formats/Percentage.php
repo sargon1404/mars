@@ -9,22 +9,18 @@ namespace Mars\Formats;
 /**
 * The Percentage Format Class
 */
-class Percentage extends Format
+class Percentage
 {
 	/**
-	* @see \Mars\Formats\Format::get()
-	* {@inheritdoc}
+	* @see \Mars\Format::percentage()
 	*/
-	public function get(string $value, ...$params) : string
+	public function format(float|array $number, float $total, int $decimals = 4) : float|array
 	{
-		$total = $params[0] ?? 100;
-		$decimals = $params[1] ?? 4;
-
-		if (!$value || !$total) {
+		if (!$number || !$total) {
 			return 0;
 		}
 
-		$result = ($value * 100) / $total;
+		$result = ($number * 100) / $total;
 
 		return round($result, $decimals);
 	}

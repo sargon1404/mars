@@ -59,7 +59,7 @@ class Format
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers);
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
 	}
 
 	/**
@@ -123,7 +123,9 @@ class Format
 	*/
 	public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
 	{
-		return $this->handlers->getMultiValue($number, 'percentage', $total, $decimals);
+		return $this->handlers->map($number, function ($number) use ($total, $decimals) {
+			return $this->handlers->get('percentage')->format($number, $total, $decimals);
+		});
 	}
 
 	/**
@@ -134,7 +136,9 @@ class Format
 	*/
 	public function filesize(int|array $bytes, int $digits = 2) : string|array
 	{
-		return $this->handlers->getMultiValue($bytes, 'filesize', $digits);
+		return $this->handlers->map($bytes, function ($bytes) use ($digits) {
+			return $this->handlers->get('filesize')->format($bytes, $digits);
+		});
 	}
 
 	/**
@@ -187,7 +191,9 @@ class Format
 	*/
 	public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
-		return $this->handlers->getMultiValue($seconds, 'time_interval', $separator1, $separator2);
+		return $this->handlers->map($seconds, function ($seconds) use ($separator1, $separator2) {
+			return $this->handlers->get('time_interval')->format($seconds, $separator1, $separator2);
+		});
 	}
 
 	/**
@@ -199,7 +205,7 @@ class Format
 	*/
 	public function jsArray(array $data, bool $quote = true, array $dont_quote_array = []) : string
 	{
-		return $this->handlers->getValue('js_array', $data, $quote, $dont_quote_array);
+		return $this->handlers->get('js_array')->format($data, $quote, $dont_quote_array);
 	}
 
 	/**
@@ -211,6 +217,6 @@ class Format
 	*/
 	public function jsObject(array|object$data, bool $quote = true, array $dont_quote_array = [])
 	{
-		return $this->handlers->getValue('js_object', $data, $quote, $dont_quote_array);
+		return $this->handlers->get('js_object')->format($data, $quote, $dont_quote_array);
 	}
 }

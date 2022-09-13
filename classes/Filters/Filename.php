@@ -9,18 +9,19 @@ namespace Mars\Filters;
 /**
 * The Filename Filter Class
 */
-class Filename extends Filter
+class Filename
 {
+	use \Mars\AppTrait;
+
 	/**
 	* @var int $max_chars The maximum number of chars allowed in $filename
 	*/
 	protected int $max_chars = 300;
 
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::filename()
 	*/
-	public function get(string $filename, ...$params) : string
+	public function filter(string $filename) : string
 	{
 		$filename = basename(trim($filename));
 		if (strlen($filename > $this->max_chars)) {
@@ -43,7 +44,7 @@ class Filename extends Filter
 		//replace spaces with dashes
 		$filename = str_replace(' ', '-', $filename);
 
-		return $this->app->plugins->filter('filters_filename_get', $filename);
+		return $this->app->plugins->filter('filters_filename_filter', $filename);
 	}
 
 	/*

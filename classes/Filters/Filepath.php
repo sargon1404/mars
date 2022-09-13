@@ -12,16 +12,15 @@ namespace Mars\Filters;
 class Filepath extends Filename
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::filepath()
 	*/
-	public function get(string $filepath, ...$params) : string
+	public function filter(string $filepath) : string
 	{
 		$path = $this->app->file->getPath($filepath);
 		$filename = basename($filepath);
 
-		$filepath = $path . parent::get($filename);
+		$filepath = $path . parent::filter($filename);
 
-		return $this->app->plugins->filter('filters_filepath_get', $filepath);
+		return $this->app->plugins->filter('filters_filepath_filter', $filepath);
 	}
 }

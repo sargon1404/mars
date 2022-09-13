@@ -29,13 +29,13 @@ class Select extends \Mars\Html\Tag
 	}
 
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$html = $this->open($attributes);
-		$html.= (new Options($this->app))->get('', [], $properties);
+		$html.= (new Options($this->app))->html('', [], $properties);
 		$html.= $this->close();
 
 		return $html;

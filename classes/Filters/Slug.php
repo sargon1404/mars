@@ -9,16 +9,15 @@ namespace Mars\Filters;
 /**
 * The Slug Filter Class
 */
-class Slug extends Filter
+class Slug
 {
-	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
-	*/
-	public function get(string $value, ...$params) : string
-	{
-		$allow_slash = $params[0] ?? false;
+	use \Mars\AppTrait;
 
+	/**
+	* @see \Mars\Filter::slug()
+	*/
+	public function filter(string $value, bool $allow_slash = false) : string
+	{
 		$original_value = $value;
 
 		$reg = '/[^0-9a-zA-Z_-]+/u';
@@ -41,7 +40,6 @@ class Slug extends Filter
 
 		$value = trim($value, '-');
 
-		return $value;
-		//return $this->app->plugins->filter('filters_slug_get', $value, $original_value, $allow_slash, $this);
+		return $this->app->plugins->filter('filters_slug_filter', $value, $original_value, $allow_slash, $this);
 	}
 }

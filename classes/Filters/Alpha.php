@@ -9,16 +9,13 @@ namespace Mars\Filters;
 /**
 * The Alphabetic Filter Class
 */
-class Alpha extends Filter
+class Alpha
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::alpha()
 	*/
-	public function get(string $value, ...$params) : string
+	public function filter(string $value, bool $space = false) : string
 	{
-		$space = $params[0] ?? false;
-
 		$pattern = "/[^a-z]/i";
 		if ($space) {
 			$pattern = "/[^a-z ]/i";

@@ -9,16 +9,13 @@ namespace Mars\Filters;
 /**
 * The Alphanumeric Filter Class
 */
-class Alnum extends Filter
+class Alnum
 {
 	/**
-	* @see \Mars\Filters\Filter::get()
-	* {@inheritdoc}
+	* @see \Mars\Filter::alnum()
 	*/
-	public function get(string $value, ...$params) : string
+	public function filter(string $value, bool $space = false) : string
 	{
-		$space = $params[0] ?? false;
-
 		$pattern = "/[^0-9a-z]/i";
 		if ($space) {
 			$pattern = "/[^0-9a-z ]/i";

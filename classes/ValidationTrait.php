@@ -10,13 +10,17 @@ namespace Mars;
 * The Validation Trait
 * Provides validation functionality
 * Classes using this trait must set these properties:
+* public readonly Errors $errors;
 * protected array $validation_rules = [];
 * protected array $validation_rules_to_skip = [];
 * protected array $validation_error_strings = [];
 */
 trait ValidationTrait
 {
-	use ErrorsTrait;
+	/**
+	* @var Errors $errors The generated errors, if any
+	*/
+	/*public readonly Errors $errors*/
 
 	/**
 	* @var array $validation_rules Validation rules
@@ -99,7 +103,7 @@ trait ValidationTrait
 		}
 
 		if (!$this->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
-			$this->setErrors($this->validator->getErrors());
+			$this->errors->set($this->validator->errors->get());
 
 			return false;
 		}

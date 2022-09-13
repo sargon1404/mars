@@ -13,10 +13,10 @@ namespace Mars\Html\Input;
 class RadioGroup extends \Mars\Html\Tag
 {
 	/**
-	* @see \Mars\Html\TagInterface::get()
+	* @see \Mars\Html\TagInterface::html()
 	* {@inheritdoc}
 	*/
-	public function get(string $text = '', array $attributes = [], array $properties = []) : string
+	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$values = $properties['values'] ?? [];
 		$checked = $properties['checked'] ?? '';
@@ -29,7 +29,7 @@ class RadioGroup extends \Mars\Html\Tag
 		$radio = new Radio($this->app);
 
 		foreach ($values as $value => $label) {
-			$html.= $radio->get('', ['value' => $value, 'checked' => $value == $checked] + $attributes, ['label' => $label]);
+			$html.= $radio->html('', ['value' => $value, 'checked' => $value == $checked] + $attributes, ['label' => $label]);
 		}
 
 		return $html;

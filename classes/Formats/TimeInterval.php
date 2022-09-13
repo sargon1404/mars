@@ -11,17 +11,13 @@ use Mars\App;
 /**
 * The Time Interval Format Class
 */
-class TimeInterval extends Format
+class TimeInterval
 {
 	/**
-	* @see \Mars\Formats\Format::get()
-	* {@inheritdoc}
+	* @see \Mars\Format::timeInterval()
 	*/
-	public function get(string $seconds, ...$params) : string
+	public function format(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
-		$separator1 = $params[0] ?? ' ';
-		$separator2 = $params[1] ?? ', ';
-
 		if (!$seconds || $seconds < 0) {
 			return '0 ' . App::__('second');
 		}

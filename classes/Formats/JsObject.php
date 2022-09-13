@@ -14,14 +14,11 @@ use Mars\App;
 class JsObject extends JsArray
 {
 	/**
-	* @see \Mars\Formats\Format::jsArray()
+	* @see \Mars\Format::jsObject()
 	* {@inheritdoc}
 	*/
-	public function get($data, ...$params) : string
+	public function format(array $data, bool $quote = true, array $dont_quote_array = []) : string
 	{
-		$quote = $params[0] ?? true;
-		$dont_quote_array = $params[1] ?? [];
-
 		$data = App::array($data);
 
 		if (!$data) {
@@ -31,7 +28,7 @@ class JsObject extends JsArray
 		$list = [];
 		foreach ($data as $key => $value) {
 			if (is_array($value)) {
-				$value = parent::get($value, $quote, $dont_quote_array);
+				$value = parent::format($value, $quote, $dont_quote_array);
 			} else {
 				$value = $this->getValue($key, $value, $quote, $dont_quote_array);
 			}
