@@ -17,10 +17,11 @@ class Url extends Rule
 	protected string $error_string = 'validate_url_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Checks if $value is a valid url
+	* @param string $value The value to validate
+	* @return bool Returns true if the url is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value) : bool
 	{
 		$url = strtolower($value);
 

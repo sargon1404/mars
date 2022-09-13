@@ -17,12 +17,14 @@ class Time extends DateTime
 	protected string $error_string = 'validate_time_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates a time value
+	* @param string $value The value to validate
+	* @param string $format The time's format
+	* @return bool Returns true if the time value is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, string $format = null) : bool
 	{
-		$format = $params[0] ?? $this->app->lang->time_picker_format;
+		$format = $format ?? $this->app->lang->time_picker_format;
 
 		return $this->isValidDateTime($value, $format);
 	}

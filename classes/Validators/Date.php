@@ -9,7 +9,7 @@ namespace Mars\Validators;
 /**
 * The Date Validator Class
 */
-class Date extends DateTime
+class Date extends Datetime
 {
 	/**
 	* {@inheritdoc}
@@ -17,12 +17,14 @@ class Date extends DateTime
 	protected string $error_string = 'validate_date_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates a date
+	* @param string $value The value to validate
+	* @param string $format The date's format
+	* @return bool Returns true if the date is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, string $format = null) : bool
 	{
-		$format = $params[0] ?? $this->app->lang->date_picker_format;
+		$format = $format ?? $this->app->lang->date_picker_format;
 
 		return $this->isValidDateTime($value, $format);
 	}

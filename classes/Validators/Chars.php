@@ -17,17 +17,17 @@ class Chars extends Rule
 	protected string $error_string = 'validate_minchars_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates the number of chars of a string
+	* @param string $value The value
+	* @param int $min The minimum no. of chars
+	* @param int $max The maximum no. of chars
+	* @return bool
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, int $min = null, int $max = null) : bool
 	{
-		if (!isset($params[0]) || !isset($params[1])) {
+		if ($min === null || $max === null) {
 			throw new \Exception("The Chars Validator rule must have the minimum/maximum number of chars. specified. Eg: chars:1:5");
 		}
-
-		$min = (int)$params[0];
-		$max = (int)$params[1];
 
 		$length = mb_strlen($value);
 

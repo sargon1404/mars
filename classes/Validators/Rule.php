@@ -26,21 +26,13 @@ abstract class Rule
 	protected string $error = '';
 
 	/**
-	* Validates the value
-	* @param string $value The value to validate
-	* @param mixed $params Extra params
-	* @return bool
-	*/
-	abstract public function isValid(string $value, ...$params) : bool;
-
-	/**
 	* Validates a value
-	* @param string $value The value to validate
+	* @param mixed $value The value to validate
 	* @param string $field The name of the field
 	* @param mixed $params Params to be passed to the validator, if any
 	* @return bool True if the validation passed
 	*/
-	public function validate(string $value, string $field, ...$params) : bool
+	public function validate(mixed $value, string $field, ...$params) : bool
 	{
 		$this->error = '';
 

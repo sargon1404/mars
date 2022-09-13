@@ -15,11 +15,6 @@ class Handlers extends HandlersList
 	use AppTrait;
 
 	/**
-	* @var string $method The method called on a handler object when getValue is called
-	*/
-	public string $method = 'get';
-
-	/**
 	* @var bool $store If true, the handlers will be stored in $this->handlers
 	*/
 	public bool $store = true;
@@ -65,18 +60,6 @@ class Handlers extends HandlersList
 	public function setStore(bool $store) : static
 	{
 		$this->store = $store;
-
-		return $this;
-	}
-
-	/**
-	* Sets the method called on a handler object when getValue is called
-	* @param string $method The method
-	* @return static
-	*/
-	public function setMethod(string $method) : static
-	{
-		$this->method = $method;
 
 		return $this;
 	}
@@ -145,39 +128,6 @@ class Handlers extends HandlersList
 		}
 
 		return $handler;
-	}
-
-	/**
-	* Calls the handler and return the value
-	* @param string $name The name of the handler
-	* @param mixed $args Arguments to pass to the handler
-	* @return mixed
-	*/
-	public function getValue(string $name, ...$args)
-	{
-		$handler = $this->get($name);
-
-		$func = $handler;
-		if (is_object($handler)) {
-			$func = [$handler, $this->method];
-		}
-
-		return call_user_func_array($func, $args);
-	}
-
-	/**
-	* Returns a value
-	* @param mixed $value The value
-	* @param mixed $name The name of the handler
-	* @param mixed $args The arguments to pass to the handler, if any
-	*/
-	public function getMultiValue($value, string $name, ...$args) : mixed
-	{
-		return $this->map($value, function ($value) use ($name, $args) {
-			$args = array_merge([$value], $args);
-
-			return $this->getValue($name, ...$args);
-		});
 	}
 
 	/**

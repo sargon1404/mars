@@ -17,18 +17,18 @@ class Max extends Rule
 	protected string $error_string = 'validate_max_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates that a value is lower than $max
+	* @param string $value The value
+	* @param int $max The maximum value
+	* @return bool
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, int|float $max = null) : bool
 	{
-		if (!isset($params[0])) {
+		if ($max === null) {
 			throw new \Exception("The Max Validator rule must have the max number specified. Eg: max:5");
 		}
 
-		$min = (float)$params[0];
-
-		if ($value <= $min) {
+		if ($value <= $max) {
 			return true;
 		}
 

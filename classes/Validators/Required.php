@@ -17,10 +17,11 @@ class Required extends Rule
 	protected string $error_string = 'validate_required_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates that a value is not empty
+	* @param string $value The value
+	* @return bool
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value) : bool
 	{
 		if (trim($value)) {
 			return true;

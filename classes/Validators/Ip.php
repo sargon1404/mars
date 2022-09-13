@@ -17,13 +17,13 @@ class Ip extends Rule
 	protected string $error_string = 'validate_ip_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Checks if $ip is a valid IP address
+	* @param string $value The IP to validate
+	* @param bool $wildcards If true, the IP can contain wildcards
+	* @return bool Returns true if the IP is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, bool $wildcards = false) : bool
 	{
-		$wildcards = $params[0] ?? '';
-
 		if (!$wildcards) {
 			return filter_var($value, FILTER_VALIDATE_IP);
 		}

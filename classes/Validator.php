@@ -56,7 +56,6 @@ class Validator
 	{
 		$this->app = $app;
 		$this->handlers = new Handlers($this->supported_handlers, $this->app);
-		$this->handlers->setMethod('validate');
 		$this->errors = new Errors($this->app);
 	}
 
@@ -70,7 +69,7 @@ class Validator
 	*/
 	public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
 	{
-		return $this->handlers->getValue($rule, $value, $field, ...$params);
+		return $this->handlers->get($rule)->validate($value, $field, ...$params);
 	}
 
 	/**
@@ -132,12 +131,12 @@ class Validator
 	/**
 	* Validates a datetime
 	* @param string $value The value to validate
-	* @param string $format The date's format
+	* @param string $format The datetime's format
 	* @return bool Returns true if the datetime is valid
 	*/
-	public function isDatetime(string $value, string $format = '') : bool
+	public function isDatetime(string $value, string $format = null) : bool
 	{
-		return $this->isValid($value, 'datetime', '', $format);
+		return $this->handlers->get('datetime')->isValid($value, $format);
 	}
 
 	/**
@@ -146,50 +145,50 @@ class Validator
 	* @param string $format The date's format
 	* @return bool Returns true if the date is valid
 	*/
-	public function isDate(string $value, string $format = '') : bool
+	public function isDate(string $value, string $format = null) : bool
 	{
-		return $this->isValid($value, 'date', '', $format);
+		return $this->handlers->get('date')->isValid($value, $format);
 	}
 
 	/**
 	* Validates a time value
 	* @param string $value The value to validate
-	* @param string $format The date's format
+	* @param string $format The time's format
 	* @return bool Returns true if the time value is valid
 	*/
-	public function isTime(string $value, string $format = '') : bool
+	public function isTime(string $value, string $format = null) : bool
 	{
-		return $this->isValid($value, 'time', '', $format);
+		return $this->handlers->get('time')->isValid($value, $format);
 	}
 
 	/**
-	* Checks if $url is a valid url
+	* Checks if $value is a valid url
 	* @param string $value The value to validate
 	* @return bool Returns true if the url is valid
 	*/
 	public function isUrl(string $value) : bool
 	{
-		return $this->isValid($value, 'url');
+		return $this->handlers->get('url')->isValid($value);
 	}
 
 	/**
-	* Checks if $email is a valid email address
-	* @param string $email The email to validate
+	* Checks if $value is a valid email address
+	* @param string $value The email to validate
 	* @return bool Returns true if the email is valid
 	*/
-	public function isEmail(string $email) : bool
+	public function isEmail(string $value) : bool
 	{
-		return $this->isValid($email, 'email');
+		return $this->handlers->get('email')->isValid($value);
 	}
 
 	/**
 	* Checks if $ip is a valid IP address
-	* @param string $ip The IP to validate
+	* @param string $value The IP to validate
 	* @param bool $wildcards If true, the IP can contain wildcards
 	* @return bool Returns true if the IP is valid
 	*/
-	public function isIp(string $ip, bool $wildcards = false) : bool
+	public function isIp(string $value, bool $wildcards = false) : bool
 	{
-		return $this->isValid($ip, 'ip', '', $wildcards);
+		return $this->handlers->get('ip')->isValid($value, $wildcards);
 	}
 }

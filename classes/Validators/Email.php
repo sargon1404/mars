@@ -17,10 +17,11 @@ class Email extends Rule
 	protected string $error_string = 'validate_email_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Checks if $value is a valid email address
+	* @param string $value The email to validate
+	* @return bool Returns true if the email is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value) : bool
 	{
 		return filter_var($value, FILTER_VALIDATE_EMAIL);
 	}

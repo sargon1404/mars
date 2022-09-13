@@ -19,12 +19,14 @@ class Datetime extends Rule
 	protected string $error_string = 'validate_datetime_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates a datetime
+	* @param string $value The value to validate
+	* @param string $format The datetime's format
+	* @return bool Returns true if the datetime is valid
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, string $format = null) : bool
 	{
-		$format = $params[0] ?? $this->app->lang->datetime_picker_format;
+		$format = $format ?? $this->app->lang->datetime_picker_format;
 
 		return $this->isValidDateTime($value, $format);
 	}

@@ -17,16 +17,16 @@ class Min extends Rule
 	protected string $error_string = 'validate_min_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates that a value is greater than $min
+	* @param string $value The value
+	* @param int $min The minimum value
+	* @return bool
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, int|float $min = null) : bool
 	{
-		if (!isset($params[0])) {
+		if ($min === null) {
 			throw new \Exception("The Validator Min rule must have the minimum number specified. Eg: min:5");
 		}
-
-		$min = (float)$params[0];
 
 		if ($value >= $min) {
 			return true;

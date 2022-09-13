@@ -17,18 +17,18 @@ class Unique extends Rule
 	protected string $error_string = 'validate_unique_error';
 
 	/**
-	* @see \Mars\Validator\Rule::isValid()
-	* {@inheritdoc}
+	* Validates that a value is unique in a table
+	* @param string $value The value
+	* @param string $table The name of the table
+	* @param string $column The name of the column
+	* @return bool
 	*/
-	public function isValid(string $value, ...$params) : bool
+	public function isValid(string $value, string $table = null, string $column = 'id') : bool
 	{
-		if (empty($params[0])) {
+		if (!$table) {
 			throw new \Exception("The Validator Unique rule must have the name of the table and (optionally) column specified. Eg: unique:users or unique:users:id");
 		}
 
-		$table = $params[0];
-		$col = $params[1] ?? 'id';
-
-		return $this->app->db->exists($table, [$col => $value], $col);
+		return $this->app->db->exists($table, [$column => $value], $column);
 	}
 }
