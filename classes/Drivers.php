@@ -10,14 +10,10 @@ namespace Mars;
 * The Driver Class
 * Encapsulates a list of suported drivers
 */
-class Drivers extends HandlersList
+class Drivers
 {
 	use AppTrait;
-
-	/**
-	* @var array $list The list of supported handlers in the name => class format
-	*/
-	protected array $list = [];
+	use \Mars\Lists\ListTrait;
 
 	/**
 	* @var string $interface_name The interface the driver must implement

@@ -7,15 +7,17 @@
 namespace Mars\Response;
 
 use Mars\App;
-use Mars\Elements;
 
 /**
 * The Headers Response Class
 * Handles the response headers
 */
-class Headers extends Elements
+class Headers
 {
 	use \Mars\AppTrait;
+	use \Mars\Lists\ListTrait {
+		add as addToList;
+	}
 
 	/**
 	* Builds the Cookie Request object
@@ -27,12 +29,11 @@ class Headers extends Elements
 	}
 
 	/**
-	* @see \Mars\Elements::add()
-	* {@inheritdoc}
+	* @see \Mars\Lists\ListTrait::add()
 	*/
 	public function add(string $name, string $value) : static
 	{
-		return parent::add($name, $name . ': ' . $value);
+		return $this->addToList($name, $name . ': ' . $value);
 	}
 
 	/**
@@ -40,7 +41,7 @@ class Headers extends Elements
 	*/
 	public function output()
 	{
-		foreach ($this->elements as $header) {
+		foreach ($this->list as $header) {
 			header($header);
 		}
 	}

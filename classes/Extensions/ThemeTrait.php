@@ -1,17 +1,29 @@
 <?php
 /**
-* The Theme "Class"
+* The Theme Trait
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Extensions;
+
+use Mars\App;
 
 /**
-* The Theme "Class"
+* The Theme Trait
 * Trait implementing the Theme functionality
 */
-trait Theme
+trait ThemeTrait
 {
+	/**
+	* @var Drivers $drivers The drivers object
+	*/
+	public readonly Drivers $drivers;
+
+	/**
+	* @var DriverInterface $driver The driver object
+	*/
+	protected DriverInterface $driver;
+		
 	/**
 	* @var string $header_template The template which will be used to render the header
 	*/
@@ -131,6 +143,14 @@ trait Theme
 	* @internal
 	*/
 	protected static string $base_dir = 'themes';
+	
+	
+	/**
+	* @var array $supported_drivers The supported drivers
+	*/
+	protected array $supported_drivers = [
+		'mars' => '\Mars\Templates\Mars',
+	];
 
 
 	/**
@@ -183,7 +203,7 @@ trait Theme
 		$this->templates_cache_path = $this->cache_path . App::CACHE_DIRS['templates'];
 		$this->templates_path = $this->path . App::EXTENSIONS_DIRS['templates'];
 		$this->images_path = $this->path . App::EXTENSIONS_DIRS['images'];
-		$this->images_url = $this->base_url . App::EXTENSIONS_DIRS['images'];
+		$this->images_url = $this->url . App::EXTENSIONS_DIRS['images'];
 	}
 
 	/**

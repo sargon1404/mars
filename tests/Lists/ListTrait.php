@@ -1,8 +1,11 @@
 <?php
 
-use Mars\Elements;
+include_once(dirname(__DIR__) . '/Base.php');
 
-include_once(__DIR__ . '/Base.php');
+class Elements
+{
+	use \Mars\Lists\ListTrait;
+}
 
 /**
 * @ignore

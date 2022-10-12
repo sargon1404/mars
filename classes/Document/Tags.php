@@ -6,15 +6,14 @@
 
 namespace Mars\Document;
 
-use Mars\Elements;
-
 /**
 * The Document Tags Class
 * Stores the custom header html tags used by a document
 */
-abstract class Tags extends Elements
+abstract class Tags
 {
 	use \Mars\AppTrait;
+	use \Mars\Lists\ListTrait;
 
 	/**
 	* Outputs a tag
@@ -29,7 +28,7 @@ abstract class Tags extends Elements
 	*/
 	public function output() : static
 	{
-		foreach ($this->elements as $name => $value) {
+		foreach ($this->list as $name => $value) {
 			$this->outputTag($name, $value);
 		}
 

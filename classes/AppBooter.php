@@ -99,7 +99,7 @@ class AppBooter
 	public function document()
 	{
 		$this->app->document = new Document($this->app);
-
+		$this->app->screens = new Screens($this->app);
 		$this->app->errors = new Errors;
 		$this->app->info = new Info;
 		$this->app->messages = new Messages;
@@ -115,8 +115,8 @@ class AppBooter
 		$this->app->plugins->load();
 
 		$this->app->lang = new System\Language($this->app);
-		/*$this->app->theme = new System\Theme($this->app);
+		//$this->app->theme = new System\Theme($this->app);
 
-		$this->app->router = new Router;*/
+		/*$this->app->router = new Router;*/
 	}
 }

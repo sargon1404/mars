@@ -1,23 +1,21 @@
 <?php
 /**
-* The Elements Class
+* The List Trait
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Lists;
 
 /**
-* The Elements Class
-* Container for an array
+* The List Trait
+* Encapsulates a list
 */
-class Elements
+trait ListTrait
 {
-	use AppTrait;
-
 	/**
-	* @var array $elements Array containing the elements
+	* @var array $list The list of elements in the name => value format
 	*/
-	protected array $elements = [];
+	protected array $list = [];
 
 	/**
 	* Returns an element, or all elements
@@ -26,28 +24,28 @@ class Elements
 	public function get(string $name = '')
 	{
 		if (!$name) {
-			return $this->elements;
+			return $this->list;
 		}
 
-		return $this->elements[$name] ?? null;
+		return $this->list[$name] ?? null;
 	}
 
 	/**
 	* Adds an element
-	* @param string $name The name
+	* @param string $name The name of the element
 	* @param string $value The value
 	* @return static
 	*/
 	public function add(string $name, string $value) : static
 	{
-		$this->elements[$name] = $value;
+		$this->list[$name] = $value;
 
 		return $this;
 	}
 
 	/**
 	* Alias for add()
-	* {@see Elements::add()}
+	* @see ListTrait::add()
 	*/
 	public function set(string $name, string $value) : static
 	{
@@ -55,14 +53,14 @@ class Elements
 	}
 
 	/**
-	* Removes a element
+	* Removes an element
 	* @param string $name The name of the element
 	* @return static
 	*/
 	public function remove(string $name) : static
 	{
-		if (isset($this->elements[$name])) {
-			unset($this->elements[$name]);
+		if (isset($this->list[$name])) {
+			unset($this->list[$name]);
 		}
 
 		return $this;

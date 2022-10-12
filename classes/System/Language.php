@@ -11,10 +11,8 @@ use Mars\App;
 /**
 * The System's Language Class
 */
-class Language extends \Mars\Extensions\Basic
+class Language extends \Mars\Extensions\Language
 {
-	use \Mars\Language;
-
 	/**
 	* Builds the language
 	* @param App $app The app object

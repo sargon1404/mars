@@ -4,13 +4,15 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Extensions;
+
+use Mars\App;
 
 /**
 * The Plugins Trait
 * Trait implementing the Plugins functionality
 */
-trait Plugins
+trait PluginsTrait
 {
 	use \Mars\AppTrait;
 

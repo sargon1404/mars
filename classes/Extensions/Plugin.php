@@ -4,13 +4,15 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Extensions;
+
+use Mars\App;
 
 /**
 * The Plugin Class
 * Object corresponding to a plugin extension
 */
-class Plugin extends \Mars\Extensions\Basic
+class Plugin extends Extension
 {
 
 	/**
@@ -40,11 +42,9 @@ class Plugin extends \Mars\Extensions\Basic
 	*/
 	public function __construct(string $name, App $app = null)
 	{
-		$this->app = $app ?? $this->getApp();
-		$this->name = $name;
 		$this->title = $name;
-
-		$this->prepare();
+		
+		parent::__construct($name, $app);
 
 		$this->addHooks();
 	}

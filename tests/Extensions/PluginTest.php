@@ -1,8 +1,8 @@
 <?php
 
-use Mars\Plugin;
+use Mars\Extensions\Plugin;
 
-include_once(__DIR__ . '/Base.php');
+include_once(dirname(__DIR__) . '/Base.php');
 
 /**
 * @ignore

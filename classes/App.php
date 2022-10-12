@@ -281,6 +281,11 @@ class App
 	* @var Timer $timer The timer object
 	*/
 	public Timer $timer;
+	
+	/**
+	* @var Screens $screens The Screens object
+	*/
+	public Screens $screens;
 
 	/**
 	* @var Sql $sql The SQL object
@@ -871,15 +876,7 @@ class App
 	}
 
 
-	/**********************MESSAGING FUNCTIONS***************************************/
-
-	/**
-	* @internal
-	*/
-	protected function getScreenObj()
-	{
-		return new Document\Screen($this);
-	}
+	/**********************SCREENS FUNCTIONS***************************************/
 
 	/**
 	* Displays a fatal error screen
@@ -889,8 +886,7 @@ class App
 	*/
 	public function fatalError(string $text, bool $escape_html = true)
 	{
-		$screen = $this->getScreenObj();
-		$screen->fatalError($text, $escape_html);
+		$this->screens->fatalError($text, $escape_html);
 	}
 
 	/**
@@ -898,12 +894,10 @@ class App
 	* @param string $text The error's text
 	* @param string $title The error's title, if any
 	* @param bool $escape_html If true will escape the title and error message
-	* @see \Mars\Document\Screen::error()
 	*/
 	public function error(string $text, string $title = '', bool $escape_html = true)
 	{
-		$screen = $this->getScreenObj();
-		$screen->error($text, $title, $escape_html);
+		$this->screens->error($text, $title, $escape_html);
 	}
 
 	/**
@@ -911,12 +905,10 @@ class App
 	* @param string $text The text of the message
 	* @param string $title The title of the message, if any
 	* @param bool $escape_html If true will escape the title and message
-	* @see \Mars\Document\Screen::message()
 	*/
 	public function message(string $text, string $title = '', bool $escape_html = true)
 	{
-		$screen = $this->getScreenObj();
-		$screen->message($text, $title, $escape_html);
+		$this->screens->message($text, $title, $escape_html);
 	}
 
 	/**
@@ -925,8 +917,7 @@ class App
 	*/
 	public function permissionDenied()
 	{
-		$screen = $this->getScreenObj();
-		$screen->permissionDenied();
+		$this->screens->permissionDenied();
 	}
 
 	/**

@@ -14,7 +14,7 @@ use Mars\App;
 */
 class Plugins
 {
-	use \Mars\Plugins;
+	use \Mars\Extensions\PluginsTrait;
 
 	/**
 	* @var string $namespace The namespace used to load plugins

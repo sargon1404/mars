@@ -10,9 +10,13 @@ namespace Mars;
 * The Handlers Class
 * Encapsulates a list of suported handlers
 */
-class Handlers extends HandlersList
+class Handlers
 {
 	use AppTrait;
+	use \Mars\Lists\ListTrait {
+		add as addToList;
+		remove as removeFromList;
+	}
 
 	/**
 	* @var bool $store If true, the handlers will be stored in $this->handlers
@@ -74,7 +78,7 @@ class Handlers extends HandlersList
 			unset($this->handlers[$name]);
 		}
 
-		return parent::add($name, $class);
+		return $this->addToList($name, $class);
 	}
 
 	/**
@@ -87,7 +91,7 @@ class Handlers extends HandlersList
 			unset($this->handlers[$name]);
 		}
 
-		return parent::remove($name);
+		return $this->removeFromList($name);
 	}
 
 	/**

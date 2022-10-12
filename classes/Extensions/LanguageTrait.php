@@ -1,16 +1,16 @@
 <?php
 /**
-* The Language "Class"
+* The Language Trait
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Extensions;
 
 /**
-* The Language "Class"
+* The Language Trait
 * Trait implementing the Language functionality
 */
-trait Language
+trait LanguageTrait
 {
 	/**
 	* @var string $encoding The encoding of the language
