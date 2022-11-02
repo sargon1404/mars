@@ -163,6 +163,11 @@ class App
 	public Db $db;
 
 	/**
+	* @var Debug $debug The Db object
+	*/
+	public Debug $debug;
+
+	/**
 	* @var Device $device The device object
 	*/
 	public Device $device;
@@ -228,11 +233,6 @@ class App
 	public Log $log;
 
 	/**
-	* @var Mail $mail The mail object
-	*/
-	public Mail $mail;
-
-	/**
 	* @var Memcache $memcache The memcache object
 	*/
 	public Memcache $memcache;
@@ -268,6 +268,11 @@ class App
 	public Request $request;
 
 	/**
+	* @var Router $router The router object
+	*/
+	public Router $router;
+
+	/**
 	* @var Serializer $serializer The serializer object
 	*/
 	public Serializer $serializer;
@@ -281,7 +286,7 @@ class App
 	* @var Timer $timer The timer object
 	*/
 	public Timer $timer;
-	
+
 	/**
 	* @var Screens $screens The Screens object
 	*/
@@ -726,6 +731,19 @@ class App
 	}
 
 	/**
+	* Returns true if no errors have been generated
+	* @return bool
+	*/
+	public function ok() : bool
+	{
+		if ($this->alerts->errors->count()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	* Starts the output buffering.
 	*/
 	public function start()
@@ -742,50 +760,24 @@ class App
 	{
 		$content = ob_get_clean();
 
-		$this->plugins->run('app_end1', $this);
+		$this->plugins->run('app_end_start', $this);
 
 		if ($this->config->debug) {
 			$this->timer->start('app_output_content');
 		}
 
-		//grab the content template first
-		ob_start();
-		$this->theme->renderContent();
-		$content = ob_get_clean();
-	}
-
-	/**
-	* Returns true if no errors have been generated
-	* @return bool
-	*/
-	public function ok() : bool
-	{
-		if ($this->alerts->errors->count()) {
-			return false;
-		}
-
-		return true;
-	}
-
-
-
-	/**
-	* Outputs the app's content
-	*/
-	public function output()
-	{
-		$content = $this->plugins->filter('app_output_filter_content', $content, $this);
+		$content = $this->plugins->filter('app_filter_content', $content, $this);
 
 		ob_start();
 		$this->theme->renderHeader();
-		echo $content;
+		$this->theme->renderContent($content);
 		$this->theme->renderFooter();
 		$output = ob_get_clean();
 
-		$output = $this->plugins->filter('app_output_filter_output', $output, $this);
+		$output = $this->plugins->filter('app_filter_output', $output, $this);
 
 		if ($this->config->debug) {
-			$output.= $this->getDebugOutput(strlen($output));
+			$output.= $this->getDebugOutput($output);
 
 			$this->can_gzip = false;
 		}
@@ -797,43 +789,29 @@ class App
 		}
 
 		//cache the output, if required
-		if ($this->caching->can_cache) {
-			$this->caching->store($output, $this->can_gzip);
-		}
+		$this->caching->store($output);
 
-		$output = $this->plugins->filter('app_output_filter', $output, $this);
+		$this->plugins->run('app_end_end', $this);
 
 		echo $output;
-
-		$this->plugins->run('app_output_end', $this);
-
-		die;
 	}
 
 	/**
 	* Returns the debug output, if debug is on
-	* @param int $output_size The size of the generated output
+	* @param string $output The generated output
 	* @return string
 	*/
-	protected function getDebugOutput(int $output_size) : string
+	protected function getDebugOutput(string $output) : string
 	{
-		$debug = $this->getDebugObj();
-
-		$debug->info['output_size'] = $output_size;
-		$debug->info['output_content_time'] = $this->timer->end('app_output_content');
+		$this->debug->info['output_size'] = strlen($output);
+		$this->debug->info['output_content_time'] = $this->timer->end('app_output_content');
+		$this->debug->info['execution_time'] = $this->timer->getExecutionTime();
 
 		ob_start();
-		$debug->output();
+		$this->debug->output();
 		return ob_get_clean();
 	}
 
-	/**
-	* @internal
-	*/
-	protected function getDebugObj()
-	{
-		return new Debug($this);
-	}
 
 	/**
 	* Renders/Outputs a template
@@ -847,10 +825,6 @@ class App
 		$this->theme->render($template, $vars);
 
 		$this->end();
-
-		$this->output();
-
-		return $this;
 	}
 
 	/**
@@ -869,10 +843,6 @@ class App
 		$controller->dispatch($action);
 
 		$this->end();
-
-		$this->output();
-
-		return $this;
 	}
 
 

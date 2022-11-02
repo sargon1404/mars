@@ -22,6 +22,31 @@ class Mail
 	public readonly Drivers $drivers;
 
 	/**
+	* @var string $from The from address
+	*/
+	public string $from = '';
+
+	/**
+	* @var string $from_name The from name
+	*/
+	public string $from_name = '';
+
+	/**
+	* @var string $reply_to The reply to address
+	*/
+	public string $reply_to = '';
+
+	/**
+	* @var string $reply_to_name The reply to name
+	*/
+	public string $reply_to_name = '';
+
+	/**
+	* @var bool $is_html If true, will send the email as html
+	*/
+	public bool $is_html = true;
+
+	/**
 	* @var DriverInterface $driver The driver object
 	*/
 	protected DriverInterface $driver;
@@ -37,11 +62,74 @@ class Mail
 	* Constructs the mail object
 	* @param App $app The app object
 	*/
-	public function __construct(App $app)
+	public function __construct(App $app = null)
 	{
-		$this->app = $app;
+		$this->app = $app ?? $this->getApp();
 		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'mail', $this->app);
 		$this->driver = $this->drivers->get($this->app->config->mail_driver);
+
+		$this->from = $this->app->config->mail_from;
+		$this->from_name = $this->app->config->mail_from_name;
+	}
+
+	/**
+	* Sets the From fields of the email
+	* @param string $from The email adress from which the email will be send
+	* @param string $from_name The from name field of the email
+	* @return static
+	*/
+	public function setFrom(string $from, string $from_name = '') : static
+	{
+		$this->from = $from;
+		if ($from_name) {
+			$this->from_name = $from_name;
+		}
+
+		return $this;
+	}
+
+	/**
+	* Sets the sender of the email
+	* @param string $reply_to The email address listed as reply to
+	* @param string $reply_to_name The reply name, if any
+	* @return static
+	*/
+	public function setSender(string $reply_to, string $reply_to_name = '') : static
+	{
+		$this->reply_to = $reply_to;
+		if ($reply_to_name) {
+			$this->reply_to_name = $reply_to_name;
+		}
+	}
+
+	/**
+	* Sets the way how the email message is send
+	* @param bool $is_html If true, will send the email as html
+	* @return static
+	*/
+	public function isHtml(bool $is_html) : static
+	{
+		$this->is_html = $is_html;
+
+		return $this;
+	}
+
+	/**
+	* Returns the content of a template to be used as the body of the email
+	* @param string $filename The template's filename
+	* @param array $vars Vars to add as template vars
+	* @return string The template's content
+	*/
+	public function getTemplate(string $filename, array $vars = []) : string
+	{
+		$content = '';
+		if (is_file($filename)) {
+			$content = $this->app->theme->getTemplateFromFilename($filename, $vars, 'mail');
+		} else {
+			$content = $this->app->theme->getTemplate($filename, $vars, 'mail');
+		}
+
+		return nl2br($content);
 	}
 
 	/**
@@ -51,29 +139,17 @@ class Mail
 	* @param string $message The body of the mail
 	* @param array $attachments The attachments, if any, to the mail
 	* @param string|array $bcc Bcc recipients, if any
-	* @param string $from The email adress from which the email will be send.By default $this->app->config->mail_from is used
-	* @param string $from_name The from name field of the email.by default $this->app->config->mail_from_name is used
-	* @param string $reply_to The email address to which to reply to
-	* @param string $reply_to_name The reply name associated with the $reply_to email
-	* @param bool $is_html If true the mail will be a html mail
 	*/
-	public function send(string|array $to, string $subject, string $message, array $attachments = [], string|array $bcc = [], string $from = '', string $from_name = '', string $reply_to = '', string $reply_to_name = '', bool $is_html = true)
+	public function send(string|array $to, string $subject, string $message, array $attachments = [], string|array $bcc = [])
 	{
-		$this->app->plugins->run('mail_send', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
+		$this->app->plugins->run('mail_send', $to, $subject, $message, $attachments, $this);
 
 		try {
-			if (!$from) {
-				$from = $this->app->config->mail_from;
-			}
-			if (!$from_name) {
-				$from_name = $this->app->config->mail_from_name;
-			}
-
 			$this->driver->setRecipient($to);
 			$this->driver->setSubject($subject);
-			$this->driver->setBody($message, $is_html);
-			$this->driver->setFrom($from, $from_name);
-			$this->driver->setSender($reply_to, $reply_to_name);
+			$this->driver->setBody($message, $this->is_html);
+			$this->driver->setFrom($this->from, $this->from_name);
+			$this->driver->setSender($this->reply_to, $this->reply_to_name);
 
 			if ($attachments) {
 				$this->driver->setAttachments($attachments);
@@ -84,9 +160,9 @@ class Mail
 
 			$this->driver->send();
 
-			$this->app->plugins->run('mail_sent', $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
+			$this->app->plugins->run('mail_sent', $to, $subject, $message, $attachments, $this);
 		} catch (\Exception $e) {
-			$this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $from, $from_name, $reply_to, $reply_to_name, $is_html, $attachments, $this);
+			$this->app->plugins->run('mail_send_error', $e->getMessage(), $to, $subject, $message, $attachments, $this);
 
 			throw new \Exception(App::__('mail_error', ['{ERROR}' => $e->getMessage()]));
 		}

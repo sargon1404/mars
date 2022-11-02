@@ -22,6 +22,11 @@ class PhpMailer implements DriverInterface
 	protected object $handle;
 
 	/**
+	* @var bool $connected Set to true, if the connection to the memcache server has been made
+	*/
+	protected bool $loaded = false;
+
+	/**
 	* Builds the PhpMailer object
 	* @param App $app The app object
 	*/

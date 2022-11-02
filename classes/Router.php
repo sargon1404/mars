@@ -29,9 +29,9 @@ class Router
 	* @param string $type The type: get/post/put/delete
 	* @param string $route The route to handle
 	* @param mixed The action. Can be a closure, a string or a controller
-	* @return $this
+	* @return static
 	*/
-	public function add(string $type, string $route, $action)
+	public function add(string $type, string $route, $action) : static
 	{
 		$this->routes[$type][$route] = $action;
 
@@ -156,57 +156,55 @@ class Router
 	}
 
 	/**
+	* Handles a get request
+	* @param string $route The route to handle
+	* @param mixed The action. Can be a closure, a string, a controller
+	* @return static
+	*/
+	public function get(string $route, $action) : static
+	{
+		return $this->add('get', $route, $action);
+	}
+
+	/**
+	* Handles a get request
+	* @param string $route The route to handle
+	* @param mixed The action. Can be a closure, a string, a controller
+	* @returnstatic
+	*/
+	public function post(string $route, $action) : static
+	{
+		return $this->add('post', $route, $action);
+	}
+
+	/**
+	* Handles a get request
+	* @param string $route The route to handle
+	* @param mixed The action. Can be a closure, a string, a controller
+	* @return static
+	*/
+	public function put(string $route, $action) : static
+	{
+		return $this->add('put', $route, $action);
+	}
+
+	/**
+	* Handles a get request
+	* @param string $route The route to handle
+	* @param mixed The action. Can be a closure, a string, a controller
+	* @return static
+	*/
+	public function delete(string $route, $action) : static
+	{
+		return $this->add('delete', $route, $action);
+	}
+
+	/**
 	* Handles the 404 not found cases
 	*/
 	public function notFound()
 	{
 		header('HTTP/1.0 404 Not Found', true, 404);
 		die;
-	}
-
-	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return $this
-	*/
-	public function get(string $route, $action)
-	{
-		$this->add('get', $route, $action);
-
-		return $this;
-	}
-
-	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return $this
-	*/
-	public function post(string $route, $action)
-	{
-		$this->add('post', $route, $action);
-	}
-
-	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return $this
-	*/
-	public function put(string $route, $action)
-	{
-		$this->add('put', $route, $action);
-	}
-
-	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return $this
-	*/
-	public function delete(string $route, $action)
-	{
-		$this->add('delete', $route, $action);
 	}
 }

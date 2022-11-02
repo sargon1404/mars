@@ -20,12 +20,11 @@ class Theme extends \Mars\Extensions\Theme
 	*/
 	public function __construct(App $app)
 	{
-		$this->engine = new Templates;
-		var_dump($this->engine);
-		die;
 		parent::__construct($app->config->theme, $app);
-		
-		$this->engine = new Templates;
+
+		$this->templates = new Templates($app);
+
+		include($this->path . 'init.php');
 
 		$this->app->plugins->run('system_theme_construct', $this);
 	}

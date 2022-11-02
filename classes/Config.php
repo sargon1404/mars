@@ -207,7 +207,12 @@ class Config extends Data
 	/**
 	* @var string $lang The default theme
 	*/
-	public string $theme = 'theme';
+	public string $theme = 'default';
+
+	/**
+	* @var string $templates_driver The templates driver. Supported options: mars
+	*/
+	public string $templates_driver = 'mars';
 
 	/**
 	* @var string $css_version Version param to apply to all css stylesheets
@@ -363,6 +368,16 @@ class Config extends Data
 	* @var string $image_watermark_margin_left The left/right margin of the watermark text
 	*/
 	public string $image_watermark_margin_left = '30';
+
+	/**
+	* @var bool $captcha_enable If true, will enable captcha
+	*/
+	public bool $captcha_enable = false;
+
+	/**
+	* @var string $captcha_driver The captca driver to use
+	*/
+	public string $captcha_driver = 'recaptcha2';
 
 	/**
 	* Builds the Config object

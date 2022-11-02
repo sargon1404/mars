@@ -7,6 +7,7 @@
 namespace Mars\Extensions;
 
 use Mars\App;
+use Mars\Templates;
 
 /**
 * The Theme Trait
@@ -14,16 +15,6 @@ use Mars\App;
 */
 trait ThemeTrait
 {
-	/**
-	* @var Drivers $drivers The drivers object
-	*/
-	public readonly Drivers $drivers;
-
-	/**
-	* @var DriverInterface $driver The driver object
-	*/
-	protected DriverInterface $driver;
-		
 	/**
 	* @var string $header_template The template which will be used to render the header
 	*/
@@ -40,89 +31,19 @@ trait ThemeTrait
 	public string $content_template = 'content';
 
 	/**
-	* @var string $layout The layout used to render the theme, if any
-	*/
-	public string $layout = '';
-
-	/**
 	* @var string $templates_path The path for the theme's templates folder
 	*/
-	public string $templates_path = '';
+	protected string $templates_path = '';
 
 	/**
 	* @var string $images_path The path for the theme's images folder
 	*/
-	public string $images_path = '';
+	protected string $images_path = '';
 
 	/**
 	* @var string $images_url The url of the theme's images folder
 	*/
-	public string $images_url = '';
-
-	/**
-	* @var array $vars The theme's vars are stored here
-	*/
-	public array $vars = [];
-
-	/**
-	* @var bool $css_output If true, will output the main css file
-	*/
-	public bool $css_output = true;
-
-	/**
-	* @var bool $javascript_output If true, will output the main js file
-	*/
-	public bool $javascript_output = true;
-
-	/**
-	* @var array Array with the list of loaded templates
-	*/
-	protected array $templates_loaded = [];
-
-	/**
-	* @var Template $engine The engine used to parse the template
-	*/
-	protected ?Templates $engine = null;
-
-	/**
-	* @internal
-	*/
-	protected $obj = null;
-
-	/**
-	* @internal
-	*/
-	protected array $objs = [];
-
-	/**
-	* @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
-	*/
-	protected array $foreach_keys = [];
-
-	/**
-	* @var array $foreach_values Array where existing vars with the same name as a foreach value are temporarily stored
-	*/
-	protected array $foreach_values = [];
-
-	/**
-	* @var array $foreach_loops Array where existing loop counts are temporarily stored
-	*/
-	protected array $foreach_loops = [];
-
-	/**
-	* @var array $foreach_loops_count Array storing the loop index for each foreach cycle
-	*/
-	protected array $foreach_loops_count = [];
-
-	/**
-	* @var string $css_file The name of the main css file
-	*/
-	protected string $css_file = 'style.css';
-
-	/**
-	* @var string $javascript_file The name of the main js file
-	*/
-	protected string $javascript_file = 'javascript.js';
+	protected string $images_url = '';
 
 	/**
 	* @var string $cache_path The folder where the cache files are stored
@@ -130,55 +51,29 @@ trait ThemeTrait
 	protected string $cache_path = '';
 
 	/**
-	* @var string $cache_url The url pointing to the folder where the cache files are stored
+	* @var array $vars The theme's vars are stored here
 	*/
-	protected string $cache_url = '';
+	protected array $vars = [];
 
 	/**
-	* @var string $templates_cache_path The folder where the templates will be cached
+	* @var array Array with the list of loaded templates
 	*/
-	protected string $templates_cache_path = '';
+	protected array $templates_loaded = [];
+
+	/**
+	* @var Template templates The engine used to parse the template
+	*/
+	protected Templates $templates;
+
+	/**
+	* @var string $content The generated content
+	*/
+	protected string $content = '';
 
 	/**
 	* @internal
 	*/
 	protected static string $base_dir = 'themes';
-	
-	
-	/**
-	* @var array $supported_drivers The supported drivers
-	*/
-	protected array $supported_drivers = [
-		'mars' => '\Mars\Templates\Mars',
-	];
-
-
-	/**
-	* Adds a supported modifier to the list
-	* @param string $name The name of the modifier
-	* @param string $function The name of the function handling the modifier
-	* @param int $priority The priority of the modifier
-	* @param bool $escape If false, the value won't be html escaped
-	* @return $this
-	*/
-	public function addSupportedModifier(string $name, string $function, int $priority, bool $escape = true)
-	{
-		$this->engine->addSupportedModifier($name, $function, $priority, $escape);
-
-		return $this;
-	}
-
-	/**
-	* Removes a supported modifier
-	* @param string $name The name of the modifier
-	* @return $this
-	*/
-	public function removeSupportedModifier(string $name)
-	{
-		$this->engine->removeSupportedModifier($name);
-
-		return $this;
-	}
 
 	/**
 	* Prepares the theme
@@ -187,7 +82,6 @@ trait ThemeTrait
 	{
 		$this->preparePaths();
 		$this->prepareDevelopment();
-		$this->prepareProperties();
 		$this->prepareVars();
 	}
 
@@ -198,21 +92,10 @@ trait ThemeTrait
 	{
 		parent::preparePaths();
 
-		$this->cache_path = $this->app->cache_path;
-		$this->cache_url = $this->app->cache_url;
-		$this->templates_cache_path = $this->cache_path . App::CACHE_DIRS['templates'];
+		$this->cache_path = $this->app->cache_path . App::CACHE_DIRS['templates'];
 		$this->templates_path = $this->path . App::EXTENSIONS_DIRS['templates'];
 		$this->images_path = $this->path . App::EXTENSIONS_DIRS['images'];
 		$this->images_url = $this->url . App::EXTENSIONS_DIRS['images'];
-	}
-
-	/**
-	* Prepares the properties
-	*/
-	protected function prepareProperties()
-	{
-		$this->css_output = $this->app->config->css_output;
-		$this->javascript_output = $this->app->config->javascript_output;
 	}
 
 	/**
@@ -253,9 +136,9 @@ trait ThemeTrait
 	* Adds a theme variable.
 	* @param string $name The name of the var
 	* @param mixed $value The value of the var
-	* @return $this
+	* @return static
 	*/
-	public function addVar(string $name, $value)
+	public function addVar(string $name, $value) : static
 	{
 		$this->vars[$name] = $value;
 
@@ -263,30 +146,17 @@ trait ThemeTrait
 	}
 
 	/**
-	* Adds a theme variable,by reference
-	* @param string $name The name of the var
-	* @param mixed $value The value of the var
-	* @return $this
-	*/
-	public function addVarr(string $name, &$value)
-	{
-		$this->vars[$name] = &$value;
-
-		return $this;
-	}
-
-	/**
 	* Adds template variables
-	* @param array $values Adds each element [$name=>$value] from $values as theme variables
-	* @return $this
+	* @param array $vars Adds each element [$name=>$value] from $values as theme variables
+	* @return static
 	*/
-	public function addVars(array $values)
+	public function addVars(array $vars) : static
 	{
-		if (!$values) {
+		if (!$vars) {
 			return $this;
 		}
 
-		foreach ($values as $name => $value) {
+		foreach ($vars as $name => $value) {
 			$this->vars[$name] = $value;
 		}
 
@@ -294,28 +164,11 @@ trait ThemeTrait
 	}
 
 	/**
-	* Appends to a theme variable
-	* @param string $name The name of the var
-	* @param mixed $value The value to append
-	* @return $this
-	*/
-	public function appendToVar(string $name, $value)
-	{
-		if (!isset($this->vars[$name])) {
-			$this->vars[$name] = '';
-		}
-
-		$this->vars[$name].= $value;
-
-		return $this;
-	}
-
-	/**
 	* Unsets a theme variable
 	* @param string $name The name of the var
-	* @return $this
+	* @return static
 	*/
-	public function unsetVar(string $name)
+	public function unsetVar(string $name) : static
 	{
 		unset($this->vars[$name]);
 
@@ -325,9 +178,9 @@ trait ThemeTrait
 	/**
 	* Unsets theme variables
 	* @param array $values Array with the name of the vars to unset
-	* @return $this
+	* @return static
 	*/
-	public function unsetVars(array $values)
+	public function unsetVars(array $values) : static
 	{
 		foreach ($values as $name) {
 			unset($this->vars[$name]);
@@ -337,17 +190,6 @@ trait ThemeTrait
 	}
 
 	/************** TEMPLATES METHODS **************************/
-
-	/**
-	* Alias for render
-	* Renders/Outputs a template
-	* @param string $template The name of the template
-	* @param array $vars Vars to pass to the template, if any
-	*/
-	public function renderTemplate(string $template, array $vars = [])
-	{
-		$this->render($template, $vars);
-	}
 
 	/**
 	* Renders/Outputs a template
@@ -360,92 +202,77 @@ trait ThemeTrait
 	}
 
 	/**
+	* Renders/Outputs a template, by filename
+	* @param string $filename The filename of the template
+	* @param array $vars Vars to pass to the template, if any
+	*/
+	public function renderFilename(string $filename, array $vars = [])
+	{
+		echo $this->getTemplateFromFilename($filename, $vars);
+	}
+
+	/**
 	* Loads a template and returns it's content
 	* @param string $template The name of the template
 	* @param array $vars Vars to pass to the template, if any
+	* @param strint $type The template's type, if any
 	* @return string The template content
 	*/
-	public function getTemplate(string $template, array $vars = []) : string
+	public function getTemplate(string $template, array $vars = [], string $type = '') : string
+	{
+		if ($this->app->config->debug) {
+			$this->templates_loaded[] = $template;
+		}
+
+		$filename = $this->getTemplateFilename($template);
+		$cache_filename = $this->getTemplateCacheFilename($template, $type);
+
+		$content = $this->getTemplateContent($filename, $cache_filename, $vars, ['template' => $template]);
+
+		return $this->app->plugins->filter('theme_get_template', $content, $template, $vars, $type, $this);
+	}
+
+	/**
+	* Loads a template and returns it's content
+	* @param string $filename The filename of the template
+	* @param array $vars Vars to pass to the template, if any
+	* @param strint $type The template's type, if any
+	* @return string The template content
+	*/
+	public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template') : string
+	{
+		if ($this->app->config->debug) {
+			$this->templates_loaded[] = $filename;
+		}
+
+		$cache_filename = $this->getTemplateCacheFilename($filename, $type);
+
+		return $this->getTemplateContent($filename, $cache_filename, $vars);
+	}
+
+	/**
+	* Returns the contents of a template
+	* @param string $filename The filename from where the template will be loaded
+	* @param string $cache_filename The filename used to cache the template
+	* @param array $vars Vars to pass to the template, if any
+	* @param array $params Params to pass to the parser
+	* @return string The template content
+	*/
+	protected function getTemplateContent(string $filename, string $cache_filename, array $vars, array $params = []) : string
 	{
 		if ($vars) {
 			$this->addVars($vars);
 		}
 
-		if ($this->app->config->debug) {
-			$this->templates_loaded[] = $template;
-		}
-
-		$current_obj = $this->obj;
-		$this->unsetObj();
-
-		$cache_filename = $this->getTemplateCacheFilename($template);
-
 		if ($this->development || !is_file($cache_filename)) {
-			$filename = $this->getTemplateFilename($template);
-
-			$this->writeTemplate($filename, $cache_filename);
+			$this->writeTemplate($filename, $cache_filename, ['filename' => $filename] + $params);
 		}
 
 		$content = $this->includeTemplate($cache_filename);
 
-		$this->setObj($current_obj);
-
-		$content = $this->app->plugins->filter('theme_get_template', $content, $template, $this);
+		$content = $this->app->plugins->filter('theme_get_template_content', $content, $filename, $cache_filename, $vars, $this);
 
 		return $content;
-	}
-
-	/**
-	* Caches, if required, and returns the content of a template
-	* @param string $filename The filename from where the template will be loaded
-	* @param string $cache_filename The filename used to cache the template
-	* @param bool $development If true, the template won't be cached
-	* @return string The template content
-	*/
-	protected function getTemplateContent(string $filename, string $cache_filename, bool $development = false) : string
-	{
-		if ($this->development || !is_file($cache_filename) || $development) {
-			$this->writeTemplate($filename, $cache_filename);
-		}
-
-		return $this->includeTemplate($cache_filename);
-	}
-
-	/**
-	* Loads a template and returns it's content from $filename
-	* @param string $filename The filename from where the template will be loaded
-	* @param bool $development If true, the template won't be cached
-	* @return string The template content
-	*/
-	public function getTemplateFromFilename(string $filename, bool $development = false) : string
-	{
-		$filename_rel = $this->app->file->getRel($filename);
-		if ($this->app->config->debug) {
-			$this->templates_loaded[] = $filename_rel;
-		}
-
-		$cache_filename = $this->getItemCacheFilename('file', '', $filename_rel);
-
-		return $this->getTemplateContent($filename, $cache_filename, $development);
-	}
-
-	/**
-	* Loads $filename, parses it and then writes it in the cache folder
-	* @param string $filename The filename from where the template will be loaded
-	* @param string $cache_filename The filename used to cache the template
-	* @return bool True if the template was written, false on failure
-	*/
-	protected function writeTemplate(string $filename, string $cache_filename) : bool
-	{
-		$content = file_get_contents($filename);
-
-		if ($content === false) {
-			return false;
-		}
-
-		$content = $this->parseTemplate($content);
-
-		return file_put_contents($cache_filename, $content);
 	}
 
 	/**
@@ -459,89 +286,34 @@ trait ThemeTrait
 	}
 
 	/**
-	* Returns the filename corresponding to $template
-	* @param string $dir The dir where the template is located
-	* @param string $template The name of the template
-	* @return string The filename
+	* Loads $filename, parses it and then writes it in the cache folder
+	* @param string $filename The filename from where the template will be loaded
+	* @param string $cache_filename The filename used to cache the template
+	* @param array $params Params to pass to the parser
+	* @return bool True if the template was written, false on failure
 	*/
-	public function buildTemplateFilename(string $dir, string $template)
+	protected function writeTemplate(string $filename, string $cache_filename, array $params) : bool
 	{
-		return $dir . '/' . $template . '.' . App::FILE_EXTENSIONS['templates'];
-	}
+		$content = file_get_contents($filename);
 
-	/**
-	* Generates a cache filename for a template
-	* @param string $template The name of the template
-	* @return string The filename
-	*/
-	public function getTemplateCacheFilename(string $template) : string
-	{
-		$parts = [
-			$this->name,
-			$this->cleanCacheFilenamePart($this->layout),
-			$this->cleanCacheFilenamePart($template),
-			$this->app->device->type,
-			$this->app->config->secret,
-			'theme'
-		];
+		if ($content === false) {
+			return false;
+		}
 
-		return $this->getCacheFilename($parts);
-	}
+		$content = $this->parseTemplate($content, $params);
 
-	/**
-	* Generates a cache filename for an custom item
-	* @param string $type The item's type
-	* @param string $name The item's name
-	* @param string $template The name of the template
-	* @param string $layout The layout, if any
-	* @return string The filename
-	*/
-	public function getItemCacheFilename(string $type, string $name, string $template, string $layout = '') : string
-	{
-		$parts = [
-			$this->cleanCacheFilenamePart($type),
-			$this->cleanCacheFilenamePart($name),
-			$this->cleanCacheFilenamePart($layout),
-			$this->cleanCacheFilenamePart($template),
-			$this->app->device->type,
-			$this->app->config->key,
-			'ext'
-		];
-
-		return $this->getCacheFilename($parts);
-	}
-
-	/**
-	* Returns the filename under which a file will be cached
-	* @param array $parts The cache parts
-	* @return string The filename
-	*/
-	protected function getCacheFilename(array $parts) : string
-	{
-		//filter out the empty parts
-		$parts = array_filter($parts);
-
-		return $this->templates_cache_path . implode('-', $parts) . '.php';
-	}
-
-	/**
-	* Cleans a part used in a filename, when caching
-	* @param string $part The part to clean
-	* @return string The cleaned part
-	*/
-	protected function cleanCacheFilenamePart($part) : string
-	{
-		return trim(str_replace(['/', '.'], '-', $part), '-');
+		return file_put_contents($cache_filename, $content);
 	}
 
 	/**
 	* Parses the template content
 	* @param string $content The content to parse
+	* @param array $params Params to pass to the parser
 	* @return string The parsed content
 	*/
-	protected function parseTemplate(string $content) : string
+	protected function parseTemplate(string $content, array $params) : string
 	{
-		return $this->engine->parse($content);
+		return $this->templates->parse($content, $params);
 	}
 
 	/**
@@ -563,49 +335,25 @@ trait ThemeTrait
 	}
 
 	/**
-	* Returns a subtemplate as a result of an {% include subtemplate_name %}
-	* @param string $subtemplate The name of the subtemplate
-	* @return string The subtemplate's content
+	* Generates a cache filename for a template
+	* @param string $template The name of the template
+	* @return string The filename
 	*/
-	public function getSubtemplate(string $subtemplate) : string
+	public function getTemplateCacheFilename(string $template, string $type) : string
 	{
-		if (!$this->obj) {
-			return $this->getTemplate($subtemplate);
-		}
+		$parts = [
+			$this->name,
+			$template,
+			$type,
+			$this->app->config->key,
+		];
 
-		$template = '';
-		$layout = '';
+		$parts = array_filter($parts);
 
-		//split the subtemplate name in case the layout is also specified
-		$parts = explode('/', $subtemplate);
+		$name = implode('-', $parts);
+		$name = trim(str_replace(['/', '.'], '-', $name), '-');
 
-		if (count($parts) == 1) { //only the template name is specified
-			$template = $parts[0];
-		} else {
-			if (count($parts) > 2) {
-				//more than 2 parts specified,most likely a slight syntax error ( /layout/template instead of layout/template),which we'll silently try to fix
-				if ($parts[0] == '') {
-					array_shift($parts);
-				}
-			}
-
-			$layout = $parts[0];
-			$template = $parts[1];
-			if (!$layout) {
-				$layout = null;
-			}
-		}
-
-		return $this->obj->getTemplate($template, $layout);
-	}
-
-	/**
-	* Renders a subtemplate
-	* @param string $subtemplate The name of the subtemplate
-	*/
-	public function renderSubtemplate(string $subtemplate)
-	{
-		echo $this->getSubtemplate($subtemplate);
+		return $this->cache_path . $name . '.php';
 	}
 
 	/**************** RENDER METHODS *************************************/
@@ -620,10 +368,13 @@ trait ThemeTrait
 
 	/**
 	* Outputs the content template
+	* @param string $content The content to render
 	*/
-	public function renderContent()
+	public function renderContent(string $content)
 	{
-		echo $this->getTemplate($this->content_template);
+		$this->content = $content;
+
+		echo $this->getTemplate($this->content_template, ['content' => $content]);
 	}
 
 	/**
@@ -637,11 +388,42 @@ trait ThemeTrait
 	/**************** OUTPUT METHODS *************************************/
 
 	/**
-	* Outputs the system generated content
+	* Outputs code in the <head>
+	*/
+	public function outputHead()
+	{
+		$this->outputTitle();
+		$this->outputEncoding();
+		$this->outputMeta();
+		$this->outputRss();
+
+		$this->outputCssUrls('first');
+		$this->outputCssUrls('head');
+
+		$this->outputJavascriptUrls('first');
+		$this->outputJavascriptUrls('head');
+
+		$this->app->plugins->run('theme_output_head', $this);
+	}
+
+	/**
+	* Outputs code in the footer
+	*/
+	public function outputFooter()
+	{
+		$this->outputCssUrls('footer');
+
+		$this->outputJavascriptUrls('footer');
+
+		$this->app->plugins->run('theme_output_footer', $this);
+	}
+
+	/**
+	* Outputs the generated content
 	*/
 	public function outputContent()
 	{
-		echo $this->app->content;
+		echo $this->content;
 	}
 
 	/**
@@ -665,27 +447,11 @@ trait ThemeTrait
 	*/
 	public function outputTitle()
 	{
-		$title = $this->app->title->get();
+		$title = $this->app->document->title->get();
 
 		$title = $this->app->plugins->filter('theme_output_title', $title);
 
 		echo '<title>' . $this->app->escape->html($title) . '</title>' . "\n";
-	}
-
-	/**
-	* Outputs the start tag for javascript inline code
-	*/
-	public function outputJavascriptCodeStart()
-	{
-		echo '<script type="text/javascript">' . "\n";
-	}
-
-	/**
-	* Outputs the start tag for javascript inline code
-	*/
-	public function outputJavascriptCodeEnd()
-	{
-		echo '</script>' . "\n";
 	}
 
 	/**
@@ -698,9 +464,9 @@ trait ThemeTrait
 			return;
 		}
 
-		$this->outputJavascriptCodeStart();
+		echo '<script type="text/javascript">' . "\n";
 		echo $code . "\n";
-		$this->outputJavascriptCodeEnd();
+		echo '</script>' . "\n";
 	}
 
 	/**
@@ -724,7 +490,7 @@ trait ThemeTrait
 	*/
 	public function outputCssUrls(string $location)
 	{
-		$this->app->css->output($location);
+		$this->app->document->css->output($location);
 	}
 
 	/**
@@ -733,36 +499,7 @@ trait ThemeTrait
 	*/
 	public function outputJavascriptUrls(string $location)
 	{
-		$this->app->javascript->output($location);
-	}
-
-	/**
-	* Outputs code in the <head>
-	*/
-	public function outputHead()
-	{
-		$this->outputTitle();
-		$this->outputEncoding();
-
-		$this->outputCssUrls('first');
-		$this->outputCssUrl();
-		$this->outputCssUrls('head');
-
-		$this->outputJavascriptUrls('first');
-		$this->outputJavascriptUrl();
-		$this->outputJavascriptUrls('head');
-
-		$this->outputMeta();
-		$this->outputRss();
-	}
-
-	/**
-	* Outputs code in the <footer>
-	*/
-	public function outputFooter()
-	{
-		$this->outputCssUrls('footer');
-		$this->outputJavascriptUrls('footer');
+		$this->app->document->javascript->output($location);
 	}
 
 	/**
@@ -798,7 +535,7 @@ trait ThemeTrait
 	*/
 	public function outputMeta()
 	{
-		$this->app->meta->output();
+		$this->app->document->meta->output();
 	}
 
 	/**
@@ -806,7 +543,7 @@ trait ThemeTrait
 	*/
 	public function outputRss()
 	{
-		$this->app->rss->output();
+		$this->app->document->rss->output();
 	}
 
 	/**
@@ -827,15 +564,15 @@ trait ThemeTrait
 	*/
 	public function outputExecutionTime()
 	{
-		echo $this->app->timer->getExecutionTime();
+		return $this->app->timer->getExecutionTime();
 	}
 
 	/**
-	* Outputs the memory usage
+	* Returns the memory usage
 	*/
 	public function outputMemoryUsage()
 	{
-		echo round(memory_get_peak_usage(true) / (1024 * 1024), 4);
+		return round(memory_get_peak_usage(true) / (1024 * 1024), 4);
 	}
 
 	/**************** OUTPUT MESSAGES *************************************/
@@ -863,7 +600,7 @@ trait ThemeTrait
 
 		$this->addVar('errors', $errors);
 
-		$this->renderTemplate('alerts/errors');
+		$this->render('alerts/errors');
 	}
 
 	/**
@@ -905,7 +642,7 @@ trait ThemeTrait
 
 		$this->addVar('messages', $messages);
 
-		$this->renderTemplate('alerts/messages');
+		$this->render('alerts/messages');
 	}
 
 	/**
@@ -920,7 +657,7 @@ trait ThemeTrait
 
 		$this->addVar('notifications', $notifications);
 
-		$this->renderTemplate('alerts/notifications');
+		$this->render('alerts/notifications');
 	}
 
 	/**
@@ -935,185 +672,6 @@ trait ThemeTrait
 
 		$this->addVar('warnings', $warnings);
 
-		$this->renderTemplate('alerts/warnings');
-	}
-
-	/**************TEMPLATES INNER METHODS**************************/
-
-	/**
-	* Sets the context object
-	* @internal
-	*/
-	public function setObj($obj)
-	{
-		$this->obj = $obj;
-
-		array_push($this->objs, $obj);
-	}
-
-	/**
-	* @internal
-	*/
-	public function restoreObj()
-	{
-		array_pop($this->objs);
-
-		$this->obj = end($this->objs);
-	}
-
-	/**
-	* @internal
-	*/
-	public function unsetObj()
-	{
-		$this->obj = null;
-	}
-
-	/**
-	* Sets a foreach key & value as vars
-	* @param string $loop_index The name of the loop index
-	* @param string $key The name of the key
-	* @param string $value The name of the value
-	*/
-	protected function setForeachData(string $loop_index, string $key, string $value)
-	{
-		$this->foreach_loops_count[$loop_index] = -1;
-
-		if ($key) {
-			if (isset($this->vars[$key])) {
-				$this->foreach_keys[$key] = $this->vars[$key];
-			} else {
-				$this->foreach_keys[$key] = '';
-			}
-		}
-
-		if (isset($this->vars[$value])) {
-			$this->foreach_values[$value] = $this->vars[$value];
-		} else {
-			$this->foreach_values[$value] = '';
-		}
-
-		$this->foreach_loops[] = $this->vars['loop_index'] ?? -1;
-	}
-
-	/**
-	* Loops over a foreach construct
-	* @param string $loop_index The name of the loop index
-	* @param string $key The name of the key
-	* @param mixed $key_data The key's data
-	* @param string $value The name of the value
-	* @param mixed $value_data The value's data
-	*/
-	protected function loopForeach(string $loop_index, string $key, $key_data, string $value, $value_data)
-	{
-		$this->foreach_loops_count[$loop_index]++;
-
-		$this->vars['loop_index'] = $this->foreach_loops_count[$loop_index];
-
-		if ($key) {
-			$this->vars[$key] = $key_data;
-		}
-
-		$this->vars[$value] = $value_data;
-	}
-
-	/**
-	* Restores the key/value vars to the previous values
-	*/
-	protected function restoreForeachVar()
-	{
-		$keys = array_keys($this->foreach_keys);
-		$name = array_pop($keys);
-		$value = array_pop($this->foreach_keys);
-		$this->vars[$name] = $value;
-
-		$keys = array_keys($this->foreach_values);
-		$name = array_pop($keys);
-		$value = array_pop($this->foreach_values);
-		$this->vars[$name] = $value;
-
-		$value = array_pop($this->foreach_loops);
-
-		if ($value != -1) {
-			$this->vars['loop_index'] = $value;
-		}
-	}
-
-	/**
-	* Outputs $str at each foreach loop interval matching $interval
-	* @param int $interval The interval to output the string at
-	* @param string $str The string to output
-	* @return string
-	*/
-	public function cycle(int $interval, string $str, $skip_zero = false) : string
-	{
-		if ($skip_zero && !$this->vars['loop_index']) {
-			return '';
-		}
-
-		if ($this->vars['loop_index'] % $interval == 0) {
-			return $str;
-		}
-
-		return '';
-	}
-
-	/**
-	* Outputs $str as the start of a cycle
-	* @param int $interval The interval to output the string at
-	* @param string $str The string to output
-	* @return string
-	*/
-	public function cycleStart(int $interval, string $str) : string
-	{
-		return $this->cycle($interval, $str);
-	}
-
-	/**
-	* Outputs $str as the end of a cycle
-	* @param int $interval The interval to output the string at
-	* @param string $str The string to output
-	* @return string
-	*/
-	public function cycleEnd(int $interval, string $str) : string
-	{
-		if (($this->vars['loop_index'] + 1) % $interval == 0) {
-			return $str;
-		}
-
-		return '';
-	}
-
-	/**
-	* Outputs $str as the end of a cycle
-	* @param int $interval The interval to output the string at
-	* @param string $str The string to output
-	* @return string
-	*/
-	public function cycleFinish(int $interval, string $str) : string
-	{
-		if (($this->vars['loop_index'] + 1) % $interval != 0) {
-			return $str;
-		}
-
-		return '';
-	}
-
-	/**
-	* Repeats a string
-	* @param string $str The string to repeat
-	* @param int $multiplier The number of time the string should be repeated
-	* @param string $str_end Will output $str_end if muliplier is not zero
-	* @return string
-	*/
-	public function repeat(string $str, int $multiplier, string $str_end = '') : string
-	{
-		$str = str_repeat($str, $multiplier);
-
-		if ($multiplier) {
-			$str.= $str_end;
-		}
-
-		return $str;
+		$this->render('alerts/warnings');
 	}
 }

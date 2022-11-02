@@ -130,11 +130,11 @@ class Format
 
 	/**
 	* Formats a filesize. It returns the result in gb, mb or kb depending on the $kb parameter
-	* @param int $bytes The filesize - in bytes - to be converted.
+	* @param int|float|array $bytes The filesize - in bytes - to be converted.
 	* @param int $digits The number of digits to return to the result if it's MBs.
 	* @return string The formatted filesize
 	*/
-	public function filesize(int|array $bytes, int $digits = 2) : string|array
+	public function filesize(int|float|array $bytes, int $digits = 2) : string|array
 	{
 		return $this->handlers->map($bytes, function ($bytes) use ($digits) {
 			return $this->handlers->get('filesize')->format($bytes, $digits);

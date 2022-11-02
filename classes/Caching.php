@@ -35,6 +35,9 @@ class Caching extends Cacheable
 		if ($this->app->is_bin || !$this->app->config->content_cache_enable || defined('CONTENT_CACHE_DISABLE')) {
 			return;
 		}
+		if ($this->app->config->debug || $this->app->config->development) {
+			return;
+		}
 		if ($this->app->method == 'post') {
 			return;
 		}
@@ -74,6 +77,9 @@ class Caching extends Cacheable
 	*/
 	public function store(string $content) : static
 	{
+		if (!$this->can_cache) {
+			return $this;
+		}
 		if ($this->minify) {
 			$content = $this->minify($content);
 		}
@@ -108,7 +114,7 @@ class Caching extends Cacheable
 	*/
 	public function minify(string $content) : string
 	{
-		$minifier = new Minifier;
+		$minifier = new Minifier($this->app);
 
 		return $minifier->minifyHtml($content);
 	}

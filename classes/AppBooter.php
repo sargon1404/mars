@@ -75,7 +75,7 @@ class AppBooter
 		$this->app->html = new Html($this->app);
 		$this->app->ui = new Ui($this->app);
 		$this->app->text = new Text($this->app);
-		$this->app->mail = new Mail($this->app);
+		$this->app->debug = new Debug($this->app);
 	}
 
 	/**
@@ -115,8 +115,8 @@ class AppBooter
 		$this->app->plugins->load();
 
 		$this->app->lang = new System\Language($this->app);
-		//$this->app->theme = new System\Theme($this->app);
+		$this->app->theme = new System\Theme($this->app);
 
-		/*$this->app->router = new Router;*/
+		$this->app->router = new Router;
 	}
 }

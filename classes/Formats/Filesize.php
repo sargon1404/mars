@@ -14,7 +14,7 @@ class Filesize
 	/**
 	* @see \Mars\Format::filesize()
 	*/
-	public function format(int|array $bytes, int $digits = 2) : string|array
+	public function format(int|float|array $bytes, int $digits = 2) : string|array
 	{
 		$gb_limit = 1024 * 768;
 

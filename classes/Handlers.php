@@ -135,6 +135,22 @@ class Handlers
 	}
 
 	/**
+	* Returns all the handlers
+	*/
+	public function getAll() : array
+	{
+		if ($this->store && $this->handlers) {
+			return $this->handlers;
+		}
+
+		foreach ($this->list as $name => $class) {
+			$this->get($name);
+		}
+
+		return $this->handlers;
+	}
+
+	/**
 	* Maps a value [scalar|array] to a callback
 	* @param mixed $value The value
 	* @param callable $callback The callback function

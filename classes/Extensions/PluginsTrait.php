@@ -91,6 +91,15 @@ trait PluginsTrait
 	}
 
 	/**
+	* Return the list of executed hooks
+	* @return array
+	*/
+	public function getHooks() : array
+	{
+		return $this->hooks;
+	}
+
+	/**
 	* Registers hooks for execution
 	* @param Plugin $plugin The plugin executing the hook
 	* @param string|array $hooks The names of the hooks at which the plugin will be attached
