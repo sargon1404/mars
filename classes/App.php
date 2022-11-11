@@ -138,9 +138,9 @@ class App
 	public Accelerator $accelerator;
 
 	/**
-	* @var Alerts $alerts The alerts object
+	* @var Bin $bin The bin object
 	*/
-	public Alerts $alerts;
+	public Bin $bin;
 
 	/**
 	* @var Cache $cache The cache object
@@ -362,7 +362,11 @@ class App
 	public const EXTENSIONS_DIRS = [
 		'languages' => 'languages/',
 		'templates' => 'templates/',
-		'images' => 'images/'
+		'images' => 'images/',
+
+		'controllers' => 'controllers/',
+		'models' => 'models/',
+		'views' => 'views/',
 	];
 
 	/**
@@ -390,6 +394,15 @@ class App
 	];
 
 	/**
+	* @var array The objects container
+	*/
+	protected static array $container = [
+		'mail' => '\Mars\Mail',
+		'minifier' => '\Mars\Helper\Minifier',
+		'http_request' => '\Mars\Http\Request'
+	];
+
+	/**
 	* Protected constructor
 	*/
 	protected function __construct()
@@ -401,10 +414,10 @@ class App
 		if (!$this->is_bin) {
 			$this->is_https = $this->getIsHttps();
 			$this->scheme = $this->getScheme();
-			$this->method = $this->getMethod();
+			$this->method = $this->getRequestMethod();
 			$this->protocol = $this->getProtocol();
-			$this->is_http2 = $this->getIsHttp2();
 			$this->full_url = $this->getFullUrl();
+			$this->is_http2 = $this->getIsHttp2();
 		}
 
 		$this->setDirs();
@@ -422,11 +435,40 @@ class App
 	}
 
 	/**
-	* Returns the app instance
-	* @return App The app instance
+	* Returns an object
+	* @param string $name The name of the object. If empty, the app object is returned
+	* @return object The object
 	*/
-	public static function get() : App
+	public static function get(string $name = '')
 	{
+		if (!$name) {
+			return static::$instance;
+		}
+		if (!isset(static::$container[$name])) {
+			throw new \Exception("Unknown object {$name}");
+		}
+
+		if (is_string($name)) {
+			$class = static::$container[$name];
+			return new $class(static::$instance);
+		} elseif (is_callable(static::$container[$name])) {
+			$func = static::$container[$name];
+			return $func();
+		}
+
+		return null;
+	}
+
+	/**
+	* Sets a container object
+	* @param string $name The name of the object
+	* @param string|callable $class The object's class/callable
+	* @return static
+	*/
+	public static function set(string $name, string $class) : static
+	{
+		static::$container[$name] = $class;
+
 		return static::$instance;
 	}
 
@@ -544,7 +586,7 @@ class App
 	* Returns the request method: get/post/put
 	* @return string
 	*/
-	protected function getMethod() : string
+	protected function getRequestMethod() : string
 	{
 		return strtolower($_SERVER['REQUEST_METHOD']);
 	}
@@ -736,7 +778,7 @@ class App
 	*/
 	public function ok() : bool
 	{
-		if ($this->alerts->errors->count()) {
+		if ($this->errors->count()) {
 			return false;
 		}
 
@@ -754,7 +796,7 @@ class App
 	}
 
 	/**
-	* End the output and sets $this->app->content
+	* Ends the output and sets $this->app->content
 	*/
 	public function end()
 	{
@@ -793,7 +835,7 @@ class App
 
 		$this->plugins->run('app_end_end', $this);
 
-		echo $output;
+		$this->response->output($output);
 	}
 
 	/**
@@ -811,7 +853,6 @@ class App
 		$this->debug->output();
 		return ob_get_clean();
 	}
-
 
 	/**
 	* Renders/Outputs a template
@@ -844,7 +885,6 @@ class App
 
 		$this->end();
 	}
-
 
 	/**********************SCREENS FUNCTIONS***************************************/
 

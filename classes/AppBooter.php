@@ -118,5 +118,6 @@ class AppBooter
 		$this->app->theme = new System\Theme($this->app);
 
 		$this->app->router = new Router;
+		$this->app->bin = new Bin($this->app);
 	}
 }

@@ -25,13 +25,18 @@ abstract class Urls
 	protected string $version = '';
 
 	/**
+	* @var string $push_type The http2 push type
+	*/
+	protected string $push_type = '';
+
+	/**
 	* Outputs an url
 	* @param string $url The url to output
-	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @param bool $async If true, will apply the async attr
 	* @param bool $defer If true, will apply the defer attr
+	* @param bool $is_local True, if the url is a local url
 	*/
-	abstract public function outputUrl(string $url, bool|string $version = true, bool $async = false, bool $defer = false);
+	abstract public function outputUrl(string $url, bool $async = false, bool $defer = false);
 
 	/**
 	* Loads an url
@@ -43,7 +48,7 @@ abstract class Urls
 	* @param bool $defer If true, will apply the defer attr
 	* @return static
 	*/
-	public function load(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
+	public function add(string $url, string $location = 'head', int $priority = 100, $version = true, bool $async = false, bool $defer = false) : static
 	{
 		$this->urls[$url] = [
 			'location' => $location, 'priority' => $priority, 'version' => $version,
@@ -58,7 +63,7 @@ abstract class Urls
 	* @param string $url The url to unload
 	* @return static
 	*/
-	public function unload(string $url) : static
+	public function remove(string $url) : static
 	{
 		if (!isset($this->urls[$url])) {
 			return $this;
@@ -115,7 +120,13 @@ abstract class Urls
 		$urls = $this->get($location);
 
 		foreach ($urls as $url => $data) {
-			$this->outputUrl($url, $data['version'], $data['async'], $data['defer']);
+			$url = $this->getUrl($url, $data['version']);
+
+			if ($data['is_local']) {
+				$this->pushUrl($url);
+			}
+
+			$this->outputUrl($url, $data['async'], $data['defer']);
 		}
 
 		return $this;
@@ -127,7 +138,7 @@ abstract class Urls
 	* @param bool|string $version If string, will add the specified version. If true, will add the configured version param to the url
 	* @return string The url
 	*/
-	protected function getUrl(string $url, bool|string $version = true) : string
+	public function getUrl(string $url, bool|string $version = true) : string
 	{
 		if (!$version) {
 			return $url;
@@ -138,5 +149,14 @@ abstract class Urls
 		}
 
 		return $this->app->uri->build($url, ['ver' => $version]);
+	}
+
+	/**
+	* http2 pushes the url, if enabled
+	* @param string $url The url to push
+	*/
+	protected function pushUrl(string $url)
+	{
+		$this->app->response->push->add($url, $this->push_type);
 	}
 }

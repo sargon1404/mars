@@ -4,23 +4,29 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Mvc;
 
-use Mars\Response\Ajax;
+use Mars\App;
+use Mars\Escape;
+use Mars\Filter;
+use Mars\Uri;
+use Mars\Validator;
+use Mars\System\Plugins;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Messages;
-use Mars\Alerts\Notifications;
+use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
+use Mars\Response\Types\Ajax;
 
 /**
 * The Controller Class
 * Implements the Controller functionality of the MVC pattern
 */
-abstract class Controller
+abstract class Controller extends \stdClass
 {
-	use AppTrait;
-	use ReflectionTrait;
-	use ValidationTrait {
+	use \Mars\AppTrait;
+	//use ReflectionTrait;
+	use \Mars\ValidationTrait {
 		validate as protected validateData;
 	}
 
@@ -65,11 +71,6 @@ abstract class Controller
 	public View $view;
 
 	/**
-	* @var Request $request The request object. Alias for $this->app->request
-	*/
-	protected Request $request;
-
-	/**
 	* @var Filter $filter The filter object. Alias for $this->app->filter
 	*/
 	protected Filter $filter;
@@ -90,9 +91,9 @@ abstract class Controller
 	protected Validator $validator;
 
 	/**
-	* @var object $plugins Alias for $this->app->plugins
+	* @var Plugins $plugins Alias for $this->app->plugins
 	*/
-	protected object $plugins;
+	protected Plugins $plugins;
 
 	/**
 	* @var Errors $errors The errors object. Alias for $this->app->errors
@@ -105,9 +106,9 @@ abstract class Controller
 	protected Messages $messages;
 
 	/**
-	* @var Notifications $notifications The notifications object. Alias for $this->app->notifications
+	* @var Info $info The info object. Alias for $this->app->info
 	*/
-	protected Notifications $notifications;
+	protected Info $info;
 
 	/**
 	* @var Warnings $warnings The warnings object. Alias for $this->app->warnings
@@ -116,8 +117,9 @@ abstract class Controller
 
 	/**
 	* Builds the controller
+	* @param App $app The app object
 	*/
-	public function __construct()
+	public function __construct(App $app)
 	{
 		$this->app = $this->getApp();
 
@@ -130,7 +132,6 @@ abstract class Controller
 	*/
 	protected function prepare()
 	{
-		$this->request = $this->app->request;
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
 		$this->uri = $this->app->uri;
@@ -139,7 +140,7 @@ abstract class Controller
 		$this->errors = $this->app->errors;
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;
-		$this->notifications = $this->app->notifications;
+		$this->info = $this->app->info;
 
 		$this->url = $this->app->url;
 	}
@@ -154,9 +155,9 @@ abstract class Controller
 	/**
 	* Sets the default_ok_method and default_error_method to the same method
 	* @param string $method The name of the method
-	* @return $this
+	* @return static
 	*/
-	public function setDefaultMethods(string $method)
+	public function setDefaultMethods(string $method) : static
 	{
 		$this->default_ok_method = $method;
 		$this->default_error_method = $method;
@@ -167,9 +168,9 @@ abstract class Controller
 	/**
 	* Sets the default method to be executed, if the requested one doesn't exist/is not public
 	* @param string $method The name of the method
-	* @return $this
+	* @return static
 	*/
-	public function setDefaultMethod(string $method)
+	public function setDefaultMethod(string $method) : static
 	{
 		$this->default_method = $method;
 
@@ -179,9 +180,9 @@ abstract class Controller
 	/**
 	* Sets the ok method. Called after the main method, if it returns true
 	* @param string $method The name of the method
-	* @return $this
+	* @return static
 	*/
-	public function setDefaultOkMethod(string $method)
+	public function setDefaultOkMethod(string $method) : static
 	{
 		$this->default_ok_method = $method;
 
@@ -191,9 +192,9 @@ abstract class Controller
 	/**
 	* Sets the error method. Called after the main method, if it returns false
 	* @param string $method The name of the method
-	* @return $this
+	* @return static
 	*/
-	public function setDefaultErrorMethod(string $method)
+	public function setDefaultErrorMethod(string $method) : static
 	{
 		$this->default_error_method = $method;
 
@@ -211,25 +212,30 @@ abstract class Controller
 	*/
 	public function dispatch(string $method = '', array $params = [])
 	{
-		if ($method) {
-			if (method_exists($this, $method)) {
-				if ($this->canDispatch($method)) {
-					$this->route($method, $params);
+		if (!$method) {
+			$method = $this->app->request->getAction();
+			if (!$method) {
+				$method = $this->default_method;
+			}
+		}
 
-					return;
-				}
-			} elseif (isset($this->$method)) {
-				//call a dynamic added method,if any
-				if ($this->$method instanceof \Closure) {
-					call_user_func_array($this->$method, [$this]);
+		$method = App::getMethod($method);
 
-					return;
-				}
+		if (method_exists($this, $method)) {
+			if ($this->canDispatch($method)) {
+				$this->route($method, $params);
+				return;
+			}
+		} elseif (isset($this->$method)) {
+			//call a dynamic added method,if any
+			if ($this->$method instanceof \Closure) {
+				call_user_func_array($this->$method, [$this]);
+				return;
 			}
 		}
 
 		//call the default method
-		$this->call($this->default_method);
+		$this->route($this->default_method);
 	}
 
 	/**
@@ -258,6 +264,7 @@ abstract class Controller
 	* @param string $method The name of the method
 	* @return mixed Returns whatever $method returns
 	* @param array $params Params to be passed to the method, if any
+	* @return mixed
 	*/
 	protected function call(string $method, array $params = [])
 	{
@@ -299,17 +306,16 @@ abstract class Controller
 	* Sends $content as ajax content
 	* @param string $content The content to output
 	* @param array $data Data to send, if any
-	* @param bool $send_content_on_error Will send the content even if there is an error
 	*/
-	protected function send(string $content = '', array $data = [], bool $send_content_on_error = false)
+	protected function send(string $content = '', array $data = [])
 	{
-		$response = new Ajax;
+		$response = new Ajax($this->app);
 		if ($data) {
 			$response_data = $response->get();
 			$data = $response_data + $data;
 		}
 
-		$response->output($content, $data, $send_content_on_error);
+		$response->output($content, $data);
 	}
 
 	/**
@@ -318,7 +324,7 @@ abstract class Controller
 	*/
 	protected function sendData($data)
 	{
-		$response = new Ajax;
+		$response = new Ajax($this->app);
 		$response->send($data);
 	}
 
@@ -328,11 +334,26 @@ abstract class Controller
 	*/
 	protected function sendError(string $error)
 	{
-		$response = new Ajax;
+		$response = new Ajax($this->app);
 		$data = $response->getData();
 
-		$data['ok'] = 0;
+		$data['ok'] = false;
 		$data['error'] = $error;
+
+		$response->send($data);
+	}
+
+	/**
+	* Sends an alert
+	* @param string $message The response message to send
+	* @param string $alert The alert's type
+	*/
+	protected function sendAlert(string $message, string $alert)
+	{
+		$response = new Ajax($this->app);
+		$data = $response->getData();
+
+		$data[$alert] = $message;
 
 		$response->send($data);
 	}
@@ -347,7 +368,7 @@ abstract class Controller
 	}
 
 	/**
-	* Sends a message as ajax content
+	* Sends a warning as ajax content
 	* @param string $message The response message to send
 	*/
 	protected function sendWarning(string $message)
@@ -356,28 +377,23 @@ abstract class Controller
 	}
 
 	/**
-	* Sends a message as ajax content
+	* Sends an info as ajax content
 	* @param string $message The response message to send
 	*/
-	protected function sendNotification(string $message)
+	protected function sendInfo(string $message)
 	{
 		$this->sendAlert($message, 'notification');
 	}
 
-	/**
-	* Sends an alert
-	* @param string $message The response message to send
-	* @param string $alert The alert's type
-	*/
-	protected function sendAlert(string $message, string $alert)
-	{
-		$response = new Ajax;
-		$data = $response->getData();
 
-		$data[$alert] = $message;
 
-		$response->send($data);
-	}
+
+
+
+
+
+
+
 
 	/**
 	* Alias for $this->view->render()
@@ -387,23 +403,7 @@ abstract class Controller
 		$this->view->render();
 	}
 
-	/**
-	* Returns the model's table
-	* @return string The table name
-	*/
-	public function getTable() : string
-	{
-		return $this->model->getTable();
-	}
 
-	/**
-	* Returns the model's id name
-	* @return string The id name
-	*/
-	public function getIdName() : string
-	{
-		return $this->model->getIdName();
-	}
 
 	/**
 	* Sets the generated errors

@@ -22,7 +22,7 @@ class Ajax implements DriverInterface
 	*/
 	public function get() : array
 	{
-		$data = ['ok'=> true, 'error' => $this->app->errors->getFirst(true), 'message' => $this->app->messages->getFirst(true), 'warning' => $this->app->warnings->getFirst(true), 'notification' => $this->app->notifications->getFirst(true), 'html' => ''];
+		$data = ['ok'=> true, 'error' => $this->app->errors->getFirst(true), 'message' => $this->app->messages->getFirst(true), 'warning' => $this->app->warnings->getFirst(true), 'info' => $this->app->info->getFirst(true), 'html' => ''];
 		if (!$this->app->ok()) {
 			$data['ok'] = false;
 		}
@@ -36,7 +36,7 @@ class Ajax implements DriverInterface
 	*/
 	public function getData() : array
 	{
-		$data = ['ok'=> true, 'error' => '', 'message' => '', 'warning' => '', 'notification' => '', 'html' => ''];
+		$data = ['ok'=> true, 'error' => '', 'message' => '', 'warning' => '', 'info' => '', 'html' => ''];
 
 		return $data;
 	}
@@ -60,13 +60,13 @@ class Ajax implements DriverInterface
 	* @see \Mars\Response\DriverInterface::output()
 	* {@inheritdoc}
 	*/
-	public function output(string $content, $data = [], bool $send_content_on_error = false)
+	public function output(string $content, $data = [])
 	{
 		if (!$data) {
 			$data = $this->get();
 		}
 
-		if ($data['ok'] || $send_content_on_error) {
+		if ($data['ok']) {
 			$data['html'] = $content;
 		}
 

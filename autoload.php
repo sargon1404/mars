@@ -20,10 +20,10 @@ namespace Mars\Autoload;
 * Returns the autoload filename from the namespace parts
 * @param array $parts The namespace parts
 * @param int $base_parts The number of base parts in the namespace
-* @param bool $convert_path If not null, will convert the specified path index part of the path. Eg: MyNamespace to my-namespace
+* @param bool $convert_path If true, will convert the path from camelCase to snake-case. Eg: MyNamespace to my-namespace
 * @return string The filename
 */
-function get_filename(array $parts, int $base_parts = 1, ?int $convert_path = null) : string
+function get_filename(array $parts, int $base_parts = 1, bool $convert_path = false) : string
 {
 	$parts_count = count($parts);
 
@@ -34,11 +34,9 @@ function get_filename(array $parts, int $base_parts = 1, ?int $convert_path = nu
 	if ($parts_count > $base_parts + 1) {
 		$path_parts = array_slice($parts, $base_parts, $parts_count - ($base_parts + 1));
 
-		if ($convert_path !== null) {
-			for ($i = 0; $i < $convert_path; $i++) {
-				if (isset($path_parts[$i])) {
-					$path_parts[$i] = convert_part($path_parts[$i]);
-				}
+		if ($convert_path) {
+			foreach ($path_parts as $i => $part) {
+				$path_parts[$i] = convert_part($part);
 			}
 		}
 

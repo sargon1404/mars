@@ -83,6 +83,11 @@ class Config extends Data
 	public string $development_device = '';
 
 	/**
+	* @var string|array $custom_headers Custom headers to be sent
+	*/
+	public string|array $custom_headers = '';
+
+	/**
 	* Change the driver only if you know what you're doing! Preferably at installation time.
 	* You might try to unserialize data which has been serialized with a different driver, otherwise
 	* @var string $serializer_driver The serializer driver. Supported options: php, igbinary
@@ -258,6 +263,11 @@ class Config extends Data
 	* @var string $request_page_param The name of the page request param
 	*/
 	public string $request_page_param = 'page';
+	
+	/**
+	* @var bool $http2_push If true, http2 push is enabled
+	*/
+	public bool $http2_push = false;
 
 	/**
 	* @var bool $plugins_enable True, if plugins are enabled

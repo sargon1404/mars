@@ -15,6 +15,11 @@ use Mars\App;
 class Css extends Urls
 {
 	/**
+	* {@inheritdoc}
+	*/
+	protected string $push_type = 'style';
+
+	/**
 	* Builds the javascript object
 	* @param App $app The app object
 	*/
@@ -29,10 +34,8 @@ class Css extends Urls
 	* @see \Mars\Document\Urls::outputUrl()
 	* {@inheritdoc}
 	*/
-	public function outputUrl(string $url, bool|string $version = true, bool $async = false, bool $defer = false)
+	public function outputUrl(string $url, bool $async = false, bool $defer = false)
 	{
-		$url = $this->getUrl($url, $version);
-
 		echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url) . '" />' . "\n";
 
 		return $this;

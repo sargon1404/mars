@@ -75,6 +75,11 @@ trait LanguageTrait
 	/**
 	* @internal
 	*/
+	protected static string $type = 'language';
+
+	/**
+	* @internal
+	*/
 	protected static string $base_dir = 'languages';
 
 	/**

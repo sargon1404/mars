@@ -11,7 +11,7 @@ namespace Mars\Autoload;
 
 	$parts = explode('\\', $name);
 
-	$filename = dirname(__DIR__, 2) . '/' . get_filename($parts, 1, 4);
+	$filename = dirname(__DIR__, 2) . '/' . get_filename($parts, 1, true);
 
 	require($filename);
 });

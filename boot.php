@@ -1,6 +1,8 @@
 <?php
 namespace Mars;
 
+define('MARS', true);
+
 try {
 	require(__DIR__ . '/autoload.php');
 	require(__DIR__ . '/autoload-extensions.php');

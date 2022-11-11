@@ -20,9 +20,9 @@ final class UrlsTest extends Base
 	public function testCss()
 	{
 		$css = new Css($this->app);
-		$css->load('https://mydomain/css/style-1.css', 'head', 100);
-		$css->load('https://mydomain/css/style-2.css', 'head', 200);
-		$css->load('https://mydomain/css/style-3.css', 'first', 300);
+		$css->add('https://mydomain/css/style-1.css', 'head', 100);
+		$css->add('https://mydomain/css/style-2.css', 'head', 200);
+		$css->add('https://mydomain/css/style-3.css', 'first', 300);
 
 		$this->assertSame($css->get(), [
 			'https://mydomain/css/style-3.css' => ['location' => 'first', 'priority' => 300, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
@@ -36,20 +36,14 @@ final class UrlsTest extends Base
 		]);
 
 		$this->assertSame($css->get('invalidlocation'), []);
-
-		$this->expectOutputString(
-			'<link rel="stylesheet" type="text/css" href="https://mydomain/css/style-2.css?ver=123" />' . "\n" .
-			'<link rel="stylesheet" type="text/css" href="https://mydomain/css/style-1.css?ver=123" />' . "\n"
-		);
-		$css->output('head');
 	}
 
 	public function testJavascript()
 	{
 		$js = new Javascript($this->app);
-		$js->load('https://mydomain/js/script-1.css', 'head', 100);
-		$js->load('https://mydomain/js/script-2.css', 'head', 200);
-		$js->load('https://mydomain/js/script-3.css', 'first', 300);
+		$js->add('https://mydomain/js/script-1.css', 'head', 100);
+		$js->add('https://mydomain/js/script-2.css', 'head', 200);
+		$js->add('https://mydomain/js/script-3.css', 'first', 300);
 
 		$this->assertSame($js->get(), [
 			'https://mydomain/js/script-3.css' => ['location' => 'first', 'priority' => 300, 'version' => true, 'async' => false, 'defer' => false, 'is_local' => false],
@@ -63,11 +57,5 @@ final class UrlsTest extends Base
 		]);
 
 		$this->assertSame($js->get('invalidlocation'), []);
-
-		$this->expectOutputString(
-			'<script type="text/javascript" src="https://mydomain/js/script-2.css?ver=1"></script>' . "\n" .
-			'<script type="text/javascript" src="https://mydomain/js/script-1.css?ver=1"></script>' . "\n"
-		);
-		$js->output('head');
 	}
 }

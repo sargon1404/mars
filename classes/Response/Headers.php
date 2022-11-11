@@ -15,9 +15,7 @@ use Mars\App;
 class Headers
 {
 	use \Mars\AppTrait;
-	use \Mars\Lists\ListTrait {
-		add as addToList;
-	}
+	use \Mars\Lists\ListTrait;
 
 	/**
 	* Builds the Cookie Request object
@@ -26,14 +24,10 @@ class Headers
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-	}
 
-	/**
-	* @see \Mars\Lists\ListTrait::add()
-	*/
-	public function add(string $name, string $value) : static
-	{
-		return $this->addToList($name, $name . ': ' . $value);
+		if ($this->app->config->custom_headers) {
+			$this->list = $this->app->config->custom_headers;
+		}
 	}
 
 	/**
@@ -41,8 +35,8 @@ class Headers
 	*/
 	public function output()
 	{
-		foreach ($this->list as $header) {
-			header($header);
+		foreach ($this->list as $name => $value) {
+			header("{$name}: $value");
 		}
 	}
 }

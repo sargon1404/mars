@@ -8,10 +8,13 @@ namespace Mars\Autoload;
 	if (!str_contains($name, 'App\\')) {
 		return;
 	}
+	if (str_contains($name, 'App\\Extensions')) {
+		return;
+	}
 
 	$parts = explode('\\', $name);
 
-	$filename = dirname(__DIR__, 2) . '/app/' . get_filename($parts, 1, 1);
+	$filename = dirname(__DIR__, 2) . '/app/' . get_filename($parts, 1, true);
 
 	require($filename);
 });

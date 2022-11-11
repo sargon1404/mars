@@ -20,7 +20,7 @@ class Text
 	public readonly Handlers $handlers;
 
 	/**
-	* @var array $supported_rules The list of supported rules
+	* @var array $supported_handlers The list of supported handlers
 	*/
 	protected array $supported_handlers = [
 		'parser' => '\Mars\Text\Parser'

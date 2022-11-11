@@ -23,6 +23,14 @@ final class AppUtilsTest extends Base
 		$this->assertSame(App::getClass('my-class'), 'MyClass');
 	}
 
+	public function testGetMethod()
+	{
+		$this->assertSame(App::getMethod('my method'), 'myMethod');
+		$this->assertSame(App::getMethod('my-method'), 'myMethod');
+		$this->assertSame(App::getMethod('my_method'), 'myMethod');
+		$this->assertSame(App::getMethod('myMethod'), 'myMethod');
+	}
+
 	public function testHasProperty()
 	{
 		$this->assertTrue(App::hasProperty($this->data, 'abc'));

@@ -8,6 +8,8 @@ namespace Mars\Extensions;
 
 use Mars\App;
 use Mars\Templates;
+use Mars\Document\Css;
+use Mars\Document\Javascript;
 
 /**
 * The Theme Trait
@@ -71,6 +73,21 @@ trait ThemeTrait
 	protected string $content = '';
 
 	/**
+	* @var Css $css The css object
+	*/
+	public Css $css;
+
+	/**
+	* @var Javascript $javascript The javascript object
+	*/
+	public Javascript $javascript;
+
+	/**
+	* @internal
+	*/
+	protected static string $type = 'theme';
+
+	/**
 	* @internal
 	*/
 	protected static string $base_dir = 'themes';
@@ -80,9 +97,19 @@ trait ThemeTrait
 	*/
 	protected function prepare()
 	{
+		$this->prepareObjects();
 		$this->preparePaths();
 		$this->prepareDevelopment();
 		$this->prepareVars();
+	}
+
+	/**
+	* Prepares the objects
+	*/
+	protected function prepareObjects()
+	{
+		$this->css = $this->app->document->css;
+		$this->javascript = $this->app->document->javascript;
 	}
 
 	/**

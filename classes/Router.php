@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Extensions\Block;
+
 /**
 * The Route Class
 * Implements the View functionality of the MVC pattern
@@ -13,11 +15,6 @@ namespace Mars;
 class Router
 {
 	use AppTrait;
-
-	/**
-	* @var array $params The params of the currently executed route
-	*/
-	public array $params = [];
 
 	/**
 	* @var array $routes The defined routes
@@ -40,7 +37,6 @@ class Router
 
 	/**
 	* Outputs the content based on the matched route
-	* @return $this
 	*/
 	public function execute()
 	{
@@ -54,20 +50,15 @@ class Router
 		$this->output($route);
 
 		$this->app->end();
-
-		$this->app->output();
-
-		return $this;
 	}
 
 	/**
 	* Outputs the content of a route
+	* @param array $route The route
 	*/
 	protected function output($route)
 	{
 		[$route, $params] = $route;
-
-		$this->params = $params;
 
 		if (is_string($route)) {
 			$parts = explode('@', $route);
@@ -88,7 +79,9 @@ class Router
 					throw new \Exception('No controller method to handle the route');
 				}
 			}
-		} elseif (is_object($route) && $route instanceof \Closure) {
+		} elseif ($route instanceof Block) {
+			$route->output();
+		} elseif ($route instanceof \Closure) {
 			echo call_user_func_array($route, $params);
 		}
 	}
@@ -114,13 +107,13 @@ class Router
 			$params_keys = [];
 			$route_path = preg_quote($route_path, '|');
 
-			$route_path = preg_replace_callback('/\\\:([a-z0-9_]*)/is', function ($match) use (&$params_keys) {
+			$route_path = preg_replace_callback('/\\\{([a-z0-9_]*)\\\}/is', function ($match) use (&$params_keys) {
 				$params_keys[] = $match[1];
 
 				return '(.*)';
 			}, $route_path);
 
-			if (preg_match("|{$route_path}|is", $path, $matches)) {
+			if (preg_match("|^{$route_path}$|is", $path, $matches)) {
 				foreach ($matches as $key => $val) {
 					if (!$key) {
 						continue;
@@ -197,6 +190,20 @@ class Router
 	public function delete(string $route, $action) : static
 	{
 		return $this->add('delete', $route, $action);
+	}
+
+	/**
+	* Handles a block request
+	* @param string $route The route to handle
+	* @param string $name The block's name
+	* @return static
+	*/
+	public function block(string $route, string $name) : static
+	{
+		$block = new Block($name);
+
+		return $this->add('get', $route, $block);
+		return $this->add('post', $route, $block);
 	}
 
 	/**

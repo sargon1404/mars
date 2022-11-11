@@ -17,6 +17,7 @@ class Bin
 	* @param array $colors Array defining the user colors
 	*/
 	public array $colors = [
+		'' => '0',
 		'default' => '0',
 		'message' => '0',
 		'error' => '0;41',
@@ -24,8 +25,27 @@ class Bin
 		'info' => '32',
 		'header' => '0;33',
 		'list_1' => '0;32',
-		'list_2' => '0'
+		'list_2' => '0',
+		'white' => '1;37',
+		'black' => '0;30',
+		'grey' => '1;30',
+		'light_grey' => '0;37',
+		'red' => '0;31',
+		'light_red' => '1;31',
+		'green' => '0;32',
+		'light_green' => '1;32',
+		'brown' => '0;33',
+		'yellow' => '1;33',
+		'blue' => '0;34',
+		'ligth_blue' => '1;34',
+		'magenta' => '0;35',
+		'cyan' => '1;36',
 	];
+
+	/**
+	* @var Handlers $handlers The handlers object
+	*/
+	public readonly Handlers $handlers;
 
 	/**
 	* @param array $argv List of commands
@@ -33,19 +53,23 @@ class Bin
 	protected array $commands = [];
 
 	/**
-	* @param array $options_list List of options, passed without a name
-	*/
-	protected array $arguments = [];
-
-	/**
 	* @param array $options List of options
 	*/
 	protected array $options = [];
 
 	/**
-	* List of missing options, when calling checkOptions
+	* @param string $newline The newline
 	*/
-	protected array $options_missing = [];
+	protected string $newline = "\n";
+
+	/**
+	* @var array $supported_handlers The list of supported handlers
+	*/
+	protected array $supported_handlers = [
+		'list' => '\Mars\Bin\Listing',
+		'list_multi' => '\Mars\Bin\ListingMulti',
+		'table' => '\Mars\Bin\Table'
+	];
 
 	/**
 	* Builds the Bin object
@@ -55,190 +79,42 @@ class Bin
 	{
 		global $argv;
 		$this->app = $app;
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
 
-		if (!isset($argv[1])) {
-			return;
+		if (isset($argv[1])) {
+			$this->commands = $this->getCommands();
+			$this->options = $this->getOptions();
 		}
 
-		$this->commands = explode(':', $argv[1]);
-
-		if (count($argv) > 2) {
-			$options = array_slice($argv, 2, count($argv) - 2);
-
-			$this->parseOptions($options);
+		if (!$this->app->is_bin) {
+			$this->newline = '<br>';
 		}
 
 		$this->app->plugins->run('bin_construct', $this);
 	}
 
 	/**
-	* Parses the command line options
-	* @param array $options The options to parse
-	*/
-	protected function parseOptions(array $options)
+   * Returns the commands list, from CLI arguments
+   * @return array
+   */
+	public function getCommands() : array
 	{
-		foreach ($options as $option) {
-			if (str_starts_with($option, '--')) {
-				$parts = explode('=', substr($option, 2));
-				$name = $parts[0];
-				$value = $parts[1] ?? '';
-
-				$this->options[$name] = $value;
-			} elseif (str_starts_with($option, '-')) {
-				$name = substr($option, 1);
-				$this->options[$name] = true;
-			} else {
-				$this->arguments[] = $option;
-			}
-		}
-	}
-
-	/**
-	* Returns the options
-	* @param array $list If specified, will only return the options matching the list
-	* @return array The options
-	*/
-	public function getOptions(array $list = []) : array
-	{
-		if (!$list) {
-			return $this->options;
+		global $argv;
+		if ($this->commands) {
+			return $this->commands;
 		}
 
-		$options = [];
-		foreach ($list as $option) {
-			$names = (array)$option;
-
-			foreach ($names as $name) {
-				if (isset($this->options[$name])) {
-					$options[$name] = $this->options[$name];
-				}
-			}
-		}
-
-		return $options;
-	}
-
-	/**
-	* Returns the arguments list
-	* @param int $size The number of expected arguments
-	* @return array The arguments list
-	*/
-	public function getArguments(int $size) : array
-	{
-		if ($size) {
-			return array_pad($this->arguments, $size, '');
-		}
-
-		return $this->arguments;
-	}
-
-	/**
-	* Returns the first argument
-	* @return string The first argument
-	*/
-	public function getArgument() : string
-	{
-		$arguments = $this->getArguments(1);
-
-		return reset($arguments);
-	}
-
-	/**
-	* Alias for getArguments
-	* @see \Mars\Bin::getArguments()
-	*/
-	public function getArgvs(int $size) : array
-	{
-		return $this->getArguments($size);
-	}
-
-	/**
-	* Checks that the right number of arguments have been passed
-	* @param int $size The
-	* @return bool
-	*/
-	public function checkArguments(int $size) : bool
-	{
-		if (count($this->arguments) == $size) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	* Returns the value of a command line option
-	* @param string|array $name The name of the option. String or array
-	* @return string The option
-	*/
-	public function getOption(string|array $name) : ?string
-	{
-		$names = (array)$name;
-
-		foreach ($names as $name) {
-			if (isset($this->options[$name])) {
-				return $this->options[$name];
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	* Returns true if a command line option has been defined
-	* @param string|array $name The name of the option. String or array
-	* @return bool
-	*/
-	public function isOption(string|array $name) : bool
-	{
-		$names = (array)$name;
-
-		foreach ($names as $name) {
-			if (isset($this->options[$name])) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	* Checks if the specified options are found
-	* @param array $options The options to check
-	* @return bool Returns true if all options are found
-	*/
-	public function checkOptions(array $options) : bool
-	{
-		$this->options_missing = [];
-		$found = true;
-
-		foreach ($options as $field => $option) {
-			$params = App::array($option);
-			$param_found = false;
-
-			foreach ($params as $name) {
-				if (isset($this->options[$name])) {
-					$param_found = true;
-					break;
-				}
+		$commands = [];
+		foreach ($argv as $i => $option) {
+			if (!$i || str_starts_with($option, '-')) {
+				continue;
 			}
 
-			if (!$param_found) {
-				$this->options_missing[] = $field;
-				$found = false;
-			}
+			$commands = explode(':', $option);
+			break;
 		}
 
-		return $found;
-	}
-
-	/**
-	* Returns an array listing the missing options, if checkOptions returned false
-	* @return array
-	*/
-	public function getOptionsMissing() : array
-	{
-		return $this->options_missing;
+		return $commands;
 	}
 
 	/**
@@ -266,34 +142,64 @@ class Bin
 	}
 
 	/**
-	* Returns a color, based on type
-	* @param string $type The type of the color
-	* @return string The color
+	* Returns the options, from CLI arguments
+	* @return array
 	*/
-	public function getColor(string $type) : string
+	public function getOptions() : array
 	{
-		return $this->colors[$type] ?? $this->colorts['default'];
-	}
+		global $argv;
+		if ($this->options) {
+			return $this->options;
+		}
 
-	/**
-	* Determines the max line length from multiple lines of text
-	* @param array $lines The lines
-	* @return int The max length line
-	*/
-	protected function getMaxLineLength(array $lines) : int
-	{
-		$max_length = 0;
+		$options = [];
+		foreach ($argv as $option) {
+			if (str_starts_with($option, '--')) {
+				$parts = explode('=', substr($option, 2));
+				$name = $parts[0];
+				$value = $parts[1] ?? '';
 
-		foreach ($lines as $line) {
-			$length = strlen($line);
-			if ($length > $max_length) {
-				$max_length = $length;
+				$options[$name] = $value;
+			} elseif (str_starts_with($option, '-')) {
+				$name = substr($option, 1);
+				$options[$name] = true;
 			}
 		}
 
-
-		return $max_length;
+		return $options;
 	}
+
+	/**
+	* Returns the value of a command line option
+	* @param string $name The name of the option
+	* @return string The option
+	*/
+	public function getOption(string $name) : ?string
+	{
+		return $this->options[$name] ?? null;
+	}
+
+	/**
+	* Returns true if a command line option has been defined
+	* @param string $name The name of the option
+	* @return bool
+	*/
+	public function hasOption(string $name) : bool
+	{
+		return isset($this->options[$name]);
+	}
+
+	/**
+	* Returns a color, based on type
+	* @param string $color The color
+	* @return string The color
+	*/
+	public function getColor(string $color) : string
+	{
+		return $this->colors[$color] ?? $color;
+	}
+
+	/****************STDIN/STDOUT***********************************/
 
 	/**
 	* Outputs a question and returns the answer from stdin
@@ -304,7 +210,7 @@ class Bin
 	{
 		echo $question . ': ';
 
-		return read();
+		return $this->read();
 	}
 
 	/**
@@ -316,70 +222,53 @@ class Bin
 		return trim(fgets(STDIN));
 	}
 
+
 	/**
-	* Outputs a text message
-	* @param string|array $text The text to output. String or array for multiple lines
-	* @param string  $color The color to print the text with
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param string $prefix Prefix to print before the text, if any
-	* @param string $suffix Suffix to add after text, if any
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the string
-	* @param int $empty_right The number of empty chars to add to the right, if a background is specified
-	* @return $this
+	* Outputs a newline
 	*/
-	public function print(string|array $text, string $color = '', int $pad_left = 0, string $prefix = '', string $suffix = '', bool $newline = true, bool $die = false, int $empty_right = 5)
+	public function printNewline()
 	{
-		if (is_array($text)) {
-			$text_array = [];
-			foreach ($text as $string) {
-				if ($pad_left) {
-					$string = $this->padStringLeft($string, $pad_left);
-				}
+		echo $this->newline;
+	}
 
-				$text_array[] = $string;
-			}
+	/**
+	* Prints a text, by repeating $text
+	* @param string $text The text to print
+	* @param string $color The color to print the text with
+	* @param bool $newline If true will also output a newline
+	*/
+	public function printRepeat(string $text, int $repeat, string $color = '', bool $newline = true)
+	{
+		$this->print(str_repeat($text, $repeat), $color, $newline);
+	}
 
-			$text = implode("\n", $text_array);
-		} else {
-			if ($pad_left) {
-				$text = $this->padStringLeft($text, $pad_left);
-			}
-		}
+	/**
+	* Outputs a delimitator
+	* @param int $chars The number of chars to print
+	*/
+	public function printDel(int $chars = 60)
+	{
+		$this->printRepeat('-', $chars);
+	}
 
+	/**
+	* Outputs text
+	* @param string $text The text to output
+	* @param string $color The color to print the text with
+	* @param bool $newline If true will also output a newline
+	* @return static
+	*/
+	public function print(string $text, string $color = '', bool $newline = true) : static
+	{
 		if ($color) {
-			//if a background might be specified, replace the newlines with empty spaces
-			$string = $prefix . $text . $suffix;
-
-			$lines = explode("\n", $string);
-			$lines_count = count($lines);
-			$max_length = $this->getMaxLineLength($lines) + $pad_left + $empty_right;
-
-			$i = 1;
-			foreach ($lines as $line) {
-				$length = strlen($line);
-				$empty = str_repeat(' ', $max_length - $length);
-
-				echo "\e[{$color}m";
-				echo $line, $empty;
-				echo "\e[0m";
-
-				if ($i < $lines_count) {
-					echo "\n";
-				}
-
-				$i++;
-			}
+			$color = $this->getColor($color);
+			echo "\e[{$color}m{$text}\e[0m";
 		} else {
-			echo $prefix, $text, $suffix;
+			echo $text;
 		}
 
 		if ($newline) {
-			echo "\n";
-		}
-
-		if ($die) {
-			die;
+			echo $this->newline;
 		}
 
 		return $this;
@@ -388,44 +277,34 @@ class Bin
 	/**
 	* Outputs a header
 	* @param string $text The text to output
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the string
-	* @return $this
+	* @return static
 	*/
-	public function header(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
+	public function header(string $text) : static
 	{
-		return $this->print($text, $this->colors['header'], $pad_left, '', '', $newline, $die);
+		return $this->print($text, $this->colors['header']);
 	}
+
 
 	/**
 	* Outputs a message
-	* @param string $text The text to output. String or array for multiple lines
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the string
-	* @return $this
+	* @param string $text The text to output
+	* @return static
 	*/
-	public function message($text, int $pad_left = 0, bool $newline = true, bool $die = false)
+	public function message($text) : static
 	{
-		$this->print($text, $this->colors['message'], $pad_left, "\n", "\n", $newline);
-
-		if ($die) {
-			die;
-		}
+		$this->print($text, $this->colors['message']);
 
 		return $this;
 	}
 
 	/**
 	* Outputs an error and dies
-	* @param string $text The text to output. String or array for multiple lines
-	* @param bool $newline If true will also output a newline
+	* @param string $text The text to output
 	*/
-	public function error($text, bool $newline = true)
+	public function error($text)
 	{
 		echo "\n";
-		$this->print($text, $this->colors['error'], 5, "\n\n", "\n\n", $newline);
+		$this->print($text, $this->colors['error']);
 		echo "\n";
 
 		die;
@@ -433,155 +312,75 @@ class Bin
 
 	/**
 	* Outputs a warning
-	* @param string $text The text to output. String or array for multiple lines
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the error
-	* @return $this
+	* @param string $text The text to output
+	* @return static
 	*/
-	public function warning(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
+	public function warning(string $text) : static
 	{
-		$this->print($text, $this->colors['warning'], $pad_left, "\n\n", "\n\n", $newline);
-
-		if ($die) {
-			die;
-		}
+		$this->print($text, $this->colors['warning']);
 
 		return $this;
 	}
 
 	/**
 	* Outputs an info string
-	* @param string $text The text to output. String or array for multiple lines
-	* @param int $pad_left The number of spaces to prefix $text with
-	* @param bool $newline If true will also output a newline
-	* @param bool $die If true, will die after printing the error
-	* @return $this
+	* @param string $text The text to output
+	* @return static
 	*/
-	public function info(string $text, int $pad_left = 0, bool $newline = true, bool $die = false)
+	public function info(string $text) : static
 	{
-		$this->print($text, $this->colors['info'], $pad_left, "\n\n", "\n\n", $newline);
-
-		if ($die) {
-			die;
-		}
+		$this->print($text, $this->colors['info']);
 
 		return $this;
 	}
 
 	/**
-	* Prints a list on two columns
-	* @param array $data The data to print in the format ['header1' => [['col1', 'col2'],['col1', 'col2']], 'header2' => ..]
-	* @param bool $headers_show If true, will show the headers
-	* @param string $headers_color The color of the headers
-	* @param string $col1_color The color of the 1st column
-	* @param string $col2_color The color of the 2nd column
-	* @return $this
+	* Prints a list
+	* @param array $data The data to print
+	* @param array $colors The colors to use
+	* @param array $paddings_right The number of left chars to apply, if any
+	* @param array $paddings_left The number of left chars to apply, if any
+	* @return static
 	*/
-	public function list(array $data, bool $headers_show = true, string $headers_color = '', string $col1_color = '', string $col2_color = '', int $col_1_left_pad = 3, int $col_2_left_pad = 15)
+	public function printList(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = []) : static
 	{
-		if (!$headers_color) {
-			$headers_color = $this->colors['header'];
-		}
-		if (!$col1_color) {
-			$col1_color = $this->colors['list_1'];
-		}
-		if (!$col2_color) {
-			$col2_color = $this->colors['list_2'];
-		}
-
-		$max_length_1 = $this->getMaxLength($data, 0) + $col_2_left_pad;
-		$max_length_2 = $this->getMaxLength($data, 1);
-
-		$data_count = count($data);
-		$i = 1;
-		foreach ($data as $header => $list) {
-			if ($headers_show) {
-				$this->print($header, $headers_color);
-			}
-
-			foreach ($list as $item) {
-				$this->print($this->padString($item[0], $max_length_1), $col1_color, $col_1_left_pad, '', '', false);
-				$this->print($this->padString($item[1], $max_length_2), $col2_color, $col_2_left_pad, '', '', false);
-				echo "\n";
-			}
-
-			if ($i < $data_count) {
-				echo "\n";
-			}
-
-			$i++;
-		}
+		$handler = $this->handlers->get('list');
+		$handler->print($data, $colors, $paddings_right, $paddings_left);
 
 		return $this;
 	}
 
 	/**
-	* Prefixes the string with empty spaces
-	* @param string $str The string to pad
-	* @param int $pad_length The spaces to prefix the string with
-	* @return string The padded string
+	* Prints a list, with multiple sections
+	* @param array $data The data to print
+	* @param array $colors The colors to use
+	* @param array $paddings_right The number of left chars to apply, if any
+	* @param array $paddings_left The number of left chars to apply, if any
+	* @return static
 	*/
-	public function padStringLeft(string $str, int $pad_length) : string
+	public function printListMulti(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = []) : static
 	{
-		return str_pad($str, strlen($str) + $pad_length, ' ', STR_PAD_LEFT);
+		$handler = $this->handlers->get('list_multi');
+		$handler->print($data, $colors, $paddings_right, $paddings_left);
+
+		return $this;
 	}
 
 	/**
-	* Pads the string to the right with empty spaces
-	* @param string $str The string to pad
-	* @param int $pad_length The spaces to prefix the string with
-	* @return string The padded string
+	* Prints a table
+	* @param array $headers The header data
+	* @param array $data The data to print
+	* @param array $colors The colors to use. $colors[0] is the header's color
+	* @param array $align Determines how the headers/cells are align. $align[0] is the header's alignment
+	* @param array $paddings_left The number of left chars to apply, if any
+	* @param array $paddings_right The number of left chars to apply, if any
+	* @return static
 	*/
-	public function padStringRight(string $str, int $pad_length) : string
+	public function printTable(array $headers, array $data, array $colors = [], array $align = [], array $paddings_left = [], array $paddings_right = []) : static
 	{
-		return str_pad($str, $pad_length);
-	}
+		$handler = $this->handlers->get('table');
+		$handler->print($headers, $data, $colors, $align, $paddings_left, $paddings_right);
 
-	/**
-	* Pads a string to match a certain length
-	* @param string $str The string to pad
-	* @param int $pad_length The max length
-	* @param int $pad_length_left If specified, will add $pad_length_left chars to the left
-	* @return string The padded string
-	*/
-	public function padString(string $str, int $pad_length, int $pad_length_left = 0) : string
-	{
-		$str = str_pad($str, $pad_length);
-		if ($pad_length_left) {
-			$str = str_pad($str, strlen($str) + $pad_length_left, ' ', STR_PAD_LEFT);
-		}
-
-		return $str;
-	}
-
-	/**
-	* Returns the max length of a column
-	* @param array $data The data where to look for the max length
-	* @param int $index The index of the column
-	* @return int The max length
-	*/
-	protected function getMaxLength(array $data, int $index) : int
-	{
-		$max_length = 0;
-
-		foreach ($data as $list) {
-			foreach ($list as $item) {
-				$length = strlen($item[$index]);
-				if ($length > $max_length) {
-					$max_length = $length;
-				}
-			}
-		}
-
-		return $max_length;
-	}
-
-	/**
-	* Outputs a delimitator
-	*/
-	public function del()
-	{
-		echo "-----------------------------------------------\n\n";
+		return $this;
 	}
 }

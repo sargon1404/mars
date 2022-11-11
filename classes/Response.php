@@ -7,6 +7,9 @@
 namespace Mars;
 
 use Mars\Response\Types\DriverInterface;
+use Mars\Response\Cookies;
+use Mars\Response\Headers;
+use Mars\Response\Push;
 
 /**
 * The Response Class
@@ -25,6 +28,21 @@ class Response
 	* @var string $type The response's type
 	*/
 	public readonly string $type;
+
+	/**
+	* @var Cookies $cookies The cookies object
+	*/
+	public Cookies $cookies;
+
+	/**
+	* @var Headers $headers The headers object
+	*/
+	public Headers $headers;
+
+	/**
+	* @var Push $push The server push object
+	*/
+	public Push $push;
 
 	/**
 	* @var DriverInterface $driver The driver object
@@ -49,8 +67,9 @@ class Response
 		$this->type = $this->getType();
 		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'response', $this->app);
 		$this->driver = $this->drivers->get($this->type);
-		$this->headers = new \Mars\Response\Headers($this->app);
-		$this->cookies = new \Mars\Response\Cookies($this->app);
+		$this->headers = new Headers($this->app);
+		$this->cookies = new Cookies($this->app);
+		$this->push = new Push($this->app);
 	}
 
 	/**
@@ -101,6 +120,9 @@ class Response
 	*/
 	public function output(string $content = '', array $data = [])
 	{
+		$this->headers->output();
+		$this->push->output();
+
 		$this->driver->output($content, $data);
 	}
 }

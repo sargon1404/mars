@@ -15,6 +15,11 @@ use Mars\App;
 class Javascript extends Urls
 {
 	/**
+	* {@inheritdoc}
+	*/
+	protected string $push_type = 'script';
+
+	/**
 	* Builds the javascript object
 	* @param App $app The app object
 	*/
@@ -29,10 +34,8 @@ class Javascript extends Urls
 	* @see \Mars\Document\Urls::outputUrl()
 	* {@inheritdoc}
 	*/
-	public function outputUrl(string $url, bool|string $version = true, bool $async = false, bool $defer = false)
+	public function outputUrl(string $url, bool $async = false, bool $defer = false)
 	{
-		$url = $this->getUrl($url, $version);
-
 		$async_str = '';
 		$defer_str = '';
 		if ($async) {

@@ -100,6 +100,24 @@ trait AppUtilsTrait
 	}
 
 	/**
+	* Converts a string to a method name. Eg: some-action => someAction
+	* @param string $str The string to convert
+	* @return string The method name
+	*/
+	public static function getMethod(string $str) : string
+	{
+		$str = preg_replace('/[^a-z0-9\-_ ]/i', '', $str);
+		$str = str_replace('_', '-', $str);
+		$str = str_replace(' ', '-', $str);
+
+		$str = ucwords($str, '-');
+		$str = lcfirst($str);
+		$str = str_replace('-', '', $str);
+
+		return $str;
+	}
+
+	/**
 	* Determines if the property exists
 	* @param array|object $data The data to return the property from
 	* @param string $name The name of the property/index
