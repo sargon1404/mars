@@ -12,9 +12,15 @@ namespace Mars\Response\Types;
 interface DriverInterface
 {
 	/**
-	* Outputs $content as json code
-	* @param string $content The content to output
-	* @param mixed $data The response data. if empty, if will be automatically built
+	* Returns the content as a string
+	* @param mixed $content The content
+	* @return string
 	*/
-	public function output(string $content, $data = []);
+	public function get($content) : string;
+
+	/**
+	* Outputs $content
+	* @param string $content The content to output
+	*/
+	public function output(string $content);
 }

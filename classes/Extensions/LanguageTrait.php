@@ -85,9 +85,10 @@ trait LanguageTrait
 	/**
 	* Loads the specified $file from the languages folder
 	* @param string $file The name of the file to load
+	* @param string $prefix Prefix to apply to the strings, if any
 	* @return static
 	*/
-	public function loadFile(string $file) : static
+	public function loadFile(string $file, string $prefix = '') : static
 	{
 		if (isset($this->loaded_files[$file])) {
 			return $this;
@@ -95,7 +96,7 @@ trait LanguageTrait
 
 		$this->loaded_file[$file] = true;
 
-		$this->loadFilename($this->path . $file . '.php');
+		$this->loadFilename($this->path . $file . '.php', $prefix);
 
 		return $this;
 	}
@@ -103,11 +104,22 @@ trait LanguageTrait
 	/**
 	* Loads the specified filename from anywhere on the disk as a language file
 	* @param string $filename The filename to load
+	* @param string $prefix Prefix to apply to the strings, if any
 	* @return static
 	*/
-	public function loadFilename(string $filename) : static
+	public function loadFilename(string $filename, string $prefix = '') : static
 	{
 		$strings = include($filename);
+
+		if ($prefix) {
+			$strings_with_prefix = [];
+			foreach ($strings as $key => $string) {
+				$key = $prefix . '.' . $key;
+				$strings_with_prefix[$key] = $string;
+			}
+
+			$strings = $strings_with_prefix;
+		}
 
 		$this->strings = array_merge($this->strings, $strings);
 

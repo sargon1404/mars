@@ -14,6 +14,7 @@ trait BlockTrait
 {
 	use \Mars\Extensions\Abilities\MvcTrait;
 	use \Mars\Extensions\Abilities\LanguagesTrait;
+	use \Mars\Extensions\Abilities\TemplatesTrait;
 
 	/**
 	* @internal

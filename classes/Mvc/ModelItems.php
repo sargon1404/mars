@@ -1,18 +1,15 @@
 <?php
 /**
-* The Model Class
+* The Model Items Class
 * @package Mars
 */
 
 namespace Mars\Mvc;
 
-use Mars\Items;
-
 /**
-* The Model Class
+* The Model Items Class
 * Implements the Model functionality of the MVC pattern. Extends the Items class.
 */
-abstract class Model extends Items
+abstract class ModelItems extends Model
 {
-	use ModelTrait;
 }

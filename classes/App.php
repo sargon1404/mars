@@ -328,6 +328,11 @@ class App
 	public string $extensions_namespace = "App\\Extensions\\";
 
 	/**
+	* @var string $type The content type [html/json]
+	*/
+	protected string $type = 'html';
+
+	/**
 	* @var App $instance The app instance
 	*/
 	protected static App $instance;
@@ -786,11 +791,35 @@ class App
 	}
 
 	/**
+	* Outputs the content, based on type
+	* @param mixed $content The content
+	* @param string $type The content's type
+	*/
+	public function output($content, string $type)
+	{
+		switch ($type) {
+			case 'ajax':
+			case 'json':
+				$type = 'ajax';
+				break;
+			default:
+				$type = 'html';
+		}
+
+		$this->type = $type;
+		echo $this->response->get($content, $type);
+	}
+
+	/**
 	* Starts the output buffering.
 	*/
 	public function start()
 	{
 		$this->plugins->run('app_start', $this);
+
+		if ($this->config->debug) {
+			$this->timer->start('app_output_content');
+		}
 
 		ob_start();
 	}
@@ -802,13 +831,36 @@ class App
 	{
 		$content = ob_get_clean();
 
-		$this->plugins->run('app_end_start', $this);
+		$content = $this->plugins->filter('app_filter_content', $content, $this);
 
-		if ($this->config->debug) {
-			$this->timer->start('app_output_content');
+		$output = $this->getOutput($content);
+
+		if ($this->can_gzip) {
+			header('Content-encoding: gzip');
+
+			$output = $this->gzip($output);
 		}
 
-		$content = $this->plugins->filter('app_filter_content', $content, $this);
+		$this->plugins->run('app_output', $output);
+
+		//cache the output, if required
+		if ($this->type == 'html') {
+			$this->caching->store($output);
+		}
+
+		$output = $this->response->output($output, $this->type);
+	}
+
+	/**
+	* Builds the output from the content
+	* @param string $content The content
+	* @return string The output
+	*/
+	protected function getOutput(string $content) : string
+	{
+		if ($this->type != 'html') {
+			return $content;
+		}
 
 		ob_start();
 		$this->theme->renderHeader();
@@ -820,22 +872,9 @@ class App
 
 		if ($this->config->debug) {
 			$output.= $this->getDebugOutput($output);
-
-			$this->can_gzip = false;
 		}
 
-		if ($this->can_gzip) {
-			header('Content-encoding: gzip');
-
-			$output = $this->gzip($output);
-		}
-
-		//cache the output, if required
-		$this->caching->store($output);
-
-		$this->plugins->run('app_end_end', $this);
-
-		$this->response->output($output);
+		return $output;
 	}
 
 	/**

@@ -160,6 +160,16 @@ trait ThemeTrait
 	/***************** VARS METHODS *********************************/
 
 	/**
+	* Returns a theme variable.
+	* @param string $name The name of the var
+	* @return static
+	*/
+	public function getVar(string $name)
+	{
+		return $this->vars[$name] ?? null;
+	}
+	
+	/**
 	* Adds a theme variable.
 	* @param string $name The name of the var
 	* @param mixed $value The value of the var
@@ -231,11 +241,12 @@ trait ThemeTrait
 	/**
 	* Renders/Outputs a template, by filename
 	* @param string $filename The filename of the template
+	* @param strint $type The template's type, if any
 	* @param array $vars Vars to pass to the template, if any
 	*/
-	public function renderFilename(string $filename, array $vars = [])
+	public function renderFilename(string $filename, array $vars = [], string $type = 'template')
 	{
-		echo $this->getTemplateFromFilename($filename, $vars);
+		echo $this->getTemplateFromFilename($filename, $vars, $type);
 	}
 
 	/**
@@ -266,15 +277,16 @@ trait ThemeTrait
 	* @param strint $type The template's type, if any
 	* @return string The template content
 	*/
-	public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template') : string
+	public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template', bool $development = false) : string
 	{
 		if ($this->app->config->debug) {
 			$this->templates_loaded[] = $filename;
 		}
 
+		$filename  = $this->app->file->getRel($filename);
 		$cache_filename = $this->getTemplateCacheFilename($filename, $type);
 
-		return $this->getTemplateContent($filename, $cache_filename, $vars);
+		return $this->getTemplateContent($filename, $cache_filename, $vars, [], $development);
 	}
 
 	/**
@@ -283,15 +295,16 @@ trait ThemeTrait
 	* @param string $cache_filename The filename used to cache the template
 	* @param array $vars Vars to pass to the template, if any
 	* @param array $params Params to pass to the parser
+	* @param bool $development If true, won't cache the template
 	* @return string The template content
 	*/
-	protected function getTemplateContent(string $filename, string $cache_filename, array $vars, array $params = []) : string
+	protected function getTemplateContent(string $filename, string $cache_filename, array $vars, array $params = [], bool $development = false) : string
 	{
 		if ($vars) {
 			$this->addVars($vars);
 		}
 
-		if ($this->development || !is_file($cache_filename)) {
+		if ($this->development || $development || !is_file($cache_filename)) {
 			$this->writeTemplate($filename, $cache_filename, ['filename' => $filename] + $params);
 		}
 
@@ -605,13 +618,13 @@ trait ThemeTrait
 	/**************** OUTPUT MESSAGES *************************************/
 
 	/**
-	* Outputs all the alers: messages/errors/notifications/warnings
+	* Outputs all the alers: messages/errors/info/warnings
 	*/
 	public function outputAlerts()
 	{
 		$this->outputMessages();
 		$this->outputErrors();
-		$this->outputNotifications();
+		$this->outputInfo();
 		$this->outputWarnings();
 	}
 
@@ -673,18 +686,18 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the notifications
+	* Outputs the info
 	*/
-	public function outputNotifications()
+	public function outputInfo()
 	{
-		$notifications = $this->app->notifications->get();
-		if (!$notifications) {
+		$info = $this->app->info->get();
+		if (!$info) {
 			return;
 		}
 
-		$this->addVar('notifications', $notifications);
+		$this->addVar('info', $info);
 
-		$this->render('alerts/notifications');
+		$this->render('alerts/info');
 	}
 
 	/**

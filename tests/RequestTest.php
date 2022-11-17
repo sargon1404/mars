@@ -90,27 +90,6 @@ final class RequestTest extends Base
 		$this->assertSame($request->get->fill($data, ['var2' => 'int'], [], ['var2']), ['var1' => 'a', 'var2' => '']);
 	}
 
-	public function testGetType()
-	{
-		$request = $this->app->request;
-
-		$_REQUEST[$this->app->config->request_type_param] = 'html';
-
-		$this->assertSame($request->getType(), 'html');
-	}
-
-	public function testisAjax()
-	{
-		$request = $this->app->request;
-
-		$_REQUEST[$this->app->config->request_type_param] = 'html';
-
-		$this->assertFalse($request->isAjax());
-
-		$_REQUEST[$this->app->config->request_type_param] = ' ajax ';
-		$this->assertTrue($request->isAjax());
-	}
-
 	public function testGetOrderBy()
 	{
 		$request = $this->app->request;

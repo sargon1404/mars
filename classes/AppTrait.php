@@ -26,7 +26,11 @@ trait AppTrait
 		$this->app = $app ?? App::get();
 	}
 
-	protected function getApp() : App
+	/**
+	* Returns the app object
+	* @return App
+	*/
+	public function getApp() : App
 	{
 		return $this->app ?? App::get();
 	}

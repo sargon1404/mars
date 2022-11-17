@@ -4,7 +4,19 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Mvc;
+
+use Mars\App;
+use Mars\Escape;
+use Mars\Filter;
+use Mars\Format;
+use Mars\Html;
+use Mars\Text;
+use Mars\Ui;
+use Mars\Uri;
+
+use Mars\System\Plugins;
+use Mars\Extensions\Extension;
 
 /**
 * The View Class
@@ -12,18 +24,7 @@ namespace Mars;
 */
 abstract class View
 {
-	use AppTrait;
-	use ReflectionTrait;
-
-	/**
-	* @var string $url The url of the controller to which the view belongs.
-	*/
-	public string $url = '';
-
-	/**
-	* @var string $layout The name of the layout (subdir) from where the template is rendered
-	*/
-	protected string $layout = '';
+	use \Mars\AppTrait;
 
 	/**
 	* @var string $template The name of the template which will be rendered when render() is called
@@ -31,91 +32,109 @@ abstract class View
 	protected string $template = '';
 
 	/**
-	* @var string $current_method The name of the currently executed method
+	* @var string $path The controller's parents's dir. Alias for $this->parent->path
 	*/
-	protected string $current_method = '';
+	public string $path = '';
 
 	/**
-	* @var string $dirname The dirname of the view. Populated only after render is called
+	* @var string $url The controller's parent's url. Alias for $this->parent->url
 	*/
-	protected string $dirname = '';
+	public string $url = '';
+
+	/**
+	* @var string $url_static The controller's parent's url static. Alias for $this->parent->url_static
+	*/
+	public string $url_static = '';
+
+	/**
+	* @var Extension $parent The parent extension
+	*/
+	protected Extension $parent;
 
 	/**
 	* @var Controller $controller The controller
 	*/
-	protected object $controller; //preload
+	protected Controller $controller;
 
 	/**
-	* @var Model $model The model
+	* @var object $model The model
 	*/
-	protected Model $model;
+	protected object $model;
 
 	/**
 	* @var Html $html Alias for $this->app->html
 	*/
-	public Html $html;
-
-	/**
-	* @var Filter $filter Alias for $this->app->filter
-	*/
-	public Filter $filter;
+	protected Html $html;
 
 	/**
 	* @var Escape $escape Alias for $this->app->escape
 	*/
-	public Escape $escape;
+	protected Escape $escape;
+
+	/**
+	* @var Filter $filter Alias for $this->app->filter
+	*/
+	protected Filter $filter;
 
 	/**
 	* @var Format $format Alias for $this->app->format
 	*/
-	public Format $format;
+	protected Format $format;
 
 	/**
-	* @var Uri $uri Alias for $this->app->format
+	* @var Uri $uri Alias for $this->app->uri
 	*/
 	public Uri $uri;
 
 	/**
+	* @var Ui $ui Alias for $this->app->ui
+	*/
+	protected Ui $ui;
+
+	/**
 	* @var Text $uri Alias for $this->app->text
 	*/
-	public Text $text;
+	protected Text $text;
 
 	/**
 	* @var Plugins $plugins Alias for $this->app->plugins
 	*/
-	protected object $plugins;
+	protected Plugins $plugins;
 
 	/**
 	* Builds the View
 	* @param Controller $controller The controller the view belongs to
+	* @param App $app the app object
 	*/
-	public function __construct(Controller $controller)
+	public function __construct(Controller $controller, App $app = null)
 	{
-		$this->app = $this->getApp();
+		$this->app = $app ?? $this->getApp();
+		$this->controller = $controller;
+		$this->model = $this->controller->model;
+		$this->parent = $this->controller->parent;
+		if ($this->parent) {
+			$this->path = $this->parent->path;
+			$this->url = $this->parent->url;
+			$this->url_static = $this->parent->url_static;
+		}
 
-		$this->prepare($controller);
+		$this->prepare();
 		$this->init();
 	}
 
 	/**
 	* Prepares the view
-	* @param Controller $controller The controller the view belongs to
 	*/
-	protected function prepare(Controller $controller)
+	protected function prepare()
 	{
 		$this->html = $this->app->html;
-		$this->ui = $this->app->ui;
-		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
+		$this->filter = $this->app->filter;
 		$this->format = $this->app->format;
 		$this->text = $this->app->text;
+		$this->ui = $this->app->ui;
 		$this->uri = $this->app->uri;
 		$this->plugins = $this->app->plugins;
-
-		$this->controller = $controller;
-		$this->model = $this->controller->model;
-
-		$this->url = $this->controller->url;
 	}
 
 	/**
@@ -128,9 +147,9 @@ abstract class View
 	/**
 	* Sets the title of the current page
 	* @param string $title The title
-	* @return $this
+	* @return static
 	*/
-	public function setTitle(string $title)
+	protected function setTitle(string $title) : static
 	{
 		$this->app->title->set($title);
 
@@ -138,154 +157,56 @@ abstract class View
 	}
 
 	/**
-	* Sets the name of the layout to use when rendering the template.
-	* @param string $layout The name of the layout
-	* @return $this
+	* Renders a template.
+	* @param array $vars Vars to pass to the template, if any
 	*/
-	public function setLayout(string $layout)
+	public function render(array $vars = [])
 	{
-		$this->layout = $layout;
+		$method = $this->controller->current_method;
+		if (!$method) {
+			$method = 'index';
+		}
 
-		return $this;
+		if ($this->canDispatch($method)) {
+			$this->$method();
+		}
+
+		//add the view's public properties as theme vars
+		$this->app->theme->addVars(get_object_vars($this));
+		$this->app->theme->addVar('view', $this);
+
+		$template = $this->getTemplate($method);
+
+		$this->parent->render($template, $vars);
 	}
 
 	/**
-	* Returns the name of the layout
-	* @return string
+	* Returns the name of a template to load
+	* @param string $method The currently executed method
+	* @return string The template's name
 	*/
-	public function getLayout() : string
+	protected function getTemplate(string $method) : string
 	{
-		return $this->layout;
+		if ($this->template) {
+			return $this->template;
+		}
+
+		$template = preg_replace('/([A-Z])/', '-$1', $method);
+		$template = strtolower($template);
+
+		return $template;
 	}
 
 	/**
 	* Sets the name of the template to render
 	* @param string $template The name of the template
-	* @return $this
+	* @return static
 	*/
-	public function setTemplate(string $template)
+	protected function setTemplate(string $template) : static
 	{
 		$this->template = $template;
 
 		return $this;
-	}
-
-	/**
-	* Returns the content of a template, loaded from the templates folder.
-	* @param string $template The name of the template to load. If left empty, the template with the same name as the controller's current method will be loaded
-	* @param string $layout The name of the layout (subfolder)
-	* @return string The template's content
-	*/
-	public function getTemplate(string $template = '', string $layout = '') : string
-	{
-		if (!$template) {
-			$template = $this->controller->current_method;
-		}
-		if ($layout) {
-			$layout = $this->layout;
-		}
-
-		$filename = $this->getTemplateFilename($template, $layout);
-
-		return $this->app->theme->getTemplateFromFilename($filename);
-	}
-
-	/**
-	* Returns the filename of a template
-	* @param string $template The name of the template
-	* @param string $layout The name of the layout
-	* @return string The filename
-	*/
-	protected function getTemplateFilename(string $template, string $layout) : string
-	{
-		var_dump("sdfdsfs");
-		die;
-		return $this->app->theme->buildTemplateFilename($this->dirname . App::EXTENSIONS_DIRS['templates'] . $layout, $template);
-	}
-
-	/**
-	* Loads and outputs a template
-	* @param string $template The name of the template to load. If left empty, the template with the same name as the controller's current method will be loaded
-	* @param string $layout The name of the layout (subfolder)
-	*/
-	public function renderTemplate(string $template = '', string $layout = '')
-	{
-		echo $this->getTemplate($template, $layout);
-	}
-
-	/**
-	* Renders a template.
-	* If the view is of type View each param is automatically added as theme variables.
-	* If the view extends class View the params. are passed as method params. to the method named the same as the current controller method and it's the job of that method to add the theme variable
-	* @param array $data Data to pass to the response handler, if any
-	* @return $this
-	*/
-	public function render(array $data = [])
-	{
-		$this->renderPrepare();
-
-		ob_start();
-		$this->renderTemplate($this->template, $this->layout);
-		$content = ob_get_clean();
-
-		$this->app->response->output($content, $data);
-
-		return $this;
-	}
-
-	/**
-	* Sends an ajax response.
-	* @param array $data The response data to send. If empty, it will be automatically built
-	* @param bool $send_content_on_error Will send the content even if there is an error
-	*/
-	public function send(array $data = [], bool $send_content_on_error = false)
-	{
-		$this->renderPrepare();
-
-		ob_start();
-		$this->renderTemplate($this->template, $this->layout);
-		$this->sendPrepare();
-		$content = ob_get_clean();
-
-		$response = new response\Ajax;
-		$response->output($content, $data, $send_content_on_error);
-	}
-
-	/**
-	* @internal
-	*/
-	protected function sendPrepare()
-	{
-	}
-
-	/**
-	* Prepares the view for rendering
-	*/
-	protected function renderPrepare()
-	{
-		$rc = new \ReflectionClass($this);
-
-		$class_name = $rc->getName();
-		$class_parent = $rc->getParentClass();
-		$this->dirname = $this->app->file->dirname($rc->getFileName());
-
-		if ($class_parent) {
-			$this->current_method = $this->controller->current_method;
-			if (!$this->current_method) {
-				$this->current_method = 'index';
-			}
-
-			if ($this->canDispatch($this->current_method)) {
-				$method = $this->current_method;
-				$this->$method();
-			}
-		}
-
-		//add the view as a theme var
-		$this->app->theme->addVar('view', $this);
-
-		//add the view's public properties as theme vars
-		$this->app->theme->addVars(get_object_vars($this));
 	}
 
 	/**

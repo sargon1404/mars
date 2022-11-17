@@ -20,7 +20,7 @@ trait ValidationTrait
 	/**
 	* @var Errors $errors The generated errors, if any
 	*/
-	/*public readonly Errors $errors*/
+	/*public Errors $errors;*/
 
 	/**
 	* @var array $validation_rules Validation rules
@@ -92,18 +92,22 @@ trait ValidationTrait
 
 	/**
 	* Validates the data
-	* @param array|object $data The data to validate
+	* @param array|object $data The data to validate. If empty, the $_POST data is used
 	* @return bool True if the validation passed all tests, false otherwise
 	*/
-	protected function validate(array|object $data = []) : bool
+	public function validate(array|object $data = []) : bool
 	{
+		if (!$data) {
+			$data = $this->app->request->post->getAll();
+		}
+
 		$rules = $this->getValidationRules();
 		if (!$rules) {
 			return true;
 		}
 
-		if (!$this->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
-			$this->errors->set($this->validator->errors->get());
+		if (!$this->app->validator->validate($data, $rules, $this->getValidationErrorStrings(), $this->getValidationRulesToSkip())) {
+			$this->errors->set($this->app->validator->errors->get());
 
 			return false;
 		}

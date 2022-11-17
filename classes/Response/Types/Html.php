@@ -15,11 +15,22 @@ class Html implements DriverInterface
 	use \Mars\AppTrait;
 
 	/**
+	* @see \Mars\Response\DriverInterface::get()
+	* {@inheritdoc}
+	*/
+	public function get($content) : string
+	{
+		return $content;
+	}
+
+	/**
 	* @see \Mars\Response\DriverInterface::output()
 	* {@inheritdoc}
 	*/
-	public function output(string $content, $data = [])
+	public function output(string $content)
 	{
+		$this->app->response->push->output();
+
 		echo $content;
 	}
 }

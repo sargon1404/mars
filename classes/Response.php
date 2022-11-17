@@ -20,14 +20,9 @@ class Response
 	use AppTrait;
 
 	/**
-	* @var Drivers $drivers The drivers object
+	* @var Handlers $handlers The handlers object
 	*/
-	public readonly Drivers $drivers;
-
-	/**
-	* @var string $type The response's type
-	*/
-	public readonly string $type;
+	public readonly Handlers $handlers;
 
 	/**
 	* @var Cookies $cookies The cookies object
@@ -50,9 +45,9 @@ class Response
 	protected DriverInterface $driver;
 
 	/**
-	* @var array $supported_drivers The supported drivers
+	* @var array $supported_handlers The supported handlers
 	*/
-	protected array $supported_drivers = [
+	protected array $supported_handlers = [
 		'ajax' => '\Mars\Response\Types\Ajax',
 		'html' => '\Mars\Response\Types\Html'
 	];
@@ -64,9 +59,8 @@ class Response
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->type = $this->getType();
-		$this->drivers = new Drivers($this->supported_drivers, DriverInterface::class, 'response', $this->app);
-		$this->driver = $this->drivers->get($this->type);
+		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->handlers->setInterface(DriverInterface::class);
 		$this->headers = new Headers($this->app);
 		$this->cookies = new Cookies($this->app);
 		$this->push = new Push($this->app);
@@ -76,11 +70,9 @@ class Response
 	* Returns the type of the respponse to send
 	* @return string
 	*/
-	protected function getType() : string
+	protected function getType(string $type) : string
 	{
-		$driver = $this->app->request->getType();
-
-		switch ($driver) {
+		switch ($type) {
 			case 'ajax':
 			case 'json':
 				return 'ajax';
@@ -90,39 +82,25 @@ class Response
 	}
 
 	/**
-	* Returns true if the request should be processed with ajax/json
+	* Returns the converted content to $type
+	* @param mixed $content The content
+	* @param string $type The type
+	* @return mixed
 	*/
-	public function isAjax() : bool
+	public function get($content, string $type)
 	{
-		if ($this->type == 'ajax') {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	* Returns true if the request should be processed with ajax
-	*/
-	public function isHtml() : bool
-	{
-		if ($this->type == 'html') {
-			return true;
-		}
-
-		return false;
+		return $this->handlers->get($type)->get($content);
 	}
 
 	/**
 	* Outputs the $content
-	* @param string $content The content to output
-	* @param array $data Data to output, if any
+	* @param string string The content to output
+	* @param string $type The content's type
 	*/
-	public function output(string $content = '', array $data = [])
+	public function output(string $content, string $type)
 	{
 		$this->headers->output();
-		$this->push->output();
 
-		$this->driver->output($content, $data);
+		$this->handlers->get($type)->output($content);
 	}
 }

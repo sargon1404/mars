@@ -119,13 +119,13 @@ class Validator
 	{
 		//do we have in the $error_strings array a custom error for this rule & $field?
 		if ($error_strings && isset($error_strings[$field][$rule])) {
-			$this->errors->add($error_strings[$field][$rule]);
+			$this->errors->add(App::__($error_strings[$field][$rule]));
 
 			return;
 		}
 
 		//use the handler's error
-		$this->errors->add($this->handlers->get($rule)->getError());
+		$this->errors->add(App::__($this->handlers->get($rule)->getError()));
 	}
 
 	/**

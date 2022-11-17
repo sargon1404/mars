@@ -240,11 +240,6 @@ class Config extends Data
 	public ?string $html_allowed_attributes = '*.class,*.style,img.src,img.alt,a.target,a.rel,a.href,a.title';
 
 	/**
-	* @var string $request_type_param The name of the response request param
-	*/
-	public string $request_type_param = 'type';
-
-	/**
 	* @var string $request_action_param The name of the action request param
 	*/
 	public string $request_action_param = 'action';
@@ -263,7 +258,7 @@ class Config extends Data
 	* @var string $request_page_param The name of the page request param
 	*/
 	public string $request_page_param = 'page';
-	
+
 	/**
 	* @var bool $http2_push If true, http2 push is enabled
 	*/

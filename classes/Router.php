@@ -93,7 +93,6 @@ class Router
 	protected function getRoute()
 	{
 		$method = $this->app->method;
-
 		if (!isset($this->routes[$method])) {
 			return null;
 		}
@@ -202,8 +201,10 @@ class Router
 	{
 		$block = new Block($name);
 
-		return $this->add('get', $route, $block);
-		return $this->add('post', $route, $block);
+		$this->add('get', $route, $block);
+		$this->add('post', $route, $block);
+
+		return $this;
 	}
 
 	/**

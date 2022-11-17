@@ -4,15 +4,15 @@ namespace Mars\Preload;
 chdir(dirname(__DIR__, 3));
 
 require('src/mars/preload/functions.php');
-require('src/mars/boot-bin.php');
+require('src/mars/boot.php');
 
-$app->file->listDir('src/mars/classes', $dirs, $files, true, true);
 
+$files = $app->dir->getFiles('src/mars/classes', true);
 $traits_and_interfaces = get_traits_and_interfaces($files);
-write_file(__DIR__ . '/traits-interfaces.php', $traits_and_interfaces);
+write_file(__DIR__ . '/generated/traits-interfaces.php', $traits_and_interfaces);
 
 $classes = get_classes($files);
 $classes = sort_classes($classes);
-write_file(__DIR__ . '/classes.php', $classes);
+write_file(__DIR__ . '/generated/classes.php', $classes);
 
 $app->bin->print('Preload list generated');

@@ -9,14 +9,15 @@ namespace Mars\Mvc;
 use Mars\App;
 use Mars\Escape;
 use Mars\Filter;
+use Mars\Request;
 use Mars\Uri;
 use Mars\Validator;
 use Mars\System\Plugins;
+use Mars\Extensions\Extension;
 use Mars\Alerts\Errors;
 use Mars\Alerts\Messages;
 use Mars\Alerts\Info;
 use Mars\Alerts\Warnings;
-use Mars\Response\Types\Ajax;
 
 /**
 * The Controller Class
@@ -29,11 +30,6 @@ abstract class Controller extends \stdClass
 	use \Mars\ValidationTrait {
 		validate as protected validateData;
 	}
-
-	/**
-	* @var string $url The controller's url
-	*/
-	public string $url = '';
 
 	/**
 	* @var string $default_method Default method to be executed on dispatch/route, if the requested method doesn't exist or is not public
@@ -56,14 +52,24 @@ abstract class Controller extends \stdClass
 	public string $current_method = '';
 
 	/**
-	* @var array $validation_rules Validation rules
+	* @var string $path The controller's parents's dir. Alias for $this->parent->path
 	*/
-	protected array $validation_rules = [];
+	public string $path = '';
 
 	/**
-	* @var Model $model The model object
+	* @var string $url The controller's parent's url. Alias for $this->parent->url
 	*/
-	public Model $model;
+	public string $url = '';
+
+	/**
+	* @var Extension $parent The parent extension
+	*/
+	public ?Extension $parent;
+
+	/**
+	* @var object $model The model object
+	*/
+	public object $model;
 
 	/**
 	* @var View $view The view object
@@ -79,6 +85,11 @@ abstract class Controller extends \stdClass
 	* @var Escape $escape Alias for $this->app->escape
 	*/
 	protected Escape $escape;
+
+	/**
+	* @var Request $request The request object. Alias for $this->app->request
+	*/
+	protected Request $request;
 
 	/**
 	* @var Validator $uri Alias for $this->app->uri
@@ -116,15 +127,43 @@ abstract class Controller extends \stdClass
 	protected Warnings $warnings;
 
 	/**
+	* @var bool $load_model If true, will automatically load the model
+	*/
+	protected bool $load_model = true;
+
+	/**
+	* @var bool $load_voew If true, will automatically load the view
+	*/
+	protected bool $load_view = true;
+
+	/**
+	* @var array $validation_rules Validation rules
+	*/
+	protected array $validation_rules = [];
+
+	/**
 	* Builds the controller
+	* @param Extension $parent The parent extension
 	* @param App $app The app object
 	*/
-	public function __construct(App $app)
+	public function __construct(Extension $parent = null, App $app = null)
 	{
-		$this->app = $this->getApp();
+		$this->app = $app ?? $this->getApp();
+		$this->parent = $parent;
+		if ($parent) {
+			$this->path = $this->parent->path;
+			$this->url = $this->parent->url;
+		}
 
 		$this->prepare();
 		$this->init();
+
+		if ($this->load_model) {
+			$this->model = $this->getModel();
+		}
+		if ($this->load_view) {
+			$this->view = $this->getView();
+		}
 	}
 
 	/**
@@ -134,6 +173,7 @@ abstract class Controller extends \stdClass
 	{
 		$this->filter = $this->app->filter;
 		$this->escape = $this->app->escape;
+		$this->request = $this->app->request;
 		$this->uri = $this->app->uri;
 		$this->validator = $this->app->validator;
 		$this->plugins = $this->app->plugins;
@@ -141,8 +181,6 @@ abstract class Controller extends \stdClass
 		$this->messages = $this->app->messages;
 		$this->warnings = $this->app->warnings;
 		$this->info = $this->app->info;
-
-		$this->url = $this->app->url;
 	}
 
 	/**
@@ -199,6 +237,26 @@ abstract class Controller extends \stdClass
 		$this->default_error_method = $method;
 
 		return $this;
+	}
+
+	/**
+	* Loads the model and returns the instance
+	* @param string $model The name of the model
+	* @return object The model
+	*/
+	public function getModel(string $model = '') : object
+	{
+		return $this->parent->getModel($model);
+	}
+
+	/**
+	* Loads the view and returns the instance
+	* @param string $view The name of the view
+	* @return View The view
+	*/
+	public function getView(string $view = '') : View
+	{
+		return $this->parent->getView($view, $this);
 	}
 
 	/**
@@ -294,38 +352,58 @@ abstract class Controller extends \stdClass
 	}
 
 	/**
+	* Alias for $this->view->render()
+	*/
+	protected function render()
+	{
+		$this->view->render();
+	}
+
+	/**
 	* Returns true if no errors have been generated
 	* @return bool
 	*/
-	public function ok() : bool
+	protected function ok() : bool
 	{
 		return $this->app->ok();
 	}
 
 	/**
 	* Sends $content as ajax content
-	* @param string $content The content to output
-	* @param array $data Data to send, if any
+	* @param array | object $data The data to output
 	*/
-	protected function send(string $content = '', array $data = [])
+	protected function sendData(array | object $data)
 	{
-		$response = new Ajax($this->app);
-		if ($data) {
-			$response_data = $response->get();
-			$data = $response_data + $data;
-		}
-
-		$response->output($content, $data);
+		$this->app->output($this->getData($data), 'ajax');
 	}
 
 	/**
-	* Sends $data as json code
-	* @param mixed $data The response data to send
+	* Returns a response array
+	* @param array | object $data The data to output
+	* @return array
 	*/
-	protected function sendData($data)
+	protected function getData(array | object $data) : array
 	{
-		$response = new Ajax($this->app);
-		$response->send($data);
+		$data_array = ['ok'=> true, 'error' => $this->app->errors->getFirst(), 'message' => $this->app->messages->getFirst(), 'warning' => $this->app->warnings->getFirst(), 'info' => $this->app->info->getFirst()];
+
+		if ($this->app->ok()) {
+			$data_array = $data_array + App::array($data);
+		} else {
+			$data_array['ok'] = false;
+		}
+
+		return $data_array;
+	}
+
+	/**
+	* Returns a basic response array, not populated with any values
+	* @return array
+	*/
+	protected function getDataArray() : array
+	{
+		$data = ['ok'=> true, 'error' => '', 'message' => '', 'warning' => '', 'info' => '', 'html' => ''];
+
+		return $data;
 	}
 
 	/**
@@ -334,13 +412,11 @@ abstract class Controller extends \stdClass
 	*/
 	protected function sendError(string $error)
 	{
-		$response = new Ajax($this->app);
-		$data = $response->getData();
-
+		$data = $this->getDataArray();
 		$data['ok'] = false;
 		$data['error'] = $error;
 
-		$response->send($data);
+		$this->app->output($data, 'ajax');
 	}
 
 	/**
@@ -350,12 +426,10 @@ abstract class Controller extends \stdClass
 	*/
 	protected function sendAlert(string $message, string $alert)
 	{
-		$response = new Ajax($this->app);
-		$data = $response->getData();
-
+		$data = $this->getDataArray();
 		$data[$alert] = $message;
 
-		$response->send($data);
+		$this->app->output($data, 'ajax');
 	}
 
 	/**
@@ -382,60 +456,6 @@ abstract class Controller extends \stdClass
 	*/
 	protected function sendInfo(string $message)
 	{
-		$this->sendAlert($message, 'notification');
-	}
-
-
-
-
-
-
-
-
-
-
-
-	/**
-	* Alias for $this->view->render()
-	*/
-	public function render()
-	{
-		$this->view->render();
-	}
-
-
-
-	/**
-	* Sets the generated errors
-	* @param array $errors The errors
-	*/
-	protected function setErrors(array $errors)
-	{
-		foreach ($errors as $error) {
-			$this->errors->add(App::__($error));
-		}
-	}
-
-	/**
-	* Returns the first generated error, if any
-	* @return mixed
-	*/
-	public function getFirstError()
-	{
-		return $this->errors->getFirst();
-	}
-
-	/**
-	* Validates the data
-	* @param array|object $data The data to validate
-	* @return bool True if the validation passed all tests, false otherwise
-	*/
-	protected function validate(array|object $data = []) : bool
-	{
-		if (!$data) {
-			$data = $this->request->post;
-		}
-
-		return $this->validateData($data);
+		$this->sendAlert($message, 'info');
 	}
 }

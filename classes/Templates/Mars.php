@@ -84,4 +84,14 @@ class Mars implements DriverInterface
 
 		return $content;
 	}
+
+	/**
+	* Returns a handler
+	* @param string $name The name of the handler
+	* @return object The handler
+	*/
+	public function getHandler(string $name) : object
+	{
+		return $this->handlers->get($name);
+	}
 }

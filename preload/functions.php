@@ -55,14 +55,14 @@ function sort_classes(array $files) : array
 */
 function get_traits_and_interfaces(array $files) : array
 {
-	$t_i = [];
+	$traits_interfaces = [];
 	foreach ($files as $file) {
 		if (str_contains($file, 'Interface') || str_contains($file, 'Trait')) {
-			$t_i[] = $file;
+			$traits_interfaces[] = $file;
 		}
 	}
 
-	return $t_i;
+	return $traits_interfaces;
 }
 
 /**

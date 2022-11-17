@@ -6,6 +6,8 @@
 
 namespace Mars;
 
+use Mars\Alerts\Errors;
+
 /**
 * The Item Class
 * The classes extending Item must set these properties:
@@ -19,6 +21,11 @@ abstract class Item extends Entity
 	use ValidationTrait {
 		validate as protected validateData;
 	}
+
+	/**
+	* @var Errors $errors The generated errors, if any
+	*/
+	public Errors $errors;
 
 	/**
 	* @var string $table The table from which the object will be loaded.
@@ -91,14 +98,19 @@ abstract class Item extends Entity
 	protected static array $validation_rules = [];
 
 	/**
+	* @var array $validation_rules_to_skip Validation rules to skip when validating, if any
+	*/
+	protected static array $validation_rules_to_skip = [];
+
+	/**
+	* @var array $validation_error_strings Custom error strings
+	*/
+	protected static array $validation_error_strings = [];
+
+	/**
 	* @var Db $db The database object. Alias for $this->app->db
 	*/
 	protected Db $db;
-
-	/**
-	* @var Validator $validator The validator object. Alias for $this->app->validator
-	*/
-	protected Validator $validator;
 
 	/**
 	* Builds an item
@@ -109,7 +121,7 @@ abstract class Item extends Entity
 	{
 		$this->app = $app ?? $this->getApp();
 		$this->db = $this->app->db;
-		$this->validator = $this->app->validator;
+		$this->errors = new Errors($this->app);
 
 		$table = $this->getTable();
 		$id_field = $this->getIdField();
@@ -239,6 +251,24 @@ abstract class Item extends Entity
 	protected function getValidationRules() : array
 	{
 		return static::$validation_rules;
+	}
+
+	/**
+	* Returns the validation rules to skip
+	* @return array The rules to skip
+	*/
+	protected function getValidationRulesToSkip() : array
+	{
+		return static::$validation_rules_to_skip;
+	}
+
+	/**
+	* Returns the validation error strings
+	* @return array The error strings
+	*/
+	protected function getValidationErrorStrings() : array
+	{
+		return static::$validation_error_strings;
 	}
 
 	/**
@@ -465,6 +495,9 @@ abstract class Item extends Entity
 		//unset the id field
 		$id_field = $this->getIdField();
 		unset($data[$id_field]);
+
+		//unset the errors property
+		unset($data['errors']);
 
 		if (static::$ignore) {
 			$data = filterProperties($data, static::$ignore);

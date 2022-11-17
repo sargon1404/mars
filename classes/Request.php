@@ -83,34 +83,6 @@ class Request
 	}
 
 	/**
-	* Returns the type of the requested response [Eg: html|ajax]
-	* @param string $type_param The type param
-	* @return string The response type
-	*/
-	public function getType(string $type_param = null) : string
-	{
-		$type_param = $type_param ?? $this->app->config->request_type_param;
-
-		return $this->all->get($type_param);
-	}
-
-	/**
-	* Returns true if this is an ajax/json request
-	* @param string $type_param The type param
-	* @return bool
-	*/
-	public function isAjax(string $type_param = null) : bool
-	{
-		$type = $this->getType($type_param);
-
-		if ($type == 'ajax' || $type == 'json') {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	* Returns the action to be performed
 	* @param string $action_param The action param
 	* @return string The action

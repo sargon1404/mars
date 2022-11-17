@@ -53,12 +53,16 @@ abstract class Alerts
 
 	/**
 	* Adds an alert or multiple alerts to the alerts list.
-	* @param string|array $alert The alert text
+	* @param string|array|Alerts $alert The alert text
 	* @return static
 	*/
-	public function add(string|array $alert) : static
+	public function add(string|array|Alerts $alert) : static
 	{
-		$alerts = (array)$alert;
+		if ($alert instanceof Alerts) {
+			$alerts = $alert->get();
+		} else {
+			$alerts = (array)$alert;
+		}
 
 		foreach ($alerts as $text) {
 			$this->alerts[] = $text;
