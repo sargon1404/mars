@@ -2,10 +2,10 @@
 namespace Mars\Preload;
 
 /**
-* Returns the classes
-* @param array $files The files list
-* @return array The classes
-*/
+ * Returns the classes
+ * @param array $files The files list
+ * @return array The classes
+ */
 function get_classes(array $files) : array
 {
 	$classes = [];
@@ -21,10 +21,10 @@ function get_classes(array $files) : array
 }
 
 /**
-* Sorts the classes
-* @param array $files The files list
-* @return array The sorted classes
-*/
+ * Sorts the classes
+ * @param array $files The files list
+ * @return array The sorted classes
+ */
 function sort_classes(array $files) : array
 {
 	natsort($files);
@@ -49,10 +49,10 @@ function sort_classes(array $files) : array
 }
 
 /**
-* Returns the traits and interfaces
-* @param array $files The files list
-* @return array The traits and interfaces
-*/
+ * Returns the traits and interfaces
+ * @param array $files The files list
+ * @return array The traits and interfaces
+ */
 function get_traits_and_interfaces(array $files) : array
 {
 	$traits_interfaces = [];
@@ -66,10 +66,10 @@ function get_traits_and_interfaces(array $files) : array
 }
 
 /**
-* Writes $files as a file
-* @param string $filename The name of the files
-* @param array $files The files to write
-*/
+ * Writes $files as a file
+ * @param string $filename The name of the files
+ * @param array $files The files to write
+ */
 function write_file(string $filename, array $files)
 {
 	natsort($files);

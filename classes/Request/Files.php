@@ -9,22 +9,22 @@ namespace Mars\Request;
 use Mars\App;
 
 /**
-* The FILES Request Class
-* Handles the $_UPLOAD interactions
-*/
+ * The FILES Request Class
+ * Handles the $_UPLOAD interactions
+ */
 class Files extends Base
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var array $disallowed_extensions The extensions of the files which are disallowed at upload
-	*/
+	 * @var array $disallowed_extensions The extensions of the files which are disallowed at upload
+	 */
 	protected array $disallowed_extensions = ['php', 'cgi', 'pl', 'py', 'exe', 'sh', 'bin'];
 
 	/**
-	* Builds the Files Request object
-	* @param App $app The app object
-	*/
+	 * Builds the Files Request object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -33,10 +33,10 @@ class Files extends Base
 	}
 
 	/**
-	* Checks if a file is an uploaded file
-	* @param string $name The name of the file
-	* @return bool Returns true if the file is uploaded
-	*/
+	 * Checks if a file is an uploaded file
+	 * @param string $name The name of the file
+	 * @return bool Returns true if the file is uploaded
+	 */
 	public function isUploaded(string $name) : bool
 	{
 		if (!$this->has($name)) {
@@ -56,11 +56,11 @@ class Files extends Base
 	}
 
 	/**
-	* Basic upload file
-	* @param string $name The name of the file
-	* @param string $filename The filename where the file will be uploaded
-	* @return bool Returns true if the file was succesfully uploaded
-	*/
+	 * Basic upload file
+	 * @param string $name The name of the file
+	 * @param string $filename The filename where the file will be uploaded
+	 * @return bool Returns true if the file was succesfully uploaded
+	 */
 	public function uploadRaw(string $name, string $filename) : bool
 	{
 		if (!move_uploaded_file($_FILES[$name]['tmp_name'], $filename)) {
@@ -71,15 +71,15 @@ class Files extends Base
 	}
 
 	/**
-	* Uploads a file/files
-	* @param string $name The name of the file
-	* @param string $upload_dir Destination folder
-	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
-	* @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
-	* @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
-	* @return array Returns the list of uploaded files
-	* @throws Exception if the upload failed
-	*/
+	 * Uploads a file/files
+	 * @param string $name The name of the file
+	 * @param string $upload_dir Destination folder
+	 * @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
+	 * @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
+	 * @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
+	 * @return array Returns the list of uploaded files
+	 * @throws Exception if the upload failed
+	 */
 	public function upload(string $name, string $upload_dir, string|array $allowed_extensions = [], bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : array
 	{
 		$this->app->plugins->run('request_files_upload', $name, $upload_dir, $allowed_extensions, $append_suffix, $append_suffix_if_file_exists, $this);
@@ -121,11 +121,11 @@ class Files extends Base
 	}
 
 	/**
-	* Checks if $filename can be uploaded, based on extension
-	* @param string $filename The filename to check
-	* @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
-	* @throws Exception if the file can't be uploaded
-	*/
+	 * Checks if $filename can be uploaded, based on extension
+	 * @param string $filename The filename to check
+	 * @param string|array $allowed_extensions Array containing the extensions of the file that are allowed to be uploaded. If '*' is passed all types of files are allowed [minus those deemed unsafe]
+	 * @throws Exception if the file can't be uploaded
+	 */
 	protected function checkCanUpload(string $filename, string|array $allowed_extensions = [])
 	{
 		$extension = $this->app->file->getExtension($filename);
@@ -142,13 +142,13 @@ class Files extends Base
 	}
 
 	/**
-	* Returns the filename where the file will be uploaded
-	* @param string $name The name of the file
-	* @param string $upload_dir Destination folder
-	* @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
-	* @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
-	* @return string
-	*/
+	 * Returns the filename where the file will be uploaded
+	 * @param string $name The name of the file
+	 * @param string $upload_dir Destination folder
+	 * @param bool $append_suffix If true, will always generate a random suffix for the uploaded filename
+	 * @param bool $append_suffix_if_file_exists If true, will generate a random suffix if the file already exists
+	 * @return string
+	 */
 	protected function getFilename(string $name, string $upload_dir, bool $append_suffix = false, bool $append_suffix_if_file_exists = true) : string
 	{
 		$filename = App::fixPath($upload_dir) . $this->app->filter->filename($name);
@@ -168,11 +168,11 @@ class Files extends Base
 	}
 
 	/**
-	* Returns the upload error
-	* @param string $code The error code
-	* @param string $file The file
-	* @return
-	*/
+	 * Returns the upload error
+	 * @param string $code The error code
+	 * @param string $file The file
+	 * @return
+	 */
 	protected function getUploadError(string $code, string $file) : string
 	{
 		switch ($code) {

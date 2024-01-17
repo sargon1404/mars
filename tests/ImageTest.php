@@ -5,8 +5,8 @@ use Mars\Image;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ImageTest extends Base
 {
 	protected $images_dir = __DIR__ . '/data/images/';

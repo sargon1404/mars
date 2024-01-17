@@ -1,17 +1,21 @@
 <?php
 namespace Mars\Autoload;
 
+use Mars\App;
+
 /**
-* Autoloader for the app files
-*/
+ * Autoloader for the app files
+ */
 \spl_autoload_register(function ($name) {
-	if (!str_contains($name, 'App\\Extensions')) {
+	if (!str_starts_with($name, 'Modules')) {
 		return;
 	}
 
+	$app = App::get();
 	$parts = explode('\\', $name);
 
-	$filename = dirname(__DIR__, 2) . '/' . get_filename($parts, 1, true);
+	$filename = $app->extensions_path . '/' . App::EXTENSIONS_DIRS['modules'] . '/' . get_filename($parts, 1, true);
+	;
 
 	require($filename);
 });

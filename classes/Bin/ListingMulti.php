@@ -7,18 +7,18 @@
 namespace Mars\Bin;
 
 /**
-* The Multi List Bin Handler
-* Displays a list with multiple sections
-*/
+ * The Multi List Bin Handler
+ * Displays a list with multiple sections
+ */
 class ListingMulti extends Listing
 {
 	/**
-	* Prints a list, with multiple sections
-	* @param array $data The data to print
-	* @param array $colors The colors to use
-	* @param array $paddings_right The number of left chars to apply, if any
-	* @param array $paddings_left The number of left chars to apply, if any
-	*/
+	 * Prints a list, with multiple sections
+	 * @param array $data The data to print
+	 * @param array $colors The colors to use
+	 * @param array $paddings_right The number of left chars to apply, if any
+	 * @param array $paddings_left The number of left chars to apply, if any
+	 */
 	public function print(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = [])
 	{
 		$max = $this->getMaxLength($data, $paddings_right);
@@ -33,9 +33,9 @@ class ListingMulti extends Listing
 	}
 
 	/**
-	* @see \Mars\Bin\Base::getMaxLength()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Bin\Base::getMaxLength()
+	 * {@inheritdoc}
+	 */
 	protected function getMaxLength(array $data, array $paddings_right = []) : array
 	{
 		$max = [];

@@ -9,59 +9,59 @@ namespace Mars;
 use Mars\Mail\DriverInterface;
 
 /**
-* The Mail Class
-* The system's mailer object
-*/
+ * The Mail Class
+ * The system's mailer object
+ */
 class Mail
 {
 	use AppTrait;
 
 	/**
-	* @var Drivers $drivers The drivers object
-	*/
+	 * @var Drivers $drivers The drivers object
+	 */
 	public readonly Drivers $drivers;
 
 	/**
-	* @var string $from The from address
-	*/
+	 * @var string $from The from address
+	 */
 	public string $from = '';
 
 	/**
-	* @var string $from_name The from name
-	*/
+	 * @var string $from_name The from name
+	 */
 	public string $from_name = '';
 
 	/**
-	* @var string $reply_to The reply to address
-	*/
+	 * @var string $reply_to The reply to address
+	 */
 	public string $reply_to = '';
 
 	/**
-	* @var string $reply_to_name The reply to name
-	*/
+	 * @var string $reply_to_name The reply to name
+	 */
 	public string $reply_to_name = '';
 
 	/**
-	* @var bool $is_html If true, will send the email as html
-	*/
+	 * @var bool $is_html If true, will send the email as html
+	 */
 	public bool $is_html = true;
 
 	/**
-	* @var DriverInterface $driver The driver object
-	*/
+	 * @var DriverInterface $driver The driver object
+	 */
 	protected DriverInterface $driver;
 
 	/**
-	* @var array $supported_drivers The supported drivers
-	*/
+	 * @var array $supported_drivers The supported drivers
+	 */
 	protected array $supported_drivers = [
 		'phpmailer' => '\Mars\Mail\PhpMailer'
 	];
 
 	/**
-	* Constructs the mail object
-	* @param App $app The app object
-	*/
+	 * Constructs the mail object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
@@ -73,11 +73,11 @@ class Mail
 	}
 
 	/**
-	* Sets the From fields of the email
-	* @param string $from The email adress from which the email will be send
-	* @param string $from_name The from name field of the email
-	* @return static
-	*/
+	 * Sets the From fields of the email
+	 * @param string $from The email adress from which the email will be send
+	 * @param string $from_name The from name field of the email
+	 * @return static
+	 */
 	public function setFrom(string $from, string $from_name = '') : static
 	{
 		$this->from = $from;
@@ -89,11 +89,11 @@ class Mail
 	}
 
 	/**
-	* Sets the sender of the email
-	* @param string $reply_to The email address listed as reply to
-	* @param string $reply_to_name The reply name, if any
-	* @return static
-	*/
+	 * Sets the sender of the email
+	 * @param string $reply_to The email address listed as reply to
+	 * @param string $reply_to_name The reply name, if any
+	 * @return static
+	 */
 	public function setSender(string $reply_to, string $reply_to_name = '') : static
 	{
 		$this->reply_to = $reply_to;
@@ -103,10 +103,10 @@ class Mail
 	}
 
 	/**
-	* Sets the way how the email message is send
-	* @param bool $is_html If true, will send the email as html
-	* @return static
-	*/
+	 * Sets the way how the email message is send
+	 * @param bool $is_html If true, will send the email as html
+	 * @return static
+	 */
 	public function isHtml(bool $is_html) : static
 	{
 		$this->is_html = $is_html;
@@ -115,11 +115,11 @@ class Mail
 	}
 
 	/**
-	* Returns the content of a template to be used as the body of the email
-	* @param string $filename The template's filename
-	* @param array $vars Vars to add as template vars
-	* @return string The template's content
-	*/
+	 * Returns the content of a template to be used as the body of the email
+	 * @param string $filename The template's filename
+	 * @param array $vars Vars to add as template vars
+	 * @return string The template's content
+	 */
 	public function getTemplate(string $filename, array $vars = []) : string
 	{
 		$content = '';
@@ -133,13 +133,13 @@ class Mail
 	}
 
 	/**
-	* Sends a mail
-	* @param string|array $to The adress(es) where the mail will be sent
-	* @param string $subject The subject of the mail
-	* @param string $message The body of the mail
-	* @param array $attachments The attachments, if any, to the mail
-	* @param string|array $bcc Bcc recipients, if any
-	*/
+	 * Sends a mail
+	 * @param string|array $to The adress(es) where the mail will be sent
+	 * @param string $subject The subject of the mail
+	 * @param string $message The body of the mail
+	 * @param array $attachments The attachments, if any, to the mail
+	 * @param string|array $bcc Bcc recipients, if any
+	 */
 	public function send(string|array $to, string $subject, string $message, array $attachments = [], string|array $bcc = [])
 	{
 		$this->app->plugins->run('mail_send', $to, $subject, $message, $attachments, $this);

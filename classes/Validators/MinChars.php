@@ -7,21 +7,21 @@
 namespace Mars\Validators;
 
 /**
-* The MinChars Validator Class
-*/
+ * The MinChars Validator Class
+ */
 class MinChars extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_minchars_error';
 
 	/**
-	* Validates the number of chars of a string
-	* @param string $value The value
-	* @param int $length The minimum length of the string
-	* @return bool
-	*/
+	 * Validates the number of chars of a string
+	 * @param string $value The value
+	 * @param int $length The minimum length of the string
+	 * @return bool
+	 */
 	public function isValid(string $value, int $length = null) : bool
 	{
 		if ($length === null) {

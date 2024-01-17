@@ -7,22 +7,22 @@
 namespace Mars\Validators;
 
 /**
-* The Unique Validator Class
-*/
+ * The Unique Validator Class
+ */
 class Unique extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_unique_error';
 
 	/**
-	* Validates that a value is unique in a table
-	* @param string $value The value
-	* @param string $table The name of the table
-	* @param string $column The name of the column
-	* @return bool
-	*/
+	 * Validates that a value is unique in a table
+	 * @param string $value The value
+	 * @param string $table The name of the table
+	 * @param string $column The name of the column
+	 * @return bool
+	 */
 	public function isValid(string $value, string $table = null, string $column = 'id') : bool
 	{
 		if (!$table) {

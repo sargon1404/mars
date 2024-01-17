@@ -7,20 +7,20 @@
 namespace Mars\Html\Input;
 
 /**
-* The Options Class
-* Renders the select options
-*/
+ * The Options Class
+ * Renders the select options
+ */
 class Options extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'option';
 
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$options = $properties['options'] ?? [];
@@ -47,11 +47,11 @@ class Options extends \Mars\Html\Tag
 	}
 
 	/**
-	* Returns the html code of the options
-	* @param array $options The options
-	* @param array $selected The selected options
-	* @return string The html code
-	*/
+	 * Returns the html code of the options
+	 * @param array $options The options
+	 * @param array $selected The selected options
+	 * @return string The html code
+	 */
 	protected function getOptions(array $options, array $selected) : string
 	{
 		$html = '';

@@ -5,8 +5,8 @@ use Mars\Serializer;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class SerializerTest extends Base
 {
 	protected $data = ['test1', 'test2'];

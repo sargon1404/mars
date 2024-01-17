@@ -7,14 +7,14 @@
 namespace Mars\Minifiers;
 
 /**
-* The Css Minifier
-*/
+ * The Css Minifier
+ */
 class Css implements DriverInterface
 {
 	/**
-	* @see \Mars\Minifiers\DriverInterface::minify()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Minifiers\DriverInterface::minify()
+	 * {@inheritdoc}
+	 */
 	public function minify(string $content) : string
 	{
 		$minifier = new \MatthiasMullie\Minify\CSS;

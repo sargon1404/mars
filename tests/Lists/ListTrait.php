@@ -8,8 +8,8 @@ class Elements
 }
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ElementsTest extends Base
 {
 	public function testHeaders()

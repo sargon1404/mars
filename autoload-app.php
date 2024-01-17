@@ -2,19 +2,16 @@
 namespace Mars\Autoload;
 
 /**
-* Autoloader for the app files
-*/
+ * Autoloader for the app files
+ */
 \spl_autoload_register(function ($name) {
-	if (!str_contains($name, 'App\\')) {
-		return;
-	}
-	if (str_contains($name, 'App\\Extensions')) {
+	if (!str_starts_with($name, 'App\\')) {
 		return;
 	}
 
 	$parts = explode('\\', $name);
 
-	$filename = dirname(__DIR__, 2) . '/app/' . get_filename($parts, 1, true);
+	$filename = dirname(__DIR__, 2) . '/app/' . get_filename($parts);
 
 	require($filename);
 });

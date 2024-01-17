@@ -7,13 +7,13 @@
 namespace Mars\Images\Operations;
 
 /**
-* The Crop Operation Image Class
-*/
+ * The Crop Operation Image Class
+ */
 class Convert extends Base
 {
 	/**
-	* Converts the image
-	*/
+	 * Converts the image
+	 */
 	public function process()
 	{
 		[$source_width, $source_height] = $this->source->getSize();

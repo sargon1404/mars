@@ -4,8 +4,8 @@ use Mars\App;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class UriTest extends Base
 {
 	public function testIsUrl()
@@ -36,8 +36,8 @@ final class UriTest extends Base
 		$uri = $this->app->uri;
 
 		$this->assertEquals($uri->getFromLocalUrl('https://google/mars/'), '');
-		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'page.php'), $this->app->path . 'page.php');
-		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'dir1/dir2/page.php'), $this->app->path . 'dir1/dir2/page.php');
+		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'page.php'), $this->app->path . '/page.php');
+		$this->assertEquals($uri->getFromLocalUrl($this->app->url . 'dir1/dir2/page.php'), $this->app->path . '/dir1/dir2/page.php');
 	}
 
 	public function testBuild()
@@ -55,9 +55,9 @@ final class UriTest extends Base
 	{
 		$uri = $this->app->uri;
 
-		$this->assertEquals($uri->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
-		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['test1', 'test2']), 'https://localhost/mars/test1/test2/');
-		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2/');
+		$this->assertEquals($uri->buildPath('https://localhost/mars', ['test1', 'test2']), 'https://localhost/mars/test1/test2');
+		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['test1', 'test2']), 'https://localhost/mars/test1/test2');
+		$this->assertEquals($uri->buildPath('https://localhost/mars/', ['te st1', 'te?st2']), 'https://localhost/mars/te%20st1/te%3Fst2');
 	}
 
 	public function testInQuery()

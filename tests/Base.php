@@ -5,8 +5,8 @@ use PHPUnit\Framework\TestCase;
 use Mars\App;
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 abstract class Base extends TestCase
 {
 	protected $app;
@@ -24,9 +24,9 @@ abstract class Base extends TestCase
 		}
 	}
 
-	protected function assertObjectHasAttributeAndValue($attr, $val, $obj)
+	protected function assertObjectHasPropertyAndValue($attr, $val, $obj)
 	{
-		$this->assertObjectHasAttribute($attr, $obj);
+		$this->assertObjectHasProperty($attr, $obj);
 		if (isset($obj->$attr)) {
 			$this->assertEquals($obj->$attr, $val);
 		}

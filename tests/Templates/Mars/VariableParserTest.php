@@ -5,8 +5,8 @@ use Mars\Templates\Mars\VariableParser;
 include_once(dirname(__DIR__, 2) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class VariableParserTest extends Base
 {
 	public function testParse()

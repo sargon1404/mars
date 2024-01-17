@@ -7,21 +7,21 @@
 namespace Mars\Validators;
 
 /**
-* The Min Validator Class
-*/
+ * The Min Validator Class
+ */
 class Min extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_min_error';
 
 	/**
-	* Validates that a value is greater than $min
-	* @param string $value The value
-	* @param int $min The minimum value
-	* @return bool
-	*/
+	 * Validates that a value is greater than $min
+	 * @param string $value The value
+	 * @param int $min The minimum value
+	 * @return bool
+	 */
 	public function isValid(string $value, int|float $min = null) : bool
 	{
 		if ($min === null) {

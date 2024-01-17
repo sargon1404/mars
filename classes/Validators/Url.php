@@ -7,20 +7,20 @@
 namespace Mars\Validators;
 
 /**
-* The Url Validator Class
-*/
+ * The Url Validator Class
+ */
 class Url extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_url_error';
 
 	/**
-	* Checks if $value is a valid url
-	* @param string $value The value to validate
-	* @return bool Returns true if the url is valid
-	*/
+	 * Checks if $value is a valid url
+	 * @param string $value The value to validate
+	 * @return bool Returns true if the url is valid
+	 */
 	public function isValid(string $value) : bool
 	{
 		$url = strtolower($value);

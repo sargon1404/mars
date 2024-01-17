@@ -9,20 +9,20 @@ namespace Mars\Templates\Mars;
 use Mars\App;
 
 /**
-* The Variable Hander
-*/
+ * The Variable Hander
+ */
 class VariableParser
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected string $variable_preg = '/(\$[a-z0-9_\.\->#\[\]\'"]*)/is';
 
 	/**
-	* @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
-	*/
+	 * @var array $supported_modifiers Array listing the supported modifiers in the format modifier => [function, priority, escape]
+	 */
 	protected array $supported_modifiers = [
 		//escape modifiers
 		'html' => ['$this->app->escape->html', 40],
@@ -60,24 +60,22 @@ class VariableParser
 	];
 
 	/**
-	* Builds the VariableParser object
-	* @param App $app The app object
-	*/
+	 * Builds the VariableParser object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-
-		$this->app->plugins->run('templates_mars_variable_parser_construct', $this);
 	}
 
 	/**
-	* Adds a supported modifier to the list
-	* @param string $name The name of the modifier
-	* @param string $function The name of the function handling the modifier
-	* @param int $priority The priority of the modifier
-	* @param bool $escape If false, the value won't be html escaped
-	* @return $this
-	*/
+	 * Adds a supported modifier to the list
+	 * @param string $name The name of the modifier
+	 * @param string $function The name of the function handling the modifier
+	 * @param int $priority The priority of the modifier
+	 * @param bool $escape If false, the value won't be html escaped
+	 * @return $this
+	 */
 	public function addSupportedModifier(string $name, string $function, int $priority = 10, bool $escape = true)
 	{
 		$this->supported_modifiers[$name] = [$function, $priority, $escape];
@@ -86,10 +84,10 @@ class VariableParser
 	}
 
 	/**
-	* Removes a supported modifier
-	* @param string $name The name of the modifier
-	* @return $this
-	*/
+	 * Removes a supported modifier
+	 * @param string $name The name of the modifier
+	 * @return $this
+	 */
 	public function removeSupportedModifier(string $name)
 	{
 		unset($this->supported_modifiers[$name]);
@@ -98,9 +96,9 @@ class VariableParser
 	}
 
 	/**
-	* @see \Mars\Templates\DriverInterface::parse()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Templates\DriverInterface::parse()
+	 * {@inheritdoc}
+	 */
 	public function parse(string $content, array $params = []) : string
 	{
 		return preg_replace_callback('/\{\{(.*)\}\}/U', function (array $match) {
@@ -109,9 +107,9 @@ class VariableParser
 	}
 
 	/**
-	* Parses a variable
+	 * Parses a variable
 
-	*/
+	 */
 	protected function parseVariable(array $match) : string
 	{
 		[$value, $modifiers] = $this->breakVariable($match[1]);
@@ -135,10 +133,10 @@ class VariableParser
 	}
 
 	/**
-	* Breaks the $var variable into parts: value/modifiers
-	* @param string $var The variable to break
-	* @return array $modifiers The modifiers
-	*/
+	 * Breaks the $var variable into parts: value/modifiers
+	 * @param string $var The variable to break
+	 * @return array $modifiers The modifiers
+	 */
 	protected function breakVariable(string $var) : array
 	{
 		$parts = explode('|', $var);
@@ -155,11 +153,11 @@ class VariableParser
 	}
 
 	/**
-	* Builds a variable from $value. Returns $vars['item'] if $value=item
-	* @param string $value The value
-	* @param bool $parse_lang If true, and $value isn't a variable, will return the language string
-	* @return string The variable
-	*/
+	 * Builds a variable from $value. Returns $vars['item'] if $value=item
+	 * @param string $value The value
+	 * @param bool $parse_lang If true, and $value isn't a variable, will return the language string
+	 * @return string The variable
+	 */
 	protected function buildVariable(string $value, bool $parse_lang = true) : string
 	{
 		//if we don't have a $ as the first char, this is a language string
@@ -206,10 +204,10 @@ class VariableParser
 	}
 
 	/**
-	* Replaces all variables in a string
-	* @param string The string
-	* @return string The string with the replaced vars
-	*/
+	 * Replaces all variables in a string
+	 * @param string The string
+	 * @return string The string with the replaced vars
+	 */
 	public function replaceVariables(string $str) : string
 	{
 		$str = trim($str);
@@ -222,13 +220,13 @@ class VariableParser
 	}
 
 	/**
-	* Applies the modifiers from $modifiers to $value. Returns the php code.
-	* See the class description for a list of supported modifiers
-	* @param string $value The value to which the modifiers will be applied
-	* @param array $modifiers Array with the modifiers to be applied
-	* @param bool $apply_escape Set to true to escape the value
-	* @return string Returns the php code.
-	*/
+	 * Applies the modifiers from $modifiers to $value. Returns the php code.
+	 * See the class description for a list of supported modifiers
+	 * @param string $value The value to which the modifiers will be applied
+	 * @param array $modifiers Array with the modifiers to be applied
+	 * @param bool $apply_escape Set to true to escape the value
+	 * @return string Returns the php code.
+	 */
 	protected function applyModifiers(string $value, array $modifiers, bool $apply_escape = true) : string
 	{
 		//add the de modifier, or the escape modifier, if required
@@ -242,11 +240,11 @@ class VariableParser
 	}
 
 	/**
-	* Determines if, based on modifiers, the value can be escaped
-	* @param array $modifiers Array with the modifiers to be applied
-	* @param bool $apply_escape Set to true to escape the value
-	* @return bool
-	*/
+	 * Determines if, based on modifiers, the value can be escaped
+	 * @param array $modifiers Array with the modifiers to be applied
+	 * @param bool $apply_escape Set to true to escape the value
+	 * @return bool
+	 */
 	protected function canEscapeModifiers(array $modifiers, bool $apply_escape = true) : bool
 	{
 		if (!$apply_escape) {
@@ -272,10 +270,10 @@ class VariableParser
 	}
 
 	/**
-	* Returns the list of functions to apply
-	* @param array $modifiers The modifiers
-	* @return array The list of functions
-	*/
+	 * Returns the list of functions to apply
+	 * @param array $modifiers The modifiers
+	 * @return array The list of functions
+	 */
 	protected function getModifiersList(array $modifiers) : array
 	{
 		$list = [];
@@ -294,11 +292,11 @@ class VariableParser
 	}
 
 	/**
-	* Builds the modifiers functions
-	* @param string $value The value
-	* @param array $list The list of functions
-	* @return string The modifiers functions string
-	*/
+	 * Builds the modifiers functions
+	 * @param string $value The value
+	 * @param array $list The list of functions
+	 * @return string The modifiers functions string
+	 */
 	protected function buildModifiers($value, array $list) : string
 	{
 		if (!$list) {

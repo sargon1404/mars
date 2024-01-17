@@ -5,8 +5,8 @@ use Mars\File;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class FileTest extends Base
 {
 	protected $dir_write = __DIR__ . '/data/dir-test-write/';
@@ -65,6 +65,8 @@ final class FileTest extends Base
 		$this->assertSame($file->getRel($this->app->path . 'dir1/dir2/somefile.txt'), 'dir1/dir2/somefile.txt');
 		$this->assertSame($file->getRel('/etc/php/somefile.txt'), '/etc/php/somefile.txt');
 		$this->assertSame($file->getRel('somefile.txt'), 'somefile.txt');
+
+		$this->assertSame($file->getRel('/dir1/dir2/somefile.txt', '/dir1/dir2'), 'somefile.txt');
 	}
 
 	public function testGetFile()

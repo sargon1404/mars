@@ -11,41 +11,41 @@ use Mars\App;
 use Mars\Images\Operations\Resize;
 
 /**
-* The Image Base Class
-*/
+ * The Image Base Class
+ */
 abstract class Image
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var string $filename The image's filename
-	*/
+	 * @var string $filename The image's filename
+	 */
 	protected string $filename = '';
 
 	/**
-	* @var string $mime_type The image's mime type
-	*/
+	 * @var string $mime_type The image's mime type
+	 */
 	protected $mime_type = '';
 
 	/**
-	* @var int $quality The image quality of the resulting images
-	*/
+	 * @var int $quality The image quality of the resulting images
+	 */
 	protected int $quality = 80;
 
 	/**
-	* @var bool $optimize If true, the images will be optimized when processed/uploaded
-	*/
+	 * @var bool $optimize If true, the images will be optimized when processed/uploaded
+	 */
 	protected bool $optimize = false;
 
 	/**
-	* @var string $optimize_command The optimization command
-	*/
+	 * @var string $optimize_command The optimization command
+	 */
 	protected string $optimize_command = '';
 
 	/**
-	* @see \Mars\Images\DriverInterface::__construct()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::__construct()
+	 * {@inheritdoc}
+	 */
 	public function __construct(string $filename, App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
@@ -54,9 +54,9 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::isValid()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::isValid()
+	 * {@inheritdoc}
+	 */
 	public function isValid() : bool
 	{
 		$finfo = \finfo_open(FILEINFO_MIME_TYPE);
@@ -67,9 +67,9 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::getSize()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::getSize()
+	 * {@inheritdoc}
+	 */
 	public function getSize() : array
 	{
 		$info = getimagesize($this->filename);
@@ -81,9 +81,9 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::getWidth()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::getWidth()
+	 * {@inheritdoc}
+	 */
 	public function getWidth(): int
 	{
 		$info = getimagesize($this->filename);
@@ -95,9 +95,9 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::getHeight()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::getHeight()
+	 * {@inheritdoc}
+	 */
 	public function getHeight(): int
 	{
 		$info = getimagesize($this->filename);
@@ -109,9 +109,9 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::getRatio()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::getRatio()
+	 * {@inheritdoc}
+	 */
 	public function getRatio() : float
 	{
 		[$width, $height] = $this->getSize();
@@ -120,18 +120,18 @@ abstract class Image
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::create()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::create()
+	 * {@inheritdoc}
+	 */
 	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
 		return imagecreatetruecolor($width, $height);
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::optimize()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::optimize()
+	 * {@inheritdoc}
+	 */
 	public function optimize() : bool
 	{
 		if (!$this->optimize || !$this->optimize_command) {

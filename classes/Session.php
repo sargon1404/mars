@@ -9,31 +9,31 @@ namespace Mars;
 use Mars\Session\DriverInterface;
 
 /**
-* The Session Class
-* The system's session object
-*/
+ * The Session Class
+ * The system's session object
+ */
 class Session
 {
 	use AppTrait;
 
 	/**
-	* @var Drivers $drivers The drivers object
-	*/
+	 * @var Drivers $drivers The drivers object
+	 */
 	public readonly Drivers $drivers;
 
 	/**
-	* @var DriverInterface $driver The driver object
-	*/
+	 * @var DriverInterface $driver The driver object
+	 */
 	protected DriverInterface $driver;
 
 	/**
-	* @var string $prefix Prefix to apply to all session keys
-	*/
+	 * @var string $prefix Prefix to apply to all session keys
+	 */
 	protected string $prefix = '';
 
 	/**
-	* @var array $supported_drivers The supported drivers
-	*/
+	 * @var array $supported_drivers The supported drivers
+	 */
 	protected array $supported_drivers = [
 		'php' => '\Mars\Session\Php',
 		'db' => '\Mars\Session\Db',
@@ -41,9 +41,9 @@ class Session
 	];
 
 	/**
-	* Builds the session object
-	* @param App $app The app object
-	*/
+	 * Builds the session object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -64,9 +64,9 @@ class Session
 	}
 
 	/**
-	* Returns the session prefix
-	* @return string
-	*/
+	 * Returns the session prefix
+	 * @return string
+	 */
 	protected function getPrefix() : string
 	{
 		$prefix = $this->app->config->session_prefix;
@@ -79,9 +79,9 @@ class Session
 	}
 
 	/**
-	* Deletes the session cookie
-	* @return static
-	*/
+	 * Deletes the session cookie
+	 * @return static
+	 */
 	public function delete() : static
 	{
 		session_unset();
@@ -92,18 +92,18 @@ class Session
 
 
 	/**
-	* Returns the session id
-	* @return string The session id
-	*/
+	 * Returns the session id
+	 * @return string The session id
+	 */
 	public function getId() : string
 	{
 		return session_id();
 	}
 
 	/**
-	* Regenerates the session id
-	* @return string The new session id
-	*/
+	 * Regenerates the session id
+	 * @return string The new session id
+	 */
 	public function regenerateId() : string
 	{
 		session_regenerate_id();
@@ -112,10 +112,10 @@ class Session
 	}
 
 	/**
-	* Determines if $_SESSION[$name] is set
-	* @param string $name The name of the var
-	* @return bool Returns true if $_SESSION[$name] is set, false otherwise
-	*/
+	 * Determines if $_SESSION[$name] is set
+	 * @param string $name The name of the var
+	 * @return bool Returns true if $_SESSION[$name] is set, false otherwise
+	 */
 	public function isSet(string $name) : bool
 	{
 		$key = $this->prefix . $name;
@@ -124,12 +124,12 @@ class Session
 	}
 
 	/**
-	* Returns $_SESSION[$name] if set
-	* @param string $name The name of the var
-	* @param bool $unserialize If true, will unserialize the returned result
-	* @param mixed $not_set The return value, if $_SESSION[$name] isn't set
-	* @return mixed
-	*/
+	 * Returns $_SESSION[$name] if set
+	 * @param string $name The name of the var
+	 * @param bool $unserialize If true, will unserialize the returned result
+	 * @param mixed $not_set The return value, if $_SESSION[$name] isn't set
+	 * @return mixed
+	 */
 	public function get(string $name, bool $unserialize = false, $not_set = null)
 	{
 		$key = $this->prefix . $name;
@@ -148,12 +148,12 @@ class Session
 	}
 
 	/**
-	* Sets a session value
-	* @param string $name The name of the var
-	* @param mixed $value The value
-	* @param bool $serialize If true, will serialize the value
-	* @return static
-	*/
+	 * Sets a session value
+	 * @param string $name The name of the var
+	 * @param mixed $value The value
+	 * @param bool $serialize If true, will serialize the value
+	 * @return static
+	 */
 	public function set(string $name, $value, bool $serialize = false) : static
 	{
 		$key = $this->prefix . $name;
@@ -168,10 +168,10 @@ class Session
 	}
 
 	/**
-	* Unsets a session value
-	* @param string $name The name of the var
-	* @return static
-	*/
+	 * Unsets a session value
+	 * @param string $name The name of the var
+	 * @return static
+	 */
 	public function unset(string $name) : static
 	{
 		$key = $this->prefix . $name;

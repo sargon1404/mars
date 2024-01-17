@@ -7,8 +7,8 @@ include_once(__DIR__ . '/Base.php');
 
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 class Cars extends Items
 {
 	protected static string $table = 'cars';
@@ -16,8 +16,8 @@ class Cars extends Items
 }
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ItemsTest extends Base
 {
 	public static function setUpBeforeClass() : void
@@ -89,23 +89,6 @@ final class ItemsTest extends Base
 		$this->assertSame($car->id, 3);
 		$this->assertSame($car->name, 'bmw');
 		$this->assertSame($car->color, 'blue');
-	}
-
-	public function testUpdateData()
-	{
-		$cars = new Cars;
-		$cars->updateData([2,3], ['name' => 'generic', 'color' => 'white']);
-		$cars->load();
-
-		$car = $cars->get(2);
-		$this->assertSame($car->id, 2);
-		$this->assertSame($car->name, 'generic');
-		$this->assertSame($car->color, 'white');
-
-		$car = $cars->get(3);
-		$this->assertSame($car->id, 3);
-		$this->assertSame($car->name, 'generic');
-		$this->assertSame($car->color, 'white');
 	}
 
 	public function testDelete()

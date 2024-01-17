@@ -5,16 +5,16 @@ use Mars\App;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class AppUtilsTest extends Base
 {
 	protected array $data = ['foo' => 'bar', 'abc' => 'baz', 'def' => 'bay'];
 
 	public function testfixPath()
 	{
-		$this->assertSame(App::fixPath('/var/www/html'), '/var/www/html/');
-		$this->assertSame(App::fixPath('/var/www/html/'), '/var/www/html/');
+		$this->assertSame(App::fixPath('/var/www/html'), '/var/www/html');
+		$this->assertSame(App::fixPath('/var/www/html/'), '/var/www/html');
 	}
 
 	public function testGetClass()

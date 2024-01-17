@@ -7,15 +7,15 @@
 namespace Mars\Html\Input;
 
 /**
-* The Checkbox Class
-* Renders a checkbox
-*/
+ * The Checkbox Class
+ * Renders a checkbox
+ */
 class RadioGroup extends \Mars\Html\Tag
 {
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$values = $properties['values'] ?? [];

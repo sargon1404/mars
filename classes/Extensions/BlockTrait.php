@@ -7,27 +7,28 @@
 namespace Mars\Extensions;
 
 /**
-* The Block Trait
-* Trait implementing the Block functionality
-*/
+ * The Block Trait
+ * Trait implementing the Block functionality
+ */
 trait BlockTrait
 {
+	use isInsideAModuleTrait;
 	use \Mars\Extensions\Abilities\MvcTrait;
 	use \Mars\Extensions\Abilities\LanguagesTrait;
 	use \Mars\Extensions\Abilities\TemplatesTrait;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected static string $type = 'block';
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected static string $base_dir = 'blocks';
 
 	/**
-	* @internal
-	*/
-	protected static string $namespace = "\\App\\Extensions\\Blocks\\";
+	 * @internal
+	 */
+	protected static string $namespace = "Blocks";
 }

@@ -56,14 +56,14 @@ class MyController extends Controller
 }
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ControllerTest extends Base
 {
 	public function testDispatch()
 	{
 		$controller = new MyController;
-		$controller->setDefaultOkMethod('mySuccess')->setDefaultErrorMethod('myError');
+		$controller->setDefaultSuccessMethod('mySuccess')->setDefaultErrorMethod('myError');
 
 		ob_start();
 		$controller->dispatch();
@@ -91,6 +91,6 @@ final class ControllerTest extends Base
 
 		ob_start();
 		$controller->dispatch('myJson');
-		$this->assertSame('{"ok":true,"error":"","message":"","warning":"","info":"","foo":"bar"}', ob_get_clean());
+		$this->assertSame('{"success":true,"error":"","message":"","warning":"","info":"","foo":"bar"}', ob_get_clean());
 	}
 }

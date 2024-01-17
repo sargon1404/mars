@@ -9,14 +9,14 @@ namespace Mars\Templates\Mars;
 use Mars\App;
 
 /**
-* The Include Hander
-*/
+ * The Include Hander
+ */
 class IncludeParser
 {
 	/**
-	* @see \Mars\Templates\DriverInterface::parse()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Templates\DriverInterface::parse()
+	 * {@inheritdoc}
+	 */
 	public function parse(string $content, array $params = []) : string
 	{
 		return preg_replace_callback('/\{\%\s*include(.*)\%\}/U', function (array $match) use ($params) {

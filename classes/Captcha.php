@@ -9,38 +9,38 @@ namespace Mars;
 use Mars\Captcha\DriverInterface;
 
 /**
-* The Captcha Class
-* Class which provides captcha functionality
-*/
+ * The Captcha Class
+ * Class which provides captcha functionality
+ */
 class Captcha
 {
 	use AppTrait;
 
 	/**
-	* @var bool $enabled Will be set to true, if captcha is enabled
-	*/
+	 * @var bool $enabled Will be set to true, if captcha is enabled
+	 */
 	protected bool $enabled = false;
 
 	/**
-	* @var Drivers $drivers The drivers object
-	*/
+	 * @var Drivers $drivers The drivers object
+	 */
 	public readonly Drivers $drivers;
 
 	/**
-	* @var DriverInterface $driver The driver object
-	*/
+	 * @var DriverInterface $driver The driver object
+	 */
 	protected DriverInterface $driver;
 
 	/**
-	* @var array $supported_drivers The supported drivers
-	*/
+	 * @var array $supported_drivers The supported drivers
+	 */
 	protected array $supported_drivers = [
 		'recaptcha2' => '\Mars\Captcha\Recaptcha2'
 	];
 
 	/**
-	* Builds the captcha object
-	*/
+	 * Builds the captcha object
+	 */
 	public function __construct(App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
@@ -55,9 +55,9 @@ class Captcha
 	}
 
 	/**
-	* Checks the captcha is correct
-	* @return bool Returns bool if the captcha is correct
-	*/
+	 * Checks the captcha is correct
+	 * @return bool Returns bool if the captcha is correct
+	 */
 	public function check() : bool
 	{
 		if (!$this->enabled) {
@@ -68,8 +68,8 @@ class Captcha
 	}
 
 	/**
-	* Outputs the captcha
-	*/
+	 * Outputs the captcha
+	 */
 	public function output()
 	{
 		if (!$this->enabled) {

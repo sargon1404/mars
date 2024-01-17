@@ -11,43 +11,43 @@ use DateTimeZone;
 use DateInterval;
 
 /**
-* The Time Class
-* Time related functions
-*/
+ * The Time Class
+ * Time related functions
+ */
 class Time
 {
 	use AppTrait;
 
 	/**
-	* @var SQL_DATETIME The SQL datetime format
-	*/
-	public const SQL_DATETIME = 'Y-m-d H:i:s';
+	 * @var SQL_DATETIME The SQL datetime format
+	 */
+	public const string SQL_DATETIME = 'Y-m-d H:i:s';
 
 	/**
-	* @var SQL_DATE The SQL date format
-	*/
-	public const SQL_DATE = 'Y-m-d';
+	 * @var SQL_DATE The SQL date format
+	 */
+	public const string SQL_DATE = 'Y-m-d';
 
 	/**
-	* @var SQL_TIME The SQL time format
-	*/
-	public const SQL_TIME = 'H:i:s';
+	 * @var SQL_TIME The SQL time format
+	 */
+	public const string SQL_TIME = 'H:i:s';
 
 	/**
-	* @var string $timezone_id The
-	*/
+	 * @var string $timezone_id The
+	 */
 	public string $timezone_id = 'UTC';
 
 	/**
-	* @var \DateTimeZone $timezone The timezone applied to the datetime computations
-	*/
+	 * @var \DateTimeZone $timezone The timezone applied to the datetime computations
+	 */
 	public DateTimeZone $timezone;
 
 	/**
-	* Builds the time object
-	* Sets the default timezone to UTC
-	* @param App $app The app object
-	*/
+	 * Builds the time object
+	 * Sets the default timezone to UTC
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		date_default_timezone_set('UTC');
@@ -58,11 +58,11 @@ class Time
 	}
 
 	/**
-	* Returns a DateTime object from a datetime
-	* @param int|string|DateTime $datetime The datetime
-	* @param bool $is_utc If true, will return the date in the UTC timezone
-	* @return \DateTime
-	*/
+	 * Returns a DateTime object from a datetime
+	 * @param int|string|DateTime $datetime The datetime
+	 * @param bool $is_utc If true, will return the date in the UTC timezone
+	 * @return \DateTime
+	 */
 	public function get(int|string|DateTime $datetime = 0, bool $is_utc = true) : DateTime
 	{
 		if (!$datetime instanceof DateTime) {
@@ -85,10 +85,10 @@ class Time
 	}
 
 	/**
-	* Returns the timestamp from a date/string|timestamp in the UTC timezone
-	* @param int|string|DateTime $datetime The datetime
-	* @return int The timestamp
-	*/
+	 * Returns the timestamp from a date/string|timestamp in the UTC timezone
+	 * @param int|string|DateTime $datetime The datetime
+	 * @return int The timestamp
+	 */
 	public function getTimestamp(int|string|DateTime $datetime) : int
 	{
 		if (!$datetime) {
@@ -99,10 +99,10 @@ class Time
 	}
 
 	/**
-	* Returns a SQL datetime in the UTC timezone
-	* @param int|string|DateTime $datetime The datetime
-	* @return string
-	*/
+	 * Returns a SQL datetime in the UTC timezone
+	 * @param int|string|DateTime $datetime The datetime
+	 * @return string
+	 */
 	public function getDatetime(int|string|DateTime $datetime) : string
 	{
 		if (!$datetime) {
@@ -113,10 +113,10 @@ class Time
 	}
 
 	/**
-	* Returns a SQL date in the UTC timezone
-	* @param int|string|DateTime $datetime The datetime
-	* @return string
-	*/
+	 * Returns a SQL date in the UTC timezone
+	 * @param int|string|DateTime $datetime The datetime
+	 * @return string
+	 */
 	public function getDate(int|string|DateTime $datetime) : string
 	{
 		if (!$datetime) {
@@ -127,10 +127,10 @@ class Time
 	}
 
 	/**
-	* Returns a SQL time in the UTC timezone
-	* @param int|string|DateTime $datetime The datetime
-	* @return string
-	*/
+	 * Returns a SQL time in the UTC timezone
+	 * @param int|string|DateTime $datetime The datetime
+	 * @return string
+	 */
 	public function getTime(int|string|DateTime $datetime) : string
 	{
 		if (!$datetime) {
@@ -141,12 +141,12 @@ class Time
 	}
 
 	/**
-	* Adds to $datetime a certain number of days/months/weeks/years
-	* @param int $units The number of time units to add
-	* @param string $type The interval type: days/months/weeks/years
-	* @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
-	* @return DateTime The new date as a timestamp in the UTC timezone
-	*/
+	 * Adds to $datetime a certain number of days/months/weeks/years
+	 * @param int $units The number of time units to add
+	 * @param string $type The interval type: days/months/weeks/years
+	 * @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
+	 * @return DateTime The new date as a timestamp in the UTC timezone
+	 */
 	public function add(int $units, string $type, int|string|DateTime $datetime = 0) : DateTime
 	{
 		$interval = $this->getDateInterval($units, $type);
@@ -155,12 +155,12 @@ class Time
 	}
 
 	/**
-	* Subtracts from $datetime a certain number of days/months/weeks/years
-	* @param int $units The number of time units to  subtract
-	* @param string $type The interval type: days/months/weeks/years
-	* @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
-	* @return DateTime The new date as a timestamp in the UTC timezone
-	*/
+	 * Subtracts from $datetime a certain number of days/months/weeks/years
+	 * @param int $units The number of time units to  subtract
+	 * @param string $type The interval type: days/months/weeks/years
+	 * @param int|string|DateTime $datetime The datetime. If 0, the current time will be used
+	 * @return DateTime The new date as a timestamp in the UTC timezone
+	 */
 	public function sub(int $units, string $type, int|string|DateTime $datetime = 0) : DateTime
 	{
 		$interval = $this->getDateInterval($units, $type);
@@ -169,11 +169,11 @@ class Time
 	}
 
 	/**
-	* Creates a DateInterval object
-	* @param int $units The number of time units
-	* @param string $type The interval type: days/months/weeks/years
-	* @return DateInterval
-	*/
+	 * Creates a DateInterval object
+	 * @param int $units The number of time units
+	 * @param string $type The interval type: days/months/weeks/years
+	 * @return DateInterval
+	 */
 	protected function getDateInterval(int $units, string $type) : DateInterval
 	{
 		$duration = '';
@@ -204,10 +204,10 @@ class Time
 	}
 
 	/**
-	* Returns the number of minutes and seconds from $seconds. Eg: for 90 seconds returns 1 min and 30 sec.
-	* @param int $seconds The number of seconds
-	* @return array Returns an array with the number of minutes & seconds
-	*/
+	 * Returns the number of minutes and seconds from $seconds. Eg: for 90 seconds returns 1 min and 30 sec.
+	 * @param int $seconds The number of seconds
+	 * @return array Returns an array with the number of minutes & seconds
+	 */
 	public function getMinutes(int $seconds) : array
 	{
 		$time = ['minutes' => 0, 'seconds' => 0];

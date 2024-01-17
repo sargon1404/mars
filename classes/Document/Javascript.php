@@ -9,20 +9,20 @@ namespace Mars\Document;
 use Mars\App;
 
 /**
-* The Document's Javascript Urls Class
-* Class containing the javascript urls/stylesheets used by a document
-*/
+ * The Document's Javascript Urls Class
+ * Class containing the javascript urls/stylesheets used by a document
+ */
 class Javascript extends Urls
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $push_type = 'script';
 
 	/**
-	* Builds the javascript object
-	* @param App $app The app object
-	*/
+	 * Builds the javascript object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -31,9 +31,9 @@ class Javascript extends Urls
 	}
 
 	/**
-	* @see \Mars\Document\Urls::outputUrl()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Document\Urls::outputUrl()
+	 * {@inheritdoc}
+	 */
 	public function outputUrl(string $url, bool $async = false, bool $defer = false)
 	{
 		$async_str = '';
@@ -51,20 +51,20 @@ class Javascript extends Urls
 	}
 
 	/**
-	* Encodes $data
-	* @param mixed $data The data to encode
-	* @return string The encoded data
-	*/
+	 * Encodes $data
+	 * @param mixed $data The data to encode
+	 * @return string The encoded data
+	 */
 	public function encode($data) : string
 	{
 		return json_encode($data);
 	}
 
 	/**
-	* Decodes $data
-	* @param string $data The data to decode
-	* @return mixed The decoded string
-	*/
+	 * Decodes $data
+	 * @param string $data The data to decode
+	 * @return mixed The decoded string
+	 */
 	public function decode(string $data)
 	{
 		return json_decode($data, true);

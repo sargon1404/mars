@@ -7,15 +7,15 @@
 namespace Mars\Filters;
 
 /**
-* The Slug Filter Class
-*/
+ * The Slug Filter Class
+ */
 class Slug
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @see \Mars\Filter::slug()
-	*/
+	 * @see \Mars\Filter::slug()
+	 */
 	public function filter(string $value, bool $allow_slash = false) : string
 	{
 		$original_value = $value;

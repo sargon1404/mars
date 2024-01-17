@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Password Input Class
-* Renders a password input field
-*/
+ * The Password Input Class
+ * Renders a password input field
+ */
 class Password extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'password';
 }

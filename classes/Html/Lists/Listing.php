@@ -7,15 +7,15 @@
 namespace Mars\Html\Lists;
 
 /**
-* The List Class
-* Renders a list
-*/
+ * The List Class
+ * Renders a list
+ */
 abstract class Listing extends \Mars\Html\Tag
 {
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $items = []) : string
 	{
 		$html = $this->open($attributes);
@@ -26,10 +26,10 @@ abstract class Listing extends \Mars\Html\Tag
 	}
 
 	/**
-	* Returns the item's html code
-	* @param array $items The items
-	* @return string The html code
-	*/
+	 * Returns the item's html code
+	 * @param array $items The items
+	 * @return string The html code
+	 */
 	public function getItems(array $items) : string
 	{
 		$html = '';

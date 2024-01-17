@@ -7,20 +7,20 @@
 namespace Mars\Filters;
 
 /**
-* The Filename Filter Class
-*/
+ * The Filename Filter Class
+ */
 class Filename
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var int $max_chars The maximum number of chars allowed in $filename
-	*/
+	 * @var int $max_chars The maximum number of chars allowed in $filename
+	 */
 	protected int $max_chars = 300;
 
 	/**
-	* @see \Mars\Filter::filename()
-	*/
+	 * @see \Mars\Filter::filename()
+	 */
 	public function filter(string $filename) : string
 	{
 		$filename = basename(trim($filename));

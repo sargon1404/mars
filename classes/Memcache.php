@@ -9,52 +9,52 @@ namespace Mars;
 use Mars\Memcache\DriverInterface;
 
 /**
-* The Memcache Class
-* Handles the interactions with the memory cache.
-* Not the same as the memcache extension, although it might use it as a driver
-*/
+ * The Memcache Class
+ * Handles the interactions with the memory cache.
+ * Not the same as the memcache extension, although it might use it as a driver
+ */
 class Memcache
 {
 	use AppTrait;
 
 	/**
-	* @var Drivers $drivers The drivers object
-	*/
+	 * @var Drivers $drivers The drivers object
+	 */
 	public readonly Drivers $drivers;
 
 	/**
-	* @var DriverInterface $driver The driver object
-	*/
+	 * @var DriverInterface $driver The driver object
+	 */
 	protected DriverInterface $driver;
 
 	/**
-	* @var string $host The host to connect to
-	*/
+	 * @var string $host The host to connect to
+	 */
 	protected string $host = '';
 
 	/**
-	* @var string $port The port to connect to
-	*/
+	 * @var string $port The port to connect to
+	 */
 	protected string $port = '';
 
 	/**
-	* @var string $key Secret key used to identify the site
-	*/
+	 * @var string $key Secret key used to identify the site
+	 */
 	protected string $key = '';
 
 	/**
-	* @var bool $enabled Will be set to true, if memcache is enabled
-	*/
+	 * @var bool $enabled Will be set to true, if memcache is enabled
+	 */
 	protected bool $enabled = false;
 
 	/**
-	* @var bool $connected Set to true, if the connection to the memcache server has been made
-	*/
+	 * @var bool $connected Set to true, if the connection to the memcache server has been made
+	 */
 	protected bool $connected = false;
 
 	/**
-	* @var array $supported_drivers The supported drivers
-	*/
+	 * @var array $supported_drivers The supported drivers
+	 */
 	protected array $supported_drivers = [
 		'redis' => '\Mars\Memcache\Redis',
 		'memcache' => '\Mars\Memcache\Memcache',
@@ -62,9 +62,9 @@ class Memcache
 	];
 
 	/**
-	* Constructs the memcache object
-	* @param App $app The app object
-	*/
+	 * Constructs the memcache object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -81,24 +81,24 @@ class Memcache
 	}
 
 	/**
-	* Destroys the memcache object. Disconnects from the memcache server
-	*/
+	 * Destroys the memcache object. Disconnects from the memcache server
+	 */
 	public function __destruct()
 	{
 		$this->disconnect();
 	}
 
 	/**
-	* Returns true if memcache is enabled
-	*/
+	 * Returns true if memcache is enabled
+	 */
 	public function isEnabled() : bool
 	{
 		return $this->enabled;
 	}
 
 	/**
-	* Connects to the memcache server
-	*/
+	 * Connects to the memcache server
+	 */
 	protected function connect()
 	{
 		if (!$this->enabled || $this->connected) {
@@ -113,8 +113,8 @@ class Memcache
 	}
 
 	/**
-	* Disconnects from the memcache server
-	*/
+	 * Disconnects from the memcache server
+	 */
 	protected function disconnect()
 	{
 		if (!$this->connected) {
@@ -125,13 +125,13 @@ class Memcache
 	}
 
 	/**
-	* Adds a key to the memcache only if it doesn't already exists
-	* @param string $key The key
-	* @param string $value The value
-	* @param bool $serialize If true, will serialize the value
-	* @param int $expires The number of seconds after which the data will expire
-	* @return bool
-	*/
+	 * Adds a key to the memcache only if it doesn't already exists
+	 * @param string $key The key
+	 * @param string $value The value
+	 * @param bool $serialize If true, will serialize the value
+	 * @param int $expires The number of seconds after which the data will expire
+	 * @return bool
+	 */
 	public function add(string $key, $value, bool $serialize = false, int $expires = 0)
 	{
 		if (!$this->enabled) {
@@ -149,13 +149,13 @@ class Memcache
 	}
 
 	/**
-	* Adds a key to the memcache. If a key with the same name exists, it's value is overwritten
-	* @param string $key The key
-	* @param string $value The value
-	* @param bool $serialize If true, will serialize the value
-	* @param int $expires The number of seconds after which the data will expire
-	* @return bool
-	*/
+	 * Adds a key to the memcache. If a key with the same name exists, it's value is overwritten
+	 * @param string $key The key
+	 * @param string $value The value
+	 * @param bool $serialize If true, will serialize the value
+	 * @param int $expires The number of seconds after which the data will expire
+	 * @return bool
+	 */
 	public function set(string $key, $value, bool $serialize = false, int $expires = 0) : bool
 	{
 		if (!$this->enabled) {
@@ -173,11 +173,11 @@ class Memcache
 	}
 
 	/**
-	* Retrieves the value of $key from the memcache
-	* @param string $key The key
-	* @param bool $unserialize If true, will unserialize the returned result
-	* @return mixed The value of $key
-	*/
+	 * Retrieves the value of $key from the memcache
+	 * @param string $key The key
+	 * @param bool $unserialize If true, will unserialize the returned result
+	 * @return mixed The value of $key
+	 */
 	public function get(string $key, bool $unserialize = false)
 	{
 		if (!$this->enabled) {
@@ -197,10 +197,10 @@ class Memcache
 	}
 
 	/**
-	* Checks if a key exists/is set
-	* @param string $key The key
-	* @return bool True if the key exists
-	*/
+	 * Checks if a key exists/is set
+	 * @param string $key The key
+	 * @return bool True if the key exists
+	 */
 	public function exists(string $key) : bool
 	{
 		if (!$this->enabled) {
@@ -214,11 +214,11 @@ class Memcache
 	}
 
 	/**
-	* Delets $key from the memcache
-	* @param string $key The key
-	* @return mixed The value for $key
-	* @return bool
-	*/
+	 * Delets $key from the memcache
+	 * @param string $key The key
+	 * @return mixed The value for $key
+	 * @return bool
+	 */
 	public function delete(string $key) : bool
 	{
 		if (!$this->enabled) {
@@ -232,9 +232,9 @@ class Memcache
 	}
 
 	/**
-	* Deletes all keys from the memcache server
-	* @return static
-	*/
+	 * Deletes all keys from the memcache server
+	 * @return static
+	 */
 	public function deleteAll() : static
 	{
 		if (!$this->enabled) {

@@ -7,21 +7,21 @@
 namespace Mars\Validators;
 
 /**
-* The Date Validator Class
-*/
+ * The Date Validator Class
+ */
 class Time extends DateTime
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_time_error';
 
 	/**
-	* Validates a time value
-	* @param string $value The value to validate
-	* @param string $format The time's format
-	* @return bool Returns true if the time value is valid
-	*/
+	 * Validates a time value
+	 * @param string $value The value to validate
+	 * @param string $format The time's format
+	 * @return bool Returns true if the time value is valid
+	 */
 	public function isValid(string $value, string $format = null) : bool
 	{
 		$format = $format ?? $this->app->lang->time_picker_format;

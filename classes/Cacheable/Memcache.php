@@ -9,16 +9,16 @@ namespace Mars\Cacheable;
 use Mars\App;
 
 /**
-* The Memcache Driver
-* Driver which stores in memcache the cached resources
-*/
+ * The Memcache Driver
+ * Driver which stores in memcache the cached resources
+ */
 class Memcache implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @param App $app The app object
-	*/
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -29,18 +29,18 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Cacheable\DriverInterface::get()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Cacheable\DriverInterface::get()
+	 * {@inheritdoc}
+	 */
 	public function get(string $filename) : string
 	{
 		return $this->app->memcache->get($filename);
 	}
 
 	/**
-	* @see \Mars\Cachable\DriverInterface::store()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Cachable\DriverInterface::store()
+	 * {@inheritdoc}
+	 */
 	public function store(string $filename, string $content) : bool
 	{
 		$this->app->memcache->set($filename, $content);
@@ -50,18 +50,18 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Cachable\DriverInterface::getLastModified()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Cachable\DriverInterface::getLastModified()
+	 * {@inheritdoc}
+	 */
 	public function getLastModified(string $filename) : int
 	{
 		return (int)$this->app->memcache->get($filename . '-last-modified');
 	}
 
 	/**
-	* @see \Mars\Cachable\DriverInterface::delete()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Cachable\DriverInterface::delete()
+	 * {@inheritdoc}
+	 */
 	public function delete(string $filename) : bool
 	{
 		$this->app->memcache->delete($filename);

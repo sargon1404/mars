@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Radio Class
-* Renders a radio
-*/
+ * The Radio Class
+ * Renders a radio
+ */
 class Radio extends Checkbox
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'radio';
 }

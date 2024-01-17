@@ -5,8 +5,8 @@ use Mars\Entity;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class EntityTest extends Base
 {
 	protected array $data = ['foo' => 'bar', 'abc' => 'baz'];

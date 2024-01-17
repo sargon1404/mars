@@ -2,10 +2,10 @@
 namespace Mars\Autoload;
 
 /**
-* Autoloader for the mars files
-*/
+ * Autoloader for the mars files
+ */
 \spl_autoload_register(function ($name) {
-	if (!str_contains($name, 'Mars\\')) {
+	if (!str_starts_with($name, 'Mars\\')) {
 		return;
 	}
 
@@ -17,12 +17,12 @@ namespace Mars\Autoload;
 });
 
 /**
-* Returns the autoload filename from the namespace parts
-* @param array $parts The namespace parts
-* @param int $base_parts The number of base parts in the namespace
-* @param bool $convert_path If true, will convert the path from camelCase to snake-case. Eg: MyNamespace to my-namespace
-* @return string The filename
-*/
+ * Returns the autoload filename from the namespace parts
+ * @param array $parts The namespace parts
+ * @param int $base_parts The number of base parts in the namespace
+ * @param bool $convert_path If true, will convert the path from camelCase to snake-case. Eg: MyNamespace to my-namespace
+ * @return string The filename
+ */
 function get_filename(array $parts, int $base_parts = 1, bool $convert_path = false) : string
 {
 	$parts_count = count($parts);
@@ -47,10 +47,10 @@ function get_filename(array $parts, int $base_parts = 1, bool $convert_path = fa
 }
 
 /**
-* Converts the path. Converts a namespace part like MyNamespace to folder my-namespace
-* @param array $parts The namespace parts
-* @return string The dir
-*/
+ * Converts the path. Converts a namespace part like MyNamespace to folder my-namespace
+ * @param array $parts The namespace parts
+ * @return string The dir
+ */
 function convert_part(string $part) : string
 {
 	$new_part = '';

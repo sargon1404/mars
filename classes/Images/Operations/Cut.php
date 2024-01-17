@@ -7,19 +7,19 @@
 namespace Mars\Images\Operations;
 
 /**
-* The Cut Operation Image Class
-*/
+ * The Cut Operation Image Class
+ */
 class Cut extends Base
 {
 	/**
-	* Cuts a section from an image
-	* @param int $cut_width The width of the cut section
-	* @param int $cut_height The height of the cut section
-	* @param int $cut_x The x point from where the cut should start
-	* @param int $cut_y The y point from where the cut should start
-	* @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
-	* @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
-	*/
+	 * Cuts a section from an image
+	 * @param int $cut_width The width of the cut section
+	 * @param int $cut_height The height of the cut section
+	 * @param int $cut_x The x point from where the cut should start
+	 * @param int $cut_y The y point from where the cut should start
+	 * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
+	 * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
+	 */
 	public function process(int $cut_width, int $cut_height, int $cut_x, int $cut_y, int $width, int $height)
 	{
 		[$source_width, $source_height] = $this->source->getSize();

@@ -7,31 +7,31 @@
 namespace Mars;
 
 /**
-* The Driver Class
-* Encapsulates a list of suported drivers
-*/
+ * The Driver Class
+ * Encapsulates a list of suported drivers
+ */
 class Drivers
 {
 	use AppTrait;
 	use \Mars\Lists\ListTrait;
 
 	/**
-	* @var string $interface_name The interface the driver must implement
-	*/
+	 * @var string $interface_name The interface the driver must implement
+	 */
 	protected string $interface_name = '';
 
 	/**
-	* @var string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	*/
+	 * @var string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	 */
 	protected string $config_key = '';
 
 	/**
-	* Builds the driver object
-	* @param array $list The list of supported drivers
-	* @param string $interface_name The interface the driver must implement
-	* @param string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
-	* @param App $app The app object
-	*/
+	 * Builds the driver object
+	 * @param array $list The list of supported drivers
+	 * @param string $interface_name The interface the driver must implement
+	 * @param string $config_key The name of the key from where we'll read additional supported drivers from app->config->drivers
+	 * @param App $app The app object
+	 */
 	public function __construct(array $list, string $interface_name, string $config_key = '', App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
@@ -41,11 +41,11 @@ class Drivers
 	}
 
 	/**
-	* Returns the handle corresponding to the driver
-	* @param string $driver The driver's name
-	* @param mixed $args Arguments to pass to the handler's constructor
-	* @return object The handle
-	*/
+	 * Returns the handle corresponding to the driver
+	 * @param string $driver The driver's name
+	 * @param mixed $args Arguments to pass to the handler's constructor
+	 * @return object The handle
+	 */
 	public function get(string $driver, ...$args) : object
 	{
 		if ($this->config_key) {

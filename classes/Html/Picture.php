@@ -7,20 +7,20 @@
 namespace Mars\Html;
 
 /**
-* The Picture Class
-* Renders a picture
-*/
+ * The Picture Class
+ * Renders a picture
+ */
 class Picture extends Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'picture';
 
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$img = new Img($this->app);
@@ -34,9 +34,9 @@ class Picture extends Tag
 	}
 
 	/**
-	* Returns the html code of the source images
-	* @return string
-	*/
+	 * Returns the html code of the source images
+	 * @return string
+	 */
 	protected function getImages($images) : string
 	{
 		$html = '';

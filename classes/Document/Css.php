@@ -9,20 +9,20 @@ namespace Mars\Document;
 use Mars\App;
 
 /**
-* The Document's Css Urls Class
-* Class containing the css urls/stylesheets used by a document
-*/
+ * The Document's Css Urls Class
+ * Class containing the css urls/stylesheets used by a document
+ */
 class Css extends Urls
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $push_type = 'style';
 
 	/**
-	* Builds the javascript object
-	* @param App $app The app object
-	*/
+	 * Builds the javascript object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -31,9 +31,9 @@ class Css extends Urls
 	}
 
 	/**
-	* @see \Mars\Document\Urls::outputUrl()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Document\Urls::outputUrl()
+	 * {@inheritdoc}
+	 */
 	public function outputUrl(string $url, bool $async = false, bool $defer = false)
 	{
 		echo '<link rel="stylesheet" type="text/css" href="' . $this->app->escape->html($url) . '" />' . "\n";

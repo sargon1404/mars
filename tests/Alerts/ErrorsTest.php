@@ -6,8 +6,8 @@ use Mars\Alerts\Alert;
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ErrorsTest extends Base
 {
 	public function testErrors()

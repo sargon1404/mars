@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Label Class
-* Renders a label tag
-*/
+ * The Label Class
+ * Renders a label tag
+ */
 class Label extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'label';
 }

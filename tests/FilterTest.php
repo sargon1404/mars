@@ -4,8 +4,8 @@ use Mars\App;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class FilterTest extends Base
 {
 	public function testString()

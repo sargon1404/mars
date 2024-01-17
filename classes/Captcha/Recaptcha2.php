@@ -10,17 +10,17 @@ use Mars\App;
 use Mars\Http\Request;
 
 /**
-* The Recaptcha2 Captcha Driver Class
-* Captcha driver which uses Recaptcha2
-*/
+ * The Recaptcha2 Captcha Driver Class
+ * Captcha driver which uses Recaptcha2
+ */
 class Recaptcha2 implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	* Builds the recaptcha2 object
-	* @param App $app The app object
-	*/
+	 * Builds the recaptcha2 object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -33,9 +33,9 @@ class Recaptcha2 implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Captcha\DriverInterface::check()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Captcha\DriverInterface::check()
+	 * {@inheritdoc}
+	 */
 	public function check() : bool
 	{
 		$request = new Request;
@@ -54,9 +54,9 @@ class Recaptcha2 implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Captcha\DriverInterface::output()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Captcha\DriverInterface::output()
+	 * {@inheritdoc}
+	 */
 	public function output()
 	{
 		echo '<div class="g-recaptcha" data-sitekey="' . $this->app->config->captcha_recaptcha_public_key . '"></div>';

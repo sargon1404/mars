@@ -7,13 +7,13 @@
 namespace Mars\Html\Lists;
 
 /**
-* The UL List Class
-* Renders an ul list
-*/
+ * The UL List Class
+ * Renders an ul list
+ */
 class UL extends Listing
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'ul';
 }

@@ -7,8 +7,8 @@
 namespace Mars\Extensions;
 
 /**
-* The Block Class
-*/
+ * The Block Class
+ */
 class Block extends Extension
 {
 	use BlockTrait;

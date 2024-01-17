@@ -5,8 +5,8 @@ use Mars\Document\Rss;
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class RssTest extends Base
 {
 	public function testRss()

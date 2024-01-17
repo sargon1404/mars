@@ -7,9 +7,9 @@
 namespace Mars\Alerts;
 
 /**
-* The Warnings Class
-* Warnings container
-*/
+ * The Warnings Class
+ * Warnings container
+ */
 class Warnings extends Alerts
 {
 }

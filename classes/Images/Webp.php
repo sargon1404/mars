@@ -11,20 +11,20 @@ use Mars\Images\Image;
 use GdImage;
 
 /**
-* The Webp Image Class
-*/
+ * The Webp Image Class
+ */
 class Webp extends Image implements DriverInterface
 {
 
 	/**
-	* @var string $mime_type The image's mime type
-	*/
+	 * @var string $mime_type The image's mime type
+	 */
 	protected $mime_type = 'image/webp';
 
 	/**
-	* @see \Mars\Images\DriverInterface::__construct()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::__construct()
+	 * {@inheritdoc}
+	 */
 	public function __construct(string $filename, App $app = null)
 	{
 		parent::__construct($filename, $app);
@@ -33,9 +33,9 @@ class Webp extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::open()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::open()
+	 * {@inheritdoc}
+	 */
 	public function open() : GdImage
 	{
 		$img = imagecreatefromwebp($this->filename);
@@ -47,9 +47,9 @@ class Webp extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::save()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::save()
+	 * {@inheritdoc}
+	 */
 	public function save(GdImage $img)
 	{
 		if (!imagewebp($img, $this->filename, $this->quality)) {

@@ -7,88 +7,88 @@
 namespace Mars;
 
 /**
-* The Sql Builder Class.
-* Builds sql code
-*/
+ * The Sql Builder Class.
+ * Builds sql code
+ */
 class Sql
 {
 	use AppTrait;
 
 	/**
-	* @var string $sql The sql code
-	*/
+	 * @var string $sql The sql code
+	 */
 	protected string $sql = '';
 
 	/**
-	* @var array $params The params to use in prepared statements
-	*/
+	 * @var array $params The params to use in prepared statements
+	 */
 	protected array $params = [];
 
 	/**
-	* @var bool $is_read Determines if the statement is a read statement
-	*/
+	 * @var bool $is_read Determines if the statement is a read statement
+	 */
 	protected bool $is_read = false;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected bool $where = false;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected bool $having = false;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected int $param_index = 0;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected int $in_index = 0;
 
 	/**
-	* Converts the sql to a string
-	*/
+	 * Converts the sql to a string
+	 */
 	public function __toString()
 	{
 		return $this->getSql();
 	}
 
 	/**
-	* Runs the SQL code as a query
-	* @param return DbResult
-	*/
+	 * Runs the SQL code as a query
+	 * @param return DbResult
+	 */
 	public function query() : DbResult
 	{
 		return $this->app->db->query($this);
 	}
 
 	/**
-	* Returns the sql code
-	* @return string
-	*/
+	 * Returns the sql code
+	 * @return string
+	 */
 	public function getSql() : string
 	{
 		return $this->sql;
 	}
 
 	/**
-	* Returns the params
-	* @return array
-	*/
+	 * Returns the params
+	 * @return array
+	 */
 	public function getParams() : array
 	{
 		return $this->params;
 	}
 
 	/**
-	* Adds params to the params list
-	* @param array $params The params to add
-	* @return static
-	*/
+	 * Adds params to the params list
+	 * @param array $params The params to add
+	 * @return static
+	 */
 	protected function addParams(array $params) : static
 	{
 		$this->params = $this->params + $params;
@@ -97,11 +97,11 @@ class Sql
 	}
 
 	/**
-	* Adds a param to the params list
-	* @param string $param The param
-	* @param string $value The value of the param
-	* @return string The param, prepanded by ':'
-	*/
+	 * Adds a param to the params list
+	 * @param string $param The param
+	 * @param string $value The value of the param
+	 * @return string The param, prepanded by ':'
+	 */
 	protected function addParam(string $param, string $value) : string
 	{
 		if (isset($this->params[$param])) {
@@ -114,8 +114,8 @@ class Sql
 	}
 
 	/**
-	* Generates a param name
-	*/
+	 * Generates a param name
+	 */
 	protected function generateParam() : string
 	{
 		$param = 'param_' . $this->param_index;
@@ -125,18 +125,18 @@ class Sql
 	}
 
 	/**
-	*Returns true if this is a read statement
-	*/
+	 *Returns true if this is a read statement
+	 */
 	public function isRead() : bool
 	{
 		return $this->is_read;
 	}
 
 	/**
-	* Starts a new statement
-	* @param bool $is_read The tpye of the statement
-	* @return static
-	*/
+	 * Starts a new statement
+	 * @param bool $is_read The tpye of the statement
+	 * @return static
+	 */
 	protected function start(bool $is_read = false)
 	{
 		$this->sql = '';
@@ -151,10 +151,10 @@ class Sql
 	}
 
 	/**
-	* Escapes a table name
-	* @param string $table The table
-	* @param string $alias The alias of the table, if any
-	*/
+	 * Escapes a table name
+	 * @param string $table The table
+	 * @param string $alias The alias of the table, if any
+	 */
 	protected function escapeTable(string $table, string $alias = '') : string
 	{
 		$table = "`{$table}`";
@@ -166,30 +166,30 @@ class Sql
 	}
 
 	/**
-	* Escapes a column name
-	* @param string $column The column to escape
-	* @return string The escaped column name
-	*/
+	 * Escapes a column name
+	 * @param string $column The column to escape
+	 * @return string The escaped column name
+	 */
 	protected function escapeColumn(string $column) : string
 	{
 		return '`' . $column . '`';
 	}
 
 	/**
-	* Escapes a value meant to be used in a like %% part
-	* @param string $value The value to escape
-	* @return string The escaped value
-	*/
+	 * Escapes a value meant to be used in a like %% part
+	 * @param string $value The value to escape
+	 * @return string The escaped value
+	 */
 	protected function escapeLike(string $value) : string
 	{
 		return str_replace('%', '\%', $value);
 	}
 
 	/**
-	* Returns a list of columns, delimited by comma
-	* @param array $cols The columns
-	* @return string The column list
-	*/
+	 * Returns a list of columns, delimited by comma
+	 * @param array $cols The columns
+	 * @return string The column list
+	 */
 	protected function getColumnsList(array $cols): string
 	{
 		array_walk($cols, function (&$col) {
@@ -200,10 +200,10 @@ class Sql
 	}
 
 	/**
-	* Builds a SELECT query
-	* @param string|array $cols The cols to select
-	* @return static
-	*/
+	 * Builds a SELECT query
+	 * @param string|array $cols The cols to select
+	 * @return static
+	 */
 	public function select(string|array $cols = '*') : static
 	{
 		$this->start(true);
@@ -218,20 +218,20 @@ class Sql
 	}
 
 	/**
-	* Builds a SELECT COUNT(*) query
-	* @return static
-	*/
+	 * Builds a SELECT COUNT(*) query
+	 * @return static
+	 */
 	public function selectCount() : static
 	{
 		return $this->select('COUNT(*)');
 	}
 
 	/**
-	* Adds the FROM clause
-	* @param string $table The table
-	* @param string $alias The alias of the table, if any
-	* @return static
-	*/
+	 * Adds the FROM clause
+	 * @param string $table The table
+	 * @param string $alias The alias of the table, if any
+	 * @return static
+	 */
 	public function from(string $table, string $alias = '') : static
 	{
 		$table = $this->escapeTable($table, $alias);
@@ -242,13 +242,13 @@ class Sql
 	}
 
 	/**
-	* Adds a LEFT JOIN clause
-	* @param string $table The table to join
-	* @param string $alias The alias of the table, if any
-	* @param string $using The column used in the USING part, if any
-	* @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
-	* @return static
-	*/
+	 * Adds a LEFT JOIN clause
+	 * @param string $table The table to join
+	 * @param string $alias The alias of the table, if any
+	 * @param string $using The column used in the USING part, if any
+	 * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
+	 * @return static
+	 */
 	public function leftJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
 	{
 		$table = $this->escapeTable($table, $alias);
@@ -259,13 +259,13 @@ class Sql
 	}
 
 	/**
-	* Adds a RIGHT JOIN clause
-	* @param string $table The table to join
-	* @param string $alias The alias of the table, if any
-	* @param string $using The column used in the USING part, if any
-	* @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
-	* @return static
-	*/
+	 * Adds a RIGHT JOIN clause
+	 * @param string $table The table to join
+	 * @param string $alias The alias of the table, if any
+	 * @param string $using The column used in the USING part, if any
+	 * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
+	 * @return static
+	 */
 	public function rightJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
 	{
 		$table = $this->escapeTable($table, $alias);
@@ -276,13 +276,13 @@ class Sql
 	}
 
 	/**
-	* Adds a INNER JOIN clause
-	* @param string $table The table to join
-	* @param string $alias The alias of the table, if any
-	* @param string $using The column used in the USING part, if any
-	* @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
-	* @return static
-	*/
+	 * Adds a INNER JOIN clause
+	 * @param string $table The table to join
+	 * @param string $alias The alias of the table, if any
+	 * @param string $using The column used in the USING part, if any
+	 * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
+	 * @return static
+	 */
 	public function innerJoin(string $table, string $alias = '', string $using = '', string $on = '') : static
 	{
 		$table = $this->escapeTable($table, $alias);
@@ -293,10 +293,10 @@ class Sql
 	}
 
 	/**
-	* Builds the USING or OR part of a join
-	* @param string $using The column used in the USING part, if any
-	* @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
-	*/
+	 * Builds the USING or OR part of a join
+	 * @param string $using The column used in the USING part, if any
+	 * @param string $on Custom sql to add in the ON part of the join clause, if $using is empty
+	 */
 	protected function getJoinSql(string $using, string $on) : string
 	{
 		if ($using) {
@@ -309,10 +309,10 @@ class Sql
 	}
 
 	/**
-	* Builds an INSERT query
-	* @param string $table The table to insert into
-	* @return static
-	*/
+	 * Builds an INSERT query
+	 * @param string $table The table to insert into
+	 * @return static
+	 */
 	public function insert(string $table) : static
 	{
 		$this->start();
@@ -323,10 +323,10 @@ class Sql
 	}
 
 	/**
-	* Builds an UPDATE query
-	* @param string $table The table
-	* @return static
-	*/
+	 * Builds an UPDATE query
+	 * @param string $table The table
+	 * @return static
+	 */
 	public function update(string $table) : static
 	{
 		$this->start();
@@ -337,10 +337,10 @@ class Sql
 	}
 
 	/**
-	* Builds a REPLACE query
-	* @param string $table The table
-	* @return static
-	*/
+	 * Builds a REPLACE query
+	 * @param string $table The table
+	 * @return static
+	 */
 	public function replace(string $table) : static
 	{
 		$this->start();
@@ -351,9 +351,9 @@ class Sql
 	}
 
 	/**
-	* Builds a DELETE query
-	* @return static
-	*/
+	 * Builds a DELETE query
+	 * @return static
+	 */
 	public function delete() : static
 	{
 		$this->start();
@@ -364,10 +364,10 @@ class Sql
 	}
 
 	/**
-	* Builds the VALUES part of an INSERT query
-	* @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
-	* @return static
-	*/
+	 * Builds the VALUES part of an INSERT query
+	 * @param array $values The data to insert in the column => value format. If value is an array it will be inserted as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+	 * @return static
+	 */
 	public function values(array $values) : static
 	{
 		$cols = $this->getColumnsList(array_keys($values));
@@ -379,10 +379,10 @@ class Sql
 	}
 
 	/**
-	* Builds the VALUES part of an INSERT query by generating multiple values
-	* @param array $values_list Array containing the list of data to insert. Eg: [ ['foo' => 'bar'], ['foo' => 'bar2'] ... ]
-	* @return static
-	*/
+	 * Builds the VALUES part of an INSERT query by generating multiple values
+	 * @param array $values_list Array containing the list of data to insert. Eg: [ ['foo' => 'bar'], ['foo' => 'bar2'] ... ]
+	 * @return static
+	 */
 	public function valuesMulti(array $values_list) : static
 	{
 		$cols = $this->getColumnsList(array_keys(reset($values_list)));
@@ -400,11 +400,11 @@ class Sql
 	}
 
 	/**
-	* Returns the values of an INSERT query
-	* @param array $values The values to insert
-	* @param string $suffix Suffix, if any, to add to the name of params
-	* @return string The values
-	*/
+	 * Returns the values of an INSERT query
+	 * @param array $values The values to insert
+	 * @param string $suffix Suffix, if any, to add to the name of params
+	 * @return string The values
+	 */
 	protected function getValuesList(array $values, string $suffix = '') : string
 	{
 		$vals = [];
@@ -423,11 +423,11 @@ class Sql
 	}
 
 	/**
-	* Returns the value to be inserted/updated from an array
-	* @param string $col The column
-	* @param string $value The value. Can contain the function/value keys
-	* @return string The value
-	*/
+	 * Returns the value to be inserted/updated from an array
+	 * @param string $col The column
+	 * @param string $value The value. Can contain the function/value keys
+	 * @return string The value
+	 */
 	protected function getValue(string $col, array $value) : string
 	{
 		//if there is a 'function' key specified, use it to return the value as a MYSQL function
@@ -449,12 +449,12 @@ class Sql
 	}
 
 	/**
-	* Returns the operator - value SQL part
-	* @param string $col The column
-	* @param string $value The value
-	* @param string $operator The operator
-	* @return string
-	*/
+	 * Returns the operator - value SQL part
+	 * @param string $col The column
+	 * @param string $value The value
+	 * @param string $operator The operator
+	 * @return string
+	 */
 	protected function prepareValue(string $col, string $value, string $operator) : string
 	{
 		switch (strtolower($operator)) {
@@ -464,15 +464,15 @@ class Sql
 			case 'like_simple':
 				$value = $this->escapeLike($value);
 				return 'LIKE ' . $this->addParam($col, $value);
-			break;
+				break;
 			case 'like_left':
 				$value = '%' . $this->escapeLike($value);
 				return 'LIKE ' . $this->addParam($col, $value);
-			break;
+				break;
 			case 'like_right':
 				$value = $this->escapeLike($value) . '%';
 				return 'LIKE ' . $this->addParam($col, $value);
-			break;
+				break;
 			default:
 				return $operator . ' ' . $this->addParam($col, $value);
 		}
@@ -481,10 +481,10 @@ class Sql
 	}
 
 	/**
-	* Builds the SET part of an update query
-	* @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
-	* @return static
-	*/
+	 * Builds the SET part of an update query
+	 * @param array $values The data to updated in the column => value format. If value is an array it will be updated as it is. Usefull if a mysql function needs to be called (EG: NOW() )
+	 * @return static
+	 */
 	public function set(array $values) : static
 	{
 		$values = $this->getSetList($values);
@@ -495,10 +495,10 @@ class Sql
 	}
 
 	/**
-	* Returns the fields of an SET part
-	* @param array $values The values to insert
-	* @return string The fields
-	*/
+	 * Returns the fields of an SET part
+	 * @param array $values The values to insert
+	 * @return string The fields
+	 */
 	protected function getSetList(array $values)
 	{
 		$vals = [];
@@ -517,8 +517,8 @@ class Sql
 	}
 
 	/**
-	* Starts a WHERE clause
-	*/
+	 * Starts a WHERE clause
+	 */
 	protected function startWhere()
 	{
 		if (!$this->where) {
@@ -527,11 +527,11 @@ class Sql
 		}
 	}
 	/**
-	* Builds a WHERE clause
-	* @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
-	* @param string $delimitator The delimitator to use between parts. By default AND is used.
-	* @return static
-	*/
+	 * Builds a WHERE clause
+	 * @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
+	 * @param string $delimitator The delimitator to use between parts. By default AND is used.
+	 * @return static
+	 */
 	public function where(array $where, string $delimitator = 'AND') : static
 	{
 		if (!$where) {
@@ -546,12 +546,12 @@ class Sql
 	}
 
 	/**
-	* Returns a WHERE IN(...) clause
-	* @param string $column The column
-	* @param array $values Array with the elements to place in the IN list
-	* @param bool $is_int If true,will treat the elements from $in_array as int values
-	* @return static
-	*/
+	 * Returns a WHERE IN(...) clause
+	 * @param string $column The column
+	 * @param array $values Array with the elements to place in the IN list
+	 * @param bool $is_int If true,will treat the elements from $in_array as int values
+	 * @return static
+	 */
 	public function whereIn(string $column, array $values, bool $is_int = true) : static
 	{
 		if (!$values) {
@@ -566,9 +566,9 @@ class Sql
 	}
 
 	/**
-	* Returns the AND keyword
-	* @return static
-	*/
+	 * Returns the AND keyword
+	 * @return static
+	 */
 	public function and() : static
 	{
 		$this->sql.= ' AND ';
@@ -577,9 +577,9 @@ class Sql
 	}
 
 	/**
-	* Returns the AND keyword
-	* @return static
-	*/
+	 * Returns the AND keyword
+	 * @return static
+	 */
 	public function or() : static
 	{
 		$this->sql.= ' OR ';
@@ -588,10 +588,10 @@ class Sql
 	}
 
 	/**
-	* Determines if an array is a IN list
-	* @param array $value The array
-	* @return true True if it's an IN list
-	*/
+	 * Determines if an array is a IN list
+	 * @param array $value The array
+	 * @return true True if it's an IN list
+	 */
 	protected function isIn(array $value) : bool
 	{
 		if (isset($value['operator']) || isset($value['function']) || isset($value['value'])) {
@@ -602,11 +602,11 @@ class Sql
 	}
 
 	/**
-	* Returns an IN(...) list
-	* @param array $values The IN values
-	* @param bool $is_int If true, will treat the elements from the list as int values
-	* @return string
-	*/
+	 * Returns an IN(...) list
+	 * @param array $values The IN values
+	 * @param bool $is_int If true, will treat the elements from the list as int values
+	 * @return string
+	 */
 	protected function getIn(array $values, bool $is_int = true) : string
 	{
 		if ($is_int) {
@@ -629,13 +629,13 @@ class Sql
 	}
 
 	/**
-	* Builds multiple conditions
-	* @param array $conditions The conditions
-	* @param string $delimitator The delimitator to use
-	* @param bool If true, will escape the column
-	* @param bool If true, will generate param names
-	* @return string
-	*/
+	 * Builds multiple conditions
+	 * @param array $conditions The conditions
+	 * @param string $delimitator The delimitator to use
+	 * @param bool If true, will escape the column
+	 * @param bool If true, will generate param names
+	 * @return string
+	 */
 	protected function getConditions(array $conditions, string $delimitator, bool $escape_col = true, bool $generate_param = false) : string
 	{
 		$parts = [];
@@ -661,8 +661,8 @@ class Sql
 	}
 
 	/**
-	* Starts a HAVING clause
-	*/
+	 * Starts a HAVING clause
+	 */
 	protected function startHaving()
 	{
 		if (!$this->having) {
@@ -672,11 +672,11 @@ class Sql
 	}
 
 	/**
-	* Builds a HAVING clause
-	* @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
-	* @param string $delimitator The delimitator to use between parts. By default AND is used.
-	* @return static
-	*/
+	 * Builds a HAVING clause
+	 * @param array $where The where conditions. The format must be: column => value or column => [value,operator,function,value]
+	 * @param string $delimitator The delimitator to use between parts. By default AND is used.
+	 * @return static
+	 */
 	public function having(array $having, string $delimitator = 'AND') : static
 	{
 		if (!$having) {
@@ -691,11 +691,11 @@ class Sql
 	}
 
 	/**
-	* Returns an ORDER BY clause
-	* @param string $order_by The order by column
-	* @param string $order The order: asc/desc
-	* @return static
-	*/
+	 * Returns an ORDER BY clause
+	 * @param string $order_by The order by column
+	 * @param string $order The order: asc/desc
+	 * @return static
+	 */
 	public function orderBy(string $order_by, string $order = '') : static
 	{
 		if (!$order_by) {
@@ -715,10 +715,10 @@ class Sql
 	}
 
 	/**
-	* Returns a GROUP BY clause
-	* @param string $group_by The group by column
-	* @return static
-	*/
+	 * Returns a GROUP BY clause
+	 * @param string $group_by The group by column
+	 * @return static
+	 */
 	public function groupBy(string $group_by) : static
 	{
 		$group_by = $this->escapeColumn($group_by);
@@ -729,11 +729,11 @@ class Sql
 	}
 
 	/**
-	* Returns a LIMIT clause
-	* @param int $count The number of items
-	* @param int int The offset, if any
-	* @return static
-	*/
+	 * Returns a LIMIT clause
+	 * @param int $count The number of items
+	 * @param int int The offset, if any
+	 * @return static
+	 */
 	public function limit(int $count, int $offset = 0) : static
 	{
 		if (!$count) {
@@ -750,12 +750,12 @@ class Sql
 	}
 
 	/**
-	* Returns a LIMIT clause corresponding to the current page
-	* @param int $page The page number of the current page
-	* @param int $page_items Items per page
-	* @param int $total_items The total number of items.
-	* @return static
-	*/
+	 * Returns a LIMIT clause corresponding to the current page
+	 * @param int $page The page number of the current page
+	 * @param int $page_items Items per page
+	 * @param int $total_items The total number of items.
+	 * @return static
+	 */
 	public function pageLimit(int $page = 0, int $page_items = 0, int $total_items = 0) : static
 	{
 		$page--;

@@ -7,25 +7,25 @@
 namespace Mars\Html\Input;
 
 /**
-* The Input Class
-* Renders an input field
-*/
+ * The Input Class
+ * Renders an input field
+ */
 class Input extends \Mars\Html\Tag
 {
 	/**
-	* @var string $type The input's type
-	*/
+	 * @var string $type The input's type
+	 */
 	protected string $type = 'text';
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'input';
 
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$attributes = $this->generateIdAttribute($attributes);

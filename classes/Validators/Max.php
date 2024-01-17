@@ -7,21 +7,21 @@
 namespace Mars\Validators;
 
 /**
-* The Max Validator Class
-*/
+ * The Max Validator Class
+ */
 class Max extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_max_error';
 
 	/**
-	* Validates that a value is lower than $max
-	* @param string $value The value
-	* @param int $max The maximum value
-	* @return bool
-	*/
+	 * Validates that a value is lower than $max
+	 * @param string $value The value
+	 * @param int $max The maximum value
+	 * @return bool
+	 */
 	public function isValid(string $value, int|float $max = null) : bool
 	{
 		if ($max === null) {

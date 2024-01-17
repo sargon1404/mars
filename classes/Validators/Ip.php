@@ -7,21 +7,21 @@
 namespace Mars\Validators;
 
 /**
-* The Ip Validator Class
-*/
+ * The Ip Validator Class
+ */
 class Ip extends Rule
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $error_string = 'validate_ip_error';
 
 	/**
-	* Checks if $ip is a valid IP address
-	* @param string $value The IP to validate
-	* @param bool $wildcards If true, the IP can contain wildcards
-	* @return bool Returns true if the IP is valid
-	*/
+	 * Checks if $ip is a valid IP address
+	 * @param string $value The IP to validate
+	 * @param bool $wildcards If true, the IP can contain wildcards
+	 * @return bool Returns true if the IP is valid
+	 */
 	public function isValid(string $value, bool $wildcards = false) : bool
 	{
 		if (!$wildcards) {

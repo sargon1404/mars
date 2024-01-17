@@ -12,16 +12,16 @@ use Mars\Alerts\Messages;
 use Mars\Alerts\Warnings;
 
 /**
-* The Booter Class
-* Initializes the system's required classes
-*/
+ * The Booter Class
+ * Initializes the system's required classes
+ */
 class AppBooter
 {
 	use AppTrait;
 
 	/**
-	* Initializes the minimum number of objects needed to server content from the cache
-	*/
+	 * Initializes the minimum number of objects needed to server content from the cache
+	 */
 	public function minimum()
 	{
 		$this->app->timer = new Timer($this->app);
@@ -32,24 +32,24 @@ class AppBooter
 	}
 
 	/**
-	* Initializes the Caching object
-	*/
+	 * Initializes the Caching object
+	 */
 	public function caching()
 	{
 		$this->app->caching = new Caching($this->app);
 	}
 
 	/**
-	* Initializes the libraries
-	*/
+	 * Initializes the libraries
+	 */
 	public function libraries()
 	{
-		require_once($this->app->libraries_path . 'php/vendor/autoload.php');
+		require_once($this->app->libraries_path . '/php/vendor/autoload.php');
 	}
 
 	/**
-	* Initializes the db & sql objects
-	*/
+	 * Initializes the db & sql objects
+	 */
 	public function db()
 	{
 		$this->app->db = new Db($this->app);
@@ -57,8 +57,8 @@ class AppBooter
 	}
 
 	/**
-	* Initializes the base objects
-	*/
+	 * Initializes the base objects
+	 */
 	public function base()
 	{
 		$this->app->log = new Log($this->app);
@@ -79,9 +79,9 @@ class AppBooter
 	}
 
 	/**
-	* Initializes the environment objects
-	* @return static
-	*/
+	 * Initializes the environment objects
+	 * @return static
+	 */
 	public function env()
 	{
 		$this->app->accelerator = new Accelerator($this->app);
@@ -94,8 +94,8 @@ class AppBooter
 	}
 
 	/**
-	* Initializes the document properties
-	*/
+	 * Initializes the document properties
+	 */
 	public function document()
 	{
 		$this->app->document = new Document($this->app);
@@ -107,17 +107,17 @@ class AppBooter
 	}
 
 	/**
-	* Initializes the system objects
-	*/
+	 * Initializes the system objects
+	 */
 	public function system()
 	{
-		$this->app->plugins = new System\Plugins($this->app);
-		$this->app->plugins->load();
-
 		$this->app->lang = new System\Language($this->app);
 		$this->app->theme = new System\Theme($this->app);
 
-		$this->app->router = new Router;
+		$this->app->router = new Router($this->app);
 		$this->app->bin = new Bin($this->app);
+
+		$this->app->plugins = new System\Plugins($this->app);
+		$this->app->plugins->load();
 	}
 }

@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Email Input Class
-* Renders an email input field
-*/
+ * The Email Input Class
+ * Renders an email input field
+ */
 class Email extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'email';
 }

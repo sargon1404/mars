@@ -7,13 +7,13 @@
 namespace Mars\Formats;
 
 /**
-* The Percentage Format Class
-*/
+ * The Percentage Format Class
+ */
 class Percentage
 {
 	/**
-	* @see \Mars\Format::percentage()
-	*/
+	 * @see \Mars\Format::percentage()
+	 */
 	public function format(float|array $number, float $total, int $decimals = 4) : float|array
 	{
 		if (!$number || !$total) {

@@ -9,9 +9,9 @@ namespace Mars\Response;
 use Mars\App;
 
 /**
-* The Server Push Class
-* Pushes assets if http2
-*/
+ * The Server Push Class
+ * Pushes assets if http2
+ */
 class Push
 {
 	use \Mars\AppTrait;
@@ -21,14 +21,14 @@ class Push
 	}
 
 	/**
-	* @var bool $enabled True if the http2 push is enabled
-	*/
+	 * @var bool $enabled True if the http2 push is enabled
+	 */
 	protected bool $enabled = false;
 
 	/**
-	* Builds the Push object
-	* @param App $app The app object
-	*/
+	 * Builds the Push object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -39,11 +39,11 @@ class Push
 	}
 
 	/**
-	* Adds an url to the http2 push list
-	* @param string $url The url to add
-	* @param string $type The url's type
-	* @return static
-	*/
+	 * Adds an url to the http2 push list
+	 * @param string $url The url to add
+	 * @param string $type The url's type
+	 * @return static
+	 */
 	public function add(string $url, string $type) : static
 	{
 		if (!$this->enabled) {
@@ -54,10 +54,10 @@ class Push
 	}
 
 	/**
-	* Removes an url from the http2 push list
-	* @param string $url The url to remove
-	* @return static
-	*/
+	 * Removes an url from the http2 push list
+	 * @param string $url The url to remove
+	 * @return static
+	 */
 	public function remove(string $url) : static
 	{
 		if (!$this->enabled) {
@@ -68,8 +68,8 @@ class Push
 	}
 
 	/**
-	* Outputs the headers
-	*/
+	 * Outputs the headers
+	 */
 	public function output()
 	{
 		if (!$this->enabled) {

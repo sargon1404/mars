@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Hidden Input Class
-* Renders a hidden input field
-*/
+ * The Hidden Input Class
+ * Renders a hidden input field
+ */
 class Hidden extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'hidden';
 }

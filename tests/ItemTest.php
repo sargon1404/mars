@@ -6,8 +6,8 @@ use Mars\Item;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 class Car extends Item
 {
 	protected static string $table = 'cars';
@@ -18,8 +18,8 @@ class Car extends Item
 }
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class ItemTest extends Base
 {
 	public static function setUpBeforeClass() : void

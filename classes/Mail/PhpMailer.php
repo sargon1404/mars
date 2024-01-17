@@ -9,33 +9,33 @@ namespace Mars\Mail;
 use Mars\App;
 
 /**
-* The PhpMailer Class
-* Mail driver which uses PhpMailer
-*/
+ * The PhpMailer Class
+ * Mail driver which uses PhpMailer
+ */
 class PhpMailer implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var object $handle The driver's handle
-	*/
+	 * @var object $handle The driver's handle
+	 */
 	protected object $handle;
 
 	/**
-	* @var bool $connected Set to true, if the connection to the memcache server has been made
-	*/
+	 * @var bool $connected Set to true, if the connection to the memcache server has been made
+	 */
 	protected bool $loaded = false;
 
 	/**
-	* Builds the PhpMailer object
-	* @param App $app The app object
-	*/
+	 * Builds the PhpMailer object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
 
 		$this->handle = new \PHPMailer\PHPMailer\PHPMailer;
-		$this->handle->setLanguage('en', $this->app->libraries_path . 'php/vendor/phpmailer/phpmailer/language/');
+		$this->handle->setLanguage('en', $this->app->libraries_path . '/php/vendor/phpmailer/phpmailer/language/');
 		$this->handle->CharSet = 'UTF-8';
 
 		if ($this->app->config->mail_smtp) {
@@ -53,9 +53,9 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setRecipient()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setRecipient()
+	 * {@inheritdoc}
+	 */
 	public function setRecipient(string|array $to)
 	{
 		$to = (array)$to;
@@ -66,9 +66,9 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setRecipientBcc()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setRecipientBcc()
+	 * {@inheritdoc}
+	 */
 	public function setRecipientBcc(string|array $to)
 	{
 		$to = (array)$to;
@@ -79,18 +79,18 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setSubject()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setSubject()
+	 * {@inheritdoc}
+	 */
 	public function setSubject(string $subject)
 	{
 		$this->handle->Subject = $subject;
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setBody()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setBody()
+	 * {@inheritdoc}
+	 */
 	public function setBody(string $body, bool $is_html = true)
 	{
 		$this->handle->Body = $body;
@@ -98,9 +98,9 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setFrom()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setFrom()
+	 * {@inheritdoc}
+	 */
 	public function setFrom(string $from, string $from_name = '')
 	{
 		$this->handle->From = $from;
@@ -108,18 +108,18 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setSender()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setSender()
+	 * {@inheritdoc}
+	 */
 	public function setSender(string $reply_to, string $reply_to_name = '')
 	{
 		$this->handle->addReplyTo($reply_to, $reply_to_name);
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::setAttachments()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::setAttachments()
+	 * {@inheritdoc}
+	 */
 	public function setAttachments(array $attachments)
 	{
 		foreach ($attachments as $attachment) {
@@ -128,9 +128,9 @@ class PhpMailer implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Mail\DriverInterface::send()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Mail\DriverInterface::send()
+	 * {@inheritdoc}
+	 */
 	public function send()
 	{
 		if (!$this->handle->send()) {

@@ -13,42 +13,42 @@ use Mars\Document\Rss;
 use Mars\Document\Title;
 
 /**
-* The Device Class
-* Encapsulates the user's device
-*/
+ * The Device Class
+ * Encapsulates the user's device
+ */
 class Document
 {
 	use AppTrait;
 
 	/**
-	* @var Css $css The css object
-	*/
+	 * @var Css $css The css object
+	 */
 	public Css $css;
 
 	/**
-	* @var Javascript $javascript The javascript object
-	*/
+	 * @var Javascript $javascript The javascript object
+	 */
 	public Javascript $javascript;
 
 	/**
-	* @var Meta $meta The meta object
-	*/
+	 * @var Meta $meta The meta object
+	 */
 	public Meta $meta;
 
 	/**
-	* @var  Rss $rss The rss object
-	*/
+	 * @var Rss $rss The rss object
+	 */
 	public Rss $rss;
 
 	/**
-	* @var Title $title The title object
-	*/
+	 * @var Title $title The title object
+	 */
 	public Title $title;
 
 	/**
-	* Builds the device object
-	* @param App $app The app object
-	*/
+	 * Builds the device object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;

@@ -7,15 +7,15 @@
 namespace Mars\Images\Operations;
 
 /**
-* The Crop Operation Image Class
-*/
+ * The Crop Operation Image Class
+ */
 class Crop extends Base
 {
 	/**
-	* Crops the image
-	* @param int $width The width of the cropped image
-	* @param int $height The height of the cropped image
-	*/
+	 * Crops the image
+	 * @param int $width The width of the cropped image
+	 * @param int $height The height of the cropped image
+	 */
 	public function process(int $width, int $height)
 	{
 		[$source_width, $source_height] = $this->source->getSize();

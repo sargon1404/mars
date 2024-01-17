@@ -7,37 +7,37 @@
 namespace Mars;
 
 /**
-* The App Trait
-* Trait injecting/pulling the $app dependency into the current object
-*/
+ * The App Trait
+ * Trait injecting/pulling the $app dependency into the current object
+ */
 trait AppTrait
 {
 	/**
-	* @var App $app The app object
-	*/
+	 * @var App $app The app object
+	 */
 	protected App $app;
 
 	/**
-	* Builds the object
-	* @param App $app The app object
-	*/
+	 * Builds the object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app = null)
 	{
 		$this->app = $app ?? App::get();
 	}
 
 	/**
-	* Returns the app object
-	* @return App
-	*/
+	 * Returns the app object
+	 * @return App
+	 */
 	public function getApp() : App
 	{
 		return $this->app ?? App::get();
 	}
 
 	/**
-	* Unsets the app property when serializing
-	*/
+	 * Unsets the app property when serializing
+	 */
 	public function __sleep()
 	{
 		$data = get_object_vars($this);
@@ -48,16 +48,16 @@ trait AppTrait
 	}
 
 	/**
-	* Sets the app property when unserializing
-	*/
+	 * Sets the app property when unserializing
+	 */
 	public function __wakeup()
 	{
 		$this->app = App::get();
 	}
 
 	/**
-	* Removes properties which shouldn't be displayed by var_dump/print_r
-	*/
+	 * Removes properties which shouldn't be displayed by var_dump/print_r
+	 */
 	public function __debugInfo()
 	{
 		$properties = get_object_vars($this);

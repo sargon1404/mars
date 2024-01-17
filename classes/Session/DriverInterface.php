@@ -7,8 +7,8 @@
 namespace Mars\Session;
 
 /**
-* The Session Driver Interface
-*/
+ * The Session Driver Interface
+ */
 interface DriverInterface
 {
 }

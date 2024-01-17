@@ -7,18 +7,18 @@
 namespace Mars\Html;
 
 /**
-* The Anchor Class
-* Renders a link
-*/
+ * The Anchor Class
+ * Renders a link
+ */
 class A extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'a';
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $newline = '';
 }

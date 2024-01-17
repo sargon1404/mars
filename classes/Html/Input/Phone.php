@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Phone Input Class
-* Renders a phone input field
-*/
+ * The Phone Input Class
+ * Renders a phone input field
+ */
 class Phone extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'tel';
 }

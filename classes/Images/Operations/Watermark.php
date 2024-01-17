@@ -9,21 +9,21 @@ namespace Mars\Images\Operations;
 use Mars\Image;
 
 /**
-* The Watermark Operation Image Class
-*/
+ * The Watermark Operation Image Class
+ */
 class Watermark extends Base
 {
 
-   /**
-	* Cuts a section from an image
-	* @param int $cut_width The width of the cut section
-	* @param int $cut_height The height of the cut section
-	* @param int $cut_x The x point from where the cut should start
-	* @param int $cut_y The y point from where the cut should start
-	* @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
-	* @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
-	* @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
-	*/
+	/**
+	 * Cuts a section from an image
+	 * @param int $cut_width The width of the cut section
+	 * @param int $cut_height The height of the cut section
+	 * @param int $cut_x The x point from where the cut should start
+	 * @param int $cut_y The y point from where the cut should start
+	 * @param int $width The width of the resulting image. If 0, the image will have the same width as $cut_width
+	 * @param int $height The height of the resulting image. If 0 the image will have the same height as $cut_height
+	 * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+	 */
 	public function applyText(string $text, int $position)
 	{
 		[$source_width, $source_height] = $this->source->getSize();
@@ -68,10 +68,10 @@ class Watermark extends Base
 	}
 
 	/**
-	* Applies a watermark image
-	* @param Image $watermark_image The watermark image
-	* @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
-	*/
+	 * Applies a watermark image
+	 * @param Image $watermark_image The watermark image
+	 * @param int $position The position of the watermark text. Matches the 1-9 keys of the numpad. 1:bottom-left; 5:middle center; 9:top-right
+	 */
 	public function applyImage(Image $watermark_image, int $position = 3)
 	{
 		[$source_width, $source_height] = $this->source->getSize();
@@ -97,10 +97,10 @@ class Watermark extends Base
 	}
 
 	/**
-	* Sets the watermark options
-	* @param array $options The options array
-	* @return array The options
-	*/
+	 * Sets the watermark options
+	 * @param array $options The options array
+	 * @return array The options
+	 */
 	protected function getOptions(array $options) : array
 	{
 		$options['background'] ??= $this->app->config->image_watermark_background;
@@ -119,16 +119,16 @@ class Watermark extends Base
 	}
 
 	/**
-	* Computes the coordinates where the watermark should be placed
-	* @param int $watermark_width The watermark's width
-	* @param int $watermark_height The watermark's height
-	* @param int $image_width The image's width
-	* @param int $image_height The image's height
-	* @param int $margin_left The left margin
-	* @param int $margin_top The top margin
-	* @param int $position The watermark's position
-	* @return array The x,y position
-	*/
+	 * Computes the coordinates where the watermark should be placed
+	 * @param int $watermark_width The watermark's width
+	 * @param int $watermark_height The watermark's height
+	 * @param int $image_width The image's width
+	 * @param int $image_height The image's height
+	 * @param int $margin_left The left margin
+	 * @param int $margin_top The top margin
+	 * @param int $position The watermark's position
+	 * @return array The x,y position
+	 */
 	protected function getPosition(int $watermark_width, int $watermark_height, int $image_width, int $image_height, int $margin_left, int $margin_top, int $position) : array
 	{
 		$pos = [];
@@ -136,31 +136,31 @@ class Watermark extends Base
 		switch ($position) {
 			case 1:
 				$pos = [$margin_left, $image_height - $margin_top - $watermark_height];
-			break;
+				break;
 			case 2:
 				$pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, $image_height - $margin_top - $watermark_height];
-			break;
+				break;
 			case 3:
 				$pos = [$image_width - $margin_left - $watermark_width, $image_height - $margin_top - $watermark_height];
-			break;
+				break;
 			case 4:
 				$pos = [$margin_left, ($image_height - 2 * $margin_top - $watermark_height) / 2];
-			break;
+				break;
 			case 5:
 				$pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, ($image_height - 2 * $margin_top - $watermark_height) / 2];
-			break;
+				break;
 			case 6:
 				$pos = [$image_width - $margin_left - $watermark_width, ($image_height - 2 * $margin_top - $watermark_height) / 2];
-			break;
+				break;
 			case 7:
 				$pos = [$margin_left, $margin_top];
-			break;
+				break;
 			case 8:
 				$pos = [($image_width - 2 * $margin_left - $watermark_height) / 2, $margin_top];
-			break;
+				break;
 			case 9:
 				$pos = [$image_width - $margin_left - $watermark_width, $margin_top];
-			break;
+				break;
 			default:
 				$pos = [$image_width - $margin_left - $watermark_width, $image_height - $margin_top - $watermark_height];
 		}

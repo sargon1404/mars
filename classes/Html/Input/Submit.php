@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Submit Input Class
-* Renders a submit button
-*/
+ * The Submit Input Class
+ * Renders a submit button
+ */
 class Submit extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'submit';
 }

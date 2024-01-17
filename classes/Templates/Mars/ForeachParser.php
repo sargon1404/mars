@@ -7,26 +7,26 @@
 namespace Mars\Templates\Mars;
 
 /**
-* The Foreach Hander
-*/
+ * The Foreach Hander
+ */
 class ForeachParser
 {
 	use \Mars\AppTrait;
 	
 	/**
-	* @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
-	*/
+	 * @var array $foreach_keys Array where existing vars with the same name as a foreach key are temporarily stored
+	 */
 	protected array $foreach_keys = [];
 
 	/**
-	* @var array $foreach_values Array where existing vars with the same name as a foreach value are temporarily stored
-	*/
+	 * @var array $foreach_values Array where existing vars with the same name as a foreach value are temporarily stored
+	 */
 	protected array $foreach_values = [];
 
 	/**
-	* @see \Mars\Templates\DriverInterface::parse()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Templates\DriverInterface::parse()
+	 * {@inheritdoc}
+	 */
 	public function parse(string $content, array $params = []) : string
 	{
 		$content = preg_replace_callback('/\{\%\s*foreach(.*) as (.*)\%\}/isU', function (array $match) {
@@ -66,10 +66,10 @@ class ForeachParser
 	}
 	
 	/**
-	* Sets a foreach key & value as vars
-	* @param string $key The name of the key
-	* @param string $value The name of the value
-	*/
+	 * Sets a foreach key & value as vars
+	 * @param string $key The name of the key
+	 * @param string $value The name of the value
+	 */
 	public function setForeachData(string $key, string $value)
 	{
 		if ($key) {
@@ -80,8 +80,8 @@ class ForeachParser
 	}
 	
 	/**
-	* Restores the key/value vars to the previous values
-	*/
+	 * Restores the key/value vars to the previous values
+	 */
 	public function restoreForeachData()
 	{
 		$keys = array_keys($this->foreach_keys);

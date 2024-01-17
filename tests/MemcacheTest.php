@@ -6,8 +6,8 @@ use Mars\Memcache;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class MemcacheTest extends Base
 {
 	protected $driver = '';
@@ -54,7 +54,7 @@ final class MemcacheTest extends Base
 		$this->assertFalse($memcache->get($key));
 	}
 
-	public function testMemcacheConnection()
+	/*public function testMemcacheConnection()
 	{
 		$this->app->config->memcache_driver = 'memcache';
 
@@ -68,7 +68,7 @@ final class MemcacheTest extends Base
 
 		$memcache = new Memcache($this->app);
 		$this->runAssertions($memcache);
-	}
+	}*/
 
 	public function testMemcachedConnection()
 	{

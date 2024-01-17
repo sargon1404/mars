@@ -7,15 +7,15 @@
 namespace Mars\Images\Operations;
 
 /**
-* The Resize Image Class
-*/
+ * The Resize Image Class
+ */
 class Resize extends Base
 {
 	/**
-	* Resizes the image
-	* @param int $width The width of the resized image
-	* @param int $height The height of the resized image
-	*/
+	 * Resizes the image
+	 * @param int $width The width of the resized image
+	 * @param int $height The height of the resized image
+	 */
 	public function process(int $width, int $height)
 	{
 		[$source_width, $source_height] = $this->source->getSize();

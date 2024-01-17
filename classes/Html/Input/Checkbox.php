@@ -7,20 +7,20 @@
 namespace Mars\Html\Input;
 
 /**
-* The Checkbox Class
-* Renders a checkbox
-*/
+ * The Checkbox Class
+ * Renders a checkbox
+ */
 class Checkbox extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'checkbox';
 
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$label = $properties['label'] ?? '';

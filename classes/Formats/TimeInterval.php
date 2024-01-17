@@ -9,13 +9,13 @@ namespace Mars\Formats;
 use Mars\App;
 
 /**
-* The Time Interval Format Class
-*/
+ * The Time Interval Format Class
+ */
 class TimeInterval
 {
 	/**
-	* @see \Mars\Format::timeInterval()
-	*/
+	 * @see \Mars\Format::timeInterval()
+	 */
 	public function format(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
 		if (!$seconds || $seconds < 0) {

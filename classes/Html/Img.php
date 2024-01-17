@@ -7,18 +7,18 @@
 namespace Mars\Html;
 
 /**
-* The Img Class
-* Renders an image
-*/
+ * The Img Class
+ * Renders an image
+ */
 class Img extends Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'img';
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $newline = '';
 }

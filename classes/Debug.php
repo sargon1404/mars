@@ -7,21 +7,21 @@
 namespace Mars;
 
 /**
-* The Debug Class
-* Contains debug functionality and outputs debug info
-*/
+ * The Debug Class
+ * Contains debug functionality and outputs debug info
+ */
 class Debug
 {
 	use AppTrait;
 
 	/**
-	* @var array $info Debug info
-	*/
+	 * @var array $info Debug info
+	 */
 	public array $info = [];
 
 	/**
-	* Outputs all the debug info
-	*/
+	 * Outputs all the debug info
+	 */
 	public function output()
 	{
 		echo '<div id="debug-info">';
@@ -45,8 +45,8 @@ class Debug
 	}
 
 	/**
-	* Outputs basic debug info
-	*/
+	 * Outputs basic debug info
+	 */
 	protected function outputInfo()
 	{
 		echo '<table class="grid debug-grid">';
@@ -62,8 +62,8 @@ class Debug
 	}
 
 	/**
-	* Outputs execution time info
-	*/
+	 * Outputs execution time info
+	 */
 	protected function outputExecutionTime()
 	{
 		$execution_time = $this->info['execution_time'];
@@ -80,8 +80,8 @@ class Debug
 	}
 
 	/**
-	* Outputs mysql info
-	*/
+	 * Outputs mysql info
+	 */
 	protected function outputDbQueries()
 	{
 		$execution_time = $this->info['execution_time'];
@@ -100,10 +100,10 @@ class Debug
 	}
 
 	/**
-	* Returns the query params, ready for outputing
-	* @param array $params The query params
-	* @return string
-	*/
+	 * Returns the query params, ready for outputing
+	 * @param array $params The query params
+	 * @return string
+	 */
 	protected function getDbQueryParams(array $params) : string
 	{
 		if (!$params) {
@@ -114,8 +114,8 @@ class Debug
 	}
 
 	/**
-	* Outputs plugins debug info
-	*/
+	 * Outputs plugins debug info
+	 */
 	protected function outputPlugins()
 	{
 		$execution_time = $this->info['execution_time'];
@@ -162,9 +162,9 @@ class Debug
 	}
 
 	/**
-	* Computes the execution time of the plugins
-	* @return int
-	*/
+	 * Computes the execution time of the plugins
+	 * @return int
+	 */
 	protected function getPluginsExecTime() : float
 	{
 		$time = 0;
@@ -176,8 +176,8 @@ class Debug
 	}
 
 	/**
-	* Outputs info about the loaded templates
-	*/
+	 * Outputs info about the loaded templates
+	 */
 	protected function outputLoadedTemplates()
 	{
 		echo '<table class="grid debug-grid debug-grid-templates">';
@@ -189,8 +189,8 @@ class Debug
 	}
 
 	/**
-	* Outputs opcache info
-	*/
+	 * Outputs opcache info
+	 */
 	protected function outputOpcacheInfo()
 	{
 		$info = opcache_get_status(true);
@@ -260,10 +260,10 @@ class Debug
 	}
 
 	/**
-	* Outputs the memory usage
-	* @param string $text Text to output before the memory usage
-	* @param bool $die If true,will call die after the mem usage is printed
-	*/
+	 * Outputs the memory usage
+	 * @param string $text Text to output before the memory usage
+	 * @param bool $die If true,will call die after the mem usage is printed
+	 */
 	public function outputMemoryUsage(string $text = '', bool $die = false)
 	{
 		$usage = round(memory_get_usage(true) / 1048576, 4);
@@ -292,9 +292,9 @@ class Debug
 	}
 
 	/**
-	* Outputs the backtrace
-	* @param int $options The backtrace options. By default, the args are not printed. Set $options to 0 for the args to be shown
-	*/
+	 * Outputs the backtrace
+	 * @param int $options The backtrace options. By default, the args are not printed. Set $options to 0 for the args to be shown
+	 */
 	public function backtrace(int $options = DEBUG_BACKTRACE_IGNORE_ARGS)
 	{
 		echo '<pre>';
@@ -303,10 +303,10 @@ class Debug
 	}
 
 	/**
-	* Dumps the superglobals.
-	* Xdebug must be available
-	* @param bool $die If true,will call die after the mem usage is printed
-	*/
+	 * Dumps the superglobals.
+	 * Xdebug must be available
+	 * @param bool $die If true,will call die after the mem usage is printed
+	 */
 	public function dump(bool $die = false)
 	{
 		ini_set('xdebug.dump.GET', '*');
@@ -324,12 +324,12 @@ class Debug
 	}
 
 	/**
-	* Starts a trace
-	* Xdebug must be available
-	* @param string $filename The filename where to save the trace
-	* @param bool $show_params If true,will include the params
-	* @param int $params The params count
-	*/
+	 * Starts a trace
+	 * Xdebug must be available
+	 * @param string $filename The filename where to save the trace
+	 * @param bool $show_params If true,will include the params
+	 * @param int $params The params count
+	 */
 	public function startTrace(string $filename, bool $show_params = true, int $params = 6)
 	{
 		if ($show_params) {
@@ -340,28 +340,28 @@ class Debug
 	}
 
 	/**
-	* Stops a trace
-	* Xdebug must be available
-	*/
+	 * Stops a trace
+	 * Xdebug must be available
+	 */
 	public function stopTrace()
 	{
 		xdebug_stop_trace();
 	}
 
 	/**
-	* Starts the code coverage. Should be used in pair with getCoverage
-	* Xdebug must be available
-	*/
+	 * Starts the code coverage. Should be used in pair with getCoverage
+	 * Xdebug must be available
+	 */
 	public function startCoverage()
 	{
 		xdebug_start_code_coverage();
 	}
 
 	/**
-	* Ends the code coverage. Should be used in pair with startCoverage
-	* Xdebug must be available
-	* @param bool $die If true, will call die after the data is printed
-	*/
+	 * Ends the code coverage. Should be used in pair with startCoverage
+	 * Xdebug must be available
+	 * @param bool $die If true, will call die after the data is printed
+	 */
 	public function getCoverage(bool $die = false)
 	{
 		\var_dump(xdebug_get_code_coverage());
@@ -372,10 +372,10 @@ class Debug
 	}
 
 	/**
-	* Dumps the function stack
-	* Xdebug must be available
-	* @param bool $die If true, will call die after the data is printed
-	*/
+	 * Dumps the function stack
+	 * Xdebug must be available
+	 * @param bool $die If true, will call die after the data is printed
+	 */
 	public function functionStackbool($die = false)
 	{
 		\var_dump(xdebug_get_function_stack());
@@ -386,19 +386,19 @@ class Debug
 	}
 
 	/**
-	* Prints the function stack
-	* Xdebug must be available
-	*/
+	 * Prints the function stack
+	 * Xdebug must be available
+	 */
 	public function printFunctionStack()
 	{
 		xdebug_get_function_stack();
 	}
 
 	/**
-	* Dumps the headers
-	* Xdebug must be available
-	* @param bool $die If true, will call die after the data is printed
-	*/
+	 * Dumps the headers
+	 * Xdebug must be available
+	 * @param bool $die If true, will call die after the data is printed
+	 */
 	public function headers(bool $die = false)
 	{
 		\var_dump(xdebug_get_headers());
@@ -408,10 +408,10 @@ class Debug
 	}
 
 	/**
-	* Returns info about the current class/file/line/func
-	* Xdebug must be available
-	* @param bool $die If true, will call die after the data is printed
-	*/
+	 * Returns info about the current class/file/line/func
+	 * Xdebug must be available
+	 * @param bool $die If true, will call die after the data is printed
+	 */
 	public function get(bool $die = false)
 	{
 		$class = xdebug_call_class();

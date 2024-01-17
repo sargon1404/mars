@@ -7,8 +7,8 @@
 namespace Mars\Extensions;
 
 /**
-* The Language Class
-*/
+ * The Language Class
+ */
 class Language extends Extension
 {
 	use LanguageTrait;

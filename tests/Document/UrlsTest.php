@@ -6,8 +6,8 @@ use Mars\Document\Javascript;
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class UrlsTest extends Base
 {
 	public function setUp() : void

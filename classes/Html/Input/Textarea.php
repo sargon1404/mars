@@ -7,20 +7,20 @@
 namespace Mars\Html\Input;
 
 /**
-* The Textarea Class
-* Renders a textarea field
-*/
+ * The Textarea Class
+ * Renders a textarea field
+ */
 class Textarea extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'textarea';
 
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$attributes = $this->generateIdAttribute($attributes);

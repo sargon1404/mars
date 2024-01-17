@@ -9,24 +9,26 @@ namespace Mars\Filters;
 use Mars\App;
 
 /**
-* The Html Filter Class
-*/
+ * The Html Filter Class
+ */
 class Html
 {
+	use \Mars\AppTrait;
+
 	/**
-	* Builds the Html filter object
-	* @param App $app The app object
-	*/
+	 * Builds the Html filter object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
 
-		require_once($this->app->libraries_path . 'php/vendor/ezyang/htmlpurifier/library/HTMLPurifier.includes.php');
+		require_once($this->app->libraries_path . '/php/vendor/ezyang/htmlpurifier/library/HTMLPurifier.includes.php');
 	}
 
 	/**
-	* @see \Mars\Filter::html()
-	*/
+	 * @see \Mars\Filter::html()
+	 */
 	public function filter(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
 		if ($allowed_elements === null) {

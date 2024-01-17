@@ -7,20 +7,20 @@
 namespace Mars\Text;
 
 /**
-* The Text Parser Class
-* Parses text
-*/
+ * The Text Parser Class
+ * Parses text
+ */
 class Parser
 {
 	use \Mars\AppTrait;
 
 	/**
-	* Parses the text for links and rel="nofollow"
-	* @param string $text The $text to parse
-	* @param bool $parse_links If true, will parse links
-	* @param bool $parse_nofollow If true, will apply the rel="nofollow" attribute to links
-	* @return string The parsed text
-	*/
+	 * Parses the text for links and rel="nofollow"
+	 * @param string $text The $text to parse
+	 * @param bool $parse_links If true, will parse links
+	 * @param bool $parse_nofollow If true, will apply the rel="nofollow" attribute to links
+	 * @return string The parsed text
+	 */
 	public function parse(string $text, bool $parse_links = true, bool $parse_nofollow = false) : string
 	{
 		if ($parse_links) {
@@ -35,10 +35,10 @@ class Parser
 	}
 
 	/**
-	* Converts all text links (https://domain.com) into the html equivalent (<a href="https://domain.com">https://domain.com</a>)
-	* @param string $text The $text to parse
-	* @return string The parsed text
-	*/
+	 * Converts all text links (https://domain.com) into the html equivalent (<a href="https://domain.com">https://domain.com</a>)
+	 * @param string $text The $text to parse
+	 * @return string The parsed text
+	 */
 	public function parseLinks(string $text)
 	{
 		$pattern = '/\b(?<!=")(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[A-Z0-9+&@#\/%=~_|](?!.*".*>)(?!.*<\/a>)/i';
@@ -51,10 +51,10 @@ class Parser
 	}
 
 	/**
-	* Adds rel="nofollow" to all links inside $text
-	* @param string $text The $text to parse
-	* @return string The parsed text
-	*/
+	 * Adds rel="nofollow" to all links inside $text
+	 * @param string $text The $text to parse
+	 * @return string The parsed text
+	 */
 	public function parseNofollow(string $text) : string
 	{
 		return preg_replace_callback('/<a(.*)href="(.*)"(.*)>/isU', function (array $match) {

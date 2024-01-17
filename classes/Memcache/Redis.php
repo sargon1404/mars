@@ -7,20 +7,20 @@
 namespace Mars\Memcache;
 
 /**
-* The Redis Memcache Class
-* Memcache driver which uses Redis
-*/
+ * The Redis Memcache Class
+ * Memcache driver which uses Redis
+ */
 class Redis implements DriverInterface
 {
 	/**
-	* @var object $handle The driver's handle
-	*/
+	 * @var object $handle The driver's handle
+	 */
 	protected object $handle;
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::connect()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::connect()
+	 * {@inheritdoc}
+	 */
 	public function connect(string $host, string $port)
 	{
 		if (!class_exists('\\Redis')) {
@@ -35,9 +35,9 @@ class Redis implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::disconnect()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::disconnect()
+	 * {@inheritdoc}
+	 */
 	public function disconnect()
 	{
 		if (isset($this->handle)) {
@@ -48,9 +48,9 @@ class Redis implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::add()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::add()
+	 * {@inheritdoc}
+	 */
 	public function add(string $key, $value, int $expires = 0) : bool
 	{
 		$ret = $this->handle->set($key, serialize($value));
@@ -63,18 +63,18 @@ class Redis implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::set()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::set()
+	 * {@inheritdoc}
+	 */
 	public function set(string $key, $value, int $expires = 0) : bool
 	{
 		return $this->add($key, $value, $expires);
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::get()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::get()
+	 * {@inheritdoc}
+	 */
 	public function get(string $key)
 	{
 		$value = $this->handle->get($key);
@@ -83,9 +83,9 @@ class Redis implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::exists()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::exists()
+	 * {@inheritdoc}
+	 */
 	public function exists(string $key) : bool
 	{
 		if (!$this->handle->exists($key)) {
@@ -96,18 +96,18 @@ class Redis implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::delete()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::delete()
+	 * {@inheritdoc}
+	 */
 	public function delete(string $key) : bool
 	{
 		return $this->handle->del($key);
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::deleteAll()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::deleteAll()
+	 * {@inheritdoc}
+	 */
 	public function deleteAll() : bool
 	{
 		return $this->handle->flushAll();

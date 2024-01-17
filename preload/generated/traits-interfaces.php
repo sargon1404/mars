@@ -24,6 +24,7 @@ return [
 	'src/mars/classes/Minifiers/DriverInterface.php',
 	'src/mars/classes/Mvc/ModelTrait.php',
 	'src/mars/classes/Response/Types/DriverInterface.php',
+	'src/mars/classes/Routers/HandlerInterface.php',
 	'src/mars/classes/Serializers/DriverInterface.php',
 	'src/mars/classes/Session/DriverInterface.php',
 	'src/mars/classes/Templates/DriverInterface.php',

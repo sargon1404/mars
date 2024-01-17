@@ -5,8 +5,8 @@ use Mars\Http\Request;
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class HttpRequestTest extends Base
 {
 	protected $url = '';
@@ -15,12 +15,12 @@ final class HttpRequestTest extends Base
 	{
 		parent::setUp();
 
-		$this->url = $this->app->url . 'src/mars/tests/data/request-test.php';
+		$this->url = $this->app->url . '/src/mars/tests/data/request-test.php';
 	}
 
 	public function testError()
 	{
-		$req = new Request($this->app->url . 'src/mars/tests/data/request-test123.php');
+		$req = new Request($this->app->url . '/src/mars/tests/data/request-test123.php');
 		$response = $req->get();
 
 		$this->assertSame($response->code, 404);
@@ -50,8 +50,8 @@ final class HttpRequestTest extends Base
 
 	public function testGetFile()
 	{
-		$url = $this->app->url . 'src/mars/tests/data/sample.txt';
-		$filename = $this->app->path . 'src/mars/tests/data/http-data/sample.txt';
+		$url = $this->app->url . '/src/mars/tests/data/sample.txt';
+		$filename = $this->app->path . '/src/mars/tests/data/http-data/sample.txt';
 
 		$req = new Request($url);
 		$response = $req->getFile($filename);

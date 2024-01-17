@@ -7,20 +7,20 @@
 namespace Mars\Memcache;
 
 /**
-* The Memcached Memcache Class
-* Memcache driver which uses Memcached
-*/
+ * The Memcached Memcache Class
+ * Memcache driver which uses Memcached
+ */
 class Memcached implements DriverInterface
 {
 	/**
-	* @var object $handle The driver's handle
-	*/
+	 * @var object $handle The driver's handle
+	 */
 	protected object $handle;
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::connect()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::connect()
+	 * {@inheritdoc}
+	 */
 	public function connect(string $host, string $port)
 	{
 		if (!extension_loaded('memcached')) {
@@ -35,9 +35,9 @@ class Memcached implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::disconnect()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::disconnect()
+	 * {@inheritdoc}
+	 */
 	public function disconnect()
 	{
 		if (isset($this->handle)) {
@@ -46,27 +46,27 @@ class Memcached implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::add()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::add()
+	 * {@inheritdoc}
+	 */
 	public function add(string $key, $value, int $expires = 0) : bool
 	{
 		return $this->handle->add($key, serialize($value), $expires);
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::set()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::set()
+	 * {@inheritdoc}
+	 */
 	public function set(string $key, $value, int $expires = 0) : bool
 	{
 		return $this->handle->set($key, serialize($value), $expires);
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::get()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::get()
+	 * {@inheritdoc}
+	 */
 	public function get(string $key)
 	{
 		$value = $this->handle->get($key);
@@ -75,9 +75,9 @@ class Memcached implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::exists()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::exists()
+	 * {@inheritdoc}
+	 */
 	public function exists(string $key) : bool
 	{
 		if ($this->handle->get($key) === false) {
@@ -88,18 +88,18 @@ class Memcached implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::delete()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::delete()
+	 * {@inheritdoc}
+	 */
 	public function delete(string $key) : bool
 	{
 		return $this->handle->delete($key);
 	}
 
 	/**
-	* @see \Mars\Memcache\DriverInterface::deleteAll()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Memcache\DriverInterface::deleteAll()
+	 * {@inheritdoc}
+	 */
 	public function deleteAll() : bool
 	{
 		return $this->handle->flush();

@@ -7,13 +7,13 @@
 namespace Mars\Filters;
 
 /**
-* The Alphabetic Filter Class
-*/
+ * The Alphabetic Filter Class
+ */
 class Alpha
 {
 	/**
-	* @see \Mars\Filter::alpha()
-	*/
+	 * @see \Mars\Filter::alpha()
+	 */
 	public function filter(string $value, bool $space = false) : string
 	{
 		$pattern = "/[^a-z]/i";

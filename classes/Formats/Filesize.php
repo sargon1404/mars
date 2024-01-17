@@ -7,13 +7,13 @@
 namespace Mars\Formats;
 
 /**
-* The Filesize Format Class
-*/
+ * The Filesize Format Class
+ */
 class Filesize
 {
 	/**
-	* @see \Mars\Format::filesize()
-	*/
+	 * @see \Mars\Format::filesize()
+	 */
 	public function format(int|float|array $bytes, int $digits = 2) : string|array
 	{
 		$gb_limit = 1024 * 768;

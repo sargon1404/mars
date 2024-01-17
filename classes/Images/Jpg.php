@@ -11,20 +11,20 @@ use Mars\Images\Image;
 use GdImage;
 
 /**
-* The Jpeg Image Class
-*/
+ * The Jpeg Image Class
+ */
 class Jpg extends Image implements DriverInterface
 {
 
 	/**
-	* @var string $mime_type The image's mime type
-	*/
+	 * @var string $mime_type The image's mime type
+	 */
 	protected $mime_type = 'image/jpeg';
 
 	/**
-	* @see \Mars\Images\DriverInterface::__construct()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::__construct()
+	 * {@inheritdoc}
+	 */
 	public function __construct(string $filename, App $app = null)
 	{
 		parent::__construct($filename, $app);
@@ -34,9 +34,9 @@ class Jpg extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::optimize()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::optimize()
+	 * {@inheritdoc}
+	 */
 	public function optimize() : bool
 	{
 		$ret = parent::optimize();
@@ -48,9 +48,9 @@ class Jpg extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::open()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::open()
+	 * {@inheritdoc}
+	 */
 	public function open() : GdImage
 	{
 		$img = imagecreatefromjpeg($this->filename);
@@ -62,9 +62,9 @@ class Jpg extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::save()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::save()
+	 * {@inheritdoc}
+	 */
 	public function save(GdImage $img)
 	{
 		if (!imagejpeg($img, $this->filename, $this->quality)) {

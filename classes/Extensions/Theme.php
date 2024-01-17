@@ -7,8 +7,8 @@
 namespace Mars\Extensions;
 
 /**
-* The Theme Class
-*/
+ * The Theme Class
+ */
 class Theme extends Extension
 {
 	use ThemeTrait;

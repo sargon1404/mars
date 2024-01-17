@@ -3,8 +3,8 @@
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class TextTest extends Base
 {
 	public function testCut()

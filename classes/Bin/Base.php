@@ -7,23 +7,23 @@
 namespace Mars\Bin;
 
 /**
-* The Base Bin Handler
-*/
+ * The Base Bin Handler
+ */
 abstract class Base
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var int $padding_right The default right padding
-	*/
+	 * @var int $padding_right The default right padding
+	 */
 	protected int $padding_right = 5;
 
 	/**
-	* Returns the max length of a column
-	* @param array $data The data where to look for the max length
-	* @param array $paddings_right The number of right chars to apply, if any
-	* @return array The max length
-	*/
+	 * Returns the max length of a column
+	 * @param array $data The data where to look for the max length
+	 * @param array $paddings_right The number of right chars to apply, if any
+	 * @return array The max length
+	 */
 	protected function getMaxLength(array $data, array $paddings_right = []) : array
 	{
 		$max = [];

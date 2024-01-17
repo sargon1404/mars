@@ -7,37 +7,37 @@
 namespace Mars;
 
 /**
-* The Dir Class
-* Folder Filesystem functionality
-*/
+ * The Dir Class
+ * Folder Filesystem functionality
+ */
 class Dir
 {
 	use AppTrait;
 
 	/**
-	* Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
-	* @see \Mars\File::checkFilename()
-	*/
+	 * Check that the filname [file/folder] doesn't contain invalid chars. and is located in the right path. Throws a fatal error for an invalid filename
+	 * @see \Mars\File::checkFilename()
+	 */
 	public function checkFilename(string $filename)
 	{
 		return $this->app->file->checkFilename($filename);
 	}
 
 	/**
-	* Builds a path from an array.
-	* @see \Mars\File::buildPath()
-	*/
+	 * Builds a path from an array.
+	 * @see \Mars\File::buildPath()
+	 */
 	public function buildPath(array $elements) : string
 	{
 		return $this->app->file->buildPath($elements, true);
 	}
 
 	/**
-	* Checks if a filename is inside a dir
-	* @param string $dir The dir
-	* @param string $filename The filename to check
-	* @return bool True if $filename is inside $dir
-	*/
+	 * Checks if a filename is inside a dir
+	 * @param string $dir The dir
+	 * @param string $filename The filename to check
+	 * @return bool True if $filename is inside $dir
+	 */
 	public function contains(string $dir, string $filename) : bool
 	{
 		if ($filename == $dir) {
@@ -52,13 +52,13 @@ class Dir
 	}
 
 	/**
-	* Returns the dirs from the specified folder
-	* @param string $dir The folder to be searched
-	* @param bool $recursive If true will enum. recursive
-	* @param bool $full_path If true it will set will return the file's full path
-	* @param array $exclude_dirs Array of dirs to exclude, if any
-	* @return array The files
-	*/
+	 * Returns the dirs from the specified folder
+	 * @param string $dir The folder to be searched
+	 * @param bool $recursive If true will enum. recursive
+	 * @param bool $full_path If true it will set will return the file's full path
+	 * @param array $exclude_dirs Array of dirs to exclude, if any
+	 * @return array The files
+	 */
 	public function getDirs(string $dir, bool $recursive = false, bool $full_path = true, array $exclude_dirs = []) : array
 	{
 		$this->checkFilename($dir);
@@ -78,14 +78,14 @@ class Dir
 	}
 
 	/**
-	* Returns the files from the specified folder
-	* @param string $dir The folder to be searched
-	* @param bool $recursive If true will enum. recursive
-	* @param bool $full_path If true it will set will return the file's full path
-	* @param array $exclude_dirs Array of dirs to exclude, if any
-	* @param array $extensions If specified, will return only the files matching the extensions
-	* @return array The files
-	*/
+	 * Returns the files from the specified folder
+	 * @param string $dir The folder to be searched
+	 * @param bool $recursive If true will enum. recursive
+	 * @param bool $full_path If true it will set will return the file's full path
+	 * @param array $exclude_dirs Array of dirs to exclude, if any
+	 * @param array $extensions If specified, will return only the files matching the extensions
+	 * @return array The files
+	 */
 	public function getFiles(string $dir, bool $recursive = false, bool $full_path = true, array $exclude_dirs = [], array $extensions = []) : array
 	{
 		$this->checkFilename($dir);
@@ -110,13 +110,13 @@ class Dir
 	}
 
 	/**
-	* Returns the iterator used to generate the files
-	* @param string $dir The folder to be searched
-	* @param bool $recursive If true will enum. recursive
-	* @param array $exclude_dirs Array of dirs to exclude, if any
-	* @param int $flag Flag to pass to \RecursiveIteratorIterator
-	* @return Iterator The iterator
-	*/
+	 * Returns the iterator used to generate the files
+	 * @param string $dir The folder to be searched
+	 * @param bool $recursive If true will enum. recursive
+	 * @param array $exclude_dirs Array of dirs to exclude, if any
+	 * @param int $flag Flag to pass to \RecursiveIteratorIterator
+	 * @return Iterator The iterator
+	 */
 	public function getIterator(string $dir, bool $recursive = true, array $exclude_dirs = [], int $flag = \RecursiveIteratorIterator::SELF_FIRST) : \Iterator
 	{
 		$iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::CURRENT_AS_SELF);
@@ -141,8 +141,8 @@ class Dir
 	}
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected function getName($file, bool $full_path = false) : string
 	{
 		if ($full_path) {
@@ -153,10 +153,10 @@ class Dir
 	}
 
 	/**
-	* Create a folder. Does nothing if the folder already exists
-	* @param string $dir The name of the folder to create
-	* @throws Exception if the folder can't be created
-	*/
+	 * Create a folder. Does nothing if the folder already exists
+	 * @param string $dir The name of the folder to create
+	 * @throws Exception if the folder can't be created
+	 */
 	public function create(string $dir)
 	{
 		$this->app->plugins->run('dir_create', $dir, $this);
@@ -173,11 +173,11 @@ class Dir
 	}
 
 	/**
-	* Copies a dir
-	* @param string $source The source folder
-	* @param string $destination The destination folder
-	* @throws Exception If folders can't be created/files can't be copied
-	*/
+	 * Copies a dir
+	 * @param string $source The source folder
+	 * @param string $destination The destination folder
+	 * @throws Exception If folders can't be created/files can't be copied
+	 */
 	public function copy(string $source, string $destination)
 	{
 		$this->app->plugins->run('dir_copy', $source, $destination, $this);
@@ -202,11 +202,11 @@ class Dir
 	}
 
 	/**
-	* Moves a dir
-	* @param string $source The source folder
-	* @param string $destination The destination folder
-	* @throws Exception if the dir can't be moved
-	*/
+	 * Moves a dir
+	 * @param string $source The source folder
+	 * @param string $destination The destination folder
+	 * @throws Exception if the dir can't be moved
+	 */
 	public function move(string $source, string $destination)
 	{
 		$this->app->plugins->run('dir_move', $source, $destination, $this);
@@ -220,11 +220,11 @@ class Dir
 	}
 
 	/**
-	* Deletes a dir
-	* @param string $dir The name of the folder to delete
-	* @param bool $delete_dir If true, will delete the dir itself; if false, will clean it
-	* @throws Exception if the dir can't be deleted
-	*/
+	 * Deletes a dir
+	 * @param string $dir The name of the folder to delete
+	 * @param bool $delete_dir If true, will delete the dir itself; if false, will clean it
+	 * @throws Exception if the dir can't be deleted
+	 */
 	public function delete(string $dir, bool $delete_dir = true)
 	{
 		$this->app->plugins->run('dir_delete', $dir, $delete_dir, $this);
@@ -252,10 +252,10 @@ class Dir
 	}
 
 	/**
-	* Deletes all the files/subdirectories from a directory but does not delete the folder itself
-	* @param string $dir The name of the folder to clear
-	* @throws Exception if the dir can't be cleaned
-	*/
+	 * Deletes all the files/subdirectories from a directory but does not delete the folder itself
+	 * @param string $dir The name of the folder to clear
+	 * @throws Exception if the dir can't be cleaned
+	 */
 	public function clean(string $dir)
 	{
 		$this->app->plugins->run('dir_clean', $dir, $this);
@@ -264,11 +264,11 @@ class Dir
 	}
 
 	/**
-	* Deletes expired files from a dir
-	* @param string $dir The name of the folder
-	* @param int $expires The threshold timestamp
-	* @throws Exception if the dir can't be deleted
-	*/
+	 * Deletes expired files from a dir
+	 * @param string $dir The name of the folder
+	 * @param int $expires The threshold timestamp
+	 * @throws Exception if the dir can't be deleted
+	 */
 	public function cleanExpired(string $dir, int $expires)
 	{
 		$this->app->plugins->run('dir_clean_old_files', $dir, $this);

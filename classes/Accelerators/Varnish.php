@@ -10,16 +10,16 @@ use Mars\App;
 use Mars\Http\Request;
 
 /**
-* The Varnish Accelerator Class
-*/
+ * The Varnish Accelerator Class
+ */
 class Varnish implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @see \Mars\Accelerators\DriverInterface::delete()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Accelerators\DriverInterface::delete()
+	 * {@inheritdoc}
+	 */
 	public function delete(string $url) : bool
 	{
 		$req = new Request($url);
@@ -29,9 +29,9 @@ class Varnish implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Accelerators\DriverInterface::deleteByPattern()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Accelerators\DriverInterface::deleteByPattern()
+	 * {@inheritdoc}
+	 */
 	public function deleteByPattern(string $pattern) : bool
 	{
 		$req = new Request($this->app->url);
@@ -42,9 +42,9 @@ class Varnish implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Accelerators\DriverInterface::deleteAll()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Accelerators\DriverInterface::deleteAll()
+	 * {@inheritdoc}
+	 */
 	public function deleteAll() : bool
 	{
 		$req = new Request($this->app->url);

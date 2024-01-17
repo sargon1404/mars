@@ -147,6 +147,8 @@ return [
 	'src/mars/classes/Response/Types/Ajax.php',
 	'src/mars/classes/Response/Types/Html.php',
 	'src/mars/classes/Router.php',
+	'src/mars/classes/Routers/Block.php',
+	'src/mars/classes/Routers/Template.php',
 	'src/mars/classes/Screens.php',
 	'src/mars/classes/Screens/Error.php',
 	'src/mars/classes/Screens/FatalError.php',

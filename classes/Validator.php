@@ -9,26 +9,26 @@ namespace Mars;
 use Mars\Alerts\Errors;
 
 /**
-* The Validator Class
-* Validates values
-*/
+ * The Validator Class
+ * Validates values
+ */
 class Validator
 {
 	use AppTrait;
 
 	/**
-	* @var Errors $errors The generated errors, if any
-	*/
+	 * @var Errors $errors The generated errors, if any
+	 */
 	public readonly Errors $errors;
 
 	/**
-	* @var Handlers $handlers The handlers object
-	*/
+	 * @var Handlers $handlers The handlers object
+	 */
 	public Handlers $handlers;
 
 	/**
-	* @var array $supported_handlers The list of supported_handlers
-	*/
+	 * @var array $supported_handlers The list of supported_handlers
+	 */
 	protected array $supported_handlers = [
 		'req' => '\Mars\Validators\Required',
 		'required' => '\Mars\Validators\Required',
@@ -49,9 +49,9 @@ class Validator
 	];
 
 	/**
-	* Builds the object
-	* @param App $app The app object
-	*/
+	 * Builds the object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -60,26 +60,26 @@ class Validator
 	}
 
 	/**
-	* Checks a value agains a validator
-	* @param mixed $value The value to validate
-	* @param string $rule The rule to validate the value against
-	* @param string $field The name of the field
-	* @param mixed $params Extra params to pass to the validator
-	* @return bool Returns true if the value is valid
-	*/
+	 * Checks a value agains a validator
+	 * @param mixed $value The value to validate
+	 * @param string $rule The rule to validate the value against
+	 * @param string $field The name of the field
+	 * @param mixed $params Extra params to pass to the validator
+	 * @return bool Returns true if the value is valid
+	 */
 	public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
 	{
 		return $this->handlers->get($rule)->validate($value, $field, ...$params);
 	}
 
 	/**
-	* Validates the rules
-	* @param array|object $data The data to validate
-	* @param array $rules The rules to validate, in the format ['field' => validation_type]. Eg: 'my_id' => 'required|min:3|unique:my_table:my_id'
-	* @param array $error_strings Custom error strings, if any
-	* @param array $skip_array Array with the fields for which we'll skip validation, if any
-	* @return bool True if the validation passed all tests, false otherwise
-	*/
+	 * Validates the rules
+	 * @param array|object $data The data to validate
+	 * @param array $rules The rules to validate, in the format ['field' => validation_type]. Eg: 'my_id' => 'required|min:3|unique:my_table:my_id'
+	 * @param array $error_strings Custom error strings, if any
+	 * @param array $skip_array Array with the fields for which we'll skip validation, if any
+	 * @return bool True if the validation passed all tests, false otherwise
+	 */
 	public function validate(array|object $data, array $rules, array $error_strings = [], array $skip_array = []) : bool
 	{
 		$ok = true;
@@ -112,9 +112,9 @@ class Validator
 	}
 
 	/**
-	* Adds an error for a field & rule
-	* @param string $rule The validation rule name
-	*/
+	 * Adds an error for a field & rule
+	 * @param string $rule The validation rule name
+	 */
 	protected function addError(string $rule, string $field, array $error_strings)
 	{
 		//do we have in the $error_strings array a custom error for this rule & $field?
@@ -129,64 +129,64 @@ class Validator
 	}
 
 	/**
-	* Validates a datetime
-	* @param string $value The value to validate
-	* @param string $format The datetime's format
-	* @return bool Returns true if the datetime is valid
-	*/
+	 * Validates a datetime
+	 * @param string $value The value to validate
+	 * @param string $format The datetime's format
+	 * @return bool Returns true if the datetime is valid
+	 */
 	public function isDatetime(string $value, string $format = null) : bool
 	{
 		return $this->handlers->get('datetime')->isValid($value, $format);
 	}
 
 	/**
-	* Validates a date
-	* @param string $value The value to validate
-	* @param string $format The date's format
-	* @return bool Returns true if the date is valid
-	*/
+	 * Validates a date
+	 * @param string $value The value to validate
+	 * @param string $format The date's format
+	 * @return bool Returns true if the date is valid
+	 */
 	public function isDate(string $value, string $format = null) : bool
 	{
 		return $this->handlers->get('date')->isValid($value, $format);
 	}
 
 	/**
-	* Validates a time value
-	* @param string $value The value to validate
-	* @param string $format The time's format
-	* @return bool Returns true if the time value is valid
-	*/
+	 * Validates a time value
+	 * @param string $value The value to validate
+	 * @param string $format The time's format
+	 * @return bool Returns true if the time value is valid
+	 */
 	public function isTime(string $value, string $format = null) : bool
 	{
 		return $this->handlers->get('time')->isValid($value, $format);
 	}
 
 	/**
-	* Checks if $value is a valid url
-	* @param string $value The value to validate
-	* @return bool Returns true if the url is valid
-	*/
+	 * Checks if $value is a valid url
+	 * @param string $value The value to validate
+	 * @return bool Returns true if the url is valid
+	 */
 	public function isUrl(string $value) : bool
 	{
 		return $this->handlers->get('url')->isValid($value);
 	}
 
 	/**
-	* Checks if $value is a valid email address
-	* @param string $value The email to validate
-	* @return bool Returns true if the email is valid
-	*/
+	 * Checks if $value is a valid email address
+	 * @param string $value The email to validate
+	 * @return bool Returns true if the email is valid
+	 */
 	public function isEmail(string $value) : bool
 	{
 		return $this->handlers->get('email')->isValid($value);
 	}
 
 	/**
-	* Checks if $ip is a valid IP address
-	* @param string $value The IP to validate
-	* @param bool $wildcards If true, the IP can contain wildcards
-	* @return bool Returns true if the IP is valid
-	*/
+	 * Checks if $ip is a valid IP address
+	 * @param string $value The IP to validate
+	 * @param bool $wildcards If true, the IP can contain wildcards
+	 * @return bool Returns true if the IP is valid
+	 */
 	public function isIp(string $value, bool $wildcards = false) : bool
 	{
 		return $this->handlers->get('ip')->isValid($value, $wildcards);

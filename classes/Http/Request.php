@@ -9,53 +9,53 @@ namespace Mars\Http;
 use Mars\App;
 
 /**
-* The Http Request Class
-* Wrapper around the Curl library for http requests
-*/
+ * The Http Request Class
+ * Wrapper around the Curl library for http requests
+ */
 class Request
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var string $url The url
-	*/
+	 * @var string $url The url
+	 */
 	public string $url = '';
 
 	/**
-	* @var int $timeout The timeout, in seconds
-	*/
+	 * @var int $timeout The timeout, in seconds
+	 */
 	public int $timeout = 30;
 
 	/**
-	* @var string $useragent The useragent used when making requests
-	*/
+	 * @var string $useragent The useragent used when making requests
+	 */
 	public string $useragent = '';
 
 	/**
-	* @var bool $follow_location Determines the value of CURLOPT_FOLLOWLOCATION
-	*/
+	 * @var bool $follow_location Determines the value of CURLOPT_FOLLOWLOCATION
+	 */
 	public bool $follow_location = true;
 
 	/**
-	* @var bool $show_headers If true,the headers will be also returned
-	*/
+	 * @var bool $show_headers If true,the headers will be also returned
+	 */
 	public bool $show_headers = false;
 
 	/**
-	* @var array $headers Array listing the custom headers to be sent
-	*/
+	 * @var array $headers Array listing the custom headers to be sent
+	 */
 	public array $headers = [];
 
 	/**
-	* @var array $options Array listing CURL options, if any
-	*/
+	 * @var array $options Array listing CURL options, if any
+	 */
 	public array $options = [];
 
 	/**
-	* Builds the Http Request object
-	* @param string $url The url of the request
-	* @param App $app The app object
-	*/
+	 * Builds the Http Request object
+	 * @param string $url The url of the request
+	 * @param App $app The app object
+	 */
 	public function __construct(string $url, App $app = null)
 	{
 		if (!extension_loaded('curl')) {
@@ -68,10 +68,10 @@ class Request
 	}
 
 	/**
-	* Adds a request header
-	* @param string $header The header to add
-	* @return static
-	*/
+	 * Adds a request header
+	 * @param string $header The header to add
+	 * @return static
+	 */
 	public function addHeader(string $header) : static
 	{
 		$this->headers[] = $header;
@@ -80,15 +80,13 @@ class Request
 	}
 
 	/**
-	* Sets the basic curl options [header/useragent/followlocation]
-	* @param array $options Curl options, if any
-	* @return resource The curl handle
-	*/
+	 * Sets the basic curl options [header/useragent/followlocation]
+	 * @param array $options Curl options, if any
+	 * @return resource The curl handle
+	 */
 	protected function init(array $options = [])
 	{
-		if ($options) {
-			$this->options = array_merge($this->options, $options);
-		}
+		$options = $options + $this->options;
 
 		$ch = curl_init();
 
@@ -106,10 +104,10 @@ class Request
 	}
 
 	/**
-	* Executes the curl session and returns the result
-	* @param resource $ch The curl handler
-	* @return Response The response
-	*/
+	 * Executes the curl session and returns the result
+	 * @param resource $ch The curl handler
+	 * @return Response The response
+	 */
 	protected function exec($ch) : Response
 	{
 		$result = curl_exec($ch);
@@ -122,10 +120,34 @@ class Request
 	}
 
 	/**
-	* Fetches an url with a custom request
-	* @param string $request The custom request
-	* @return Response The response
-	*/
+	 * Sets the request referer
+	 * @param string $referer The referer
+	 * @return static
+	 */
+	public function setReferer(string $referer) : static
+	{
+		$this->options[CURLOPT_REFERER] = $referer;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the cookies jar filename
+	 * @param string $filename
+	 */
+	public function setCookiesJar(string $filename) : static
+	{
+		$this->options[CURLOPT_COOKIEJAR] = $filename;
+		$this->options[CURLOPT_COOKIEFILE] = $filename;
+
+		return $this;
+	}
+
+	/**
+	 * Fetches an url with a custom request
+	 * @param string $request The custom request
+	 * @return Response The response
+	 */
 	public function custom(string $request) : Response
 	{
 		$ch = $this->init([CURLOPT_CUSTOMREQUEST => $request]);
@@ -134,9 +156,9 @@ class Request
 	}
 
 	/**
-	* Fetches an url with a GET request
-	* @return Response The response
-	*/
+	 * Fetches an url with a GET request
+	 * @return Response The response
+	 */
 	public function get() : Response
 	{
 		$ch = $this->init();
@@ -145,11 +167,11 @@ class Request
 	}
 
 	/**
-	* Fetches an url with a POST request
-	* @param array $data Array with the data to post
-	* @param array $files Files to send in the name=>filename format
-	* @return Response The response
-	*/
+	 * Fetches an url with a POST request
+	 * @param array $data Array with the data to post
+	 * @param array $files Files to send in the name=>filename format
+	 * @return Response The response
+	 */
 	public function post(array $data, array $files = []) : Response
 	{
 		if ($files) {
@@ -170,13 +192,20 @@ class Request
 	}
 
 	/**
-	* Downloads a file with a get request
-	* @param string $filename The local filename under which the file will be stored
-	* @return Response The response
-	* @throws Exception if the file can't be written
-	*/
-	public function getFile(string $filename) : Response
+	 * Downloads a file with a get request
+	 * @param string $filename The local filename under which the file will be stored
+	 * @param bool $download_if_exists If false, the file won't be downloaded, if it already exists
+	 * @return Response The response. If the file exists and $download_if_exists = false, it will return true
+	 * @throws Exception if the file can't be written
+	 */
+	public function getFile(string $filename, bool $download_if_exists = true) : bool|Response
 	{
+		if (!$download_if_exists) {
+			if (is_file($filename)) {
+				return true;
+			}
+		}
+
 		$f = fopen($filename, 'wb');
 		if (!$f) {
 			throw new \Exception(App::__('file_error_write', ['{FILE}' => $filename]));
@@ -189,5 +218,20 @@ class Request
 		fclose($f);
 
 		return $response;
+	}
+
+	/**
+	 * Returns the contents of the file. If the file exists, if returns it's content. If the file doesn't exist, it will download it with a get request
+	 * @param string $filename The local filename under which the file will be stored
+	 * @return string The file's content
+	 * @throws Exception if the file can't be written
+	 */
+	public function getFileContent(string $filename) : string
+	{
+		if (!is_file($filename)) {
+			$this->getFile($filename);
+		}
+
+		return file_get_contents($filename);
 	}
 }

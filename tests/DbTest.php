@@ -6,8 +6,8 @@ use Mars\Db;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class DbTest extends Base
 {
 	protected $expected = [
@@ -61,9 +61,9 @@ final class DbTest extends Base
 
 	protected function assertRowAsObject($row, $key)
 	{
-		$this->assertObjectHasAttributeAndValue('id', $this->expected[$key]['id'], $row);
-		$this->assertObjectHasAttributeAndValue('col1', $this->expected[$key]['col1'], $row);
-		$this->assertObjectHasAttributeAndValue('col2', $this->expected[$key]['col2'], $row);
+		$this->assertObjectHasPropertyAndValue('id', $this->expected[$key]['id'], $row);
+		$this->assertObjectHasPropertyAndValue('col1', $this->expected[$key]['col1'], $row);
+		$this->assertObjectHasPropertyAndValue('col2', $this->expected[$key]['col2'], $row);
 	}
 
 	protected function assertRowAsArray($row, $key)
@@ -78,9 +78,9 @@ final class DbTest extends Base
 		$data = $this->data;
 		$data['id'] = $id;
 
-		$this->assertObjectHasAttributeAndValue('id', $data['id'], $row);
-		$this->assertObjectHasAttributeAndValue('col1', $data['col1'], $row);
-		$this->assertObjectHasAttributeAndValue('col2', $data['col2'], $row);
+		$this->assertObjectHasPropertyAndValue('id', $data['id'], $row);
+		$this->assertObjectHasPropertyAndValue('col1', $data['col1'], $row);
+		$this->assertObjectHasPropertyAndValue('col2', $data['col2'], $row);
 	}
 
 	public function testConnection()
@@ -308,14 +308,14 @@ final class DbTest extends Base
 		$affected = $db->update('insert_test', $data);
 		$this->assertEquals($affected, 1);
 		$row = $db->query("SELECT * FROM insert_test WHERE col1 = :col1", ['col1' => 'abc'])->fetch();
-		$this->assertObjectHasAttribute('id', $row);
+		$this->assertObjectHasProperty('id', $row);
 
 		//updateById()
 		$data['col1'] = 'zxc';
 		$affected = $db->updateById('insert_test', $data, $id);
 		$this->assertEquals($affected, 1);
 		$row = $db->query("SELECT * FROM insert_test WHERE col1 = :col1", ['col1' => 'zxc'])->fetch();
-		$this->assertObjectHasAttribute('id', $row);
+		$this->assertObjectHasProperty('id', $row);
 
 		//replace()
 		$db->query("TRUNCATE insert_test");
@@ -331,7 +331,7 @@ final class DbTest extends Base
 		$this->assertEquals($id, 2);
 		$row = $db->query("SELECT * FROM insert_test WHERE id = 2")->fetch();
 		$this->assertIsObject($row);
-		$this->assertObjectHasAttributeAndValue('col1', '123', $row);
+		$this->assertObjectHasPropertyAndValue('col1', '123', $row);
 
 		//delete()
 		$db->query("TRUNCATE insert_test");

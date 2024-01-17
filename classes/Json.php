@@ -7,18 +7,18 @@
 namespace Mars;
 
 /**
-* The Json Class
-* Encodes/Decodes data using json
-*/
+ * The Json Class
+ * Encodes/Decodes data using json
+ */
 class Json
 {
 	use AppTrait;
 
 	/**
-	* Encodes data
-	* @param mixed $data The data to encode
-	* @return string The encoded string
-	*/
+	 * Encodes data
+	 * @param mixed $data The data to encode
+	 * @return string The encoded string
+	 */
 	public function encode($data) : string
 	{
 		if (!$data) {
@@ -29,10 +29,10 @@ class Json
 	}
 
 	/**
-	* Decodes a string
-	* @param string $string The string to decode
-	* @return mixed The decoded data
-	*/
+	 * Decodes a string
+	 * @param string $string The string to decode
+	 * @return mixed The decoded data
+	 */
 	public function decode(string $string)
 	{
 		if (!$string) {

@@ -12,50 +12,55 @@ use Mars\Response\Headers;
 use Mars\Response\Push;
 
 /**
-* The Response Class
-* Outputs the system's html/ajax response
-*/
+ * The Response Class
+ * Outputs the system's html/ajax response
+ */
 class Response
 {
 	use AppTrait;
 
 	/**
-	* @var Handlers $handlers The handlers object
-	*/
+	 * @var Handlers $handlers The handlers object
+	 */
 	public readonly Handlers $handlers;
 
 	/**
-	* @var Cookies $cookies The cookies object
-	*/
+	 * @var Cookies $cookies The cookies object
+	 */
 	public Cookies $cookies;
 
 	/**
-	* @var Headers $headers The headers object
-	*/
+	 * @var Headers $headers The headers object
+	 */
 	public Headers $headers;
 
 	/**
-	* @var Push $push The server push object
-	*/
+	 * @var Push $push The server push object
+	 */
 	public Push $push;
+	
+	/**
+	 * @var string $type The response type
+	 */
+	protected string $type = 'html';
 
 	/**
-	* @var DriverInterface $driver The driver object
-	*/
+	 * @var DriverInterface $driver The driver object
+	 */
 	protected DriverInterface $driver;
 
 	/**
-	* @var array $supported_handlers The supported handlers
-	*/
+	 * @var array $supported_handlers The supported handlers
+	 */
 	protected array $supported_handlers = [
 		'ajax' => '\Mars\Response\Types\Ajax',
 		'html' => '\Mars\Response\Types\Html'
 	];
 
 	/**
-	* Builds the Response object
-	* @param App $app The app object
-	*/
+	 * Builds the Response object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -65,42 +70,53 @@ class Response
 		$this->cookies = new Cookies($this->app);
 		$this->push = new Push($this->app);
 	}
+	
+	/**
+	 * Returns the type of the response to send
+	 * @return string
+	 */
+	public function getType() : string
+	{
+		return $this->type;
+	}
 
 	/**
-	* Returns the type of the respponse to send
-	* @return string
-	*/
-	protected function getType(string $type) : string
+	 * Sets the type of the response to send
+	 * @param string $type The type
+	 * @return static
+	 */
+	public function setType(string $type) : static
 	{
 		switch ($type) {
 			case 'ajax':
 			case 'json':
-				return 'ajax';
+				$this->type = 'ajax';
+				break;
 			default:
-				return 'html';
+				$this->type = 'html';
 		}
+		
+		return $this;
 	}
 
 	/**
-	* Returns the converted content to $type
-	* @param mixed $content The content
-	* @param string $type The type
-	* @return mixed
-	*/
-	public function get($content, string $type)
+	 * Returns the converted content to $type
+	 * @param mixed $content The content
+	 * @return mixed
+	 */
+	public function get($content)
 	{
-		return $this->handlers->get($type)->get($content);
+		return $this->handlers->get($this->type)->get($content);
 	}
 
 	/**
-	* Outputs the $content
-	* @param string string The content to output
-	* @param string $type The content's type
-	*/
-	public function output(string $content, string $type)
+	 * Outputs the $content
+	 * @param string string The content to output
+	 */
+	public function output(string $content)
 	{
 		$this->headers->output();
 
-		$this->handlers->get($type)->output($content);
+		$this->handlers->get($this->type)->output($content);
 	}
 }

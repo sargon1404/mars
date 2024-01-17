@@ -7,50 +7,50 @@
 namespace Mars\Bin;
 
 /**
-* The Table Bin Handler
-* Displays a table
-*/
+ * The Table Bin Handler
+ * Displays a table
+ */
 class Table extends Base
 {
 	/**
-	* @var string $header_color The default header color
-	*/
+	 * @var string $header_color The default header color
+	 */
 	protected string $header_color = 'header';
 
 	/**
-	* @var string $header_align The default header align
-	*/
+	 * @var string $header_align The default header align
+	 */
 	protected string $header_align = 'left';
 
 	/**
-	* @var string $data_color The default data color
-	*/
+	 * @var string $data_color The default data color
+	 */
 	protected string $data_color = 'default';
 
 	/**
-	* @var string $data_align The default data align
-	*/
+	 * @var string $data_align The default data align
+	 */
 	protected string $data_align = 'left';
 
 	/**
-	* @var int $padding_left The default left padding
-	*/
+	 * @var int $padding_left The default left padding
+	 */
 	protected int $padding_left = 2;
 
 	/**
-	* @var int $padding_right The default right padding
-	*/
+	 * @var int $padding_right The default right padding
+	 */
 	protected int $padding_right = 2;
 
 	/**
-	* Prints a table
-	* @param array $headers The header data
-	* @param array $data The data to print
-	* @param array $colors The colors to use. $colors[0] is the header's color
-	* @param array $align Determines how the headers/cells are align. $align[0] is the header's alignment
-	* @param array $paddings_left The number of left chars to apply, if any
-	* @param array $paddings_right The number of left chars to apply, if any
-	*/
+	 * Prints a table
+	 * @param array $headers The header data
+	 * @param array $data The data to print
+	 * @param array $colors The colors to use. $colors[0] is the header's color
+	 * @param array $align Determines how the headers/cells are align. $align[0] is the header's alignment
+	 * @param array $paddings_left The number of left chars to apply, if any
+	 * @param array $paddings_right The number of left chars to apply, if any
+	 */
 	public function print(array $headers, array $data, array $colors = [], array $align = [], array $paddings_left = [], array $paddings_right = [])
 	{
 		$all_data = array_merge([$headers], $data);
@@ -67,8 +67,8 @@ class Table extends Base
 	}
 
 	/**
-	* Prints a row
-	*/
+	 * Prints a row
+	 */
 	protected function printRow(array $row, string $color, string $alignment, array $paddings_left, array $paddings_right, array $max)
 	{
 		echo "|";
@@ -85,8 +85,8 @@ class Table extends Base
 	}
 
 	/**
-	* Prints the header
-	*/
+	 * Prints the header
+	 */
 	protected function printHeader(array $headers, array $colors, array $align, array $paddings_left, array $paddings_right, array $max)
 	{
 		$color = $colors[0] ?? $this->header_color;
@@ -96,8 +96,8 @@ class Table extends Base
 	}
 
 	/**
-	* Prints the data
-	*/
+	 * Prints the data
+	 */
 	protected function printData(array $data, array $colors, array $align, array $paddings_left, array $paddings_right, array $max)
 	{
 		$color = $colors[1] ?? $this->data_color;
@@ -109,13 +109,13 @@ class Table extends Base
 	}
 
 	/**
-	* Returns the text, aligned and with padding
-	* @param string $text The text
-	* @param string $alignment The alignment [left,center,right]
-	* @param int $padding_left The left padding
-	* @param int $padding_right The right padding
-	* @return stirng The text
-	*/
+	 * Returns the text, aligned and with padding
+	 * @param string $text The text
+	 * @param string $alignment The alignment [left,center,right]
+	 * @param int $padding_left The left padding
+	 * @param int $padding_right The right padding
+	 * @return stirng The text
+	 */
 	protected function getText(string $text, string $alignment, int $padding_left, int $padding_right, int $max_value) : string
 	{
 		$length = strlen($text);
@@ -143,9 +143,9 @@ class Table extends Base
 	}
 
 	/**
-	* @see \Mars\Bin\Base::getMaxLength()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Bin\Base::getMaxLength()
+	 * {@inheritdoc}
+	 */
 	protected function getMaxLength(array $data, array $paddings_right = [], array $paddings_left = []) : array
 	{
 		$max = [];

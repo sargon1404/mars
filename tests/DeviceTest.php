@@ -5,8 +5,8 @@ use Mars\Device\MobileDetect;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class DeviceTest extends Base
 {
 	public function testDevice()

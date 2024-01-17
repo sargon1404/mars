@@ -11,20 +11,20 @@ use Mars\App;
 use Mars\Images\Image;
 
 /**
-* The Png Image Class
-*/
+ * The Png Image Class
+ */
 class Png extends Image implements DriverInterface
 {
 
 	/**
-	* @var string $mime_type The image's mime type
-	*/
+	 * @var string $mime_type The image's mime type
+	 */
 	protected $mime_type = 'image/png';
 
 	/**
-	* @see \Mars\Images\DriverInterface::__construct()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::__construct()
+	 * {@inheritdoc}
+	 */
 	public function __construct(string $filename, App $app = null)
 	{
 		parent::__construct($filename, $app);
@@ -34,9 +34,9 @@ class Png extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::open()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::open()
+	 * {@inheritdoc}
+	 */
 	public function open() : GdImage
 	{
 		$img = imagecreatefrompng($this->filename);
@@ -51,9 +51,9 @@ class Png extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::create()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::create()
+	 * {@inheritdoc}
+	 */
 	public function create(int $width, int $height, GdImage $source) : GdImage
 	{
 		$img = parent::create($width, $height, $source);
@@ -65,9 +65,9 @@ class Png extends Image implements DriverInterface
 	}
 
 	/**
-	* @see \Mars\Images\DriverInterface::save()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Images\DriverInterface::save()
+	 * {@inheritdoc}
+	 */
 	public function save(GdImage $img)
 	{
 		if (!imagepng($img, $this->filename, $this->quality)) {

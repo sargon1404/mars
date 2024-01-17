@@ -7,16 +7,16 @@
 namespace Mars\Templates\Mars;
 
 /**
-* The If Hander
-*/
+ * The If Hander
+ */
 class IfParser
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @see \Mars\Templates\DriverInterface::parse()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Templates\DriverInterface::parse()
+	 * {@inheritdoc}
+	 */
 	public function parse(string $content, array $params = []) : string
 	{
 		$content = preg_replace_callback('/\{\%\s*if(.*)\s*\%\}/iU', function (array $match) {
@@ -34,10 +34,10 @@ class IfParser
 	}
 
 	/**
-	* Returns an if condition from $match
-	* @param array $match Callback match
-	* @return string
-	*/
+	 * Returns an if condition from $match
+	 * @param array $match Callback match
+	 * @return string
+	 */
 	protected function getCondition(array $match) : string
 	{
 		$condition = $this->trimParentheses($match[1]);
@@ -47,10 +47,10 @@ class IfParser
 	}
 
 	/**
-	* Trims the parentheses of string, if any
-	* @param string $str The string
-	* @return string
-	*/
+	 * Trims the parentheses of string, if any
+	 * @param string $str The string
+	 * @return string
+	 */
 	protected function trimParentheses(string $str) : string
 	{
 		$str = trim($str);

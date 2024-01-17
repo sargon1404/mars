@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Optgroup Class
-* Renders an optgroup tag
-*/
+ * The Optgroup Class
+ * Renders an optgroup tag
+ */
 class Optgroup extends \Mars\Html\Tag
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $tag = 'optgroup';
 }

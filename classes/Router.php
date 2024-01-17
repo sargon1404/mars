@@ -6,28 +6,49 @@
 
 namespace Mars;
 
-use Mars\Extensions\Block;
-
 /**
-* The Route Class
-* Implements the View functionality of the MVC pattern
-*/
+ * The Route Class
+ * Implements the View functionality of the MVC pattern
+ */
 class Router
 {
 	use AppTrait;
 
 	/**
-	* @var array $routes The defined routes
-	*/
+	 * @var array $routes The defined routes
+	 */
 	protected array $routes = [];
+	
+	/**
+	 * @var Handlers $handlers The routes handlers
+	 */
+	public readonly Handlers $handlers;
+	
+	/**
+	 * @var array $routes_types The list of supported routes
+	 */
+	protected array $routes_types = [
+		'block' => '\Mars\Routers\Block',
+		'template' => '\Mars\Routers\Template',
+	];
+	
+	/**
+	 * Constructs the routes object
+	 * @param App $app The app object
+	 */
+	public function __construct(App $app)
+	{
+		$this->app = $app;
+		$this->handlers = new Handlers($this->routes_types, $this->app);
+	}
 
 	/**
-	* Adds a route
-	* @param string $type The type: get/post/put/delete
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string or a controller
-	* @return static
-	*/
+	 * Adds a route
+	 * @param string $type The type: get/post/put/delete
+	 * @param string $route The route to handle
+	 * @param mixed The action. Can be a closure, a string or a controller
+	 * @return static
+	 */
 	public function add(string $type, string $route, $action) : static
 	{
 		$this->routes[$type][$route] = $action;
@@ -36,8 +57,8 @@ class Router
 	}
 
 	/**
-	* Outputs the content based on the matched route
-	*/
+	 * Outputs the content based on the matched route
+	 */
 	public function execute()
 	{
 		$route = $this->getRoute();
@@ -53,9 +74,9 @@ class Router
 	}
 
 	/**
-	* Outputs the content of a route
-	* @param array $route The route
-	*/
+	 * Outputs the content of a route
+	 * @param array $route The route
+	 */
 	protected function output($route)
 	{
 		[$route, $params] = $route;
@@ -79,17 +100,17 @@ class Router
 					throw new \Exception('No controller method to handle the route');
 				}
 			}
-		} elseif ($route instanceof Block) {
-			$route->output();
 		} elseif ($route instanceof \Closure) {
-			echo call_user_func_array($route, $params);
+			echo call_user_func_array($route, [$this, $this->app]);
+		} elseif (is_object($route)) {
+			$route->output();
 		}
 	}
 
 	/**
-	* Returns the route matching the current request
-	* @return mixed
-	*/
+	 * Returns the route matching the current request
+	 * @return mixed
+	 */
 	protected function getRoute()
 	{
 		$method = $this->app->method;
@@ -131,9 +152,9 @@ class Router
 	}
 
 	/**
-	* Returns the current path
-	* @return string The current path
-	*/
+	 * Returns the current path
+	 * @return string The current path
+	 */
 	protected function getPath() : string
 	{
 		$request_uri = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
@@ -148,68 +169,93 @@ class Router
 	}
 
 	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return static
-	*/
+	 * Handles a get request
+	 * @param string $route The route to handle
+	 * @param mixed The action. Can be a closure, a string, a controller
+	 * @return static
+	 */
 	public function get(string $route, $action) : static
 	{
 		return $this->add('get', $route, $action);
 	}
 
 	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @returnstatic
-	*/
+	 * Handles a get request
+	 * @param string $route The route to handle
+	 * @param mixed The action. Can be a closure, a string, a controller
+	 * @returnstatic
+	 */
 	public function post(string $route, $action) : static
 	{
 		return $this->add('post', $route, $action);
 	}
 
 	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return static
-	*/
+	 * Handles a get request
+	 * @param string $route The route to handle
+	 * @param mixed The action. Can be a closure, a string, a controller
+	 * @return static
+	 */
 	public function put(string $route, $action) : static
 	{
 		return $this->add('put', $route, $action);
 	}
 
 	/**
-	* Handles a get request
-	* @param string $route The route to handle
-	* @param mixed The action. Can be a closure, a string, a controller
-	* @return static
-	*/
+	 * Handles a get request
+	 * @param string $route The route to handle
+	 * @param mixed The action. Can be a closure, a string, a controller
+	 * @return static
+	 */
 	public function delete(string $route, $action) : static
 	{
 		return $this->add('delete', $route, $action);
 	}
 
 	/**
-	* Handles a block request
-	* @param string $route The route to handle
-	* @param string $name The block's name
-	* @return static
-	*/
-	public function block(string $route, string $name) : static
+	 * Handles a block request
+	 * @param string $route The route to handle
+	 * @param string $module_name The module the block belongs to
+	 * @param string $name The block's name
+	 * @return static
+	 */
+	public function block(string $route, string $module_name, string $name = '') : static
 	{
-		$block = new Block($name);
+		return $this->setRoute($route, 'block', $module_name, $name);
+	}
+	
+	/**
+	 * Handles a template request
+	 * @param string $route The route to handle
+	 * @param string $template The template's name
+	 * @param string $title The title tag of the page
+	 * @param array $meta Meta data of the page
+	 * @return static
+	 */
+	public function template(string $route, string $template, string $title = '', array $meta = []) : static
+	{
+		return $this->setRoute($route, 'template', $template, $title, $meta);
+	}
+	
+	/**
+	 * Sets a route
+	 * @param string $route The route to handle
+	 * @param string $handler The handler's name
+	 * @param mixed $args Arguments to pass to the handler's constructor
+	 */
+	protected function setRoute(string $route, string $handler, ...$args) : static
+	{
+		$obj = $this->handlers->get($handler, ...$args);
 
-		$this->add('get', $route, $block);
-		$this->add('post', $route, $block);
+		$this->add('get', $route, $obj);
+		$this->add('post', $route, $obj);
 
 		return $this;
 	}
 
 	/**
-	* Handles the 404 not found cases
-	*/
+	 * Handles the 404 not found cases
+	 */
 	public function notFound()
 	{
 		header('HTTP/1.0 404 Not Found', true, 404);

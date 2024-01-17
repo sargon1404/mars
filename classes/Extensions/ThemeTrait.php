@@ -12,89 +12,89 @@ use Mars\Document\Css;
 use Mars\Document\Javascript;
 
 /**
-* The Theme Trait
-* Trait implementing the Theme functionality
-*/
+ * The Theme Trait
+ * Trait implementing the Theme functionality
+ */
 trait ThemeTrait
 {
 	/**
-	* @var string $header_template The template which will be used to render the header
-	*/
+	 * @var string $header_template The template which will be used to render the header
+	 */
 	public string $header_template = 'header';
 
 	/**
-	* @var string $footer_template The template which will be used to render the footer
-	*/
+	 * @var string $footer_template The template which will be used to render the footer
+	 */
 	public string $footer_template = 'footer';
 
 	/**
-	* @var string $content_template The template which will be used to render the content
-	*/
+	 * @var string $content_template The template which will be used to render the content
+	 */
 	public string $content_template = 'content';
 
 	/**
-	* @var string $templates_path The path for the theme's templates folder
-	*/
+	 * @var string $templates_path The path for the theme's templates folder
+	 */
 	protected string $templates_path = '';
 
 	/**
-	* @var string $images_path The path for the theme's images folder
-	*/
+	 * @var string $images_path The path for the theme's images folder
+	 */
 	protected string $images_path = '';
 
 	/**
-	* @var string $images_url The url of the theme's images folder
-	*/
+	 * @var string $images_url The url of the theme's images folder
+	 */
 	protected string $images_url = '';
 
 	/**
-	* @var string $cache_path The folder where the cache files are stored
-	*/
+	 * @var string $cache_path The folder where the cache files are stored
+	 */
 	protected string $cache_path = '';
 
 	/**
-	* @var array $vars The theme's vars are stored here
-	*/
+	 * @var array $vars The theme's vars are stored here
+	 */
 	protected array $vars = [];
 
 	/**
-	* @var array Array with the list of loaded templates
-	*/
+	 * @var array Array with the list of loaded templates
+	 */
 	protected array $templates_loaded = [];
 
 	/**
-	* @var Template templates The engine used to parse the template
-	*/
+	 * @var Template templates The engine used to parse the template
+	 */
 	protected Templates $templates;
 
 	/**
-	* @var string $content The generated content
-	*/
+	 * @var string $content The generated content
+	 */
 	protected string $content = '';
 
 	/**
-	* @var Css $css The css object
-	*/
+	 * @var Css $css The css object
+	 */
 	public Css $css;
 
 	/**
-	* @var Javascript $javascript The javascript object
-	*/
+	 * @var Javascript $javascript The javascript object
+	 */
 	public Javascript $javascript;
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected static string $type = 'theme';
 
 	/**
-	* @internal
-	*/
+	 * @internal
+	 */
 	protected static string $base_dir = 'themes';
 
 	/**
-	* Prepares the theme
-	*/
+	 * Prepares the theme
+	 */
 	protected function prepare()
 	{
 		$this->prepareObjects();
@@ -104,8 +104,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Prepares the objects
-	*/
+	 * Prepares the objects
+	 */
 	protected function prepareObjects()
 	{
 		$this->css = $this->app->document->css;
@@ -113,21 +113,21 @@ trait ThemeTrait
 	}
 
 	/**
-	* Prepares the paths
-	*/
+	 * Prepares the paths
+	 */
 	protected function preparePaths()
 	{
 		parent::preparePaths();
 
-		$this->cache_path = $this->app->cache_path . App::CACHE_DIRS['templates'];
-		$this->templates_path = $this->path . App::EXTENSIONS_DIRS['templates'];
-		$this->images_path = $this->path . App::EXTENSIONS_DIRS['images'];
-		$this->images_url = $this->url . App::EXTENSIONS_DIRS['images'];
+		$this->cache_path = $this->app->cache_path . '/' . App::CACHE_DIRS['templates'];
+		$this->templates_path = $this->path . '/' . App::EXTENSIONS_DIRS['templates'];
+		$this->images_path = $this->path . '/' . App::EXTENSIONS_DIRS['images'];
+		$this->images_url = $this->url . '/' . rawurlencode(App::EXTENSIONS_DIRS['images']);
 	}
 
 	/**
-	* Sets the theme vars
-	*/
+	 * Sets the theme vars
+	 */
 	protected function prepareVars()
 	{
 		$this->addVar('app', $this->app);
@@ -141,7 +141,7 @@ trait ThemeTrait
 		$this->addVar('escape', $this->app->escape);
 		$this->addVar('format', $this->app->format);
 
-		$this->addVar('plugins', $this->app->plugins);
+		//$this->addVar('plugins', $this->app->plugins);
 
 		$this->addVar('request', $this->app->request);
 		$this->addVar('get', $this->app->request->get);
@@ -149,9 +149,9 @@ trait ThemeTrait
 	}
 
 	/**
-	* Returns the list of loaded templates
-	* @return array
-	*/
+	 * Returns the list of loaded templates
+	 * @return array
+	 */
 	public function getLoadedTemplates() : array
 	{
 		return $this->templates_loaded;
@@ -160,21 +160,21 @@ trait ThemeTrait
 	/***************** VARS METHODS *********************************/
 
 	/**
-	* Returns a theme variable.
-	* @param string $name The name of the var
-	* @return static
-	*/
+	 * Returns a theme variable.
+	 * @param string $name The name of the var
+	 * @return static
+	 */
 	public function getVar(string $name)
 	{
 		return $this->vars[$name] ?? null;
 	}
 	
 	/**
-	* Adds a theme variable.
-	* @param string $name The name of the var
-	* @param mixed $value The value of the var
-	* @return static
-	*/
+	 * Adds a theme variable.
+	 * @param string $name The name of the var
+	 * @param mixed $value The value of the var
+	 * @return static
+	 */
 	public function addVar(string $name, $value) : static
 	{
 		$this->vars[$name] = $value;
@@ -183,10 +183,10 @@ trait ThemeTrait
 	}
 
 	/**
-	* Adds template variables
-	* @param array $vars Adds each element [$name=>$value] from $values as theme variables
-	* @return static
-	*/
+	 * Adds template variables
+	 * @param array $vars Adds each element [$name=>$value] from $values as theme variables
+	 * @return static
+	 */
 	public function addVars(array $vars) : static
 	{
 		if (!$vars) {
@@ -201,10 +201,10 @@ trait ThemeTrait
 	}
 
 	/**
-	* Unsets a theme variable
-	* @param string $name The name of the var
-	* @return static
-	*/
+	 * Unsets a theme variable
+	 * @param string $name The name of the var
+	 * @return static
+	 */
 	public function unsetVar(string $name) : static
 	{
 		unset($this->vars[$name]);
@@ -213,10 +213,10 @@ trait ThemeTrait
 	}
 
 	/**
-	* Unsets theme variables
-	* @param array $values Array with the name of the vars to unset
-	* @return static
-	*/
+	 * Unsets theme variables
+	 * @param array $values Array with the name of the vars to unset
+	 * @return static
+	 */
 	public function unsetVars(array $values) : static
 	{
 		foreach ($values as $name) {
@@ -229,33 +229,33 @@ trait ThemeTrait
 	/************** TEMPLATES METHODS **************************/
 
 	/**
-	* Renders/Outputs a template
-	* @param string $template The name of the template
-	* @param array $vars Vars to pass to the template, if any
-	*/
+	 * Renders/Outputs a template
+	 * @param string $template The name of the template
+	 * @param array $vars Vars to pass to the template, if any
+	 */
 	public function render(string $template, array $vars = [])
 	{
 		echo $this->getTemplate($template, $vars);
 	}
 
 	/**
-	* Renders/Outputs a template, by filename
-	* @param string $filename The filename of the template
-	* @param strint $type The template's type, if any
-	* @param array $vars Vars to pass to the template, if any
-	*/
+	 * Renders/Outputs a template, by filename
+	 * @param string $filename The filename of the template
+	 * @param strint $type The template's type, if any
+	 * @param array $vars Vars to pass to the template, if any
+	 */
 	public function renderFilename(string $filename, array $vars = [], string $type = 'template')
 	{
 		echo $this->getTemplateFromFilename($filename, $vars, $type);
 	}
 
 	/**
-	* Loads a template and returns it's content
-	* @param string $template The name of the template
-	* @param array $vars Vars to pass to the template, if any
-	* @param strint $type The template's type, if any
-	* @return string The template content
-	*/
+	 * Loads a template and returns it's content
+	 * @param string $template The name of the template
+	 * @param array $vars Vars to pass to the template, if any
+	 * @param strint $type The template's type, if any
+	 * @return string The template content
+	 */
 	public function getTemplate(string $template, array $vars = [], string $type = '') : string
 	{
 		if ($this->app->config->debug) {
@@ -271,33 +271,32 @@ trait ThemeTrait
 	}
 
 	/**
-	* Loads a template and returns it's content
-	* @param string $filename The filename of the template
-	* @param array $vars Vars to pass to the template, if any
-	* @param strint $type The template's type, if any
-	* @return string The template content
-	*/
+	 * Loads a template and returns it's content
+	 * @param string $filename The filename of the template
+	 * @param array $vars Vars to pass to the template, if any
+	 * @param strint $type The template's type, if any
+	 * @return string The template content
+	 */
 	public function getTemplateFromFilename(string $filename, array $vars = [], string $type = 'template', bool $development = false) : string
 	{
 		if ($this->app->config->debug) {
 			$this->templates_loaded[] = $filename;
 		}
 
-		$filename  = $this->app->file->getRel($filename);
-		$cache_filename = $this->getTemplateCacheFilename($filename, $type);
+		$cache_filename = $this->getTemplateCacheFilename($this->app->file->getRel($filename), $type);
 
 		return $this->getTemplateContent($filename, $cache_filename, $vars, [], $development);
 	}
 
 	/**
-	* Returns the contents of a template
-	* @param string $filename The filename from where the template will be loaded
-	* @param string $cache_filename The filename used to cache the template
-	* @param array $vars Vars to pass to the template, if any
-	* @param array $params Params to pass to the parser
-	* @param bool $development If true, won't cache the template
-	* @return string The template content
-	*/
+	 * Returns the contents of a template
+	 * @param string $filename The filename from where the template will be loaded
+	 * @param string $cache_filename The filename used to cache the template
+	 * @param array $vars Vars to pass to the template, if any
+	 * @param array $params Params to pass to the parser
+	 * @param bool $development If true, won't cache the template
+	 * @return string The template content
+	 */
 	protected function getTemplateContent(string $filename, string $cache_filename, array $vars, array $params = [], bool $development = false) : string
 	{
 		if ($vars) {
@@ -316,22 +315,22 @@ trait ThemeTrait
 	}
 
 	/**
-	* Returns the filename corresponding to $template
-	* @param string $template The name of the template
-	* @return string The filename
-	*/
+	 * Returns the filename corresponding to $template
+	 * @param string $template The name of the template
+	 * @return string The filename
+	 */
 	public function getTemplateFilename(string $template) : string
 	{
-		return $this->templates_path . $template . '.' . App::FILE_EXTENSIONS['templates'];
+		return $this->templates_path . '/' . $template . '.' . App::FILE_EXTENSIONS['templates'];
 	}
 
 	/**
-	* Loads $filename, parses it and then writes it in the cache folder
-	* @param string $filename The filename from where the template will be loaded
-	* @param string $cache_filename The filename used to cache the template
-	* @param array $params Params to pass to the parser
-	* @return bool True if the template was written, false on failure
-	*/
+	 * Loads $filename, parses it and then writes it in the cache folder
+	 * @param string $filename The filename from where the template will be loaded
+	 * @param string $cache_filename The filename used to cache the template
+	 * @param array $params Params to pass to the parser
+	 * @return bool True if the template was written, false on failure
+	 */
 	protected function writeTemplate(string $filename, string $cache_filename, array $params) : bool
 	{
 		$content = file_get_contents($filename);
@@ -346,21 +345,21 @@ trait ThemeTrait
 	}
 
 	/**
-	* Parses the template content
-	* @param string $content The content to parse
-	* @param array $params Params to pass to the parser
-	* @return string The parsed content
-	*/
+	 * Parses the template content
+	 * @param string $content The content to parse
+	 * @param array $params Params to pass to the parser
+	 * @return string The parsed content
+	 */
 	protected function parseTemplate(string $content, array $params) : string
 	{
 		return $this->templates->parse($content, $params);
 	}
 
 	/**
-	* Includes a template and returns it's content
-	* @param string $filename The filename of the template
-	* @return string The template's content
-	*/
+	 * Includes a template and returns it's content
+	 * @param string $filename The filename of the template
+	 * @return string The template's content
+	 */
 	protected function includeTemplate(string $filename) : string
 	{
 		$app = $this->app;
@@ -375,10 +374,10 @@ trait ThemeTrait
 	}
 
 	/**
-	* Generates a cache filename for a template
-	* @param string $template The name of the template
-	* @return string The filename
-	*/
+	 * Generates a cache filename for a template
+	 * @param string $template The name of the template
+	 * @return string The filename
+	 */
 	public function getTemplateCacheFilename(string $template, string $type) : string
 	{
 		$parts = [
@@ -393,23 +392,23 @@ trait ThemeTrait
 		$name = implode('-', $parts);
 		$name = trim(str_replace(['/', '.'], '-', $name), '-');
 
-		return $this->cache_path . $name . '.php';
+		return $this->cache_path . '/' . $name . '.php';
 	}
 
 	/**************** RENDER METHODS *************************************/
 
 	/**
-	* Outputs the header
-	*/
+	 * Outputs the header
+	 */
 	public function renderHeader()
 	{
 		echo $this->getTemplate($this->header_template);
 	}
 
 	/**
-	* Outputs the content template
-	* @param string $content The content to render
-	*/
+	 * Outputs the content template
+	 * @param string $content The content to render
+	 */
 	public function renderContent(string $content)
 	{
 		$this->content = $content;
@@ -418,8 +417,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the footer
-	*/
+	 * Outputs the footer
+	 */
 	public function renderFooter()
 	{
 		echo $this->getTemplate($this->footer_template);
@@ -428,8 +427,8 @@ trait ThemeTrait
 	/**************** OUTPUT METHODS *************************************/
 
 	/**
-	* Outputs code in the <head>
-	*/
+	 * Outputs code in the <head>
+	 */
 	public function outputHead()
 	{
 		$this->outputTitle();
@@ -447,8 +446,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs code in the footer
-	*/
+	 * Outputs code in the footer
+	 */
 	public function outputFooter()
 	{
 		$this->outputCssUrls('footer');
@@ -459,32 +458,32 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the generated content
-	*/
+	 * Outputs the generated content
+	 */
 	public function outputContent()
 	{
 		echo $this->content;
 	}
 
 	/**
-	* Outputs the language code
-	*/
+	 * Outputs the language code
+	 */
 	public function outputLangCode()
 	{
 		echo $this->app->escape->html($this->app->lang->code);
 	}
 
 	/**
-	* Outputs the page encoding
-	*/
+	 * Outputs the page encoding
+	 */
 	public function outputEncoding()
 	{
 		echo '<meta charset="' . $this->app->escape->html($this->app->lang->encoding) . '" />' . "\n";
 	}
 
 	/**
-	* Outputs the title
-	*/
+	 * Outputs the title
+	 */
 	public function outputTitle()
 	{
 		$title = $this->app->document->title->get();
@@ -495,9 +494,9 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs javascript inline code
-	* @param string $code The js code to output
-	*/
+	 * Outputs javascript inline code
+	 * @param string $code The js code to output
+	 */
 	public function outputJavascriptCode(string $code)
 	{
 		if (!$code) {
@@ -510,9 +509,9 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs css inline code
-	* @param string $code The js code to output
-	*/
+	 * Outputs css inline code
+	 * @param string $code The js code to output
+	 */
 	public function outputCssCode(string $code)
 	{
 		if (!$code) {
@@ -525,91 +524,91 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the loaded css files
-	* @param bool $location The location of the urls: head|footer
-	*/
+	 * Outputs the loaded css files
+	 * @param bool $location The location of the urls: head|footer
+	 */
 	public function outputCssUrls(string $location)
 	{
 		$this->app->document->css->output($location);
 	}
 
 	/**
-	* Outputs the loaded javascript files
-	* @param bool $location The location of the urls: head|footer
-	*/
+	 * Outputs the loaded javascript files
+	 * @param bool $location The location of the urls: head|footer
+	 */
 	public function outputJavascriptUrls(string $location)
 	{
 		$this->app->document->javascript->output($location);
 	}
 
 	/**
-	* Outputs the main css file
-	*/
+	 * Outputs the main css file
+	 */
 	public function outputCssUrl()
 	{
 		if (!$this->css_output) {
 			return;
 		}
 
-		$url = $this->app->url_static . $this->css_file;
+		$url = $this->app->url_static . '/' . $this->css_file;
 
 		$this->app->css->outputUrl($url);
 	}
 
 	/**
-	* Outputs the main javascript file
-	*/
+	 * Outputs the main javascript file
+	 */
 	public function outputJavascriptUrl()
 	{
 		if (!$this->javascript_output) {
 			return;
 		}
 
-		$url = $this->app->url_static . $this->javascript_file;
+		$url = $this->app->url_static . '/' . $this->javascript_file;
 
 		$this->app->javascript->outputUrl($url);
 	}
 
 	/**
-	* Outputs the meta tags
-	*/
+	 * Outputs the meta tags
+	 */
 	public function outputMeta()
 	{
 		$this->app->document->meta->output();
 	}
 
 	/**
-	* Outputs the rss tags
-	*/
+	 * Outputs the rss tags
+	 */
 	public function outputRss()
 	{
 		$this->app->document->rss->output();
 	}
 
 	/**
-	* Outputs the favicon
-	* @param string $icon_url The url of the png icon
-	*/
+	 * Outputs the favicon
+	 * @param string $icon_url The url of the png icon
+	 */
 	public function outputFavicon(string $icon_url = '')
 	{
 		if (!$icon_url) {
-			$icon_url = $this->app->url_static . 'favicon.png';
+			$icon_url = $this->app->url_static . '/' . 'favicon.png';
 		}
 
 		echo '<link rel="shortcut icon" type="image/png" href="' . $this->app->escape->html($icon_url) . '" />' . "\n";
 	}
 
 	/**
-	* Outputs the execution time
-	*/
+	 * Outputs the execution time
+	 */
 	public function outputExecutionTime()
 	{
 		return $this->app->timer->getExecutionTime();
 	}
 
 	/**
-	* Returns the memory usage
-	*/
+	 * Returns the memory usage
+	 */
 	public function outputMemoryUsage()
 	{
 		return round(memory_get_peak_usage(true) / (1024 * 1024), 4);
@@ -618,8 +617,8 @@ trait ThemeTrait
 	/**************** OUTPUT MESSAGES *************************************/
 
 	/**
-	* Outputs all the alers: messages/errors/info/warnings
-	*/
+	 * Outputs all the alers: messages/errors/info/warnings
+	 */
 	public function outputAlerts()
 	{
 		$this->outputMessages();
@@ -629,8 +628,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the errors
-	*/
+	 * Outputs the errors
+	 */
 	public function outputErrors()
 	{
 		$errors = $this->getErrors();
@@ -644,9 +643,9 @@ trait ThemeTrait
 	}
 
 	/**
-	* Returns the errors
-	* @return array The errors, if any
-	*/
+	 * Returns the errors
+	 * @return array The errors, if any
+	 */
 	public function getErrors() : array
 	{
 		$errors = $this->app->errors->get();
@@ -667,8 +666,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the messages
-	*/
+	 * Outputs the messages
+	 */
 	public function outputMessages()
 	{
 		if ($this->app->errors->count()) {
@@ -686,8 +685,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the info
-	*/
+	 * Outputs the info
+	 */
 	public function outputInfo()
 	{
 		$info = $this->app->info->get();
@@ -701,8 +700,8 @@ trait ThemeTrait
 	}
 
 	/**
-	* Outputs the warnings
-	*/
+	 * Outputs the warnings
+	 */
 	public function outputWarnings()
 	{
 		$warnings = $this->app->warnings->get();

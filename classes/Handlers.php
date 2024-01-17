@@ -7,9 +7,9 @@
 namespace Mars;
 
 /**
-* The Handlers Class
-* Encapsulates a list of suported handlers
-*/
+ * The Handlers Class
+ * Encapsulates a list of suported handlers
+ */
 class Handlers
 {
 	use AppTrait;
@@ -19,25 +19,25 @@ class Handlers
 	}
 
 	/**
-	* @var bool $store If true, the handlers will be stored in $this->handlers
-	*/
+	 * @var bool $store If true, the handlers will be stored in $this->handlers
+	 */
 	public bool $store = true;
 
 	/**
-	* @var string $interface_name The interface the driver must implement
-	*/
+	 * @var string $interface_name The interface the driver must implement
+	 */
 	protected string $interface_name = '';
 
 	/**
-	* @var array $handlers Array storing the handler objects, if $store is true
-	*/
+	 * @var array $handlers Array storing the handler objects, if $store is true
+	 */
 	protected array $handlers = [];
 
 	/**
-	* Builds the handler object
-	* @param array $list The list of supported handlers
-	* @param App $app The app object
-	*/
+	 * Builds the handler object
+	 * @param array $list The list of supported handlers
+	 * @param App $app The app object
+	 */
 	public function __construct(array $list, App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
@@ -45,10 +45,10 @@ class Handlers
 	}
 
 	/**
-	* Sets the interface the handler must implement
-	* @param string $interface_name The name of the interface
-	* @return static
-	*/
+	 * Sets the interface the handler must implement
+	 * @param string $interface_name The name of the interface
+	 * @return static
+	 */
 	public function setInterface(string $interface_name) : static
 	{
 		$this->interface_name = $interface_name;
@@ -57,10 +57,10 @@ class Handlers
 	}
 
 	/**
-	* Determines if the handlers will be stored for future uses
-	* @param bool $store If true, the handlers will be stored in $this->handlers
-	* @return static
-	*/
+	 * Determines if the handlers will be stored for future uses
+	 * @param bool $store If true, the handlers will be stored in $this->handlers
+	 * @return static
+	 */
 	public function setStore(bool $store) : static
 	{
 		$this->store = $store;
@@ -69,9 +69,9 @@ class Handlers
 	}
 
 	/**
-	* @see \Mars\HandlersList::add()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\HandlersList::add()
+	 * {@inheritdoc}
+	 */
 	public function add(string $name, string $class) : static
 	{
 		if ($this->store && isset($this->handlers[$name])) {
@@ -82,9 +82,9 @@ class Handlers
 	}
 
 	/**
-	* @see \Mars\HandlersList::remove()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\HandlersList::remove()
+	 * {@inheritdoc}
+	 */
 	public function remove(string $name) : static
 	{
 		if ($this->store && isset($this->handlers[$name])) {
@@ -95,11 +95,11 @@ class Handlers
 	}
 
 	/**
-	* Returns the handler
-	* @param string $name The name of the handler
-	* @param mixed $args Arguments to pass to the handler's constructor
-	* @return mixed The handler
-	*/
+	 * Returns the handler
+	 * @param string $name The name of the handler
+	 * @param mixed $args Arguments to pass to the handler's constructor
+	 * @return mixed The handler
+	 */
 	public function get(string $name, ...$args)
 	{
 		if ($this->store && isset($this->handlers[$name])) {
@@ -135,8 +135,8 @@ class Handlers
 	}
 
 	/**
-	* Returns all the handlers
-	*/
+	 * Returns all the handlers
+	 */
 	public function getAll() : array
 	{
 		if ($this->store && $this->handlers) {
@@ -151,10 +151,10 @@ class Handlers
 	}
 
 	/**
-	* Maps a value [scalar|array] to a callback
-	* @param mixed $value The value
-	* @param callable $callback The callback function
-	*/
+	 * Maps a value [scalar|array] to a callback
+	 * @param mixed $value The value
+	 * @param callable $callback The callback function
+	 */
 	public function map($value, callable $callback)
 	{
 		if (is_array($value)) {

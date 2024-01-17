@@ -7,13 +7,13 @@
 namespace Mars\Html\Input;
 
 /**
-* The Time Class
-* Renders a field from where the time of the day can be picked
-*/
+ * The Time Class
+ * Renders a field from where the time of the day can be picked
+ */
 class Time extends Input
 {
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	protected string $type = 'time';
 }

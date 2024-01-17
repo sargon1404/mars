@@ -3,8 +3,8 @@
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class DirTest extends Base
 {
 	protected $dir_cnt = __DIR__ . '/data/dir-test/';

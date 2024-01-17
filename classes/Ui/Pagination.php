@@ -9,61 +9,61 @@ namespace Mars\Ui;
 use Mars\App;
 
 /**
-* The Pagination Class
-* Generates pagination links
-*/
+ * The Pagination Class
+ * Generates pagination links
+ */
 class Pagination
 {
 	use \Mars\AppTrait;
 
 	/**
-	* @var string $base_url The generic base_url where the number of the page will be appended
-	*/
+	 * @var string $base_url The generic base_url where the number of the page will be appended
+	 */
 	protected string $base_url = '';
 
 	/**
-	* @var int $current_paget The current page
-	*/
+	 * @var int $current_paget The current page
+	 */
 	protected int $current_page = 0;
 
 	/**
-	* @var int $total_pages The total number of pages
-	*/
+	 * @var int $total_pages The total number of pages
+	 */
 	protected int $total_pages = 0;
 
 	/**
-	* @var int $total_items The total number of items
-	*/
+	 * @var int $total_items The total number of items
+	 */
 	protected int $total_items = 0;
 
 	/**
-	* @var int $pagination_items_per_page The number of items that should be displayed on each page
-	*/
+	 * @var int $pagination_items_per_page The number of items that should be displayed on each page
+	 */
 	protected int $items_per_page = 0;
 
 	/**
-	* @var int $max_links The max number of pagination links to show
-	*/
+	 * @var int $max_links The max number of pagination links to show
+	 */
 	protected int $max_links = 0;
 
 	/**
-	* @var bool $use_seo_param If true, will use the seo param in the base url rather than append the page as a query param
-	*/
+	 * @var bool $use_seo_param If true, will use the seo param in the base url rather than append the page as a query param
+	 */
 	protected bool $use_seo_param = false;
 
 	/**
-	* @var string $seo_param The string found in $base_url which will be replaced by the page number
-	*/
+	 * @var string $seo_param The string found in $base_url which will be replaced by the page number
+	 */
 	protected string $seo_param = '{PAGE_NO}';
 
 	/**
-	* Builds the pagination object
-	* @param string $base_url The generic base_url where the number of the page will be appended
-	* @param int $items_per_page The number of items per page
-	* @param int $total_items The total numbers of items
-	* @param int $max_links The max number of links to show
-	* @param App $app The app object
-	*/
+	 * Builds the pagination object
+	 * @param string $base_url The generic base_url where the number of the page will be appended
+	 * @param int $items_per_page The number of items per page
+	 * @param int $total_items The total numbers of items
+	 * @param int $max_links The max number of links to show
+	 * @param App $app The app object
+	 */
 	public function __construct(string $base_url, int $items_per_page, int $total_items, int $max_links, App $app)
 	{
 		$this->app = $app;
@@ -78,9 +78,9 @@ class Pagination
 	}
 
 	/**
-	* Builds the pagination template. The number of pages is computed as $total_items / $items_per_page.
-	* @return string The html code
-	*/
+	 * Builds the pagination template. The number of pages is computed as $total_items / $items_per_page.
+	 * @return string The html code
+	 */
 	public function get() : string
 	{
 		if (!$this->total_items || $this->items_per_page > $this->total_items) {
@@ -95,9 +95,9 @@ class Pagination
 	}
 
 	/**
-	* Returns the pagination html code
-	* @return string
-	*/
+	 * Returns the pagination html code
+	 * @return string
+	 */
 	protected function getHtml(array $links) : string
 	{
 		$html = '<div class="pagination">' . "\n";
@@ -115,11 +115,11 @@ class Pagination
 	}
 
 	/**
-	* Returns the pagination links
-	* @param int $start The start page
-	* @param int $end The end page
-	* @return array
-	*/
+	 * Returns the pagination links
+	 * @param int $start The start page
+	 * @param int $end The end page
+	 * @return array
+	 */
 	public function getLinks() : array
 	{
 		[$start, $end] = $this->getLimits();
@@ -141,18 +141,18 @@ class Pagination
 	}
 
 	/**
-	* Returns the total number of pages
-	* @return int
-	*/
+	 * Returns the total number of pages
+	 * @return int
+	 */
 	protected function getTotalPages() : int
 	{
 		return ceil($this->total_items / $this->items_per_page);
 	}
 
 	/**
-	* Returns the current page
-	* @return int
-	*/
+	 * Returns the current page
+	 * @return int
+	 */
 	protected function getCurrentPage() : int
 	{
 		$current_page = $this->app->request->getPage();
@@ -164,18 +164,18 @@ class Pagination
 	}
 
 	/**
-	* Returns true if the base url contains the page seo param
-	* @return bool
-	*/
+	 * Returns true if the base url contains the page seo param
+	 * @return bool
+	 */
 	protected function canUseSeoParam() : bool
 	{
 		return str_contains($this->base_url, $this->seo_param);
 	}
 
 	/**
-	* Determines the pages interval which should be displayed/are visible
-	* @return array The start & end pages
-	*/
+	 * Determines the pages interval which should be displayed/are visible
+	 * @return array The start & end pages
+	 */
 	protected function getLimits() : array
 	{
 		$start = 1;
@@ -205,10 +205,10 @@ class Pagination
 	}
 
 	/**
-	* Builds the url, by appending the page param
-	* @param int $page The page number
-	* @return string The url
-	*/
+	 * Builds the url, by appending the page param
+	 * @param int $page The page number
+	 * @return string The url
+	 */
 	protected function getUrl(int $page) : string
 	{
 		if ($this->use_seo_param) {
@@ -221,22 +221,22 @@ class Pagination
 	}
 
 	/**
-	* Returns the link array
-	* @param int $page The page number
-	* @param string $title The link's title
-	* @param bool $show If false, the link shouldn't be visible
-	* @param string $class The class of the link, if any
-	* @return array
-	*/
+	 * Returns the link array
+	 * @param int $page The page number
+	 * @param string $title The link's title
+	 * @param bool $show If false, the link shouldn't be visible
+	 * @param string $class The class of the link, if any
+	 * @return array
+	 */
 	protected function getLink(int $page, string $title, bool $show = true, string $class = '') : array
 	{
 		return ['show' => $show, 'url' => $this->getUrl($page), 'title' => $title, 'page' => $page, 'class' => $class];
 	}
 
 	/**
-	* Returns the data for the first link
-	* @return array
-	*/
+	 * Returns the data for the first link
+	 * @return array
+	 */
 	protected function getFirstLink() : array
 	{
 		$show = false;
@@ -248,9 +248,9 @@ class Pagination
 	}
 
 	/**
-	* Returns the data for the last link
-	* @return array
-	*/
+	 * Returns the data for the last link
+	 * @return array
+	 */
 	protected function getLastLink() : array
 	{
 		$show = false;
@@ -262,9 +262,9 @@ class Pagination
 	}
 
 	/**
-	* Returns the data for the previous link
-	* @internal
-	*/
+	 * Returns the data for the previous link
+	 * @internal
+	 */
 	protected function getPreviousLink() : array
 	{
 		$show = false;
@@ -276,9 +276,9 @@ class Pagination
 	}
 
 	/**
-	* Returns the data for the next link
-	* @internal
-	*/
+	 * Returns the data for the next link
+	 * @internal
+	 */
 	protected function getNextLink() : array
 	{
 		$show = false;

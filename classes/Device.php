@@ -9,39 +9,39 @@ namespace Mars;
 use Mars\Device\DriverInterface;
 
 /**
-* The Device Class
-* Encapsulates the user's device
-*/
+ * The Device Class
+ * Encapsulates the user's device
+ */
 class Device
 {
 	use AppTrait;
 
 	/**
-	* @var Drivers $drivers The drivers object
-	*/
+	 * @var Drivers $drivers The drivers object
+	 */
 	public readonly Drivers $drivers;
 
 	/**
-	* @var string $type The device type. Eg: desktop/tablet/smartphone
-	*/
+	 * @var string $type The device type. Eg: desktop/tablet/smartphone
+	 */
 	public readonly string $type;
 
 	/**
-	* @var string $devices Array listing the supported devices
-	*/
+	 * @var string $devices Array listing the supported devices
+	 */
 	public readonly array $devices;
 
 	/**
-	* @var array $supported_drivers The supported drivers
-	*/
+	 * @var array $supported_drivers The supported drivers
+	 */
 	protected array $supported_drivers = [
 		'mobile_detect' => '\Mars\Device\MobileDetect'
 	];
 
 	/**
-	* Builds the device object
-	* @param App $app The app object
-	*/
+	 * Builds the device object
+	 * @param App $app The app object
+	 */
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -57,18 +57,18 @@ class Device
 	}
 
 	/**
-	* Returns the current device
-	* @return string The device
-	*/
+	 * Returns the current device
+	 * @return string The device
+	 */
 	public function get() : string
 	{
 		return $this->type;
 	}
 
 	/**
-	* Detects the user's device
-	* @return string The user's device
-	*/
+	 * Detects the user's device
+	 * @return string The user's device
+	 */
 	protected function getDevice() : string
 	{
 		if ($this->app->config->development_device) {
@@ -98,9 +98,9 @@ class Device
 	}
 
 	/**
-	* Returns true if the user is using a desktop
-	* @return bool
-	*/
+	 * Returns true if the user is using a desktop
+	 * @return bool
+	 */
 	public function isDesktop() : bool
 	{
 		if (!$this->type || $this->type == 'desktop') {
@@ -111,9 +111,9 @@ class Device
 	}
 
 	/**
-	* Returns true if the user is using a tablet/smartphone
-	* @return bool
-	*/
+	 * Returns true if the user is using a tablet/smartphone
+	 * @return bool
+	 */
 	public function isMobile() : bool
 	{
 		if ($this->type == 'tablet' || $this->type == 'smartphone') {
@@ -124,9 +124,9 @@ class Device
 	}
 
 	/**
-	* Returns true if the user is using a tablet
-	* @return bool
-	*/
+	 * Returns true if the user is using a tablet
+	 * @return bool
+	 */
 	public function isTablet() : bool
 	{
 		if ($this->type == 'tablet') {
@@ -137,9 +137,9 @@ class Device
 	}
 
 	/**
-	* Returns true if the user is using a smartphone
-	* @return bool
-	*/
+	 * Returns true if the user is using a smartphone
+	 * @return bool
+	 */
 	public function isSmartphone() : bool
 	{
 		if ($this->type == 'smartphone') {

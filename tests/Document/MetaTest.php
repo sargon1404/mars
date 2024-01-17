@@ -5,8 +5,8 @@ use Mars\Document\Meta;
 include_once(dirname(__DIR__) . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class MetaTest extends Base
 {
 	public function testMeta()

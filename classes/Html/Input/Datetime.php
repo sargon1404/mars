@@ -7,15 +7,15 @@
 namespace Mars\Html\Input;
 
 /**
-* The Datetime Class
-* Renders a field from where a date & time can be picked
-*/
+ * The Datetime Class
+ * Renders a field from where a date & time can be picked
+ */
 class Datetime extends \Mars\Html\Tag
 {
 	/**
-	* @see \Mars\Html\TagInterface::html()
-	* {@inheritdoc}
-	*/
+	 * @see \Mars\Html\TagInterface::html()
+	 * {@inheritdoc}
+	 */
 	public function html(string $text = '', array $attributes = [], array $properties = []) : string
 	{
 		$name = $attributes['name'];

@@ -4,8 +4,8 @@ use Mars\App;
 include_once(__DIR__ . '/Base.php');
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 final class FormatTest extends Base
 {
 	public function testLower()
