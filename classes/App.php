@@ -13,6 +13,7 @@ use Mars\Alerts\Warnings;
 use Mars\System\Language;
 use Mars\System\Plugins;
 use Mars\System\Theme;
+use Mars\Mvc\Controller;
 
 /**
  * The App Class
@@ -66,6 +67,11 @@ class App
 	 * @var string $url_static The url from where static content is served
 	 */
 	public string $url_static = '';
+
+	/**
+	 * @var string $page_url The url of the current page determined from $_SERVER. Doesn't include the QUERY_STRING
+	 */
+	public readonly string $page_url;
 
 	/**
 	 * @var string $full_url The url of the current page determined from $_SERVER. Includes the QUERY_STRING
@@ -146,11 +152,6 @@ class App
 	 * @var Cache $cache The cache object
 	 */
 	public Cache $cache;
-
-	/**
-	 * @var Caching $caching The caching object
-	 */
-	public Caching $caching;
 
 	/**
 	 * @var Config $config The config object
@@ -439,6 +440,7 @@ class App
 			$this->scheme = $this->getScheme();
 			$this->method = $this->getRequestMethod();
 			$this->protocol = $this->getProtocol();
+			$this->page_url = $this->getPageUrl();
 			$this->full_url = $this->getFullUrl();
 			$this->is_http2 = $this->getIsHttp2();
 		}
@@ -505,7 +507,6 @@ class App
 
 		$this->boot->minimum();
 		$this->boot1();
-		$this->boot->caching();
 		$this->boot->libraries();
 		$this->boot->db();
 		$this->boot2();
@@ -635,6 +636,19 @@ class App
 	}
 
 	/**
+	 * Returns the page url of the current page
+	 * @return string
+	 */
+	protected function getPageUrl() : string
+	{
+		$request_uri = explode('?', $_SERVER["REQUEST_URI"], 2);
+
+		$url = $this->scheme . $_SERVER['SERVER_NAME'] . $request_uri[0];
+
+		return filter_var($url, FILTER_SANITIZE_URL);
+	}
+
+	/**
 	 * Returns the full url of the current page
 	 * @return string
 	 */
@@ -651,9 +665,9 @@ class App
 	 */
 	protected function isHomepage() : bool
 	{
-		if ($this->full_url == $this->url || $this->full_url == $this->url . '/') {
+		if ($this->page_url == $this->url || $this->page_url == $this->url . '/') {
 			return true;
-		} elseif ($this->full_url == $this->url . '/index.php') {
+		} elseif ($this->page_url == $this->url . '/index.php') {
 			return true;
 		}
 		
@@ -822,13 +836,11 @@ class App
 
 		$output = $this->getOutput($content);
 
-		$this->plugins->run('app_output', $output);
+		$this->plugins->run('app_end', $output);
 
 		//cache the output, if required
-		if ($this->response->getType() == 'html') {
-			$this->caching->store($output);
-		}
-
+		$this->cache->store($output);
+		
 		$output = $this->response->output($output);
 	}
 

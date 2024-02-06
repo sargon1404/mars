@@ -6,6 +6,9 @@
 
 namespace Mars;
 
+use Mars\Handlers;
+use Mars\Cache\Pages;
+use Mars\Cache\Templates;
 use Mars\System\Theme;
 
 /**
@@ -16,26 +19,50 @@ use Mars\System\Theme;
 class Cache extends Data
 {
 	/**
-	 * Clears the templates cache
-	 * @return static
+	 * @var Handlers $caches
 	 */
-	public function clearTemplates() : static
-	{
-		$this->clearDir($this->app->cache_path . '/templates');
-
-		return $this;
-	}
+	public readonly Handlers $caches;
 
 	/**
-	 * Clears a folder and copies the empty index.htm file
-	 * @param string $dir The folder's name
+	 * @var Page $page The Page Cache object
 	 */
-	protected function clearDir($dir)
+	public readonly Pages $pages;
+
+	/**
+	 * @var Templates $templates The Templates Cache object
+	 */
+	public readonly Templates $templates;
+	
+	/**
+	 * @var array $supported_caches The list of supported caches
+	 */
+	protected array $supported_caches = [
+		'pages' => '\Mars\Cache\Pages',
+		'templates' => '\Mars\Cache\Templates'
+	];
+
+	/**
+	 * @var array $caches_list The list of cache objects
+	 */
+	protected array $caches_list = [];
+
+	/**
+	 * Builds the Cache object
+	 */
+	public function __construct(App $app)
 	{
-		$dir = App::fixPath($dir);
+		$this->app = $app ?? App::get();
 
-		$this->app->dir->clean($dir);
+		$this->caches = new Handlers($this->supported_caches, $this->app);
+		
+		$this->caches_list = &$this->caches->getAll();
+		foreach ($this->caches_list as $cache_name => $cache) {
+			$this->$cache_name = $cache;
+		}
+	}
 
-		$this->app->file->copy($this->app->path . '/src/index.htm', $dir . 'index.htm');
+	public function store(string $content)
+	{
+		$this->pages->store($content);
 	}
 }

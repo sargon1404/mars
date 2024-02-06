@@ -78,7 +78,11 @@ class Handlers
 			unset($this->handlers[$name]);
 		}
 
-		return $this->addToList($name, $class);
+		$this->addToList($name, $class);
+
+		$this->get($name);
+
+		return $this;
 	}
 
 	/**
@@ -100,7 +104,7 @@ class Handlers
 	 * @param mixed $args Arguments to pass to the handler's constructor
 	 * @return mixed The handler
 	 */
-	public function get(string $name, ...$args)
+	public function get(string $name, ...$args) : mixed
 	{
 		if ($this->store && isset($this->handlers[$name])) {
 			return $this->handlers[$name];
@@ -137,7 +141,7 @@ class Handlers
 	/**
 	 * Returns all the handlers
 	 */
-	public function getAll() : array
+	public function &getAll() : array
 	{
 		if ($this->store && $this->handlers) {
 			return $this->handlers;

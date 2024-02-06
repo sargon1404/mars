@@ -15,14 +15,14 @@ class Text
 	use AppTrait;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $handlers The operations object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $operations;
 
 	/**
-	 * @var array $supported_handlers The list of supported handlers
+	 * @var array $supported_operations The list of supported operations
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_operations = [
 		'parser' => '\Mars\Text\Parser'
 	];
 
@@ -33,7 +33,7 @@ class Text
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->operations = new Handlers($this->supported_operations, $this->app);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Text
 	 */
 	public function parse(string $text, bool $parse_links = true, bool $parse_nofollow = false) : string
 	{
-		$parser = $this->handlers->get('parser');
+		$parser = $this->operations->get('parser');
 
 		$text = $parser->parse($text, $parse_links, $parse_nofollow);
 

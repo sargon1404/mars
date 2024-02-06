@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Cacheable;
+namespace Mars\Cache\Cacheable;
 
 use Mars\App;
 
@@ -29,7 +29,7 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cacheable\DriverInterface::get()
+	 * @see \Mars\Cache\Cacheable\DriverInterface::get()
 	 * {@inheritdoc}
 	 */
 	public function get(string $filename) : string
@@ -38,7 +38,7 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::store()
+	 * @see \Mars\Cache\Cachable\DriverInterface::store()
 	 * {@inheritdoc}
 	 */
 	public function store(string $filename, string $content) : bool
@@ -50,7 +50,7 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::getLastModified()
+	 * @see \Mars\Cache\Cachable\DriverInterface::getLastModified()
 	 * {@inheritdoc}
 	 */
 	public function getLastModified(string $filename) : int
@@ -59,7 +59,7 @@ class Memcache implements DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::delete()
+	 * @see \Mars\Cache\Cachable\DriverInterface::delete()
 	 * {@inheritdoc}
 	 */
 	public function delete(string $filename) : bool

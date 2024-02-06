@@ -17,9 +17,9 @@ class Screens
 	use AppTrait;
 
 	/**
-	 * @var Handlers $handlers The screens handlers
+	 * @var Handlers $screens The screens handlers
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $screens;
 
 	/**
 	 * @var array $screens_list The list of supported screens
@@ -38,7 +38,7 @@ class Screens
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->screens_list, $this->app);
+		$this->screens = new Handlers($this->screens_list, $this->app);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class Screens
 	 */
 	public function error(string $text, string $title = '', ?bool $escape_html = null)
 	{
-		$this->handlers->get('error')->output($text, $title, $escape_html);
+		$this->screens->get('error')->output($text, $title, $escape_html);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Screens
 	 */
 	public function message(string $text, string $title = '', ?bool $escape_html = null)
 	{
-		$this->handlers->get('message')->output($text, $title, $escape_html);
+		$this->screens->get('message')->output($text, $title, $escape_html);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Screens
 	 */
 	public function fatalError(string $text, bool $escape_html = null)
 	{
-		$this->handlers->get('fatal_error')->output($text, $escape_html);
+		$this->screens->get('fatal_error')->output($text, $escape_html);
 	}
 
 	/**
@@ -78,6 +78,6 @@ class Screens
 	 */
 	public function permissionDenied()
 	{
-		$this->handlers->get('permission_denied')->output();
+		$this->screens->get('permission_denied')->output();
 	}
 }

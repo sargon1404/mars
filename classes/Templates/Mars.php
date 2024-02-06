@@ -36,14 +36,14 @@ class Mars implements DriverInterface
 	use \Mars\AppTrait;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $handlers The parsers object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $parsers;
 
 	/**
-	 * @var array $supported_rules The list of supported rules
+	 * @var array $supported_structures The list of supported parsers
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_parsers = [
 		'include' => '\Mars\Templates\Mars\IncludeParser',
 		'variable_double' => '\Mars\Templates\Mars\VariableDoubleParser',
 		'variable_raw' => '\Mars\Templates\Mars\VariableRawParser',
@@ -55,7 +55,7 @@ class Mars implements DriverInterface
 	/**
 	 * @var array $parsers The parsers array
 	 */
-	protected array $parsers = [];
+	protected array $parsers_list = [];
 
 	/**
 	 * Builds the Mars Template object
@@ -66,8 +66,8 @@ class Mars implements DriverInterface
 		ini_set('pcre.backtrack_limit', 10000000);
 
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
-		$this->parsers = $this->handlers->getAll();
+		$this->parsers = new Handlers($this->supported_parsers, $this->app);
+		$this->parsers_list = $this->parsers->getAll();
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Mars implements DriverInterface
 	 */
 	public function parse(string $content, array $params) : string
 	{
-		foreach ($this->parsers as $parser) {
+		foreach ($this->parsers_list as $parser) {
 			$content = $parser->parse($content, $params);
 		}
 
@@ -84,12 +84,12 @@ class Mars implements DriverInterface
 	}
 
 	/**
-	 * Returns a handler
-	 * @param string $name The name of the handler
+	 * Returns a parser
+	 * @param string $name The name of the parser
 	 * @return object The handler
 	 */
-	public function getHandler(string $name) : object
+	public function getParser(string $name) : object
 	{
-		return $this->handlers->get($name);
+		return $this->parsers->get($name);
 	}
 }

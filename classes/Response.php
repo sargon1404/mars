@@ -20,9 +20,9 @@ class Response
 	use AppTrait;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $responses The $responses object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $responses;
 
 	/**
 	 * @var Cookies $cookies The cookies object
@@ -50,9 +50,9 @@ class Response
 	protected DriverInterface $driver;
 
 	/**
-	 * @var array $supported_handlers The supported handlers
+	 * @var array $supported_$responses The supported $responses types
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_responses = [
 		'ajax' => '\Mars\Response\Types\Ajax',
 		'html' => '\Mars\Response\Types\Html'
 	];
@@ -64,8 +64,8 @@ class Response
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
-		$this->handlers->setInterface(DriverInterface::class);
+		$this->responses = new Handlers($this->supported_responses, $this->app);
+		$this->responses->setInterface(DriverInterface::class);
 		$this->headers = new Headers($this->app);
 		$this->cookies = new Cookies($this->app);
 		$this->push = new Push($this->app);
@@ -106,7 +106,7 @@ class Response
 	 */
 	public function get($content)
 	{
-		return $this->handlers->get($this->type)->get($content);
+		return $this->responses->get($this->type)->get($content);
 	}
 
 	/**
@@ -117,6 +117,6 @@ class Response
 	{
 		$this->headers->output();
 
-		$this->handlers->get($this->type)->output($content);
+		$this->responses->get($this->type)->output($content);
 	}
 }

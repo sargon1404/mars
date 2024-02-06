@@ -15,14 +15,14 @@ class Filter
 	use AppTrait;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $filters The filters object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $filters;
 
 	/**
-	 * @var array $supported_handlers The list of supported_handlers
+	 * @var array $supported_filters The list of supported filters
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_filters = [
 		'string' => ['string'],
 		'int' => ['int'],
 		'float' => ['float'],
@@ -50,7 +50,7 @@ class Filter
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->filters = new Handlers($this->supported_filters, $this->app);
 	}
 
 	/**
@@ -65,8 +65,8 @@ class Filter
 			return $this->$filter($value);
 		}
 
-		return $this->handlers->map($value, function ($value) use ($filter) {
-			return $this->handlers->get($filter)->filter($value);
+		return $this->filters->map($value, function ($value) use ($filter) {
+			return $this->filters->get($filter)->filter($value);
 		});
 	}
 
@@ -77,7 +77,7 @@ class Filter
 	 */
 	public function string($value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return (string)$value;
 		});
 	}
@@ -89,7 +89,7 @@ class Filter
 	 */
 	public function int($value) : int|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return (int)$value;
 		});
 	}
@@ -101,7 +101,7 @@ class Filter
 	 */
 	public function float($value) : float|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return (float)$value;
 		});
 	}
@@ -113,7 +113,7 @@ class Filter
 	 */
 	public function abs($value) : int|float|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return abs($value);
 		});
 	}
@@ -125,7 +125,7 @@ class Filter
 	 */
 	public function absint($value) : int|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return abs((int)$value);
 		});
 	}
@@ -137,7 +137,7 @@ class Filter
 	 */
 	public function absfloat($value) : int|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return abs((float)$value);
 		});
 	}
@@ -149,7 +149,7 @@ class Filter
 	 */
 	public function trim($value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return trim($value);
 		});
 	}
@@ -162,7 +162,7 @@ class Filter
 	 */
 	public function tags($value, array|string|null $allowed_tags = null) : string|array
 	{
-		return $this->handlers->map($value, function ($value) use ($allowed_tags) {
+		return $this->filters->map($value, function ($value) use ($allowed_tags) {
 			return strip_tags($value, $allowed_tags);
 		});
 	}
@@ -177,8 +177,8 @@ class Filter
 	 */
 	public function html(string $html, string $allowed_elements = null, string $allowed_attributes = null, string $encoding = 'UTF-8') : string
 	{
-		return $this->handlers->map($html, function ($html) use ($allowed_elements, $allowed_attributes, $encoding) {
-			return $this->handlers->get('html')->filter($html, $allowed_elements, $allowed_attributes, $encoding);
+		return $this->filters->map($html, function ($html) use ($allowed_elements, $allowed_attributes, $encoding) {
+			return $this->filters->get('html')->filter($html, $allowed_elements, $allowed_attributes, $encoding);
 		});
 	}
 
@@ -189,7 +189,7 @@ class Filter
 	 */
 	public function id(int|array $value) : int|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->filters->map($value, function ($value) {
 			return abs((int)$value);
 		});
 	}
@@ -212,8 +212,8 @@ class Filter
 	 */
 	public function alpha(string|array $value, bool $space = false) : string|array
 	{
-		return $this->handlers->map($value, function ($value) use ($space) {
-			return $this->handlers->get('alpha')->filter($value, $space);
+		return $this->filters->map($value, function ($value) use ($space) {
+			return $this->filters->get('alpha')->filter($value, $space);
 		});
 	}
 
@@ -225,8 +225,8 @@ class Filter
 	 */
 	public function alnum(string|array $value, bool $space = false) : string|array
 	{
-		return $this->handlers->map($value, function ($value) use ($space) {
-			return $this->handlers->get('alnum')->filter($value, $space);
+		return $this->filters->map($value, function ($value) use ($space) {
+			return $this->filters->get('alnum')->filter($value, $space);
 		});
 	}
 
@@ -237,8 +237,8 @@ class Filter
 	 */
 	public function filename(string|array $value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
-			return $this->handlers->get('filename')->filter($value);
+		return $this->filters->map($value, function ($value) {
+			return $this->filters->get('filename')->filter($value);
 		});
 	}
 
@@ -250,8 +250,8 @@ class Filter
 	 */
 	public function filepath(string|array $value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
-			return $this->handlers->get('filepath')->filter($value);
+		return $this->filters->map($value, function ($value) {
+			return $this->filters->get('filepath')->filter($value);
 		});
 	}
 
@@ -262,8 +262,8 @@ class Filter
 	 */
 	public function url(string|array $url) : string|array
 	{
-		return $this->handlers->map($url, function ($url) {
-			return $this->handlers->get('url')->filter($url);
+		return $this->filters->map($url, function ($url) {
+			return $this->filters->get('url')->filter($url);
 		});
 	}
 
@@ -274,8 +274,8 @@ class Filter
 	 */
 	public function email(string|array $email) : string|array
 	{
-		return $this->handlers->map($email, function ($email) {
-			return $this->handlers->get('email')->filter($email);
+		return $this->filters->map($email, function ($email) {
+			return $this->filters->get('email')->filter($email);
 		});
 	}
 
@@ -287,8 +287,8 @@ class Filter
 	 */
 	public function slug(string|array $value, bool $allow_slash = false) : string|array
 	{
-		return $this->handlers->map($value, function ($value) use ($allow_slash) {
-			return $this->handlers->get('slug')->filter($value, $allow_slash);
+		return $this->filters->map($value, function ($value) use ($allow_slash) {
+			return $this->filters->get('slug')->filter($value, $allow_slash);
 		});
 	}
 
@@ -302,8 +302,8 @@ class Filter
 	 */
 	public function interval(int|float $value, int|float $min, int|float $max, int|float $default_value) : int|float
 	{
-		return $this->handlers->map($value, function ($value) use ($min, $max, $default_value) {
-			return $this->handlers->get('interval')->filter($value, $min, $max, $default_value);
+		return $this->filters->map($value, function ($value) use ($min, $max, $default_value) {
+			return $this->filters->get('interval')->filter($value, $min, $max, $default_value);
 		});
 	}
 

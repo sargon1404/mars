@@ -15,14 +15,14 @@ class Router
 	use AppTrait;
 
 	/**
-	 * @var array $routes The defined routes
+	 * @var array $routes_list The defined routes list
 	 */
-	protected array $routes = [];
+	protected array $routes_list = [];
 	
 	/**
-	 * @var Handlers $handlers The routes handlers
+	 * @var Handlers $routes The routes handlers
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $routes;
 	
 	/**
 	 * @var array $routes_types The list of supported routes
@@ -30,6 +30,7 @@ class Router
 	protected array $routes_types = [
 		'block' => '\Mars\Routers\Block',
 		'template' => '\Mars\Routers\Template',
+		'page' => '\Mars\Routers\Page',
 	];
 	
 	/**
@@ -39,7 +40,7 @@ class Router
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->routes_types, $this->app);
+		$this->routes = new Handlers($this->routes_types, $this->app);
 	}
 
 	/**
@@ -51,7 +52,7 @@ class Router
 	 */
 	public function add(string $type, string $route, $action) : static
 	{
-		$this->routes[$type][$route] = $action;
+		$this->routes_list[$type][$route] = $action;
 
 		return $this;
 	}
@@ -114,11 +115,11 @@ class Router
 	protected function getRoute()
 	{
 		$method = $this->app->method;
-		if (!isset($this->routes[$method])) {
+		if (!isset($this->routes_list[$method])) {
 			return null;
 		}
 
-		$routes = $this->routes[$method];
+		$routes = $this->routes_list[$method];
 		$path = $this->getPath();
 
 		foreach ($routes as $route_path => $route) {
@@ -236,6 +237,19 @@ class Router
 	{
 		return $this->setRoute($route, 'template', $template, $title, $meta);
 	}
+
+	/**
+	 * Handles a page request
+	 * @param string $route The route to handle
+	 * @param string $template The page's template's name
+	 * @param string $title The title tag of the page
+	 * @param array $meta Meta data of the page
+	 * @return static
+	 */
+	public function page(string $route, string $template, string $title = '', array $meta = []) : static
+	{
+		return $this->setRoute($route, 'page', $template, $title, $meta);
+	}
 	
 	/**
 	 * Sets a route
@@ -245,7 +259,7 @@ class Router
 	 */
 	protected function setRoute(string $route, string $handler, ...$args) : static
 	{
-		$obj = $this->handlers->get($handler, ...$args);
+		$obj = $this->routes->get($handler, ...$args);
 
 		$this->add('get', $route, $obj);
 		$this->add('post', $route, $obj);

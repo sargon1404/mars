@@ -83,6 +83,51 @@ class Config extends Data
 	public string|array $custom_headers = '';
 
 	/**
+	 * @var string $db_driver The db driver. Supported drivers: pdo
+	 */
+	public string $db_driver = 'pdo';
+
+	/**
+	 * @var string $db_hostname The db hostname
+	 */
+	public string $db_hostname = 'localhost';
+
+	/**
+	 * @var string $db_port	The db port
+	 */
+	public string $db_port = '3306';
+
+	/**
+	 * @var string $db_username The db username
+	 */
+	public string $db_username = '';
+
+	/**
+	 * @var string $db_password The db password
+	 */
+	public string $db_password = '';
+
+	/**
+	 * @var string $db_name The db name
+	 */
+	public string $db_name = '';
+
+	/**
+	 * @var bool $db_persistent If true, the db connection will be persistent
+	 */
+	public bool $db_persistent = false;
+
+	/**
+	 * @var string $db_charset The db charset
+	 */
+	public string $db_charset = 'utf8mb4';
+
+	/**
+	 * @var bool $db_debug Set to true to enable the db debug data
+	 */
+	public bool $db_debug = false;
+
+	/**
 	 * Change the driver only if you know what you're doing! Preferably at installation time.
 	 * You might try to unserialize data which has been serialized with a different driver, otherwise
 	 * @var string $serializer_driver The serializer driver. Supported options: php, igbinary
@@ -202,12 +247,97 @@ class Config extends Data
 	/**
 	 * @var string $language The default language
 	 */
-	public string $language = '';
+	public string $language = 'english';
 
 	/**
 	 * @var string $lang The default theme
 	 */
-	public string $theme = '';
+	public string $theme = 'default';
+
+	/**
+	 * @var bool $memcache_enable If true will enable the memory cache functionality
+	 */
+	public bool $memcache_enable = false;
+
+	/**
+	 * @var string $memcache_driver The driver used for memcache. Supported options: memcache, memcached, redis
+	 */
+	public string $memcache_driver = '';
+
+	/**
+	 * @var string $memcache_host The memcache host
+	 */
+	public string $memcache_host = '127.0.0.1';
+
+	/**
+	 * @var string $memcache_port The memcache port
+	 */
+	public string $memcache_port = '11211';
+
+	/**
+	 * @var bool $mail_driver The mail driver. Supported options: phpmailer
+	 */
+	public string $mail_driver = 'phpmailer';
+
+	/**
+	 * @var bool $mail_from The default email address used as the 'From' address
+	 */
+	public string $mail_from = '';
+
+	/**
+	 * @var bool $mail_from_name The default name address used as the 'From' name
+	 */
+	public string $mail_from_name = '';
+
+	/**
+	 * @var bool $mail_smtp Set to true if the mails are to be sent using smtp
+	 */
+	public bool $mail_smtp = false;
+
+	/**
+	 * @var bool $mail_smtp_host The smtp host
+	 */
+	public string $mail_smtp_host = '';
+
+	/**
+	 * @var bool $mail_smtp_port The smtp port
+	 */
+	public string $mail_smtp_port = '';
+
+	/**
+	 * @var bool $mail_smtp_username The smtp username
+	 */
+	public string $mail_smtp_username = '';
+
+	/**
+	 * @var bool $mail_smtp_password The smtp password
+	 */
+	public string $mail_smtp_password = '';
+
+	/**
+	 * @var bool $mail_smt_secure The smtp secure connection. Supported options: tls, ssl
+	 */
+	public bool $mail_smtp_secure = false;
+
+	/**
+	 * @var bool $cache_page_enable If true, will enable the content cache functionality
+	 */
+	public bool $cache_page_enable = false;
+
+	/**
+	 * @var string $cache_page_driver
+	 */
+	public string $cache_page_driver = 'file';
+
+	/**
+	 * @var int $cache_page_expire_hours The value - in hours - of the Expires header
+	 */
+	public int $cache_page_expire_hours = 72;
+
+	/**
+	 * @var bool $cache_page_minify If true will minify the cached content
+	 */
+	public bool $cache_page_minify = true;
 
 	/**
 	 * @var string $templates_driver The templates driver. Supported options: mars
@@ -263,6 +393,11 @@ class Config extends Data
 	 * @var bool $plugins_enable True, if plugins are enabled
 	 */
 	public bool $plugins_enable = true;
+
+	/**
+	 * @var array $plugins List of enabled plugins
+	 */
+	public array $plugins = [];
 
 	/**
 	 * @var int $pagination_max_links The max number of pagination links to show
@@ -440,7 +575,6 @@ class Config extends Data
 		}
 
 		if ($this->development) {
-			$this->content_cache_enable = false;
 			$this->css_version = time();
 			$this->javascript_version = time();
 		}

@@ -16,12 +16,12 @@ class Ui
 	/**
 	 * @var Handlers $handlers The handlers object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $uis;
 
 	/**
 	 * @var array $supported_rules The list of supported rules
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_uis = [
 		'pagination' => '\Mars\Ui\Pagination'
 	];
 
@@ -32,7 +32,7 @@ class Ui
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->uis = new Handlers($this->supported_uis, $this->app);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Ui
 		$items_per_page = $items_per_page?? $this->app->config->pagination_items_per_page;
 		$max_links = $max_links ?? $this->app->config->pagination_max_links;
 
-		$pag = $this->handlers->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
+		$pag = $this->uis->get('pagination', $base_url, $items_per_page, $total_items, $max_links);
 
 		return $pag->get();
 	}

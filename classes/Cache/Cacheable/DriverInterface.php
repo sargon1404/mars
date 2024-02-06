@@ -4,7 +4,7 @@
 * @package Mars
 */
 
-namespace Mars\Cacheable;
+namespace Mars\Cache\Cacheable;
 
 /**
  * The Cacheable Driver Interface

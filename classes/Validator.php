@@ -22,14 +22,14 @@ class Validator
 	public readonly Errors $errors;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $rules The rules object
 	 */
-	public Handlers $handlers;
+	public Handlers $rules;
 
 	/**
-	 * @var array $supported_handlers The list of supported_handlers
+	 * @var array $supported_rules The list of supported validation rules
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_rules = [
 		'req' => '\Mars\Validators\Required',
 		'required' => '\Mars\Validators\Required',
 		'unique' => '\Mars\Validators\Unique',
@@ -55,7 +55,7 @@ class Validator
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->rules = new Handlers($this->supported_rules, $this->app);
 		$this->errors = new Errors($this->app);
 	}
 
@@ -69,7 +69,7 @@ class Validator
 	 */
 	public function isValid(mixed $value, string $rule, string $field = '', ...$params) : bool
 	{
-		return $this->handlers->get($rule)->validate($value, $field, ...$params);
+		return $this->rules->get($rule)->validate($value, $field, ...$params);
 	}
 
 	/**
@@ -124,8 +124,8 @@ class Validator
 			return;
 		}
 
-		//use the handler's error
-		$this->errors->add(App::__($this->handlers->get($rule)->getError()));
+		//use the rule's error
+		$this->errors->add(App::__($this->rules->get($rule)->getError()));
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Validator
 	 */
 	public function isDatetime(string $value, string $format = null) : bool
 	{
-		return $this->handlers->get('datetime')->isValid($value, $format);
+		return $this->rules->get('datetime')->isValid($value, $format);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Validator
 	 */
 	public function isDate(string $value, string $format = null) : bool
 	{
-		return $this->handlers->get('date')->isValid($value, $format);
+		return $this->rules->get('date')->isValid($value, $format);
 	}
 
 	/**
@@ -158,7 +158,7 @@ class Validator
 	 */
 	public function isTime(string $value, string $format = null) : bool
 	{
-		return $this->handlers->get('time')->isValid($value, $format);
+		return $this->rules->get('time')->isValid($value, $format);
 	}
 
 	/**
@@ -168,7 +168,7 @@ class Validator
 	 */
 	public function isUrl(string $value) : bool
 	{
-		return $this->handlers->get('url')->isValid($value);
+		return $this->rules->get('url')->isValid($value);
 	}
 
 	/**
@@ -178,7 +178,7 @@ class Validator
 	 */
 	public function isEmail(string $value) : bool
 	{
-		return $this->handlers->get('email')->isValid($value);
+		return $this->rules->get('email')->isValid($value);
 	}
 
 	/**
@@ -189,6 +189,6 @@ class Validator
 	 */
 	public function isIp(string $value, bool $wildcards = false) : bool
 	{
-		return $this->handlers->get('ip')->isValid($value, $wildcards);
+		return $this->rules->get('ip')->isValid($value, $wildcards);
 	}
 }

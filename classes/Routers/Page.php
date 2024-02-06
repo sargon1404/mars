@@ -1,6 +1,6 @@
 <?php
 /**
-* The Template Router Class
+* The Page Router Class
 * @package Mars
 */
 
@@ -9,10 +9,10 @@ namespace Mars\Routers;
 use Mars\App;
 
 /**
- * The Template Router Class
- * Routes to a template
+ * The Page Router Class
+ * Routes to a page
  */
-class Template implements HandlerInterface
+class Page implements HandlerInterface
 {
 	use \Mars\AppTrait;
 	
@@ -55,7 +55,9 @@ class Template implements HandlerInterface
 				$this->app->document->meta->set($name, $val);
 			}
 		}
-			
-		echo $this->app->theme->getTemplate($this->name);
+
+		$template = $this->app->path . '/app/pages/' . $this->name . '.' . App::FILE_EXTENSIONS['templates'];
+
+		echo $this->app->theme->getTemplateFromFilename($template);
 	}
 }

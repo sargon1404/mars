@@ -18,9 +18,9 @@ class Minifier
 	use \Mars\AppTrait;
 
 	/**
-	 * @var Handlers $handlers The screens handlers
+	 * @var Handlers $minifiers The screens handlers
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $minifiers;
 
 	/**
 	 * @var array $minifiers_list The list of supported minifiers
@@ -38,7 +38,7 @@ class Minifier
 	public function __construct(App $app = null)
 	{
 		$this->app = $app ?? $this->getApp();
-		$this->handlers = new Handlers($this->minifiers_list, $this->app);
+		$this->minifiers = new Handlers($this->minifiers_list, $this->app);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Minifier
 	 */
 	public function minifyHtml(string $code) : string
 	{
-		$handler = $this->handlers->get('html');
+		$handler = $this->minifiers->get('html');
 
 		return $handler->minify($code);
 	}
@@ -60,7 +60,7 @@ class Minifier
 	 */
 	public function minifyCss(string $code) : string
 	{
-		$handler = $this->handlers->get('css');
+		$handler = $this->minifiers->get('css');
 
 		return $handler->minify($code);
 	}
@@ -72,7 +72,7 @@ class Minifier
 	 */
 	public function minifyJs(string $code) : string
 	{
-		$handler = $this->handlers->get('js');
+		$handler = $this->minifiers->get('js');
 
 		return $handler->minify($code);
 	}

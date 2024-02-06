@@ -4,18 +4,18 @@
 * @package Mars
 */
 
-namespace Mars\Cacheable;
+namespace Mars\Cache\Cacheable;
 
 /**
  * The Cachable File Driver
  * Driver which stores on disk the cached resources
  */
-class File implements \Mars\Cacheable\DriverInterface
+class File implements DriverInterface
 {
 	use \Mars\AppTrait;
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::get()
+	 * @see \Mars\Cache\Cachable\DriverInterface::get()
 	 * {@inheritdoc}
 	 */
 	public function get(string $filename) : string
@@ -24,7 +24,7 @@ class File implements \Mars\Cacheable\DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::store()
+	 * @see \Mars\Cache\Cachable\DriverInterface::store()
 	 * {@inheritdoc}
 	 */
 	public function store(string $filename, string $content) : bool
@@ -33,7 +33,7 @@ class File implements \Mars\Cacheable\DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::getLastModified()
+	 * @see \Mars\Cache\Cachable\DriverInterface::getLastModified()
 	 * {@inheritdoc}
 	 */
 	public function getLastModified(string $filename) : int
@@ -46,7 +46,7 @@ class File implements \Mars\Cacheable\DriverInterface
 	}
 
 	/**
-	 * @see \Mars\Cachable\DriverInterface::delete()
+	 * @see \Mars\Cache\Cachable\DriverInterface::delete()
 	 * {@inheritdoc}
 	 */
 	public function delete(string $filename) : bool

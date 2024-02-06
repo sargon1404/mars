@@ -4,9 +4,11 @@
 * @package Mars
 */
 
-namespace Mars;
+namespace Mars\Cache;
 
-use Mars\Cacheable\DriverInterface;
+use Mars\App;
+use Mars\Drivers;
+use Mars\Cache\Cacheable\DriverInterface;
 
 /**
  * The Cacheable Class
@@ -14,7 +16,7 @@ use Mars\Cacheable\DriverInterface;
  */
 abstract class Cacheable
 {
-	use AppTrait;
+	use \Mars\AppTrait;
 
 	/**
 	 * @var Drivers $drivers The drivers object
@@ -60,8 +62,8 @@ abstract class Cacheable
 	 * @var array $supported_drivers The supported drivers
 	 */
 	protected array $supported_drivers = [
-		'file' => '\Mars\Cacheable\File',
-		'memcache' => '\Mars\Cacheable\Memcache'
+		'file' => '\Mars\Cache\Cacheable\File',
+		'memcache' => '\Mars\Cache\Cacheable\Memcache'
 	];
 
 	/**
@@ -84,29 +86,10 @@ abstract class Cacheable
 	}
 
 	/**
-	 * Returns the name of the driver to use
-	 * @return string The driver name
-	 */
-	protected function getDriver() : string
-	{
-		if ($this->driver == 'memcache') {
-			if (!$this->app->config->memcache_enable) {
-				throw new \Exception("Memcache must be enabled in order to use the memcache driver when caching content. Either set content_cache_driver to 'file' else or set memcache_enable to true");
-			}
-		}
-
-		return $this->driver;
-	}
-
-	/**
 	 * Outputs the content, if it's cached
 	 */
 	public function output()
 	{
-		if ($this->app->is_bin) {
-			return;
-		}
-
 		$last_modified = $this->getLastModified();
 
 		if ($last_modified) {
@@ -196,9 +179,9 @@ abstract class Cacheable
 	/**
 	 * Stores the content in the cache
 	 * @param string $content The content to store
-	 *                        return $this;
+	 * @return $this;
 	 */
-	public function store(string $content)
+	public function storeContent(string $content)
 	{
 		$this->driver->store($this->filename, $content);
 

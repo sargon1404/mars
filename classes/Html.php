@@ -20,14 +20,14 @@ class Html
 	use AppTrait;
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $handlers The tags object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $tags;
 
 	/**
-	 * @var array $supported_handlers The list of supported_handlers
+	 * @var array $supported_tags The list of supported tags
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_tags = [
 		'img' => '\Mars\Html\Img',
 		'picture' => '\Mars\Html\Picture',
 		'a' => '\Mars\Html\A',
@@ -59,8 +59,8 @@ class Html
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
-		$this->handlers->setInterface(TagInterface::class);
+		$this->tags = new Handlers($this->supported_tags, $this->app);
+		$this->tags->setInterface(TagInterface::class);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Html
 	 */
 	public function getTag(string $type, string $text = '', array $attributes = [], array $properties = []) : string
 	{
-		return $this->handlers->get($type)->html($text, $attributes, $properties);
+		return $this->tags->get($type)->html($text, $attributes, $properties);
 	}
 
 	/**

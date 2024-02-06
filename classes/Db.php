@@ -182,7 +182,7 @@ class Db
 		$this->read_port = $this->use_multi ? $this->app->config->db_port[$key] : $this->app->config->db_port;
 		$this->read_username = $this->use_multi ? $this->app->config->db_username[$key] : $this->app->config->db_username;
 		$this->read_password = $this->use_multi ? $this->app->config->db_password[$key] : $this->app->config->db_password;
-		$this->read_database = $this->use_multi ? $this->app->config->db_database[$key] : $this->app->config->db_database;
+		$this->read_database = $this->use_multi ? $this->app->config->db_name[$key] : $this->app->config->db_name;
 		$this->read_persistent = $this->use_multi ? $this->app->config->db_persistent[$key] : $this->app->config->db_persistent;
 	}
 
@@ -195,7 +195,7 @@ class Db
 		$this->write_port = $this->use_multi ? $this->app->config->db_port[0] : $this->app->config->db_port;
 		$this->write_username = $this->use_multi ? $this->app->config->db_username[0] : $this->app->config->db_username;
 		$this->write_password = $this->use_multi ? $this->app->config->db_password[0] : $this->app->config->db_password;
-		$this->write_database = $this->use_multi ? $this->app->config->db_database[0] : $this->app->config->db_database;
+		$this->write_database = $this->use_multi ? $this->app->config->db_name[0] : $this->app->config->db_name;
 		$this->write_persistent = $this->use_multi ? $this->app->config->db_persistent[0] : $this->app->config->db_persistent;
 	}
 

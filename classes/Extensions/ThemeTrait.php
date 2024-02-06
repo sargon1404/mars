@@ -18,6 +18,16 @@ use Mars\Document\Javascript;
 trait ThemeTrait
 {
 	/**
+	 * @var Css $css The css object
+	 */
+	public Css $css;
+
+	/**
+	 * @var Javascript $javascript The javascript object
+	 */
+	public Javascript $javascript;
+
+	/**
 	 * @var string $header_template The template which will be used to render the header
 	 */
 	public string $header_template = 'header';
@@ -48,11 +58,6 @@ trait ThemeTrait
 	protected string $images_url = '';
 
 	/**
-	 * @var string $cache_path The folder where the cache files are stored
-	 */
-	protected string $cache_path = '';
-
-	/**
 	 * @var array $vars The theme's vars are stored here
 	 */
 	protected array $vars = [];
@@ -63,24 +68,14 @@ trait ThemeTrait
 	protected array $templates_loaded = [];
 
 	/**
-	 * @var Template templates The engine used to parse the template
-	 */
-	protected Templates $templates;
-
-	/**
 	 * @var string $content The generated content
 	 */
 	protected string $content = '';
 
 	/**
-	 * @var Css $css The css object
+	 * @var Template templates The engine used to parse the template
 	 */
-	public Css $css;
-
-	/**
-	 * @var Javascript $javascript The javascript object
-	 */
-	public Javascript $javascript;
+	protected Templates $templates;
 
 	/**
 	 * @internal
@@ -119,7 +114,6 @@ trait ThemeTrait
 	{
 		parent::preparePaths();
 
-		$this->cache_path = $this->app->cache_path . '/' . App::CACHE_DIRS['templates'];
 		$this->templates_path = $this->path . '/' . App::EXTENSIONS_DIRS['templates'];
 		$this->images_path = $this->path . '/' . App::EXTENSIONS_DIRS['images'];
 		$this->images_url = $this->url . '/' . rawurlencode(App::EXTENSIONS_DIRS['images']);
@@ -263,9 +257,9 @@ trait ThemeTrait
 		}
 
 		$filename = $this->getTemplateFilename($template);
-		$cache_filename = $this->getTemplateCacheFilename($template, $type);
+		$cache_name = $this->app->cache->templates->getName($filename, $type);
 
-		$content = $this->getTemplateContent($filename, $cache_filename, $vars, ['template' => $template]);
+		$content = $this->getTemplateContent($filename, $cache_name, $vars, ['template' => $template]);
 
 		return $this->app->plugins->filter('theme_get_template', $content, $template, $vars, $type, $this);
 	}
@@ -283,33 +277,33 @@ trait ThemeTrait
 			$this->templates_loaded[] = $filename;
 		}
 
-		$cache_filename = $this->getTemplateCacheFilename($this->app->file->getRel($filename), $type);
+		$cache_file = $this->app->cache->templates->getName($filename, $type);
 
-		return $this->getTemplateContent($filename, $cache_filename, $vars, [], $development);
+		return $this->getTemplateContent($filename, $cache_file, $vars, [], $development);
 	}
 
 	/**
 	 * Returns the contents of a template
 	 * @param string $filename The filename from where the template will be loaded
-	 * @param string $cache_filename The filename used to cache the template
+	 * @param string $cache_file The name used to cache the template
 	 * @param array $vars Vars to pass to the template, if any
 	 * @param array $params Params to pass to the parser
 	 * @param bool $development If true, won't cache the template
 	 * @return string The template content
 	 */
-	protected function getTemplateContent(string $filename, string $cache_filename, array $vars, array $params = [], bool $development = false) : string
+	protected function getTemplateContent(string $filename, string $cache_name, array $vars, array $params = [], bool $development = false) : string
 	{
 		if ($vars) {
 			$this->addVars($vars);
 		}
 
-		if ($this->development || $development || !is_file($cache_filename)) {
-			$this->writeTemplate($filename, $cache_filename, ['filename' => $filename] + $params);
+		if ($this->development || $development || !$this->app->cache->templates->exists($cache_name)) {
+			$this->writeTemplate($filename, $cache_name, ['filename' => $filename] + $params);
 		}
 
-		$content = $this->includeTemplate($cache_filename);
+		$content = $this->includeTemplate($cache_name);
 
-		$content = $this->app->plugins->filter('theme_get_template_content', $content, $filename, $cache_filename, $vars, $this);
+		$content = $this->app->plugins->filter('theme_get_template_content', $content, $filename, $cache_name, $vars, $this);
 
 		return $content;
 	}
@@ -329,19 +323,19 @@ trait ThemeTrait
 	 * @param string $filename The filename from where the template will be loaded
 	 * @param string $cache_filename The filename used to cache the template
 	 * @param array $params Params to pass to the parser
-	 * @return bool True if the template was written, false on failure
+	 * @throws \Exception If the file can't be read or written to the cache
 	 */
-	protected function writeTemplate(string $filename, string $cache_filename, array $params) : bool
+	protected function writeTemplate(string $filename, string $cache_filename, array $params)
 	{
 		$content = file_get_contents($filename);
 
 		if ($content === false) {
-			return false;
+			throw new \Exception("Error reading template file: {$filename}");
 		}
 
 		$content = $this->parseTemplate($content, $params);
 
-		return file_put_contents($cache_filename, $content);
+		return $this->app->cache->templates->write($cache_filename, $content);
 	}
 
 	/**
@@ -357,10 +351,10 @@ trait ThemeTrait
 
 	/**
 	 * Includes a template and returns it's content
-	 * @param string $filename The filename of the template
+	 * @param string $cache_name The name of the cached template
 	 * @return string The template's content
 	 */
-	protected function includeTemplate(string $filename) : string
+	protected function includeTemplate(string $cache_name) : string
 	{
 		$app = $this->app;
 		$strings = &$this->app->lang->strings;
@@ -368,31 +362,9 @@ trait ThemeTrait
 
 		ob_start();
 
-		include($filename);
+		include($this->app->cache->templates->getFilename($cache_name));
 
 		return ob_get_clean();
-	}
-
-	/**
-	 * Generates a cache filename for a template
-	 * @param string $template The name of the template
-	 * @return string The filename
-	 */
-	public function getTemplateCacheFilename(string $template, string $type) : string
-	{
-		$parts = [
-			$this->name,
-			$template,
-			$type,
-			$this->app->config->key,
-		];
-
-		$parts = array_filter($parts);
-
-		$name = implode('-', $parts);
-		$name = trim(str_replace(['/', '.'], '-', $name), '-');
-
-		return $this->cache_path . '/' . $name . '.php';
 	}
 
 	/**************** RENDER METHODS *************************************/

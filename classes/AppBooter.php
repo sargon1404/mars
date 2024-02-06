@@ -32,14 +32,6 @@ class AppBooter
 	}
 
 	/**
-	 * Initializes the Caching object
-	 */
-	public function caching()
-	{
-		$this->app->caching = new Caching($this->app);
-	}
-
-	/**
 	 * Initializes the libraries
 	 */
 	public function libraries()

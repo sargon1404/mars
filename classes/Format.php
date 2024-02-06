@@ -30,14 +30,14 @@ class Format
 	protected string $time_format = 'h:i:s';
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $formats The formats object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $formats;
 
 	/**
-	 * @var array $supported_handlers The list of supported_handlers
+	 * @var array $supported_formats The list of supported formats
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_formats = [
 		'lower' => ['lower'],
 		'upper' => ['upper'],
 		'round' => ['round'],
@@ -59,7 +59,7 @@ class Format
 	public function __construct(App $app)
 	{
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->formats = new Handlers($this->supported_formats, $this->app);
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Format
 	 */
 	public function lower(string|array $value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->formats->map($value, function ($value) {
 			return strtolower($value);
 		});
 	}
@@ -81,7 +81,7 @@ class Format
 	 */
 	public function upper(string|array $value) : string|array
 	{
-		return $this->handlers->map($value, function ($value) {
+		return $this->formats->map($value, function ($value) {
 			return strtoupper($value);
 		});
 	}
@@ -94,7 +94,7 @@ class Format
 	 */
 	public function round(float|array $value, int $decimals = 2) : float|array
 	{
-		return $this->handlers->map($value, function ($value) use ($decimals) {
+		return $this->formats->map($value, function ($value) use ($decimals) {
 			return round($value, $decimals);
 		});
 	}
@@ -109,7 +109,7 @@ class Format
 	 */
 	public function number(float|array $number, int $decimals = 2, string $decimal_separator = '.', string $thousands_separator = ',') : string|array
 	{
-		return $this->handlers->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
+		return $this->formats->map($number, function ($number) use ($decimals, $decimal_separator, $thousands_separator) {
 			return number_format($number, $decimals, $decimal_separator, $thousands_separator);
 		});
 	}
@@ -123,8 +123,8 @@ class Format
 	 */
 	public function percentage(float|array $number, float $total, int $decimals = 4) : float|array
 	{
-		return $this->handlers->map($number, function ($number) use ($total, $decimals) {
-			return $this->handlers->get('percentage')->format($number, $total, $decimals);
+		return $this->formats->map($number, function ($number) use ($total, $decimals) {
+			return $this->formats->get('percentage')->format($number, $total, $decimals);
 		});
 	}
 
@@ -136,8 +136,8 @@ class Format
 	 */
 	public function filesize(int|float|array $bytes, int $digits = 2) : string|array
 	{
-		return $this->handlers->map($bytes, function ($bytes) use ($digits) {
-			return $this->handlers->get('filesize')->format($bytes, $digits);
+		return $this->formats->map($bytes, function ($bytes) use ($digits) {
+			return $this->formats->get('filesize')->format($bytes, $digits);
 		});
 	}
 
@@ -151,7 +151,7 @@ class Format
 	{
 		$format = $format ?: $this->datetime_format;
 
-		return $this->handlers->map($datetime, function ($datetime) use ($format) {
+		return $this->formats->map($datetime, function ($datetime) use ($format) {
 			return $this->app->time->get($datetime)->format($format);
 		});
 	}
@@ -191,8 +191,8 @@ class Format
 	 */
 	public function timeInterval(int|array $seconds, string $separator1 = ' ', string $separator2 = ', ') : string|array
 	{
-		return $this->handlers->map($seconds, function ($seconds) use ($separator1, $separator2) {
-			return $this->handlers->get('time_interval')->format($seconds, $separator1, $separator2);
+		return $this->formats->map($seconds, function ($seconds) use ($separator1, $separator2) {
+			return $this->formats->get('time_interval')->format($seconds, $separator1, $separator2);
 		});
 	}
 
@@ -205,7 +205,7 @@ class Format
 	 */
 	public function jsArray(array $data, bool $quote = true, array $dont_quote_array = []) : string
 	{
-		return $this->handlers->get('js_array')->format($data, $quote, $dont_quote_array);
+		return $this->formats->get('js_array')->format($data, $quote, $dont_quote_array);
 	}
 
 	/**
@@ -217,6 +217,6 @@ class Format
 	 */
 	public function jsObject(array|object$data, bool $quote = true, array $dont_quote_array = [])
 	{
-		return $this->handlers->get('js_object')->format($data, $quote, $dont_quote_array);
+		return $this->formats->get('js_object')->format($data, $quote, $dont_quote_array);
 	}
 }

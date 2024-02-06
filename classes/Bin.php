@@ -43,9 +43,9 @@ class Bin
 	];
 
 	/**
-	 * @var Handlers $handlers The handlers object
+	 * @var Handlers $handlers The printers object
 	 */
-	public readonly Handlers $handlers;
+	public readonly Handlers $printers;
 
 	/**
 	 * @param array $argv List of arguments
@@ -68,9 +68,9 @@ class Bin
 	protected string $newline = "\n";
 
 	/**
-	 * @var array $supported_handlers The list of supported handlers
+	 * @var array $supported_printers The list of supported printers
 	 */
-	protected array $supported_handlers = [
+	protected array $supported_printers = [
 		'list' => '\Mars\Bin\Listing',
 		'list_multi' => '\Mars\Bin\ListingMulti',
 		'table' => '\Mars\Bin\Table'
@@ -84,7 +84,7 @@ class Bin
 	{
 		global $argv;
 		$this->app = $app;
-		$this->handlers = new Handlers($this->supported_handlers, $this->app);
+		$this->printers = new Handlers($this->supported_printers, $this->app);
 		$this->argv = $argv ?? [];
 
 		if (isset($argv[1])) {
@@ -369,8 +369,8 @@ class Bin
 	 */
 	public function printList(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = []) : static
 	{
-		$handler = $this->handlers->get('list');
-		$handler->print($data, $colors, $paddings_right, $paddings_left);
+		$printer = $this->printers->get('list');
+		$printer->print($data, $colors, $paddings_right, $paddings_left);
 
 		return $this;
 	}
@@ -385,8 +385,8 @@ class Bin
 	 */
 	public function printListMulti(array $data, array $colors = [], array $paddings_right = [], array $paddings_left = []) : static
 	{
-		$handler = $this->handlers->get('list_multi');
-		$handler->print($data, $colors, $paddings_right, $paddings_left);
+		$printer = $this->printers->get('list_multi');
+		$printer->print($data, $colors, $paddings_right, $paddings_left);
 
 		return $this;
 	}
@@ -403,8 +403,8 @@ class Bin
 	 */
 	public function printTable(array $headers, array $data, array $colors = [], array $align = [], array $paddings_left = [], array $paddings_right = []) : static
 	{
-		$handler = $this->handlers->get('table');
-		$handler->print($headers, $data, $colors, $align, $paddings_left, $paddings_right);
+		$printer = $this->printers->get('table');
+		$printer->print($headers, $data, $colors, $align, $paddings_left, $paddings_right);
 
 		return $this;
 	}
